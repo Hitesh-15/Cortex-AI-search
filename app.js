@@ -49,9 +49,10 @@ function executeSearch(userQuery) {
 
 // Auto-Sanitize & Clear Stale Legacy Cache
 (function sanitizeLegacyBrowserCache() {
-    const provider = localStorage.getItem("ambu_provider");
-    const model = localStorage.getItem("ambu_model");
-    if (!provider || provider === "local" || model === "gemini-3.7-flash" || model === "gemini-3.6-flash") {
+    const CURRENT_VERSION = "7.0";
+    const lastVersion = localStorage.getItem("ambu_build_v");
+    if (lastVersion !== CURRENT_VERSION) {
+        localStorage.setItem("ambu_build_v", CURRENT_VERSION);
         localStorage.setItem("ambu_provider", "local");
         localStorage.setItem("ambu_model", "ambulkar-cortex-engine");
     }
