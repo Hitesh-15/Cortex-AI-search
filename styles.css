@@ -1455,16 +1455,11 @@ select option:checked {
     }
 
     .hero-title {
-        font-size: 1.6rem !important;
+        font-size: 1.45rem !important;
     }
 
     .search-input {
-        font-size: 0.9rem !important;
-    }
-
-    .privacy-badge-banner {
-        font-size: 0.72rem !important;
-        padding: 6px 10px !important;
+        font-size: 0.88rem !important;
     }
 
     .modal-footer {
@@ -1474,6 +1469,136 @@ select option:checked {
 
     .modal-footer button {
         width: 100%;
+    }
+}
+
+/* Mobile Phone Displays (under 600px) - Ultra-Clean Perplexity Style */
+@media (max-width: 600px) {
+    .spend-ticker-pill {
+        display: none !important;
+    }
+
+    .top-header {
+        padding: 8px 12px !important;
+    }
+
+    .model-indicator-pill {
+        padding: 4px 10px !important;
+        font-size: 0.76rem !important;
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .empty-hero {
+        padding: 10px 0 !important;
+    }
+
+    .hero-title {
+        font-size: 1.45rem !important;
+        line-height: 1.25 !important;
+        margin-bottom: 6px !important;
+    }
+
+    .hero-subtitle {
+        font-size: 0.8rem !important;
+        line-height: 1.35 !important;
+        margin-bottom: 12px !important;
+        padding: 0 4px !important;
+    }
+
+    .privacy-badge-banner {
+        display: none !important;
+    }
+
+    .suggested-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+
+    .suggested-card {
+        padding: 10px 12px !important;
+        border-radius: var(--radius-md) !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .suggested-card-sub {
+        display: none !important;
+    }
+
+    .suggested-card-text {
+        font-size: 0.82rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .suggested-card-icon {
+        font-size: 0.9rem !important;
+        margin-bottom: 0 !important;
+    }
+
+    .bottom-search-wrapper {
+        padding: 8px 10px !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+    }
+
+    .search-box-container {
+        padding: 8px 10px !important;
+        gap: 6px !important;
+        border-radius: 16px !important;
+    }
+
+    .search-input {
+        font-size: 0.88rem !important;
+        padding: 4px 0 !important;
+    }
+
+    .search-actions-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+        border-top: none !important;
+        padding-top: 2px !important;
+    }
+
+    .chat-model-picker-container {
+        max-width: 48% !important;
+        padding: 2px 6px !important;
+    }
+
+    .chat-model-select {
+        font-size: 0.7rem !important;
+        max-width: 110px !important;
+    }
+
+    .effort-picker-container {
+        max-width: 48% !important;
+        padding: 2px 6px !important;
+    }
+
+    .effort-picker-label {
+        display: none !important;
+    }
+
+    .chat-effort-select {
+        font-size: 0.7rem !important;
+        max-width: 100px !important;
+    }
+
+    .btn-search-send {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.82rem !important;
     }
 }
 
