@@ -426,6 +426,56 @@ function setFocusMode(mode) {
         };
         searchInput.placeholder = placeholders[mode] || "Ask Ambulkar Cortex anything...";
     }
+
+    // Render Dynamic Hero Suggested Query Cards for Selected Focus Mode
+    renderSuggestedCards(mode);
+}
+
+function renderSuggestedCards(mode) {
+    const grid = document.querySelector(".suggested-cards-grid");
+    if (!grid) return;
+
+    const cardsMap = {
+        web: [
+            { icon: "fa-atom", title: "2026 AI & Quantum Breakthroughs", sub: "Real-time tech web research", query: "What are the top 2026 AI breakthroughs and quantum computing updates?" },
+            { icon: "fa-chart-pie", title: "S&P 500 vs. Inflation Benchmark", sub: "Financial market analysis", query: "Compare S&P 500 YTD return vs. Federal Reserve inflation targets" },
+            { icon: "fa-code", title: "Python Async Scraper Pipeline", sub: "Clean code & data pipeline", query: "Write a clean Python async pipeline to scrape and process API data" },
+            { icon: "fa-bolt", title: "Fusion Energy Reactor Milestones", sub: "Scientific web updates", query: "Explain how fusion energy net-gain milestones work in modern reactors" }
+        ],
+        academic: [
+            { icon: "fa-graduation-cap", title: "arXiv Transformer Research Papers", sub: "Computer Science & LLM papers", query: "Find recent arXiv papers on sparse attention transformers and LLM efficiency" },
+            { icon: "fa-dna", title: "PubMed Clinical CRISPR Trials", sub: "Biomedical peer-reviewed studies", query: "Summarize latest PubMed clinical trials on CRISPR gene editing therapies" },
+            { icon: "fa-microchip", title: "Quantum Supremacy Proofs", sub: "Physics & IEEE papers", query: "What are recent peer-reviewed paper findings on error-corrected quantum supremacy?" },
+            { icon: "fa-network-wired", title: "Neural Architecture Search (NAS)", sub: "AI arXiv repository research", query: "Search IEEE & arXiv research on automated neural architecture search (NAS)" }
+        ],
+        code: [
+            { icon: "fa-cubes", title: "Next.js 15 Server Actions & TS", sub: "Full-stack Web Dev pattern", query: "Write a production Next.js 15 Server Action with TypeScript validation" },
+            { icon: "fa-python", title: "FastAPI + PyDantic V2 Async API", sub: "Backend API implementation", query: "Show clean FastAPI code with PyDantic V2 models and WebSockets" },
+            { icon: "fa-gear", title: "Rust Tokio High-Throughput Server", sub: "Systems programming example", query: "Provide Rust tokio async TCP server example with zero-copy parsing" },
+            { icon: "fa-docker", title: "Docker Multi-Stage Optimization", sub: "DevOps & Containerization", query: "How to write a multi-stage Dockerfile for Node.js microservices under 50MB" }
+        ],
+        finance: [
+            { icon: "fa-file-invoice-dollar", title: "SEC 10-K & EDGAR Filings Analysis", sub: "Corporate financial disclosures", query: "Search SEC 10-K filings for Big Tech revenue breakdown and capital expenditure" },
+            { icon: "fa-landmark", title: "Fed Interest Rates & Treasury Yields", sub: "Macroeconomic & Bond markets", query: "Summarize current FOMC interest rate forecasts and 10-Year Treasury Yield trends" },
+            { icon: "fa-scale-balanced", title: "High Yield Savings vs S&P 500", sub: "Asset allocation benchmarks", query: "Compare high yield savings rates vs S&P 500 real inflation-adjusted returns" },
+            { icon: "fa-chart-line", title: "AI Semiconductor Earnings Metrics", sub: "Market earnings forecasts", query: "Analyze NVIDIA & TSMC quarterly earnings margins and GPU demand forecasts" }
+        ],
+        writing: [
+            { icon: "fa-pen-nib", title: "Executive Summary & Pitch Deck", sub: "Business & Startup writing", query: "Write a compelling 1-page executive summary for an AI startup seed round" },
+            { icon: "fa-paper-plane", title: "Enterprise Outreach Email", sub: "B2B Sales & Communication", query: "Draft a professional high-converting outreach email to enterprise CTOs" },
+            { icon: "fa-file-code", title: "Microservice RFC Architecture Doc", sub: "Technical documentation", query: "Write a clear RFC specification document for a distributed microservice system" },
+            { icon: "fa-lightbulb", title: "Sci-Fi Quantum Memory Concept", sub: "Creative & Worldbuilding", query: "Brainstorm a sci-fi world concept where memory can be backed up to quantum storage" }
+        ]
+    };
+
+    const cards = cardsMap[mode] || cardsMap.web;
+    grid.innerHTML = cards.map(c => `
+        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
+            <i class="fa-solid ${c.icon} suggested-card-icon"></i>
+            <div class="suggested-card-text">${c.title}</div>
+            <div class="suggested-card-sub">${c.sub}</div>
+        </div>
+    `).join('');
 }
 
 function setEffortLevel(effort) {
@@ -619,60 +669,90 @@ function saveThreadsToLocalStorage() {
     localStorage.setItem("ambu_threads", JSON.stringify(appState.threads));
 }
 
-// Web Sources Search Engine (Supports Depth per Effort Level)
+// Web Sources Search Engine (Supports Depth per Effort Level & Targeted Focus Modes)
 async function fetchWebSources(query, focusMode, effortLevel) {
     let cleanQuery = query.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    let targetedQuery = cleanQuery;
+
+    // Apply Focus Mode Domain Modifiers to Query
+    if (focusMode === "academic") {
+        targetedQuery += " site:arxiv.org OR site:pubmed.ncbi.nlm.nih.gov OR site:nature.com OR site:wikipedia.org";
+    } else if (focusMode === "code") {
+        targetedQuery += " site:github.com OR site:stackoverflow.com OR site:developer.mozilla.org";
+    } else if (focusMode === "finance") {
+        targetedQuery += " site:sec.gov OR site:finance.yahoo.com OR site:bloomberg.com OR site:marketwatch.com";
+    }
+
     let sources = [];
 
-    if (focusMode === "finance") {
-        sources = [
-            { id: 1, num: 1, title: "MarketWatch: Inflation, Treasury Yields & Stocks", domain: "marketwatch.com", url: "https://marketwatch.com", snippet: "Key indices, Federal Reserve interest benchmark rates, and macroeconomic indicators." },
-            { id: 2, num: 2, title: "SEC EDGAR Financial Data & Public Filings", domain: "sec.gov", url: "https://sec.gov", snippet: "Official corporate financial statements and balance sheet metrics." },
-            { id: 3, num: 3, title: "Bloomberg Markets & Economic Intelligence", domain: "bloomberg.com", url: "https://bloomberg.com", snippet: "Live analysis of market returns and corporate earnings updates." }
-        ];
-    } else if (focusMode === "academic") {
-        sources = [
-            { id: 1, num: 1, title: "Wikipedia Scientific & Historical Encyclopedia", domain: "wikipedia.org", url: "https://wikipedia.org", snippet: "Peer-reviewed scientific summaries, equations, and historical references." },
-            { id: 2, num: 2, title: "ArXiv Scientific Repository & Research Papers", domain: "arxiv.org", url: "https://arxiv.org", snippet: "Open-access scientific papers in computer science, physics, and mathematics." },
-            { id: 3, num: 3, title: "Nature Journal of Science & Technology", domain: "nature.com", url: "https://nature.com", snippet: "High-impact research articles and technological reviews." }
-        ];
-    } else if (focusMode === "code") {
-        sources = [
-            { id: 1, num: 1, title: "StackOverflow Technical Q&A & Code Patterns", domain: "stackoverflow.com", url: "https://stackoverflow.com", snippet: "Community code solutions, async patterns, and error handling." },
-            { id: 2, num: 2, title: "GitHub Code Repository & Open-Source Docs", domain: "github.com", url: "https://github.com", snippet: "Production code repositories, library APIs, and documentation." },
-            { id: 3, num: 3, title: "MDN Web Docs & Technical Specifications", domain: "developer.mozilla.org", url: "https://developer.mozilla.org", snippet: "Authoritative web APIs and JavaScript documentation." }
-        ];
-    } else {
-        try {
-            const res = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(cleanQuery)}&format=json&no_html=1&skip_disambig=1`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.AbstractText) {
-                    sources.push({
-                        id: 1, num: 1,
-                        title: data.Heading || "Web Reference Summary",
-                        domain: data.AbstractSource || "duckduckgo.com",
-                        url: data.AbstractURL || "https://duckduckgo.com",
-                        snippet: data.AbstractText
-                    });
-                }
+    // 1. Attempt Live DuckDuckGo API Search with targeted query
+    try {
+        const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(targetedQuery)}&format=json&no_html=1&skip_disambig=1`;
+        const res = await fetch(ddgUrl);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.AbstractText) {
+                sources.push({
+                    id: 1, num: 1,
+                    title: data.Heading || `${cleanQuery} (${focusMode.toUpperCase()} Focus)`,
+                    domain: data.AbstractSource ? data.AbstractSource.toLowerCase() : "duckduckgo.com",
+                    url: data.AbstractURL || "https://duckduckgo.com",
+                    snippet: data.AbstractText
+                });
             }
-        } catch (e) {
-            console.log("DDG fetch fallback:", e);
-        }
 
-        if (sources.length === 0) {
+            if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+                data.RelatedTopics.slice(0, 3).forEach((topic) => {
+                    if (topic.Text && topic.FirstURL) {
+                        const domainMatch = topic.FirstURL.match(/https?:\/\/([^\/]+)/);
+                        sources.push({
+                            id: sources.length + 1,
+                            num: sources.length + 1,
+                            title: topic.Text.substring(0, 60) + "...",
+                            domain: domainMatch ? domainMatch[1] : "web-reference.org",
+                            url: topic.FirstURL,
+                            snippet: topic.Text
+                        });
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.log("Live DDG search fetch notice:", e);
+    }
+
+    // 2. If DDG returns no abstract for hyper-specific query, construct domain-specific live research targets
+    if (sources.length === 0) {
+        if (focusMode === "finance") {
             sources = [
-                { id: 1, num: 1, title: `${cleanQuery} - Comprehensive Web Analysis`, domain: "reuters.com", url: "https://reuters.com", snippet: "Global news coverage and multi-source verification." },
-                { id: 2, num: 2, title: "TechCrunch Technology & Market Trends", domain: "techcrunch.com", url: "https://techcrunch.com", snippet: "Insights on AI infrastructure, tech developments, and market trends." },
-                { id: 3, num: 3, title: "Wikipedia Reference Portal", domain: "wikipedia.org", url: "https://wikipedia.org", snippet: "Structured encyclopedic overview and historical background." }
+                { id: 1, num: 1, title: `${cleanQuery} - SEC EDGAR Corporate Filings & Disclosures`, domain: "sec.gov", url: `https://www.sec.gov/edgar/searchedgar/companysearch?q=${encodeURIComponent(cleanQuery)}`, snippet: `Official SEC corporate filings, 10-K statements, and financial metrics for ${cleanQuery}.` },
+                { id: 2, num: 2, title: `${cleanQuery} - Yahoo Finance Market & Earnings Data`, domain: "finance.yahoo.com", url: `https://finance.yahoo.com/quote/${encodeURIComponent(cleanQuery)}`, snippet: `Live stock price, balance sheet, valuation multiples, and analyst targets for ${cleanQuery}.` },
+                { id: 3, num: 3, title: `${cleanQuery} - MarketWatch Financial Intelligence`, domain: "marketwatch.com", url: `https://www.marketwatch.com/search?q=${encodeURIComponent(cleanQuery)}`, snippet: `Real-time macroeconomic context, treasury yield metrics, and corporate news for ${cleanQuery}.` }
+            ];
+        } else if (focusMode === "academic") {
+            sources = [
+                { id: 1, num: 1, title: `${cleanQuery} - ArXiv Research Papers & Preprint Archive`, domain: "arxiv.org", url: `https://arxiv.org/search/?query=${encodeURIComponent(cleanQuery)}&searchtype=all`, snippet: `Peer-reviewed preprints, mathematical proofs, and scientific literature regarding ${cleanQuery}.` },
+                { id: 2, num: 2, title: `${cleanQuery} - PubMed Biomedical & Scientific Research`, domain: "pubmed.ncbi.nlm.nih.gov", url: `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(cleanQuery)}`, snippet: `MEDLINE index, peer-reviewed clinical studies, and scientific articles for ${cleanQuery}.` },
+                { id: 3, num: 3, title: `${cleanQuery} - Wikipedia Scientific Reference`, domain: "wikipedia.org", url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(cleanQuery)}`, snippet: `Encyclopedic scientific overview, equations, and historical references for ${cleanQuery}.` }
+            ];
+        } else if (focusMode === "code") {
+            sources = [
+                { id: 1, num: 1, title: `${cleanQuery} - GitHub Open-Source Repositories & Code`, domain: "github.com", url: `https://github.com/search?q=${encodeURIComponent(cleanQuery)}`, snippet: `Production source code repositories, async implementations, and library usage for ${cleanQuery}.` },
+                { id: 2, num: 2, title: `${cleanQuery} - StackOverflow Solutions & Error Fixes`, domain: "stackoverflow.com", url: `https://stackoverflow.com/search?q=${encodeURIComponent(cleanQuery)}`, snippet: `Verified developer solutions, stack trace resolution, and code patterns for ${cleanQuery}.` },
+                { id: 3, num: 3, title: `${cleanQuery} - MDN Web Docs Technical Specification`, domain: "developer.mozilla.org", url: `https://developer.mozilla.org/en-US/search?q=${encodeURIComponent(cleanQuery)}`, snippet: `Standardized API reference documentation, browser compatibility, and code examples for ${cleanQuery}.` }
+            ];
+        } else {
+            sources = [
+                { id: 1, num: 1, title: `${cleanQuery} - Reuters International Intelligence`, domain: "reuters.com", url: `https://www.reuters.com/site-search/?query=${encodeURIComponent(cleanQuery)}`, snippet: `Verified multi-source global reporting and real-time facts for ${cleanQuery}.` },
+                { id: 2, num: 2, title: `${cleanQuery} - TechCrunch Technology & Industry Analysis`, domain: "techcrunch.com", url: `https://techcrunch.com/search/${encodeURIComponent(cleanQuery)}`, snippet: `Tech developments, market trends, and industry analysis for ${cleanQuery}.` },
+                { id: 3, num: 3, title: `${cleanQuery} - Wikipedia Overview`, domain: "wikipedia.org", url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(cleanQuery)}`, snippet: `Structured encyclopedic summary and contextual background for ${cleanQuery}.` }
             ];
         }
     }
 
-    if (effortLevel === "high") {
+    if (effortLevel === "high" && sources.length < 4) {
         sources.push({
-            id: 4, num: 4, title: "MIT Technology Review & Advanced Research", domain: "technologyreview.com", url: "https://technologyreview.com", snippet: "Deep tech analysis and expert domain synthesis."
+            id: 4, num: 4, title: `${cleanQuery} - MIT Technology Review & Expert Synthesis`, domain: "technologyreview.com", url: `https://www.technologyreview.com/search/?q=${encodeURIComponent(cleanQuery)}`, snippet: `In-depth technical analysis and multi-angle domain evaluation for ${cleanQuery}.`
         });
     }
 
