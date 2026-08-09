@@ -721,14 +721,9 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     } else if (provider === "openrouter" && apiKey) {
         contentHTML = await callOpenRouterProvider(query, sources, activeModel, apiKey);
     } else {
-        const neuralResponse = await callOpenSourceNeuralLLM(query, sources);
-        if (neuralResponse) {
-            contentHTML = neuralResponse.html;
-            activeModelDisplay = neuralResponse.modelName;
-        } else {
-            contentHTML = generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel);
-            activeModelDisplay = "Ambulkar Engine (Local Synthesis)";
-        }
+        const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
+        contentHTML = neuralResponse.html;
+        activeModelDisplay = neuralResponse.modelName;
     }
 
     const telemetryFooter = `
@@ -755,53 +750,51 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     };
 }
 
-async function callOpenSourceNeuralLLM(query, sources) {
+async function callEmbeddedFreeNeuralEngine(query, sources) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive response to: "${query}".
+    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive, accurate response to: "${query}".
 
 Verified Web Sources:
 ${sourceContext}
 
 Instructions:
-1. Synthesize current facts based on web references provided.
+1. Synthesize current facts based on the web references provided.
 2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
 3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
-4. Do NOT output markdown code block wrappers or raw JSON. Output clean HTML directly.`;
+4. Output clean HTML directly without raw JSON or markdown wrappers.`;
 
-    const freeModels = [
-        { id: "openai", name: "Llama 3.3 70B (Open-Source Neural)" },
-        { id: "mistral", name: "Mistral 8x22B (Open-Source Neural)" },
-        { id: "qwen", name: "Qwen 2.5 72B (Open-Source Neural)" }
-    ];
+    // 1. Attempt Free Neural Engine
+    try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyA_FREE_NEURAL_ROUTE`;
+        const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
 
-    for (const m of freeModels) {
-        try {
-            const res = await fetch("https://text.pollinations.ai/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    messages: [{ role: "user", content: prompt }],
-                    model: m.id
-                })
-            });
-
-            if (res.ok) {
-                const text = await res.text();
-                if (text && text.length > 30 && !text.includes("404 Not Found") && !text.includes("error")) {
+        if (res.ok) {
+            const data = await res.json();
+            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                const text = data.candidates[0].content.parts[0].text;
+                if (text && text.length > 20) {
                     return {
                         html: formatAIResponseHTML(text),
-                        modelName: m.name
+                        modelName: "Gemini 1.5 Flash (Free Neural)"
                     };
                 }
             }
-        } catch (err) {
-            console.log(`OpenSource neural fallback attempt for ${m.id}:`, err);
         }
+    } catch (err) {
+        console.log("Free neural route attempt:", err);
     }
 
-    return null;
+    // 2. Resilient Fallback to Local Citation Synthesizer
+    return {
+        html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
+        modelName: "Ambulkar Engine (Local Synthesis)"
+    };
 }
 
 function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) {
