@@ -709,6 +709,8 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         };
     }
 
+    let activeModelDisplay = activeModel;
+
     if (provider === "gemini" && apiKey) {
         contentHTML = await callGeminiProvider(query, sources, activeModel, apiKey);
     } else if (provider === "openai" && apiKey) {
@@ -720,9 +722,11 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     } else {
         const neuralResponse = await callOpenSourceNeuralLLM(query, sources);
         if (neuralResponse) {
-            contentHTML = neuralResponse;
+            contentHTML = neuralResponse.html;
+            activeModelDisplay = neuralResponse.modelName;
         } else {
             contentHTML = generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel);
+            activeModelDisplay = "Ambulkar Engine (Local Synthesis)";
         }
     }
 
@@ -738,7 +742,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
                 <i class="fa-solid fa-gauge-high"></i> Effort: ${effortClass.label}
             </span>
             <span class="telemetry-badge model" title="Active Model Identifier">
-                <i class="fa-solid fa-atom"></i> ${activeModel}
+                <i class="fa-solid fa-atom"></i> ${activeModelDisplay}
             </span>
         </div>
     `;
@@ -764,12 +768,12 @@ Instructions:
 4. Do NOT output markdown code block wrappers or raw JSON. Output clean HTML directly.`;
 
     const freeModels = [
-        "meta-llama/llama-3.3-70b-instruct:free",
-        "google/gemma-2-9b-it:free",
-        "qwen/qwen-2.5-72b-instruct:free"
+        { id: "meta-llama/llama-3.3-70b-instruct:free", name: "Llama 3.3 70B (Open-Source Neural)" },
+        { id: "google/gemma-2-9b-it:free", name: "Gemma 2 9B (Open-Source Neural)" },
+        { id: "qwen/qwen-2.5-72b-instruct:free", name: "Qwen 2.5 72B (Open-Source Neural)" }
     ];
 
-    for (const modelId of freeModels) {
+    for (const m of freeModels) {
         try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
@@ -779,7 +783,7 @@ Instructions:
                     "X-Title": "Ambulkar Cortex"
                 },
                 body: JSON.stringify({
-                    model: modelId,
+                    model: m.id,
                     messages: [{ role: "user", content: prompt }]
                 })
             });
@@ -789,12 +793,15 @@ Instructions:
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     const text = data.choices[0].message.content;
                     if (text && text.length > 20) {
-                        return formatAIResponseHTML(text);
+                        return {
+                            html: formatAIResponseHTML(text),
+                            modelName: m.name
+                        };
                     }
                 }
             }
         } catch (err) {
-            console.log(`OpenSource neural fallback attempt for ${modelId}:`, err);
+            console.log(`OpenSource neural fallback attempt for ${m.id}:`, err);
         }
     }
 
