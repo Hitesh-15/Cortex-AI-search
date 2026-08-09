@@ -57,7 +57,7 @@ let appState = {
     totalSessionSpend: parseFloat(localStorage.getItem("ambu_total_spend") || "0.00000"),
     settings: {
         provider: localStorage.getItem("ambu_provider") || "local",
-        model: localStorage.getItem("ambu_model") || "gemini-3.7-flash",
+        model: localStorage.getItem("ambu_model") || "ambulkar-cortex-engine",
         customModel: localStorage.getItem("ambu_custom_model") || "",
         costRouting: localStorage.getItem("ambu_cost_routing") || "min_cost", // min_cost, balanced, max_quality
         autoUpdateModels: localStorage.getItem("ambu_auto_update") !== "false",
@@ -73,7 +73,8 @@ let appState = {
 
 // MODEL PRICING MATRIX ($ USD per 1 Million Tokens - Frontier Thinking & Max Models)
 const MODEL_PRICING = {
-    "local": { input: 0.0, output: 0.0, tier: "fast" },
+    "ambulkar-cortex-engine": { input: 0.0, output: 0.0, tier: "free" },
+    "local": { input: 0.0, output: 0.0, tier: "free" },
     "gpt-5.6-terra": { input: 0.80, output: 3.20, tier: "fast" },
     "gpt-5.6-sol": { input: 2.50, output: 10.00, tier: "reasoning" },
     "gemini-3.6-flash": { input: 0.075, output: 0.30, tier: "fast" },
@@ -89,7 +90,7 @@ const MODEL_PRICING = {
 // Provider to Models Map (Exact Frontier Models List)
 let PROVIDER_MODELS = {
     local: [
-        { id: "gemini-3.6-flash", name: "Ambulkar Engine (Free)" }
+        { id: "ambulkar-cortex-engine", name: "Ambulkar Engine (Free)" }
     ],
     openai: [
         { id: "gpt-5.6-terra", name: "GPT-5.6 Terra" },
@@ -659,7 +660,7 @@ function calculateTokenSpend(modelId, promptTokens, completionTokens) {
 async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effortClass) {
     const provider = appState.settings.provider;
     const apiKey = appState.settings.apiKeys[provider];
-    const modelSelect = appState.settings.model;
+    const modelSelect = provider === "local" ? "ambulkar-cortex-engine" : appState.settings.model;
     const customModel = appState.settings.customModel;
     const activeModel = modelSelect === "custom" ? (customModel || "gemini-3.6-flash") : modelSelect;
 
@@ -1119,12 +1120,11 @@ function deleteThread(threadId) {
 
 function switchProviderToLocal() {
     appState.settings.provider = "local";
-    appState.settings.model = "gemini-3.6-flash";
+    appState.settings.model = "ambulkar-cortex-engine";
     localStorage.setItem("ambu_provider", "local");
-    localStorage.setItem("ambu_model", "gemini-3.6-flash");
-    populateChatModelSelector();
+    localStorage.setItem("ambu_model", "ambulkar-cortex-engine");
     updateHeaderModelLabel();
-    alert("Switched to Ambu Local Engine (100% Free)!");
+    alert("Switched to Ambulkar Engine (100% Free)!");
 }
 
 // Modal Settings Dialog
