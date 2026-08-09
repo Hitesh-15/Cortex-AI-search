@@ -718,7 +718,12 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     } else if (provider === "openrouter" && apiKey) {
         contentHTML = await callOpenRouterProvider(query, sources, activeModel, apiKey);
     } else {
-        contentHTML = generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel);
+        const neuralResponse = await callOpenSourceNeuralLLM(query, sources);
+        if (neuralResponse) {
+            contentHTML = neuralResponse;
+        } else {
+            contentHTML = generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel);
+        }
     }
 
     const telemetryFooter = `
@@ -743,6 +748,57 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         costUSD: spendMetrics.costUSD,
         telemetry: spendMetrics
     };
+}
+
+async function callOpenSourceNeuralLLM(query, sources) {
+    const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
+    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive, accurate response to: "${query}".
+
+Verified Web Sources:
+${sourceContext}
+
+Instructions:
+1. Synthesize current facts based on web references provided.
+2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
+3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
+4. Do NOT output markdown code block wrappers or raw JSON. Output clean HTML directly.`;
+
+    const freeModels = [
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "google/gemma-2-9b-it:free",
+        "qwen/qwen-2.5-72b-instruct:free"
+    ];
+
+    for (const modelId of freeModels) {
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://cortex.ambulkar.com",
+                    "X-Title": "Ambulkar Cortex"
+                },
+                body: JSON.stringify({
+                    model: modelId,
+                    messages: [{ role: "user", content: prompt }]
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    const text = data.choices[0].message.content;
+                    if (text && text.length > 20) {
+                        return formatAIResponseHTML(text);
+                    }
+                }
+            }
+        } catch (err) {
+            console.log(`OpenSource neural fallback attempt for ${modelId}:`, err);
+        }
+    }
+
+    return null;
 }
 
 function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) {
@@ -1183,3 +1239,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
