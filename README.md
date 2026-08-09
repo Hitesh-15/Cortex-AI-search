@@ -46,7 +46,7 @@ flowchart TD
 - ⚡ **Ambulkar Hybrid Engine**: 100% free local hybrid processing engine.
 - 🌐 **Real-Time Web Citations**: Automated web source extraction with numbered citation badges (`[1]`, `[2]`).
 - 🎯 **Focus Search Modes**: All Web, Academic Papers, Code Repos, and Financial Markets.
-- 💰 **Cost & Token Telemetry**: Real-time USD spend ticker tracking exact token consumption across queries.
+- 💰 **Cost & Token Telemetry**: Estimated USD spend ticker calculated in real-time using published model rate cards ($ USD / 1M tokens).
 - 🔒 **100% Privacy & Local Key Storage**: All provider API keys are saved exclusively in the browser's `localStorage`.
 
 ---

@@ -854,7 +854,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
 
     const telemetryFooter = `
         <div class="telemetry-bar">
-            <span class="telemetry-badge cost" title="Estimated API Token Cost for this response">
+            <span class="telemetry-badge cost" title="Estimated USD spend calculated via published provider rate cards ($/1M tokens)">
                 <i class="fa-solid fa-coins"></i> Spend: <strong>${spendMetrics.costFormatted}</strong>
             </span>
             <span class="telemetry-badge" title="Prompt Tokens / Output Tokens">
