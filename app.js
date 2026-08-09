@@ -766,7 +766,7 @@ Instructions:
     // 1. Attempt Free Neural Engine
     try {
         const freeKey = atob("REMOVED_COMPROMISED_KEY=");
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${freeKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${freeKey}`;
         const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -782,7 +782,7 @@ Instructions:
                 if (text && text.length > 20) {
                     return {
                         html: formatAIResponseHTML(text),
-                        modelName: "Gemini 1.5 Flash (Free Neural)"
+                        modelName: "Gemini 3.6 Flash (Free Neural)"
                     };
                 }
             }
