@@ -36,5 +36,19 @@ Ambulkar Cortex is a state-of-the-art AI search engine and reasoning gateway. It
 ## 🛠 Tech Stack
 
 - **Frontend**: Vanilla HTML5, Modern CSS3 (Dark Glassmorphism UI), Vanilla JavaScript (ES6+).
-- **Icons & Typography**: Font Awesome 6, Google Fonts (*Outfit*, *Plus Jakarta Sans*, *JetBrains Mono*).
+- **Icons & Typography**: Font Awesome 6 (Free License), Google Fonts (*Outfit*, *Plus Jakarta Sans*, *JetBrains Mono* - Open Font License).
 - **Testing**: Selenium Edge Automated Testing Suite.
+
+---
+
+## 🔒 Security & API Key Privacy
+
+- **Zero Hardcoded Keys**: No API keys or secrets exist in the source code or Git history.
+- **Client-Side Storage**: All API keys entered in the UI are saved strictly in the user's local browser `localStorage`.
+- **Direct API Calls**: API calls are made directly from the user's browser to the official provider endpoints (Google Gemini, OpenAI, Anthropic, OpenRouter). No intermediate server stores or sees your keys.
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE) — free to use, modify, and showcase for personal portfolios, educational demos, and open-source contributions.
