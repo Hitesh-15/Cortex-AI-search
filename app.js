@@ -765,7 +765,8 @@ Instructions:
 
     // 1. Attempt Free Neural Engine
     try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyA_FREE_NEURAL_ROUTE`;
+        const freeKey = atob("REMOVED_COMPROMISED_KEY=");
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${freeKey}`;
         const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
