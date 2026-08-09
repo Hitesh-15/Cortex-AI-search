@@ -47,6 +47,16 @@ function executeSearch(userQuery) {
     runAsyncSearchPipeline(userQuery);
 }
 
+// Auto-Sanitize & Clear Stale Legacy Cache
+(function sanitizeLegacyBrowserCache() {
+    const provider = localStorage.getItem("ambu_provider");
+    const model = localStorage.getItem("ambu_model");
+    if (!provider || provider === "local" || model === "gemini-3.7-flash" || model === "gemini-3.6-flash") {
+        localStorage.setItem("ambu_provider", "local");
+        localStorage.setItem("ambu_model", "ambulkar-cortex-engine");
+    }
+})();
+
 // Application State
 let appState = {
     threads: JSON.parse(localStorage.getItem("ambu_threads") || "[]"),
