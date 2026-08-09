@@ -89,7 +89,7 @@ const MODEL_PRICING = {
 // Provider to Models Map (Exact Frontier Models List)
 let PROVIDER_MODELS = {
     local: [
-        { id: "gemini-3.6-flash", name: "Ambu Local Engine (Free)" }
+        { id: "gemini-3.6-flash", name: "Ambulkar Engine (Free)" }
     ],
     openai: [
         { id: "gpt-5.6-terra", name: "GPT-5.6 Terra" },
@@ -328,7 +328,7 @@ function setupNavigationListeners() {
 
     // Clear History Button
     document.getElementById("btnClearHistory").addEventListener("click", () => {
-        if (confirm("Clear all search history and token spend logs from Ambu Intelligence?")) {
+        if (confirm("Clear all search history and token spend logs from Ambulkar Cortex?")) {
             appState.threads = [];
             appState.activeThreadId = null;
             appState.totalSessionSpend = 0.0;
@@ -394,7 +394,7 @@ function updateHeaderModelLabel() {
     const model = appState.settings.model;
 
     if (provider === "local") {
-        label.textContent = "Ambu Hybrid Engine";
+        label.textContent = "Ambulkar Engine";
     } else {
         label.textContent = `${provider.toUpperCase()} (${model})`;
     }
@@ -491,7 +491,7 @@ async function runAsyncSearchPipeline(userQuery) {
         </div>
         <div class="sources-container">
             <div class="sources-header">
-                <i class="fa-solid fa-spinner fa-spin text-cyan"></i> Ambu Intelligence running [${effortClassification.label}] search & extracting citations...
+                <i class="fa-solid fa-spinner fa-spin text-cyan"></i> Ambulkar Cortex running [${effortClassification.label}] search & extracting citations...
             </div>
             <div class="sources-grid" id="${stepId}_sources">
                 <div class="source-card">
@@ -501,7 +501,7 @@ async function runAsyncSearchPipeline(userQuery) {
             </div>
         </div>
         <div class="ai-answer-box" id="${stepId}_answer">
-            <span class="text-muted"><i class="fa-solid fa-brain fa-pulse"></i> Synthesizing answer with Ambu (${appState.settings.provider.toUpperCase()})...</span>
+            <span class="text-muted"><i class="fa-solid fa-brain fa-pulse"></i> Synthesizing answer with Ambulkar Cortex (${appState.settings.provider.toUpperCase()})...</span>
         </div>
     `;
 
@@ -676,7 +676,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
 
     let reasonBanner = effortLevel === "high" || appState.isProSearch ? `
         <div class="privacy-badge-banner" style="background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border-color: rgba(139, 92, 246, 0.3); margin-bottom: 16px;">
-            <i class="fa-solid fa-brain"></i> <strong>Ambu Deep Research Agent (${effortClass.label}):</strong> Decomposed query into 3 research sub-topics ➔ Verified ${sources.length} sources ➔ Chain-of-Thought Synthesis.
+            <i class="fa-solid fa-brain"></i> <strong>Ambulkar Cortex Deep Research Agent (${effortClass.label}):</strong> Decomposed query into 3 research sub-topics ➔ Verified ${sources.length} sources ➔ Chain-of-Thought Synthesis.
         </div>
     ` : '';
 
@@ -689,7 +689,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
                     <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> API Key Missing for ${activeModel}
                 </h4>
                 <p style="color: #cbd5e1; font-size: 0.88rem; margin-bottom: 14px;">
-                    You selected <strong>${activeModel}</strong> (${provider.toUpperCase()}), but no API key was found. Please enter your ${provider.toUpperCase()} API key to run this prompt, or switch to <strong>Ambu Local Engine (Free)</strong>.
+                    You selected <strong>${activeModel}</strong> (${provider.toUpperCase()}), but no API key was found. Please enter your ${provider.toUpperCase()} API key to run this prompt, or switch to <strong>Ambulkar Engine (Free)</strong>.
                 </p>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button type="button" class="btn-primary" onclick="openSettingsModal()" style="font-size: 0.8rem; padding: 7px 14px;">
@@ -751,7 +751,7 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
 
     if (effortLevel === "low") {
         return `
-            <h3>Ambu Quick Direct Answer</h3>
+            <h3>Ambulkar Cortex Quick Answer</h3>
             <p>Synthesizing top web reference ${sources[0] ? `<span class="citation-ref">[1]</span>` : ''} for <strong>"${query}"</strong>:</p>
             <p>${sources[0] ? sources[0].snippet : 'High-relevance factual overview retrieved directly from verified sources.'}</p>
         `;
@@ -759,9 +759,9 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
 
     if (focusMode === "code" || qLower.includes("code") || qLower.includes("python") || qLower.includes("javascript")) {
         return `
-            <h3>Ambu Technical Architecture & Implementation</h3>
+            <h3>Ambulkar Cortex Architecture & Implementation</h3>
             <p>Based on documentation extracted from StackOverflow, GitHub, and MDN ${sourceRefs}, here is the optimal production pattern:</p>
-            <pre><code>// Ambu High-Efficiency Async Pipeline
+            <pre><code>// Ambulkar Cortex Async Pipeline
 async function processDataStream(inputPayload) {
     try {
         const response = await fetch("https://api.example.com/v1/process", {
@@ -786,7 +786,7 @@ async function processDataStream(inputPayload) {
 
     if (focusMode === "finance" || qLower.includes("market") || qLower.includes("inflation") || qLower.includes("stock")) {
         return `
-            <h3>Ambu Financial & Economic Synthesis</h3>
+            <h3>Ambulkar Cortex Financial Synthesis</h3>
             <p>According to real-time market data and official financial reporting ${sourceRefs}:</p>
             <ul>
                 <li><strong>Market Performance:</strong> S&P 500 benchmark year-to-date return tracks at <strong>+14.2%</strong>, driven by technology and infrastructure growth <span class="citation-ref">[1]</span>.</li>
@@ -799,7 +799,7 @@ async function processDataStream(inputPayload) {
 
     return `
         <h3>Key Takeaways & Synthesized Overview</h3>
-        <p>Synthesizing insights across ${sources.length} verified web sources with Ambu Intelligence ${sourceRefs}:</p>
+        <p>Synthesizing insights across ${sources.length} verified web sources with Ambulkar Cortex ${sourceRefs}:</p>
         <p><strong>1. Core Overview:</strong><br>
         Research indicates significant developments regarding <strong>"${query}"</strong>. Key indicators demonstrate strong progress across technical, structural, and market domains <span class="citation-ref">[1]</span>.</p>
         
@@ -847,7 +847,7 @@ function formatAIResponseHTML(text) {
 // Provider Direct API Calls
 async function callGeminiProvider(query, sources, model, apiKey) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    const prompt = `You are Ambu Intelligence, a state-of-the-art AI search engine. Provide a comprehensive, accurate, up-to-date response to: "${query}".
+    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive, accurate, up-to-date response to: "${query}".
 
 Verified Web Sources:
 ${sourceContext}
