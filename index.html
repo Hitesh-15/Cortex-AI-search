@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambu Intelligence - Multi-Model AI Search Engine</title>
+    <meta name="description"
+        content="State-of-the-art AI search engine with real-time web citations, multi-model reasoning, and focus modes.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-atom"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>Ambu<span>Intelligence</span></h1>
+                    <span class="brand-tag">Ambu AI Engine</span>
+                </div>
+            </div>
+
+            <button id="btnNewThread" class="btn-new-thread">
+                <i class="fa-solid fa-plus"></i> New Search Thread
+            </button>
+
+            <span class="sidebar-section-title">Focus Search Modes</span>
+            <div class="focus-nav">
+                <div class="focus-nav-item active" data-mode="web">
+                    <i class="fa-solid fa-globe text-cyan"></i>
+                    <span>All Web</span>
+                </div>
+                <div class="focus-nav-item" data-mode="academic">
+                    <i class="fa-solid fa-graduation-cap text-purple"></i>
+                    <span>Academic & Papers</span>
+                </div>
+                <div class="focus-nav-item" data-mode="code">
+                    <i class="fa-solid fa-code text-emerald"></i>
+                    <span>Code & Tech</span>
+                </div>
+                <div class="focus-nav-item" data-mode="finance">
+                    <i class="fa-solid fa-chart-line text-gold"></i>
+                    <span>Finance & Markets</span>
+                </div>
+                <div class="focus-nav-item" data-mode="writing">
+                    <i class="fa-solid fa-pen-nib text-rose"></i>
+                    <span>Writing & Creative</span>
+                </div>
+            </div>
+
+            <span class="sidebar-section-title">Thread History</span>
+            <div class="thread-history-list" id="threadHistoryList">
+                <!-- Dynamically populated by JS -->
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="btnOpenSettings" class="btn-sidebar-footer">
+                    <i class="fa-solid fa-sliders text-accent"></i> API & Model Settings
+                </button>
+                <button id="btnClearHistory" class="btn-sidebar-footer">
+                    <i class="fa-solid fa-trash-can text-muted"></i> Clear History
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE & CHAT AREA -->
+        <main class="main-content">
+            <!-- TOP HEADER -->
+            <header class="top-header">
+                <div class="model-badge-group">
+                    <div class="model-indicator-pill" id="btnHeaderModelSelect" onclick="openSettingsModal()"
+                        title="Change AI Model Provider & Cost Settings">
+                        <i class="fa-solid fa-microchip text-accent"></i>
+                        <span id="activeModelLabel">Gemini 3.6 Flash</span>
+                        <i class="fa-solid fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
+                    </div>
+
+                    <div class="spend-ticker-pill" id="spendTickerPill" title="Estimated session API token spend">
+                        <i class="fa-solid fa-coins text-gold"></i>
+                        <span>Spend: <strong id="totalSpendLabel">$0.00000</strong></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ANSWERS & THREAD VIEWPORT -->
+            <div class="view-scroll-area" id="viewScrollArea">
+                <!-- Empty State Hero (Default View) -->
+                <div class="empty-hero" id="emptyHeroView">
+                    <h2 class="hero-title">Search at the speed of <span>thought.</span></h2>
+                    <p class="hero-subtitle">Ask anything for real-time web citations, agentic reasoning, and cost-aware
+                        multi-model synthesis with Ambu Intelligence.</p>
+
+                    <div class="suggested-cards-grid">
+                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
+                            data-query="What are the top 2026 AI breakthroughs and quantum computing updates?">
+                            <i class="fa-solid fa-atom suggested-card-icon"></i>
+                            <div class="suggested-card-text">2026 AI & Quantum Breakthroughs</div>
+                            <div class="suggested-card-sub">Real-time tech web research</div>
+                        </div>
+                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
+                            data-query="Compare S&P 500 YTD return vs. Federal Reserve inflation targets">
+                            <i class="fa-solid fa-chart-pie suggested-card-icon"></i>
+                            <div class="suggested-card-text">S&P 500 vs. Inflation Benchmark</div>
+                            <div class="suggested-card-sub">Financial market analysis</div>
+                        </div>
+                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
+                            data-query="Write a clean Python async pipeline to scrape and process API data">
+                            <i class="fa-solid fa-code suggested-card-icon"></i>
+                            <div class="suggested-card-text">Python Async Data Pipeline</div>
+                            <div class="suggested-card-sub">Coding snippet & architecture</div>
+                        </div>
+                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
+                            data-query="Explain how fusion energy reactors work and current commercial timelines">
+                            <i class="fa-solid fa-bolt suggested-card-icon"></i>
+                            <div class="suggested-card-text">Commercial Fusion Timelines</div>
+                            <div class="suggested-card-sub">Academic & scientific synthesis</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Thread Container (Populated dynamically) -->
+                <div id="activeThreadContainer" style="display: none; flex-direction: column; gap: 30px; width: 100%;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- FLOATING BOTTOM SEARCH INPUT BAR -->
+            <div class="bottom-search-wrapper">
+                <form id="searchForm" class="search-box-container">
+                    <div class="search-input-row">
+                        <input type="text" id="searchInput" class="search-input"
+                            placeholder="Ask Ambu Intelligence anything... (Press Enter or click search)"
+                            autocomplete="off">
+                        <div class="submit-btn-group">
+                            <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Search">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-actions-row">
+                        <!-- CHAT WINDOW DIRECT MODEL SELECTOR -->
+                        <div class="chat-model-picker-container"
+                            title="Instantly switch active AI Model for your search prompt">
+                            <i class="fa-solid fa-microchip text-accent" style="font-size: 0.8rem;"></i>
+                            <select id="chatModelSelect" class="chat-model-select">
+                                <optgroup label="⚡ Local Engine">
+                                    <option value="local:gemini-3.6-flash">Ambu Local Engine (Free)</option>
+                                </optgroup>
+                                <optgroup label="🧠 OpenAI">
+                                    <option value="openai:gpt-5.6-terra">GPT-5.6 Terra</option>
+                                    <option value="openai:gpt-5.6-sol">GPT-5.6 Sol</option>
+                                </optgroup>
+                                <optgroup label="🚀 Google Gemini">
+                                    <option value="gemini:gemini-3.6-flash">Gemini 3.6 Flash</option>
+                                    <option value="gemini:gemini-3.1-pro">Gemini 3.1 Pro</option>
+                                </optgroup>
+                                <optgroup label="🎨 Anthropic Claude">
+                                    <option value="claude:claude-5-sonnet">Claude Sonnet 5</option>
+                                    <option value="claude:claude-5-opus">Claude Opus 5</option>
+                                </optgroup>
+                                <optgroup label="🌙 Moonshot Kimi">
+                                    <option value="kimi:kimi-k3">Kimi K3</option>
+                                </optgroup>
+                                <optgroup label="⚡ Zhipu GLM">
+                                    <option value="zhipu:glm-5.2">GLM 5.2</option>
+                                </optgroup>
+                                <optgroup label="🌌 xAI Grok">
+                                    <option value="xai:grok-4.5">Grok 4.5</option>
+                                </optgroup>
+                                <optgroup label="🟢 NVIDIA Nemotron">
+                                    <option value="nvidia:nemotron-3-ultra">Nemotron 3 Ultra</option>
+                                </optgroup>
+                            </select>
+                            <button type="button" id="btnRefreshModels" class="btn-refresh-models-icon"
+                                title="Fetch & Sync Latest Released Models Across All Providers">
+                                <i class="fa-solid fa-arrows-rotate text-cyan"></i>
+                            </button>
+                        </div>
+
+                        <!-- AGENT EFFORT SELECTOR DROPDOWN -->
+                        <div class="effort-picker-container" title="Agent Effort Level">
+                            <span class="effort-picker-label"><i class="fa-solid fa-gauge-high text-cyan"
+                                    style="font-size: 0.8rem;"></i> Effort:</span>
+                            <select id="chatEffortSelect" class="chat-effort-select">
+                                <option value="auto">Auto (Smart Speed & Cost)</option>
+                                <option value="low">Low (Fast ~1s • Min Cost)</option>
+                                <option value="medium">Medium (Balanced ~3s)</option>
+                                <option value="high">High (Deep ~8s • Reasoning)</option>
+                            </select>
+                        </div>
+
+                        <!-- PRO SEARCH (DEEP REASONING) TOGGLE -->
+                        <div class="pro-toggle-wrapper"
+                            title="Pro Search runs multi-step deep reasoning and query expansion">
+                            <span class="pro-toggle-label"><i class="fa-solid fa-brain text-purple"
+                                    style="font-size: 0.8rem;"></i> Pro Search</span>
+                            <input type="checkbox" id="toggleProSearch" class="toggle-switch">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: MULTI-PROVIDER & MODEL SETTINGS -->
+    <div id="settingsModal" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders text-accent"></i> Multi-Provider & Cost Optimization Settings</h3>
+                <button class="modal-close" id="btnCloseSettingsModal">&times;</button>
+            </div>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="providerSelect"><i class="fa-solid fa-network-wired text-cyan"></i> Select AI
+                        Provider</label>
+                    <select id="providerSelect">
+                        <option value="local">Local Hybrid Engine (Default - 100% Free)</option>
+                        <option value="openai">OpenAI (GPT-5.6 Sol / Terra)</option>
+                        <option value="gemini">Google Gemini (Gemini 3.6 Flash / 3.1 Pro)</option>
+                        <option value="claude">Anthropic Claude (Claude Opus 5 / Sonnet 5)</option>
+                        <option value="kimi">Moonshot Kimi (Kimi K3)</option>
+                        <option value="zhipu">Zhipu AI (GLM 5.2)</option>
+                        <option value="xai">xAI Grok (Grok 4.5)</option>
+                        <option value="nvidia">NVIDIA (Nemotron 3 Ultra)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="modelSelect"><i class="fa-solid fa-microchip text-purple"></i> Model Version</label>
+                    <select id="modelSelect">
+                        <!-- Dynamically populated based on provider -->
+                    </select>
+                </div>
+
+                <div class="form-group" id="customModelGroup" style="display: none;">
+                    <label for="customModelInput"><i class="fa-solid fa-code"></i> Custom Model Identifier</label>
+                    <input type="text" id="customModelInput"
+                        placeholder="e.g. gemini-3.7-flash, gpt-5, or latest-reasoning">
+                </div>
+
+                <div class="form-group">
+                    <label for="costRoutingSelect"><i class="fa-solid fa-coins text-gold"></i> Cost & Quality
+                        Strategy</label>
+                    <select id="costRoutingSelect">
+                        <option value="min_cost">Minimum Cost First (Lowest Token Price + Best Quality Output)</option>
+                        <option value="balanced">Balanced (High Quality Flash/Mini Models)</option>
+                        <option value="max_quality">Max Quality (Pro & Deep Reasoning Models)</option>
+                    </select>
+                </div>
+
+                <div class="form-group-checkbox">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                        <input type="checkbox" id="toggleAutoUpdateModels" checked class="toggle-switch">
+                        <span>Auto-update registry to latest models upon release</span>
+                    </label>
+                </div>
+
+                <div class="form-group" id="apiKeyGroup" style="display: none;">
+                    <label for="apiKeyInput" id="apiKeyLabel"><i class="fa-solid fa-key text-gold"></i> Provider API
+                        Key</label>
+                    <input type="password" id="apiKeyInput" placeholder="Paste your API key..." autocomplete="off">
+                    <span class="help-text" style="font-size: 0.75rem; color: var(--text-muted);">Saved 100% locally in
+                        your browser's localStorage.</span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelSettings">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+
+</html>
