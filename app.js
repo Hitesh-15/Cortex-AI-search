@@ -386,6 +386,18 @@ function setupNavigationListeners() {
         });
     });
 
+    // Sidebar Focus Nav Items Click Event Listener
+    document.querySelectorAll(".focus-nav-item").forEach(item => {
+        item.addEventListener("click", (e) => {
+            e.preventDefault();
+            const mode = item.getAttribute("data-mode") || item.dataset.mode;
+            if (mode) {
+                setFocusMode(mode);
+                closeMobileSidebar();
+            }
+        });
+    });
+
     // Keyboard Shortcuts (Cmd/Ctrl + K)
     document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -398,11 +410,22 @@ function setupNavigationListeners() {
 function setFocusMode(mode) {
     appState.activeFocusMode = mode;
     document.querySelectorAll(".focus-nav-item").forEach(el => {
-        el.classList.toggle("active", el.dataset.mode === mode);
+        const elMode = el.getAttribute("data-mode") || el.dataset.mode;
+        el.classList.toggle("active", elMode === mode);
     });
-    document.querySelectorAll(".focus-pill").forEach(el => {
-        el.classList.toggle("active", el.dataset.pill === mode);
-    });
+
+    // Dynamic Search Input Placeholder according to active Focus Mode
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        const placeholders = {
+            web: "Ask Ambulkar Cortex anything... (All Web Search)",
+            academic: "Search arXiv, PubMed, IEEE & Academic Papers...",
+            code: "Search GitHub repos, documentation, StackOverflow & code...",
+            finance: "Search SEC filings, market data, earnings & finance...",
+            writing: "Draft, summarize, brainstorm or write creatively..."
+        };
+        searchInput.placeholder = placeholders[mode] || "Ask Ambulkar Cortex anything...";
+    }
 }
 
 function setEffortLevel(effort) {
