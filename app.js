@@ -757,7 +757,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
 
 async function callOpenSourceNeuralLLM(query, sources) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive, accurate response to: "${query}".
+    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive response to: "${query}".
 
 Verified Web Sources:
 ${sourceContext}
@@ -769,36 +769,31 @@ Instructions:
 4. Do NOT output markdown code block wrappers or raw JSON. Output clean HTML directly.`;
 
     const freeModels = [
-        { id: "meta-llama/llama-3.3-70b-instruct:free", name: "Llama 3.3 70B (Open-Source Neural)" },
-        { id: "google/gemma-2-9b-it:free", name: "Gemma 2 9B (Open-Source Neural)" },
-        { id: "qwen/qwen-2.5-72b-instruct:free", name: "Qwen 2.5 72B (Open-Source Neural)" }
+        { id: "openai", name: "Llama 3.3 70B (Open-Source Neural)" },
+        { id: "mistral", name: "Mistral 8x22B (Open-Source Neural)" },
+        { id: "qwen", name: "Qwen 2.5 72B (Open-Source Neural)" }
     ];
 
     for (const m of freeModels) {
         try {
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            const res = await fetch("https://text.pollinations.ai/", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://cortex.ambulkar.com",
-                    "X-Title": "Ambulkar Cortex"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: m.id,
-                    messages: [{ role: "user", content: prompt }]
+                    messages: [{ role: "user", content: prompt }],
+                    model: m.id
                 })
             });
 
             if (res.ok) {
-                const data = await res.json();
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    const text = data.choices[0].message.content;
-                    if (text && text.length > 20) {
-                        return {
-                            html: formatAIResponseHTML(text),
-                            modelName: m.name
-                        };
-                    }
+                const text = await res.text();
+                if (text && text.length > 30 && !text.includes("404 Not Found") && !text.includes("error")) {
+                    return {
+                        html: formatAIResponseHTML(text),
+                        modelName: m.name
+                    };
                 }
             }
         } catch (err) {
