@@ -100,7 +100,7 @@ const MODEL_PRICING = {
 // Provider to Models Map (Exact Frontier Models List)
 let PROVIDER_MODELS = {
     local: [
-        { id: "ambulkar-cortex-engine", name: "Ambulkar Engine (Free)" }
+        { id: "ambulkar-cortex-engine", name: "Ambulkar Engine (Free Neural)" }
     ],
     openai: [
         { id: "gpt-5.6-terra", name: "GPT-5.6 Terra" },
@@ -405,7 +405,7 @@ function updateHeaderModelLabel() {
     const model = appState.settings.model;
 
     if (provider === "local") {
-        label.textContent = "Ambulkar Engine";
+        label.textContent = "Ambulkar Engine (Free Neural)";
     } else {
         label.textContent = `${provider.toUpperCase()} (${model})`;
     }
@@ -796,6 +796,24 @@ Instructions:
                     };
                 }
             }
+        } else if (res.status === 429) {
+            const rateLimitBanner = `
+                <div class="api-key-error-card" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); padding: 16px 18px; border-radius: var(--radius-md); margin-bottom: 16px;">
+                    <h4 style="color: #fde047; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; font-size: 0.92rem;">
+                        <i class="fa-solid fa-gauge-high" style="color: #f59e0b;"></i> Global Free Tier Quota Busy (15 Requests/Min)
+                    </h4>
+                    <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 12px;">
+                        The shared free neural quota is currently busy. Add your personal free API key in Settings to run unlimited instant search!
+                    </p>
+                    <button type="button" class="btn-primary" onclick="openSettingsModal()" style="font-size: 0.78rem; padding: 6px 13px;">
+                        <i class="fa-solid fa-key"></i> Add Personal Free API Key
+                    </button>
+                </div>
+            `;
+            return {
+                html: rateLimitBanner + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
+                modelName: "Free Quota Busy (Local Fallback)"
+            };
         }
     } catch (err) {
         console.log("Free neural route attempt:", err);
