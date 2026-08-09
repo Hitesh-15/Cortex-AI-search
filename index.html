@@ -103,6 +103,11 @@
                     <p class="hero-subtitle">Ask anything for real-time web citations, agentic reasoning, and cost-aware
                         multi-model synthesis with Ambulkar Cortex.</p>
 
+                    <div class="privacy-badge-banner" style="margin: 10px auto 22px auto; max-width: 540px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); color: #a7f3d0; padding: 7px 16px; border-radius: 20px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i>
+                        <span><strong>100% Privacy Guarantee:</strong> All API keys, queries, and history stay inside your local browser storage. Zero server tracking.</span>
+                    </div>
+
                     <div class="suggested-cards-grid">
                         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
                             data-query="What are the top 2026 AI breakthroughs and quantum computing updates?">
@@ -277,6 +282,11 @@
                         your browser's localStorage.</span>
                 </div>
 
+                <div class="privacy-notice-box" style="margin-top: 14px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); font-size: 0.78rem; color: #a7f3d0; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-shield-halved" style="color: #10b981; font-size: 0.9rem;"></i>
+                    <span><strong>100% Privacy Guarantee:</strong> All API keys, search history, and settings are saved exclusively inside your browser's local storage. Zero data or keys are transmitted to any cloud database.</span>
+                </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" id="btnCancelSettings">Cancel</button>
                     <button type="submit" class="btn-primary">Save Settings</button>
@@ -286,7 +296,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=3.0"></script>
+    <script src="app.js?v=4.1"></script>
 </body>
 
 </html>
