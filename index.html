@@ -21,8 +21,11 @@
 
 <body>
     <div class="app-container">
+        <!-- SIDEBAR BACKDROP OVERLAY FOR MOBILE -->
+        <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
         <!-- SIDEBAR NAVIGATION -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="appSidebar">
             <div class="brand">
                 <div class="brand-icon">
                     <i class="fa-solid fa-brain"></i>
@@ -31,6 +34,9 @@
                     <h1>Ambulkar<span>Cortex</span></h1>
                     <span class="brand-tag">cortex.ambulkar.com</span>
                 </div>
+                <button id="btnMobileCloseSidebar" class="btn-mobile-close" aria-label="Close Sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
             <button id="btnNewThread" class="btn-new-thread">
@@ -80,6 +86,10 @@
         <main class="main-content">
             <!-- TOP HEADER -->
             <header class="top-header">
+                <button id="btnMobileToggle" class="btn-mobile-toggle" aria-label="Toggle Mobile Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
                 <div class="model-badge-group">
                     <div class="model-indicator-pill" id="btnHeaderModelSelect" onclick="openSettingsModal()"
                         title="Change AI Model Provider & Cost Settings">
@@ -296,7 +306,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=4.1"></script>
+    <script src="app.js?v=5.0"></script>
 </body>
 
 </html>

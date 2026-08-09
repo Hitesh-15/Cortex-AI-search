@@ -269,6 +269,26 @@ async function fetchLatestModelsAuto(isManual = false) {
 
 // Navigation & Event Listeners
 function setupNavigationListeners() {
+    // Mobile Sidebar Drawer Toggle Listeners
+    const btnMobileToggle = document.getElementById("btnMobileToggle");
+    const btnMobileClose = document.getElementById("btnMobileCloseSidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+    const sidebar = document.getElementById("appSidebar");
+
+    function openMobileSidebar() {
+        sidebar?.classList.add("active");
+        sidebarOverlay?.classList.add("active");
+    }
+
+    function closeMobileSidebar() {
+        sidebar?.classList.remove("active");
+        sidebarOverlay?.classList.remove("active");
+    }
+
+    if (btnMobileToggle) btnMobileToggle.addEventListener("click", openMobileSidebar);
+    if (btnMobileClose) btnMobileClose.addEventListener("click", closeMobileSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeMobileSidebar);
+
     // Refresh & Sync Models Button
     const btnRefresh = document.getElementById("btnRefreshModels");
     if (btnRefresh) {
@@ -296,6 +316,7 @@ function setupNavigationListeners() {
     // New Thread Button
     document.getElementById("btnNewThread").addEventListener("click", () => {
         createNewThread();
+        closeMobileSidebar();
     });
 
     // Sidebar Focus Nav Items
