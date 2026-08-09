@@ -39,8 +39,14 @@ function executeSearch(userQuery) {
     if (input) input.value = userQuery;
 
     const heroView = document.getElementById("emptyHeroView");
-    const container = document.getElementById("activeThreadContainer");
+    const isHeroVisible = heroView && (heroView.style.display !== "none" && getComputedStyle(heroView).display !== "none");
 
+    // Automatically create a fresh, clean thread if coming from Hero state or no active thread
+    if (isHeroVisible || !appState.activeThreadId) {
+        createNewThread(userQuery);
+    }
+
+    const container = document.getElementById("activeThreadContainer");
     if (heroView) heroView.style.display = "none";
     if (container) container.style.display = "flex";
 
