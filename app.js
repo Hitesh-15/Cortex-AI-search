@@ -345,15 +345,6 @@ function setupNavigationListeners() {
         });
     });
 
-    // Pro Search Switch
-    const togglePro = document.getElementById("toggleProSearch");
-    if (togglePro) {
-        togglePro.checked = appState.isProSearch;
-        togglePro.addEventListener("change", (e) => {
-            appState.isProSearch = e.target.checked;
-        });
-    }
-
     // Header Model Select Pill
     document.getElementById("btnHeaderModelSelect").addEventListener("click", () => {
         openSettingsModal();
