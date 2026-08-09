@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20JS-blue.svg)](https://developer.mozilla.org/)
 [![AI: Frontier LLMs](https://img.shields.io/badge/AI-Multi--Model%20Gateway-cyan.svg)](#-features)
-[![Vibe Coding](https://img.shields.io/badge/Vibe%20Coding-AI%20Pair%20Programmed-emerald.svg)](#-recruiter--vibe-coding-highlights)
+[![Vibe Coding](https://img.shields.io/badge/Vibe%20Coding-AI%20Pair%20Programmed-emerald.svg)](#-vibe-coding--architectural-highlights)
 
 Ambulkar Cortex is a state-of-the-art AI search engine and reasoning gateway. It aggregates real-time web citations, agentic deep reasoning, and cost-aware multi-model execution across frontier LLMs.
 
@@ -51,7 +51,7 @@ flowchart TD
 
 ---
 
-## 💼 Recruiter & Vibe Coding Highlights
+## ⚡ Vibe Coding & Architectural Highlights
 
 This repository was designed and engineered as a showcase of modern **Vibe Coding** and **GenAI Software Architecture**:
 - **Zero Heavy Framework Bloat**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JS for instant load times (<50ms).
