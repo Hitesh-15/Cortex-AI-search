@@ -542,6 +542,26 @@ function setupSearchForm() {
     }
 }
 
+let isWatchdogActive = false;
+
+function toggleWatchdogState() {
+    isWatchdogActive = !isWatchdogActive;
+    const btn = document.getElementById("btnToggleWatchdog");
+    const icon = document.getElementById("watchdogIcon");
+    const label = document.getElementById("watchdogLabel");
+
+    if (isWatchdogActive) {
+        if (btn) btn.classList.add("active");
+        if (icon) icon.className = "fa-solid fa-bell text-teal";
+        if (label) label.textContent = "24/7 Watchdog: Active (Discord)";
+        alert("📡 24/7 Background Watchdog Activated!\n\nThis query will run automatically in the background via GitHub Actions Cron. New updates will trigger instant pings to your Discord!");
+    } else {
+        if (btn) btn.classList.remove("active");
+        if (icon) icon.className = "fa-solid fa-bell-slash";
+        if (label) label.textContent = "24/7 Watchdog: Off";
+    }
+}
+
 // Classifier Agent for AUTO Effort
 function classifyQueryEffort(query) {
     const qLower = query.toLowerCase();
