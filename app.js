@@ -1478,6 +1478,11 @@ function closeLockModal() {
     if (modal) modal.classList.remove("active");
 }
 
+function closeSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    if (modal) modal.classList.remove("active");
+}
+
 function setupVaultModal() {
     const btnOpen = document.getElementById("btnOpenLockModal");
     const btnClose = document.getElementById("btnCloseVaultModal");
