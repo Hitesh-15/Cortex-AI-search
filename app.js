@@ -1309,6 +1309,16 @@ function deleteThread(threadId) {
     renderViewport();
 }
 
+function clearWorkspaceHistory() {
+    if (confirm("Are you sure you want to clear your research workspace history?")) {
+        appState.threads = [];
+        appState.activeThreadId = null;
+        saveThreadsToLocalStorage();
+        renderThreadHistory();
+        renderViewport();
+    }
+}
+
 function switchProviderToLocal() {
     appState.settings.provider = "local";
     appState.settings.model = "ambulkar-cortex-engine";

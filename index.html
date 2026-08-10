@@ -77,13 +77,13 @@
             </div>
 
             <div class="sidebar-footer">
-                <button id="btnOpenLockModal" class="btn-sidebar-footer" title="Manage Dual-Lock 2FA Vault Security">
+                <button id="btnOpenLockModal" class="btn-sidebar-footer" onclick="openLockModal()" title="Manage Dual-Lock 2FA Security Vault">
                     <i class="fa-solid fa-vault text-cyan"></i> Dual-Lock 2FA Vault
                 </button>
-                <button id="btnOpenSettings" class="btn-sidebar-footer">
+                <button id="btnOpenSettings" class="btn-sidebar-footer" onclick="openSettingsModal()" title="Open OpenRouter Gateway & Model Settings">
                     <i class="fa-solid fa-sliders text-cyan"></i> OpenRouter Gateway Settings
                 </button>
-                <button id="btnClearHistory" class="btn-sidebar-footer">
+                <button id="btnClearHistory" class="btn-sidebar-footer" onclick="clearWorkspaceHistory()" title="Clear Workspace Thread History">
                     <i class="fa-solid fa-trash-can text-muted"></i> Clear Workspace
                 </button>
             </div>
