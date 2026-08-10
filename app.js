@@ -975,7 +975,7 @@ Instructions:
             return formatAIResponseHTML(text);
         } else {
             const errData = await res.json().catch(() => ({}));
-            return `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> OpenRouter Gateway Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${errData.error?.message || 'Failed to communicate with OpenRouter API.'}</p></div>`;
+            return `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Cortex Gateway Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${errData.error?.message || 'Failed to communicate with Gateway API.'}</p></div>`;
         }
     } catch (err) {
         return `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Connection Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${err.message}</p></div>`;
