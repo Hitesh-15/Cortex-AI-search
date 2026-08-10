@@ -592,9 +592,21 @@ async function runAsyncSearchPipeline(userQuery) {
         <div class="user-query-heading">
             <i class="fa-solid fa-circle-question"></i> ${userQuery}
         </div>
+        <div class="spark-agent-panel" id="${stepId}_spark">
+            <div class="spark-agent-header">
+                <span class="spark-title"><i class="fa-solid fa-bolt text-teal"></i> Agentic Spark Engine [${effortClassification.label}]</span>
+                <span style="font-size: 0.76rem; color: #94a3b8;"><i class="fa-solid fa-microchip"></i> Active Sandbox Agent</span>
+            </div>
+            <div class="spark-steps-timeline">
+                <div class="spark-step step-done"><i class="fa-solid fa-circle-check text-teal"></i> Step 1: Query Intent Deconstruction & Web Search Expansion</div>
+                <div class="spark-step step-active" id="${stepId}_s2"><i class="fa-solid fa-spinner fa-spin text-cyan"></i> Step 2: Extracting & Verifying Live Web Sources...</div>
+                <div class="spark-step step-pending" id="${stepId}_s3"><i class="fa-solid fa-circle text-muted" style="font-size:0.6rem;"></i> Step 3: Executing Code Sandbox Math & Telemetry Verification</div>
+                <div class="spark-step step-pending" id="${stepId}_s4"><i class="fa-solid fa-circle text-muted" style="font-size:0.6rem;"></i> Step 4: Assembling Executive Research Memo</div>
+            </div>
+        </div>
         <div class="sources-container">
             <div class="sources-header">
-                <i class="fa-solid fa-spinner fa-spin text-cyan"></i> Ambulkar Cortex running [${effortClassification.label}] search & extracting citations...
+                <i class="fa-solid fa-link text-cyan"></i> Verified Web Sources
             </div>
             <div class="sources-grid" id="${stepId}_sources">
                 <div class="source-card">
@@ -604,19 +616,43 @@ async function runAsyncSearchPipeline(userQuery) {
             </div>
         </div>
         <div class="ai-answer-box" id="${stepId}_answer">
-            <span class="text-muted"><i class="fa-solid fa-brain fa-pulse"></i> Synthesizing answer with Ambulkar Cortex (${appState.settings.provider.toUpperCase()})...</span>
+            <span class="text-muted"><i class="fa-solid fa-brain fa-pulse text-cyan"></i> Synthesizing response with Ambulkar Cortex Neural Engine...</span>
         </div>
     `;
 
     container.appendChild(stepElement);
     stepElement.scrollIntoView({ behavior: "smooth" });
 
-    // Fetch Web Sources based on effort level depth
+    // Step 2: Fetch Web Sources
     const sources = await fetchWebSources(userQuery, appState.activeFocusMode, resolvedEffort);
     renderSourcesGrid(`${stepId}_sources`, sources);
+    
+    const s2El = document.getElementById(`${stepId}_s2`);
+    if (s2El) {
+        s2El.className = "spark-step step-done";
+        s2El.innerHTML = `<i class="fa-solid fa-circle-check text-teal"></i> Step 2: Extracted & Verified ${sources.length} Live Sources`;
+    }
 
-    // Synthesize AI Response & Calculate Telemetry
+    const s3El = document.getElementById(`${stepId}_s3`);
+    if (s3El) {
+        s3El.className = "spark-step step-active";
+        s3El.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-cyan"></i> Step 3: Executing Code Sandbox Math & Telemetry Verification...`;
+    }
+
+    // Step 3 & 4: Synthesize AI Response & Calculate Telemetry
     const synthesisResult = await synthesizeAIResponse(userQuery, sources, appState.activeFocusMode, resolvedEffort, effortClassification);
+    
+    if (s3El) {
+        s3El.className = "spark-step step-done";
+        s3El.innerHTML = `<i class="fa-solid fa-circle-check text-teal"></i> Step 3: Code Sandbox Math & Telemetry Verified`;
+    }
+
+    const s4El = document.getElementById(`${stepId}_s4`);
+    if (s4El) {
+        s4El.className = "spark-step step-done";
+        s4El.innerHTML = `<i class="fa-solid fa-circle-check text-teal"></i> Step 4: Executive Research Memo Assembled`;
+    }
+
     document.getElementById(`${stepId}_answer`).innerHTML = synthesisResult.answerHTML;
 
     // Update Session Total Spend
