@@ -202,7 +202,7 @@
             </div>
             <form id="vaultLockForm">
                 <p style="font-size: 0.83rem; color: #cbd5e1; margin-bottom: 1rem; line-height: 1.55;">
-                    Unlock full multi-device access to your <strong>OpenRouter Master Key</strong> on this phone, tablet, or browser. Unauthenticated visitors view read-only showcase mode with zero credit risk.
+                    Unlock full multi-device access to your <strong>Cortex Neural Gateway Master Key</strong> on this phone, tablet, or browser. Unauthenticated visitors view read-only showcase mode with zero credit risk.
                 </p>
 
                 <div class="form-group">
@@ -216,14 +216,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="inputOpenRouterKey"><i class="fa-solid fa-bolt text-cyan"></i> OpenRouter Master Key (Stored Encrypted in Device Vault)</label>
+                    <label for="inputOpenRouterKey"><i class="fa-solid fa-bolt text-cyan"></i> Cortex Neural Gateway Master Key (Stored Encrypted in Device Vault)</label>
                     <input type="password" id="inputOpenRouterKey" class="text-input" placeholder="sk-or-v1-..." style="width: 100%; padding: 8px 12px; font-size: 0.88rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
                     <span class="help-text" style="font-size: 0.75rem; color: #94a3b8;">Encrypted 100% locally inside your browser's private storage. Zero data sent to any server.</span>
                 </div>
 
                 <div class="privacy-notice-box" style="margin-top: 14px; padding: 10px 14px; background: rgba(45, 212, 191, 0.08); border: 1px solid rgba(45, 212, 191, 0.25); border-radius: 6px; font-size: 0.78rem; color: #99f6e4; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-lock" style="color: #2dd4bf; font-size: 0.9rem;"></i>
-                    <span><strong>Dual-Lock Active:</strong> Even if someone learns your password, they cannot access your OpenRouter credits without Factor 2.</span>
+                    <span><strong>Dual-Lock Active:</strong> Even if someone learns your password, they cannot access your Cortex Neural Gateway credits without Factor 2.</span>
                 </div>
 
                 <div class="modal-footer">
@@ -234,18 +234,18 @@
         </div>
     </div>
 
-    <!-- MODAL: OPENROUTER SETTINGS -->
+    <!-- MODAL: CORTEX NEURAL GATEWAY SETTINGS -->
     <div id="settingsModal" class="modal-backdrop" onclick="if(event.target===this) closeSettingsModal()">
         <div class="modal-box">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-sliders text-cyan"></i> OpenRouter Gateway Settings</h3>
+                <h3><i class="fa-solid fa-sliders text-cyan"></i> Cortex Neural Gateway Settings</h3>
                 <button class="modal-close" id="btnCloseSettingsModal" onclick="closeSettingsModal()">&times;</button>
             </div>
             <form id="settingsForm">
                 <div class="form-group">
                     <label for="providerSelect"><i class="fa-solid fa-network-wired text-cyan"></i> Gateway Route</label>
                     <select id="providerSelect">
-                        <option value="openrouter">OpenRouter Gateway (Unified 2026 Models)</option>
+                        <option value="openrouter">Cortex Neural Gateway (Unified 2026 Models)</option>
                         <option value="local">Cortex Gateway Free Fallback Route</option>
                     </select>
                 </div>
@@ -253,7 +253,7 @@
                 <div class="form-group">
                     <label for="modelSelect"><i class="fa-solid fa-microchip text-purple"></i> Active Model</label>
                     <select id="modelSelect">
-                        <option value="openrouter:auto">openrouter/auto (August 2026 Top Frontier)</option>
+                        <option value="openrouter:auto">cortex/auto (August 2026 Top Frontier)</option>
                         <option value="openrouter:perplexity/sonar-pro">perplexity/sonar-pro (Live Search)</option>
                         <option value="openrouter:anthropic/claude-5-sonnet">anthropic/claude-5-sonnet</option>
                         <option value="openrouter:google/gemini-3.6-flash">google/gemini-3.6-flash</option>
