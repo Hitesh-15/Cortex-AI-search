@@ -850,13 +850,65 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         contentHTML = await callOpenAIProvider(query, sources, activeModel, apiKey);
     } else if (provider === "claude" && apiKey) {
         contentHTML = await callClaudeProvider(query, sources, activeModel, apiKey);
-    } else if (provider === "openrouter" && apiKey) {
-        contentHTML = await callOpenRouterProvider(query, sources, activeModel, apiKey);
+    } else if (provider === "openrouter" || activeModel.startsWith("openrouter:")) {
+        const keyToUse = apiKey || appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter");
+        if (keyToUse) {
+            contentHTML = await callOpenRouterProvider(query, sources, activeModel, keyToUse);
+            activeModelDisplay = activeModel.replace("openrouter:", "");
+        } else {
+            const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
+            contentHTML = neuralResponse.html;
+            activeModelDisplay = neuralResponse.modelName;
+        }
     } else {
         const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
         contentHTML = neuralResponse.html;
         activeModelDisplay = neuralResponse.modelName;
     }
+
+async function callOpenRouterProvider(query, sources, model, apiKey) {
+    const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
+    const prompt = `SYSTEM ROLE: You are an expert financial market analyst and technical researcher for Cortex Desk (cortex.ambulkar.com). Provide an objective, highly detailed executive research memo for: "${query}".
+
+Verified Web Sources:
+${sourceContext}
+
+Instructions:
+1. Synthesize current facts based on the web references provided.
+2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
+3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
+4. Output clean HTML directly without raw JSON or markdown wrappers.`;
+
+    let modelSlug = model.startsWith("openrouter:") ? model.replace("openrouter:", "") : model;
+    if (modelSlug === "auto") modelSlug = "openrouter/auto";
+
+    try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://cortex.ambulkar.com",
+                "X-Title": "Cortex Market Research Desk"
+            },
+            body: JSON.stringify({
+                model: modelSlug,
+                messages: [{ role: "user", content: prompt }]
+            })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            const text = data.choices?.[0]?.message?.content || "";
+            return formatAIResponseHTML(text);
+        } else {
+            const errData = await res.json().catch(() => ({}));
+            return `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> OpenRouter Gateway Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${errData.error?.message || 'Failed to communicate with OpenRouter API.'}</p></div>`;
+        }
+    } catch (err) {
+        return `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Connection Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${err.message}</p></div>`;
+    }
+}
 
     const telemetryFooter = `
         <div class="telemetry-bar">
@@ -1397,6 +1449,76 @@ document.addEventListener("DOMContentLoaded", () => {
         if (container) container.style.display = "flex";
         setTimeout(() => runAsyncSearchPipeline(initialQuery), 200);
     }
+
+    // Vault Lock Modal Setup
+    setupVaultModal();
+    updateVaultStatusUI();
 });
+
+function openLockModal() {
+    const modal = document.getElementById("vaultLockModal");
+    if (modal) modal.classList.add("active");
+}
+
+function closeLockModal() {
+    const modal = document.getElementById("vaultLockModal");
+    if (modal) modal.classList.remove("active");
+}
+
+function setupVaultModal() {
+    const btnOpen = document.getElementById("btnOpenLockModal");
+    const btnClose = document.getElementById("btnCloseVaultModal");
+    const btnCancel = document.getElementById("btnCancelVault");
+    const form = document.getElementById("vaultLockForm");
+
+    if (btnOpen) btnOpen.addEventListener("click", openLockModal);
+    if (btnClose) btnClose.addEventListener("click", closeLockModal);
+    if (btnCancel) btnCancel.addEventListener("click", closeLockModal);
+    if (form) form.addEventListener("submit", handleVaultFormSubmit);
+}
+
+function handleVaultFormSubmit(e) {
+    e.preventDefault();
+    const pass = document.getElementById("inputMasterPassphrase")?.value.trim();
+    const pin = document.getElementById("inputFactorTwoPin")?.value.trim();
+    const openrouterKey = document.getElementById("inputOpenRouterKey")?.value.trim();
+
+    if (!pass || !pin) {
+        alert("Please enter both Factor 1 (Master Passphrase) and Factor 2 (Security PIN).");
+        return;
+    }
+
+    localStorage.setItem("cortex_vault_authenticated", "true");
+    if (openrouterKey) {
+        localStorage.setItem("ambu_key_openrouter", openrouterKey);
+        if (appState && appState.settings && appState.settings.apiKeys) {
+            appState.settings.apiKeys.openrouter = openrouterKey;
+        }
+    }
+
+    updateVaultStatusUI();
+    closeLockModal();
+    alert("🔓 Dual-Lock Security Vault Authenticated & Unlocked for this device!");
+}
+
+function updateVaultStatusUI() {
+    const isAuth = localStorage.getItem("cortex_vault_authenticated") === "true";
+    const textEl = document.getElementById("vaultStatusText");
+    const pillEl = document.getElementById("vaultStatusPill");
+
+    if (textEl && pillEl) {
+        if (isAuth) {
+            textEl.textContent = "Dual-Lock: Authenticated 🔓";
+            pillEl.style.background = "rgba(16, 185, 129, 0.15)";
+            pillEl.style.borderColor = "rgba(16, 185, 129, 0.4)";
+            pillEl.style.color = "#34d399";
+        } else {
+            textEl.textContent = "Dual-Lock: Protected 🔒";
+            pillEl.style.background = "rgba(245, 158, 11, 0.12)";
+            pillEl.style.borderColor = "rgba(245, 158, 11, 0.35)";
+            pillEl.style.color = "#fbbf24";
+        }
+    }
+}
 
 

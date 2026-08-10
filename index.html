@@ -4,24 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Strict Cache Control Headers for Instant Hard-Refresh Updates -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <title>Ambulkar Cortex | Frontier AI Search Engine & Neural Gateway</title>
+    <title>Ambulkar Cortex | Market Intelligence & Research Desk</title>
     <meta name="description"
-        content="State-of-the-art AI search engine with real-time web citations, multi-model reasoning, and focus modes powered by Ambulkar Cortex (cortex.ambulkar.com).">
+        content="Executive Market Intelligence Workdesk with live web citations, OpenRouter 2026 frontier model gateway, and Dual-Lock 2FA security.">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=12.0">
+    <link rel="stylesheet" href="styles.css?v=14.0">
 </head>
 
 <body>
@@ -36,7 +35,7 @@
                     <i class="fa-solid fa-brain"></i>
                 </div>
                 <div class="brand-text">
-                    <h1>Ambulkar<span>Cortex</span></h1>
+                    <h1>Cortex<span>Desk</span></h1>
                     <span class="brand-tag">cortex.ambulkar.com</span>
                 </div>
                 <button id="btnMobileCloseSidebar" class="btn-mobile-close" aria-label="Close Sidebar">
@@ -45,44 +44,47 @@
             </div>
 
             <button id="btnNewThread" class="btn-new-thread">
-                <i class="fa-solid fa-plus"></i> New Search Thread
+                <i class="fa-solid fa-plus"></i> New Research Desk Memo
             </button>
 
-            <span class="sidebar-section-title">Focus Search Modes</span>
+            <span class="sidebar-section-title">Research Desks</span>
             <div class="focus-nav">
                 <div class="focus-nav-item active" data-mode="web">
                     <i class="fa-solid fa-globe text-cyan"></i>
-                    <span>All Web</span>
+                    <span>Market & Web</span>
+                </div>
+                <div class="focus-nav-item" data-mode="finance">
+                    <i class="fa-solid fa-chart-line text-gold"></i>
+                    <span>Financial Markets</span>
                 </div>
                 <div class="focus-nav-item" data-mode="academic">
                     <i class="fa-solid fa-graduation-cap text-purple"></i>
-                    <span>Academic & Papers</span>
+                    <span>Academic & Research</span>
                 </div>
                 <div class="focus-nav-item" data-mode="code">
-                    <i class="fa-solid fa-code text-gold"></i>
-                    <span>Code & Repos</span>
-                </div>
-                <div class="focus-nav-item" data-mode="finance">
-                    <i class="fa-solid fa-chart-line text-cyan"></i>
-                    <span>Financial Markets</span>
+                    <i class="fa-solid fa-code text-emerald"></i>
+                    <span>Engineering & Code</span>
                 </div>
                 <div class="focus-nav-item" data-mode="writing">
                     <i class="fa-solid fa-pen-nib text-rose"></i>
-                    <span>Writing & Creative</span>
+                    <span>Executive Memos</span>
                 </div>
             </div>
 
-            <span class="sidebar-section-title">Thread History</span>
+            <span class="sidebar-section-title">Research Memos History</span>
             <div class="thread-history-list" id="threadHistoryList">
                 <!-- Dynamically populated by JS -->
             </div>
 
             <div class="sidebar-footer">
+                <button id="btnOpenLockModal" class="btn-sidebar-footer" title="Manage Dual-Lock 2FA Vault Security">
+                    <i class="fa-solid fa-vault text-gold"></i> Dual-Lock 2FA Vault
+                </button>
                 <button id="btnOpenSettings" class="btn-sidebar-footer">
-                    <i class="fa-solid fa-sliders text-accent"></i> API & Model Settings
+                    <i class="fa-solid fa-sliders text-cyan"></i> OpenRouter Gateway Settings
                 </button>
                 <button id="btnClearHistory" class="btn-sidebar-footer">
-                    <i class="fa-solid fa-trash-can text-muted"></i> Clear History
+                    <i class="fa-solid fa-trash-can text-muted"></i> Clear Workspace
                 </button>
             </div>
         </aside>
@@ -97,15 +99,15 @@
 
                 <div class="model-badge-group">
                     <div class="model-indicator-pill" id="btnHeaderModelSelect" onclick="openSettingsModal()"
-                        title="Change AI Model Provider & Cost Settings">
-                        <i class="fa-solid fa-microchip text-accent"></i>
-                        <span id="activeModelLabel">Ambulkar Engine</span>
+                        title="OpenRouter Gateway Engine">
+                        <i class="fa-solid fa-bolt text-gold"></i>
+                        <span id="activeModelLabel">OpenRouter Auto (August 2026)</span>
                         <i class="fa-solid fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
                     </div>
 
-                    <div class="spend-ticker-pill" id="spendTickerPill" title="Estimated session API token spend">
-                        <i class="fa-solid fa-coins text-gold"></i>
-                        <span>Spend: <strong id="totalSpendLabel">$0.00000</strong></span>
+                    <div class="vault-status-pill" id="vaultStatusPill" onclick="openLockModal()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-size: 0.78rem; font-weight: 600; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.35); color: #fbbf24;" title="Click to manage Dual-Lock 2FA Security Vault">
+                        <i class="fa-solid fa-lock text-gold"></i>
+                        <span id="vaultStatusText">Dual-Lock: Protected</span>
                     </div>
                 </div>
             </header>
@@ -114,21 +116,20 @@
             <div class="view-scroll-area" id="viewScrollArea">
                 <!-- Empty State Hero (Default View) -->
                 <div class="empty-hero" id="emptyHeroView">
-                    <h2 class="hero-title">Search at the speed of <span>thought.</span></h2>
-                    <p class="hero-subtitle">Ask anything for real-time web citations, agentic reasoning, and cost-aware
-                        multi-model synthesis with Ambulkar Cortex.</p>
+                    <h2 class="hero-title">Market Intelligence & <span>Executive Research.</span></h2>
+                    <p class="hero-subtitle">Real-time web research, OpenRouter frontier model routing, and Dual-Lock security vault for your devices.</p>
 
-                    <div class="privacy-badge-banner" style="margin: 10px auto 22px auto; max-width: 540px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); color: #a7f3d0; padding: 7px 16px; border-radius: 20px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 8px;">
+                    <div class="privacy-badge-banner" style="margin: 10px auto 22px auto; max-width: 580px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); color: #a7f3d0; padding: 8px 18px; border-radius: 20px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 8px;">
                         <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i>
-                        <span><strong>100% Privacy Guarantee:</strong> All API keys, queries, and history stay inside your local browser storage. Zero server tracking.</span>
+                        <span><strong>Dual-Lock Protected:</strong> Master keys stay encrypted in your local device vault. Zero server tracking.</span>
                     </div>
 
                     <div class="suggested-cards-grid">
                         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
                             data-query="What are the top 2026 AI breakthroughs and quantum computing updates?">
                             <i class="fa-solid fa-atom suggested-card-icon"></i>
-                            <div class="suggested-card-text">2026 AI & Quantum Breakthroughs</div>
-                            <div class="suggested-card-sub">Real-time tech web research</div>
+                            <div class="suggested-card-text">2026 Tech & Quantum Breakthroughs</div>
+                            <div class="suggested-card-sub">Real-time market research memo</div>
                         </div>
                         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
                             data-query="Compare S&P 500 YTD return vs. Federal Reserve inflation targets">
@@ -140,13 +141,13 @@
                             data-query="Write a clean Python async pipeline to scrape and process API data">
                             <i class="fa-solid fa-code suggested-card-icon"></i>
                             <div class="suggested-card-text">Python Async Data Pipeline</div>
-                            <div class="suggested-card-sub">Coding snippet & architecture</div>
+                            <div class="suggested-card-sub">Engineering architecture memo</div>
                         </div>
                         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
                             data-query="Explain how fusion energy reactors work and current commercial timelines">
                             <i class="fa-solid fa-bolt suggested-card-icon"></i>
                             <div class="suggested-card-text">Commercial Fusion Timelines</div>
-                            <div class="suggested-card-sub">Academic & scientific synthesis</div>
+                            <div class="suggested-card-sub">Scientific research synthesis</div>
                         </div>
                     </div>
                 </div>
@@ -162,60 +163,43 @@
                 <form id="searchForm" class="search-box-container">
                     <div class="search-input-row">
                         <input type="text" id="searchInput" class="search-input"
-                            placeholder="Ask Ambulkar Cortex anything... (Press Enter or click search)"
+                            placeholder="Enter a research topic, market query, or analysis request..."
                             autocomplete="off">
                         <div class="submit-btn-group">
-                            <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Search">
+                            <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Research">
                                 <i class="fa-solid fa-arrow-up"></i>
                             </button>
                         </div>
                     </div>
 
                     <div class="search-actions-row">
-                        <!-- CHAT WINDOW DIRECT MODEL SELECTOR -->
+                        <!-- OPENROUTER UNIFIED MODEL SELECTOR -->
                         <div class="chat-model-picker-container"
-                            title="Instantly switch active AI Model for your search prompt">
-                            <i class="fa-solid fa-microchip text-accent" style="font-size: 0.8rem;"></i>
+                            title="Switch OpenRouter Frontier Model">
+                            <i class="fa-solid fa-bolt text-gold" style="font-size: 0.8rem;"></i>
                             <select id="chatModelSelect" class="chat-model-select">
-                                <optgroup label="⚡ Local Engine">
-                                    <option value="local:gemini-3.6-flash">Ambu Local Engine (Free)</option>
+                                <optgroup label="🌐 OpenRouter Gateway (2026)">
+                                    <option value="openrouter:auto">Auto Router (August 2026 Top Frontier)</option>
+                                    <option value="openrouter:perplexity/sonar-pro">Perplexity Sonar Pro (Live Search)</option>
+                                    <option value="openrouter:anthropic/claude-5-sonnet">Claude Sonnet 5 (High Logic)</option>
+                                    <option value="openrouter:google/gemini-3.6-flash">Gemini 3.6 Flash (Fast)</option>
+                                    <option value="openrouter:deepseek/deepseek-r1">DeepSeek R1 (Deep Reasoning)</option>
                                 </optgroup>
-                                <optgroup label="🧠 OpenAI">
-                                    <option value="openai:gpt-5.6-terra">GPT-5.6 Terra</option>
-                                    <option value="openai:gpt-5.6-sol">GPT-5.6 Sol</option>
-                                </optgroup>
-                                <optgroup label="🚀 Google Gemini">
-                                    <option value="gemini:gemini-3.6-flash">Gemini 3.6 Flash</option>
-                                    <option value="gemini:gemini-3.1-pro">Gemini 3.1 Pro</option>
-                                </optgroup>
-                                <optgroup label="🎨 Anthropic Claude">
-                                    <option value="claude:claude-5-sonnet">Claude Sonnet 5</option>
-                                    <option value="claude:claude-5-opus">Claude Opus 5</option>
-                                </optgroup>
-                                <optgroup label="🌙 Moonshot Kimi">
-                                    <option value="kimi:kimi-k3">Kimi K3</option>
-                                </optgroup>
-                                <optgroup label="⚡ Zhipu GLM">
-                                    <option value="zhipu:glm-5.2">GLM 5.2</option>
-                                </optgroup>
-                                <optgroup label="🌌 xAI Grok">
-                                    <option value="xai:grok-4.5">Grok 4.5</option>
-                                </optgroup>
-                                <optgroup label="🟢 NVIDIA Nemotron">
-                                    <option value="nvidia:nemotron-3-ultra">Nemotron 3 Ultra</option>
+                                <optgroup label="⚡ Free Fallback Route">
+                                    <option value="local:gemini-3.6-flash">Cortex Gateway Free Route</option>
                                 </optgroup>
                             </select>
                         </div>
 
-                        <!-- AGENT EFFORT SELECTOR DROPDOWN -->
-                        <div class="effort-picker-container" title="Agent Effort Level">
+                        <!-- AGENT SPARK EFFORT SELECTOR -->
+                        <div class="effort-picker-container" title="Spark Execution Effort">
                             <span class="effort-picker-label"><i class="fa-solid fa-gauge-high text-cyan"
-                                    style="font-size: 0.8rem;"></i> Effort:</span>
+                                    style="font-size: 0.8rem;"></i> Spark:</span>
                             <select id="chatEffortSelect" class="chat-effort-select">
-                                <option value="auto">Auto (Smart Speed & Cost)</option>
-                                <option value="low">Low (Fast ~1s • Min Cost)</option>
-                                <option value="medium">Medium (Balanced ~3s)</option>
-                                <option value="high">High (Deep ~8s • Reasoning)</option>
+                                <option value="auto">Auto (Smart Speed & Synthesis)</option>
+                                <option value="low">Low (Fast ~1s Response)</option>
+                                <option value="medium">Medium (Balanced Search & Code)</option>
+                                <option value="high">High (Deep Canvas & Reasoning)</option>
                             </select>
                         </div>
                     </div>
@@ -224,73 +208,71 @@
         </main>
     </div>
 
-    <!-- MODAL: MULTI-PROVIDER & MODEL SETTINGS -->
+    <!-- MODAL: DUAL-LOCK 2FA SECURITY VAULT -->
+    <div id="vaultLockModal" class="modal-backdrop">
+        <div class="modal-box" style="border-top: 3px solid #fbbf24;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-vault text-gold"></i> Dual-Lock 2FA Device Security Vault</h3>
+                <button class="modal-close" id="btnCloseVaultModal">&times;</button>
+            </div>
+            <form id="vaultLockForm">
+                <p style="font-size: 0.83rem; color: #cbd5e1; margin-bottom: 1rem; line-height: 1.55;">
+                    Unlock full multi-device access to your <strong>OpenRouter Master Key</strong> on this phone, tablet, or browser. Unauthenticated visitors view read-only showcase mode with zero credit risk.
+                </p>
+
+                <div class="form-group">
+                    <label for="inputMasterPassphrase"><i class="fa-solid fa-key text-gold"></i> Factor 1: Master Passphrase</label>
+                    <input type="password" id="inputMasterPassphrase" class="text-input" placeholder="Enter your secret Master Passphrase..." required style="width: 100%; padding: 8px 12px; font-size: 0.88rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputFactorTwoPin"><i class="fa-solid fa-shield-cat text-cyan"></i> Factor 2: Security PIN / 2FA Token</label>
+                    <input type="password" id="inputFactorTwoPin" class="text-input" placeholder="Enter 6-digit Security PIN..." required style="width: 100%; padding: 8px 12px; font-size: 0.88rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputOpenRouterKey"><i class="fa-solid fa-bolt text-gold"></i> OpenRouter Master Key (Stored Encrypted in Device Vault)</label>
+                    <input type="password" id="inputOpenRouterKey" class="text-input" placeholder="sk-or-v1-..." style="width: 100%; padding: 8px 12px; font-size: 0.88rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                    <span class="help-text" style="font-size: 0.75rem; color: #94a3b8;">Encrypted 100% locally inside your browser's private storage.</span>
+                </div>
+
+                <div class="privacy-notice-box" style="margin-top: 14px; padding: 10px 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 6px; font-size: 0.78rem; color: #fde68a; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-lock" style="color: #fbbf24; font-size: 0.9rem;"></i>
+                    <span><strong>Dual-Lock Active:</strong> Even if someone learns your password, they cannot access your OpenRouter credits without Factor 2.</span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelVault">Cancel</button>
+                    <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #f59e0b); color: #0b0f19;">Authenticate & Unlock Vault</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: OPENROUTER SETTINGS -->
     <div id="settingsModal" class="modal-backdrop">
         <div class="modal-box">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-sliders text-accent"></i> Multi-Provider & Cost Optimization Settings</h3>
+                <h3><i class="fa-solid fa-sliders text-accent"></i> OpenRouter Gateway Settings</h3>
                 <button class="modal-close" id="btnCloseSettingsModal">&times;</button>
             </div>
             <form id="settingsForm">
                 <div class="form-group">
-                    <label for="providerSelect"><i class="fa-solid fa-network-wired text-cyan"></i> Select AI
-                        Provider</label>
+                    <label for="providerSelect"><i class="fa-solid fa-network-wired text-cyan"></i> Gateway Route</label>
                     <select id="providerSelect">
-                        <option value="local">Local Hybrid Engine (Default - 100% Free)</option>
-                        <option value="openai">OpenAI (GPT-5.6 Sol / Terra)</option>
-                        <option value="gemini">Google Gemini (Gemini 3.6 Flash / 3.1 Pro)</option>
-                        <option value="claude">Anthropic Claude (Claude Opus 5 / Sonnet 5)</option>
-                        <option value="kimi">Moonshot Kimi (Kimi K3)</option>
-                        <option value="zhipu">Zhipu AI (GLM 5.2)</option>
-                        <option value="xai">xAI Grok (Grok 4.5)</option>
-                        <option value="nvidia">NVIDIA (Nemotron 3 Ultra)</option>
+                        <option value="openrouter">OpenRouter Gateway (Unified 2026 Models)</option>
+                        <option value="local">Cortex Gateway Free Fallback Route</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="modelSelect"><i class="fa-solid fa-microchip text-purple"></i> Model Version</label>
+                    <label for="modelSelect"><i class="fa-solid fa-microchip text-purple"></i> Active Model</label>
                     <select id="modelSelect">
-                        <!-- Dynamically populated based on provider -->
+                        <option value="openrouter:auto">openrouter/auto (August 2026 Top Frontier)</option>
+                        <option value="openrouter:perplexity/sonar-pro">perplexity/sonar-pro (Live Search)</option>
+                        <option value="openrouter:anthropic/claude-5-sonnet">anthropic/claude-5-sonnet</option>
+                        <option value="openrouter:google/gemini-3.6-flash">google/gemini-3.6-flash</option>
                     </select>
-                </div>
-
-                <div class="form-group" id="customModelGroup" style="display: none;">
-                    <label for="customModelInput"><i class="fa-solid fa-code"></i> Custom Model Identifier</label>
-                    <input type="text" id="customModelInput"
-                        placeholder="e.g. gemini-3.7-flash, gpt-5, or latest-reasoning">
-                </div>
-
-                <div class="form-group">
-                    <label for="costRoutingSelect"><i class="fa-solid fa-coins text-gold"></i> Cost & Quality
-                        Strategy</label>
-                    <select id="costRoutingSelect">
-                        <option value="min_cost">Minimum Cost First (Lowest Token Price + Best Quality Output)</option>
-                        <option value="balanced">Balanced (High Quality Flash/Mini Models)</option>
-                        <option value="max_quality">Max Quality (Pro & Deep Reasoning Models)</option>
-                    </select>
-                </div>
-
-                <div class="form-group-checkbox" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
-                        <input type="checkbox" id="toggleAutoUpdateModels" checked class="toggle-switch">
-                        <span>Auto-update registry upon release</span>
-                    </label>
-                    <button type="button" id="btnRefreshModels" class="btn-secondary" style="font-size: 0.78rem; padding: 4px 10px; display: flex; align-items: center; gap: 6px;" title="Fetch & Sync Latest Released Models Across All Providers">
-                        <i class="fa-solid fa-arrows-rotate text-cyan"></i> Sync Models
-                    </button>
-                </div>
-
-                <div class="form-group" id="apiKeyGroup" style="display: none;">
-                    <label for="apiKeyInput" id="apiKeyLabel"><i class="fa-solid fa-key text-gold"></i> Provider API
-                        Key</label>
-                    <input type="password" id="apiKeyInput" placeholder="Paste your API key..." autocomplete="off">
-                    <span class="help-text" style="font-size: 0.75rem; color: var(--text-muted);">Saved 100% locally in
-                        your browser's localStorage.</span>
-                </div>
-
-                <div class="privacy-notice-box" style="margin-top: 14px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); font-size: 0.78rem; color: #a7f3d0; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-shield-halved" style="color: #10b981; font-size: 0.9rem;"></i>
-                    <span><strong>100% Privacy Guarantee:</strong> All API keys, search history, and settings are saved exclusively inside your browser's local storage. Zero data or keys are transmitted to any cloud database.</span>
                 </div>
 
                 <div class="modal-footer">
@@ -302,7 +284,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=13.0"></script>
+    <script src="app.js?v=14.0"></script>
 </body>
 
 </html>
