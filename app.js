@@ -1321,28 +1321,38 @@ function switchProviderToLocal() {
 // Modal Settings Dialog
 function setupSettingsModal() {
     const modal = document.getElementById("settingsModal");
+    const btnOpenSettings = document.getElementById("btnOpenSettings");
+    const btnCloseSettingsModal = document.getElementById("btnCloseSettingsModal");
+    const btnCancelSettings = document.getElementById("btnCancelSettings");
     const providerSelect = document.getElementById("providerSelect");
     const modelSelect = document.getElementById("modelSelect");
+    const settingsForm = document.getElementById("settingsForm");
 
-    document.getElementById("btnOpenSettings").addEventListener("click", () => openSettingsModal());
-    document.getElementById("btnCloseSettingsModal").addEventListener("click", () => modal.classList.remove("active"));
-    document.getElementById("btnCancelSettings").addEventListener("click", () => modal.classList.remove("active"));
+    if (btnOpenSettings) btnOpenSettings.addEventListener("click", () => openSettingsModal());
+    if (btnCloseSettingsModal) btnCloseSettingsModal.addEventListener("click", () => modal && modal.classList.remove("active"));
+    if (btnCancelSettings) btnCancelSettings.addEventListener("click", () => modal && modal.classList.remove("active"));
 
-    providerSelect.addEventListener("change", (e) => {
-        updateModelDropdownOptions(e.target.value);
-        updateApiKeyVisibility(e.target.value);
-    });
+    if (providerSelect) {
+        providerSelect.addEventListener("change", (e) => {
+            updateModelDropdownOptions(e.target.value);
+            updateApiKeyVisibility(e.target.value);
+        });
+    }
 
-    modelSelect.addEventListener("change", (e) => {
-        const customGroup = document.getElementById("customModelGroup");
-        if (customGroup) customGroup.style.display = e.target.value === "custom" ? "block" : "none";
-    });
+    if (modelSelect) {
+        modelSelect.addEventListener("change", (e) => {
+            const customGroup = document.getElementById("customModelGroup");
+            if (customGroup) customGroup.style.display = e.target.value === "custom" ? "block" : "none";
+        });
+    }
 
-    document.getElementById("settingsForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-        saveSettingsForm();
-        modal.classList.remove("active");
-    });
+    if (settingsForm) {
+        settingsForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            saveSettingsForm();
+            if (modal) modal.classList.remove("active");
+        });
+    }
 }
 
 function updateModelDropdownOptions(provider) {
@@ -1357,6 +1367,7 @@ function updateApiKeyVisibility(provider) {
     const apiKeyGroup = document.getElementById("apiKeyGroup");
     const apiKeyInput = document.getElementById("apiKeyInput");
     const apiKeyLabel = document.getElementById("apiKeyLabel");
+    if (!apiKeyGroup || !apiKeyInput || !apiKeyLabel) return;
 
     if (provider === "local") {
         apiKeyGroup.style.display = "none";
@@ -1368,32 +1379,24 @@ function updateApiKeyVisibility(provider) {
 }
 
 function saveSettingsForm() {
-    const provider = document.getElementById("providerSelect").value;
-    const model = document.getElementById("modelSelect").value;
-    const customModel = document.getElementById("customModelInput").value.trim();
-    const apiKey = document.getElementById("apiKeyInput").value.trim();
-    const costRouting = document.getElementById("costRoutingSelect").value;
-    const autoUpdate = document.getElementById("toggleAutoUpdateModels").checked;
+    const providerEl = document.getElementById("providerSelect");
+    const modelEl = document.getElementById("modelSelect");
+    const customModelEl = document.getElementById("customModelInput");
+    const apiKeyEl = document.getElementById("apiKeyInput");
+    const costRoutingEl = document.getElementById("costRoutingSelect");
+    const autoUpdateEl = document.getElementById("toggleAutoUpdateModels");
 
-    appState.settings.provider = provider;
-    appState.settings.model = model;
-    appState.settings.customModel = customModel;
-    appState.settings.costRouting = costRouting;
-    appState.settings.autoUpdateModels = autoUpdate;
+    if (providerEl) appState.settings.provider = providerEl.value;
+    if (modelEl) appState.settings.model = modelEl.value;
+    if (customModelEl) appState.settings.customModel = customModelEl.value.trim();
+    if (apiKeyEl && providerEl) appState.settings.apiKeys[providerEl.value] = apiKeyEl.value.trim();
+    if (costRoutingEl) appState.settings.costRouting = costRoutingEl.value;
+    if (autoUpdateEl) appState.settings.autoUpdateModels = autoUpdateEl.checked;
 
-    if (provider !== "local") {
-        appState.settings.apiKeys[provider] = apiKey;
-        localStorage.setItem(`ambu_key_${provider}`, apiKey);
-    }
-
-    localStorage.setItem("ambu_provider", provider);
-    localStorage.setItem("ambu_model", model);
-    localStorage.setItem("ambu_custom_model", customModel);
-    localStorage.setItem("ambu_cost_routing", costRouting);
-    localStorage.setItem("ambu_auto_update", autoUpdate.toString());
-
+    localStorage.setItem("ambu_provider", appState.settings.provider || "local");
+    localStorage.setItem("ambu_model", appState.settings.model || "ambulkar-cortex-engine");
     updateHeaderModelLabel();
-    populateChatModelSelector();
+    alert("⚙️ Settings Saved Successfully!");
 }
 
 // Global Application Initialization Entrypoint
