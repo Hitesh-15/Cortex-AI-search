@@ -153,13 +153,15 @@
 
             <!-- FLOATING BOTTOM SEARCH INPUT BAR -->
             <div class="bottom-search-wrapper">
-                <form id="searchForm" class="search-box-container">
+                <form id="searchForm" class="search-box-container" onsubmit="event.preventDefault(); const q = document.getElementById('searchInput').value.trim(); if(q){ executeSearch(q); document.getElementById('searchInput').value = ''; }">
                     <div class="search-input-row">
                         <input type="text" id="searchInput" class="search-input"
                             placeholder="Enter a research topic, market query, or analysis request..."
-                            autocomplete="off">
+                            autocomplete="off"
+                            onkeydown="if(event.key==='Enter'){ event.preventDefault(); const q = this.value.trim(); if(q){ executeSearch(q); this.value = ''; } }">
                         <div class="submit-btn-group">
-                            <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Research">
+                            <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Research"
+                                onclick="event.preventDefault(); const q = document.getElementById('searchInput').value.trim(); if(q){ executeSearch(q); document.getElementById('searchInput').value = ''; }">
                                 <i class="fa-solid fa-arrow-up"></i>
                             </button>
                         </div>
