@@ -16,34 +16,34 @@ Ambulkar Cortex is a state-of-the-art AI search engine and reasoning gateway. It
 
 ```mermaid
 flowchart TD
-    User([User Search Prompt]) --> Classifier[Effort & Query Classifier Agent]
-    Classifier --> FocusMode{Focus Mode Router}
+    User(["User Search Prompt"]) --> Classifier["Effort & Query Classifier Agent"]
+    Classifier --> FocusMode{"Focus Mode Router"}
     
-    FocusMode -->|All Web| ExtractDDG[DuckDuckGo Real-Time Search Engine]
-    FocusMode -->|Academic Papers| SearchArxiv[Targeted ArXiv, PubMed & Nature Search]
-    FocusMode -->|Code & Repos| SearchGithub[Targeted GitHub, StackOverflow & MDN Search]
-    FocusMode -->|Financial Markets| SearchSEC[Targeted SEC EDGAR & Yahoo Finance Search]
-    FocusMode -->|Writing & Creative| CreativeSynthesizer[Structured Creative Synthesis Engine]
+    FocusMode -->|All Web| ExtractDDG["DuckDuckGo Real-Time Search Engine"]
+    FocusMode -->|Academic Papers| SearchArxiv["Targeted ArXiv, PubMed & Nature Search"]
+    FocusMode -->|Code & Repos| SearchGithub["Targeted GitHub, StackOverflow & MDN Search"]
+    FocusMode -->|Financial Markets| SearchSEC["Targeted SEC EDGAR & Yahoo Finance Search"]
+    FocusMode -->|Writing & Creative| CreativeSynthesizer["Structured Creative Synthesis Engine"]
     
-    ExtractDDG --> MultiModelGateway[Multi-Model Provider Router]
+    ExtractDDG --> MultiModelGateway["Multi-Model Provider Router"]
     SearchArxiv --> MultiModelGateway
     SearchGithub --> MultiModelGateway
     SearchSEC --> MultiModelGateway
     CreativeSynthesizer --> MultiModelGateway
     
-    MultiModelGateway -->|Default Free Route| FreeNeuralRoute[Ambulkar Engine (Gemini 3.6 Flash Free Neural)]
-    MultiModelGateway -->|Gemini API| Gemini3[Google Gemini 3.6 / 3.1 Pro]
-    MultiModelGateway -->|OpenAI API| GPT5[OpenAI GPT-5.6 Sol / Terra]
-    MultiModelGateway -->|Claude API| Claude5[Anthropic Claude 5 Sonnet / Opus]
+    MultiModelGateway -->|Default Free Route| FreeNeuralRoute["Ambulkar Engine (Gemini 3.6 Flash Free Neural)"]
+    MultiModelGateway -->|Gemini API| Gemini3["Google Gemini 3.6 / 3.1 Pro"]
+    MultiModelGateway -->|OpenAI API| GPT5["OpenAI GPT-5.6 Sol / Terra"]
+    MultiModelGateway -->|Claude API| Claude5["Anthropic Claude 5 Sonnet / Opus"]
     
-    FreeNeuralRoute -->|Quota Busy Fallback| LocalSynthesizer[Local Citation Synthesizer]
-    FreeNeuralRoute --> Telemetry[Estimated Token & USD Spend Telemetry]
+    FreeNeuralRoute -->|Quota Busy Fallback| LocalSynthesizer["Local Citation Synthesizer"]
+    FreeNeuralRoute --> Telemetry["Estimated Token & USD Spend Telemetry"]
     LocalSynthesizer --> Telemetry
     Gemini3 --> Telemetry
     GPT5 --> Telemetry
     Claude5 --> Telemetry
     
-    Telemetry --> UI[Interactive Citations & Responsive Chat View]
+    Telemetry --> UI["Interactive Citations & Responsive Chat View"]
 ```
 
 ---
