@@ -514,15 +514,32 @@ function updateTotalSpendDisplay() {
 function setupSearchForm() {
     const form = document.getElementById("searchForm");
     const input = document.getElementById("searchInput");
+    const btnSubmit = document.getElementById("btnSubmitSearch");
 
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const query = input.value.trim();
+    const handleSearchTrigger = (e) => {
+        if (e) e.preventDefault();
+        const query = input ? input.value.trim() : "";
         if (query) {
             executeSearch(query);
-            input.value = "";
+            if (input) input.value = "";
         }
-    });
+    };
+
+    if (form) {
+        form.addEventListener("submit", handleSearchTrigger);
+    }
+
+    if (btnSubmit) {
+        btnSubmit.addEventListener("click", handleSearchTrigger);
+    }
+
+    if (input) {
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                handleSearchTrigger(e);
+            }
+        });
+    }
 }
 
 // Classifier Agent for AUTO Effort
