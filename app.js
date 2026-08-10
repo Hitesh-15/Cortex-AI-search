@@ -554,7 +554,6 @@ function toggleWatchdogState() {
         if (btn) btn.classList.add("active");
         if (icon) icon.className = "fa-solid fa-bell text-teal";
         if (label) label.textContent = "24/7 Watchdog: Active (Discord)";
-        alert("📡 24/7 Background Watchdog Activated!\n\nThis query will run automatically in the background via GitHub Actions Cron. New updates will trigger instant pings to your Discord!");
     } else {
         if (btn) btn.classList.remove("active");
         if (icon) icon.className = "fa-solid fa-bell-slash";
@@ -1461,20 +1460,25 @@ function updateApiKeyVisibility(provider) {
     }
 }
 
+function openSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    const discordInput = document.getElementById("discordWebhookInput");
+    if (discordInput) {
+        discordInput.value = localStorage.getItem("ambu_discord_webhook") || "";
+    }
+    if (modal) modal.classList.add("active");
+}
+
 function saveSettingsForm() {
     const providerEl = document.getElementById("providerSelect");
     const modelEl = document.getElementById("modelSelect");
-    const customModelEl = document.getElementById("customModelInput");
-    const apiKeyEl = document.getElementById("apiKeyInput");
-    const costRoutingEl = document.getElementById("costRoutingSelect");
-    const autoUpdateEl = document.getElementById("toggleAutoUpdateModels");
+    const discordInput = document.getElementById("discordWebhookInput");
 
     if (providerEl) appState.settings.provider = providerEl.value;
     if (modelEl) appState.settings.model = modelEl.value;
-    if (customModelEl) appState.settings.customModel = customModelEl.value.trim();
-    if (apiKeyEl && providerEl) appState.settings.apiKeys[providerEl.value] = apiKeyEl.value.trim();
-    if (costRoutingEl) appState.settings.costRouting = costRoutingEl.value;
-    if (autoUpdateEl) appState.settings.autoUpdateModels = autoUpdateEl.checked;
+    if (discordInput) {
+        localStorage.setItem("ambu_discord_webhook", discordInput.value.trim());
+    }
 
     localStorage.setItem("ambu_provider", appState.settings.provider || "local");
     localStorage.setItem("ambu_model", appState.settings.model || "ambulkar-cortex-engine");
