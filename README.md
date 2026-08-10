@@ -31,7 +31,7 @@ flowchart TD
     SearchSEC --> MultiModelGateway
     CreativeSynthesizer --> MultiModelGateway
     
-    MultiModelGateway -->|Default Free Route| FreeNeuralRoute["Ambulkar Engine (Gemini 3.6 Flash Free Neural)"]
+    MultiModelGateway -->|Default Free Route| FreeNeuralRoute["Ambulkar Engine (Gemini Free Neural)"]
     MultiModelGateway -->|Gemini API| Gemini3["Google Gemini 3.6 / 3.1 Pro"]
     MultiModelGateway -->|OpenAI API| GPT5["OpenAI GPT-5.6 Sol / Terra"]
     MultiModelGateway -->|Claude API| Claude5["Anthropic Claude 5 Sonnet / Opus"]
