@@ -7,4 +7,6 @@
 # Dependency directories
 node_modules/
 dist/
-build/
+# Temporary scratch files
+scratch/
+

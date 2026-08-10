@@ -1384,5 +1384,19 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
+    // Handle incoming URL search query params (e.g. ?q=financial+query from Aura Wealth)
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialQuery = urlParams.get('q');
+    if (initialQuery) {
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) searchInput.value = initialQuery;
+        const heroView = document.getElementById("emptyHeroView");
+        const container = document.getElementById("activeThreadContainer");
+        if (heroView) heroView.style.display = "none";
+        if (container) container.style.display = "flex";
+        setTimeout(() => runAsyncSearchPipeline(initialQuery), 200);
+    }
 });
+
 
