@@ -914,7 +914,7 @@ Instructions:
                 if (text && text.length > 20) {
                     return {
                         html: formatAIResponseHTML(text),
-                        modelName: "Gemini 3.6 Flash (Free Neural)"
+                        modelName: "Gemini Free Neural"
                     };
                 }
             }
