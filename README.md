@@ -16,38 +16,47 @@ Ambulkar Cortex is a state-of-the-art AI search engine and reasoning gateway. It
 
 ```mermaid
 flowchart TD
-    User([User Prompt]) --> Classifier[Effort & Query Classifier Agent]
-    Classifier --> FocusMode{Focus Mode Routing}
+    User([User Search Prompt]) --> Classifier[Effort & Query Classifier Agent]
+    Classifier --> FocusMode{Focus Mode Router}
     
-    FocusMode -->|Web Search| ExtractDDG[DuckDuckGo Citation Extractor]
-    FocusMode -->|Academic/Code/Finance| FilterSources[Context-Aware Web Scraper]
+    FocusMode -->|All Web| ExtractDDG[DuckDuckGo Real-Time Search Engine]
+    FocusMode -->|Academic Papers| SearchArxiv[Targeted ArXiv, PubMed & Nature Search]
+    FocusMode -->|Code & Repos| SearchGithub[Targeted GitHub, StackOverflow & MDN Search]
+    FocusMode -->|Financial Markets| SearchSEC[Targeted SEC EDGAR & Yahoo Finance Search]
+    FocusMode -->|Writing & Creative| CreativeSynthesizer[Structured Creative Synthesis Engine]
     
     ExtractDDG --> MultiModelGateway[Multi-Model Provider Router]
-    FilterSources --> MultiModelGateway
+    SearchArxiv --> MultiModelGateway
+    SearchGithub --> MultiModelGateway
+    SearchSEC --> MultiModelGateway
+    CreativeSynthesizer --> MultiModelGateway
     
-    MultiModelGateway -->|Local Free| HybridEngine[Ambulkar Engine]
+    MultiModelGateway -->|Default Free Route| FreeNeuralRoute[Ambulkar Engine (Gemini 3.6 Flash Free Neural)]
     MultiModelGateway -->|Gemini API| Gemini3[Google Gemini 3.6 / 3.1 Pro]
     MultiModelGateway -->|OpenAI API| GPT5[OpenAI GPT-5.6 Sol / Terra]
     MultiModelGateway -->|Claude API| Claude5[Anthropic Claude 5 Sonnet / Opus]
     
-    HybridEngine --> Telemetry[Token & USD Spend Telemetry Engine]
+    FreeNeuralRoute -->|Quota Busy Fallback| LocalSynthesizer[Local Citation Synthesizer]
+    FreeNeuralRoute --> Telemetry[Estimated Token & USD Spend Telemetry]
+    LocalSynthesizer --> Telemetry
     Gemini3 --> Telemetry
     GPT5 --> Telemetry
     Claude5 --> Telemetry
     
-    Telemetry --> UI[Interactive Citation & Response View]
+    Telemetry --> UI[Interactive Citations & Responsive Chat View]
 ```
 
 ---
 
 ## ✨ Key Features
 
-- 🧠 **Frontier AI Models**: Native routing for GPT-5.6 (Sol / Terra), Gemini 3.6 Flash / 3.1 Pro, Claude 5 (Sonnet / Opus), Kimi K3, GLM 5.2, Grok 4.5, and Nemotron 3 Ultra.
-- ⚡ **Ambulkar Hybrid Engine**: 100% free local hybrid processing engine.
-- 🌐 **Real-Time Web Citations**: Automated web source extraction with numbered citation badges (`[1]`, `[2]`).
-- 🎯 **Focus Search Modes**: All Web, Academic Papers, Code Repos, and Financial Markets.
-- 💰 **Cost & Token Telemetry**: Estimated USD spend ticker calculated in real-time using published model rate cards ($ USD / 1M tokens).
-- 🔒 **100% Privacy & Local Key Storage**: All provider API keys are saved exclusively in the browser's `localStorage`.
+- ⚡ **Ambulkar Engine (Free Neural)**: Out-of-the-box 100% free live neural AI search powered by Gemini 3.6 Flash (zero user key required).
+- 🧠 **Frontier Multi-Model Router**: Native routing for GPT-5.6 (Sol / Terra), Gemini 3.6 Flash / 3.1 Pro, Claude 5 (Sonnet / Opus), Kimi K3, GLM 5.2, Grok 4.5, and Nemotron 3 Ultra.
+- 🎯 **Targeted Focus Search Modes**: Real-time domain search for All Web, Academic Papers (arXiv/PubMed), Code Repos (GitHub/StackOverflow), and Financial Markets (SEC EDGAR/Yahoo Finance).
+- 🎨 **Dynamic Hero Query Suggestions**: Interactive, context-aware query suggestion cards that update automatically per Focus Mode.
+- 📱 **Ultra-Clean Responsive Mobile UI**: Perplexity-style slide-over navigation drawer, single-row search bar controls, and compact typography scaling for all phone and tablet viewports.
+- 💰 **Cost & Token Telemetry**: Real-time estimated USD spend ticker calculated based on published provider rate cards ($ USD / 1M tokens).
+- 🔒 **100% Local Privacy Guarantee**: All API keys, search queries, and chat history remain exclusively inside the user's browser `localStorage`. Zero server tracking.
 
 ---
 
