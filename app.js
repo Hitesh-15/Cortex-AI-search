@@ -396,11 +396,22 @@ function setupNavigationListeners() {
         });
     });
 
+    const btnNewThread = document.getElementById("btnNewThread");
+    if (btnNewThread) {
+        btnNewThread.addEventListener("click", () => {
+            createNewThread();
+            renderThreadHistory();
+            renderViewport();
+            closeMobileSidebar();
+        });
+    }
+
     // Keyboard Shortcuts (Cmd/Ctrl + K)
     document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
             e.preventDefault();
-            document.getElementById("searchInput").focus();
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) searchInput.focus();
         }
     });
 }
