@@ -1714,7 +1714,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
         switchThread(targetThreadId);
     } else if (initialQuery) {
-        setTimeout(() => executeSearch(initialQuery), 100);
+        executeSearch(initialQuery);
     }
 
     // Vault Lock Modal Setup
