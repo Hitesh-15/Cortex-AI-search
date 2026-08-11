@@ -611,8 +611,9 @@ async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
 
     try {
         const cleanText = htmlContent.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').substring(0, 700);
+        const encodedQ = encodeURIComponent(query);
         const payload = {
-            content: `🔔 **Ambulkar Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?thread=${threadId}`
+            content: `🔔 **Ambulkar Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?q=${encodedQ}&thread=${threadId}`
         };
 
         const res = await fetch(webhookUrl, {
