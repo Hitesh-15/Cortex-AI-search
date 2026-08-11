@@ -261,7 +261,12 @@
                 </div>
 
                 <div class="form-group" style="margin-top: 14px;">
-                    <label for="discordWebhookInput"><i class="fa-brands fa-discord text-purple"></i> Discord Alert Webhook URL (100% Free)</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label for="discordWebhookInput"><i class="fa-brands fa-discord text-purple"></i> Discord Alert Webhook URL (100% Free)</label>
+                        <button type="button" class="btn-secondary" onclick="testDiscordWebhook()" style="font-size: 0.75rem; padding: 3px 10px; border-radius: 4px;">
+                            <i class="fa-solid fa-paper-plane text-teal"></i> Test Alert Now
+                        </button>
+                    </div>
                     <input type="password" id="discordWebhookInput" class="text-input" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
                     <span class="help-text" style="font-size: 0.75rem; color: #94a3b8;">Optional: Paste your Discord channel webhook URL for instant 24/7 background alerts. Zero cost.</span>
                 </div>
