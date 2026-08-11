@@ -1287,7 +1287,6 @@ function formatAIResponseHTML(text) {
     return `<p style="margin-bottom:10px;">${clean}</p>`;
 }
 
-// Provider Direct API Calls
 async function callGeminiProvider(query, sources, model, apiKey) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
     const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive, accurate, up-to-date response to: "${query}".
@@ -1301,33 +1300,41 @@ Instructions:
 3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
 4. Do NOT output raw JSON or code block wrappers. Output clean HTML directly.`;
 
-    try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model.trim()}:generateContent?key=${apiKey.trim()}`;
-        const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
-            })
-        });
+    const modelOptions = [model.trim(), "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
 
-        if (!res.ok) {
-            const errData = await res.json().catch(() => ({}));
-            throw new Error(errData.error?.message || `Gemini HTTP ${res.status}`);
+    for (const currentModel of modelOptions) {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey.trim()}`;
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                return formatAIResponseHTML(rawText);
+            } else if (res.status === 429) {
+                console.warn(`Gemini model ${currentModel} rate limited (429). Trying fallback model...`);
+                continue; // Failover to next Gemini model in list
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error?.message || `Gemini HTTP ${res.status}`);
+            }
+        } catch (e) {
+            console.error(`Gemini API Call Exception for ${currentModel}:`, e);
         }
-
-        const data = await res.json();
-        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        return formatAIResponseHTML(rawText);
-    } catch (e) {
-        console.error("Gemini API Call Exception:", e);
-        return `
-            <div class="privacy-badge-banner" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); margin-bottom: 12px;">
-                <i class="fa-solid fa-triangle-exclamation text-red"></i> <strong>Gemini API Note:</strong> ${e.message}. Displaying real-time web synthesis below.
-            </div>
-        ` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
     }
+
+    return `
+        <div class="privacy-badge-banner" style="background: rgba(245, 158, 11, 0.15); color: #fde047; border-color: rgba(245, 158, 11, 0.35); margin-bottom: 12px;">
+            <i class="fa-solid fa-gauge-high" style="color: #f59e0b;"></i> <strong>Gemini Free Tier Rate Limit (15 RPM):</strong> Reached Google's 1-minute request cap. Switched to Local Synthesis Engine below.
+        </div>
+    ` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
 }
 
 async function callOpenAIProvider(query, sources, model, apiKey) {
