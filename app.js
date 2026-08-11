@@ -1431,33 +1431,40 @@ function renderViewport() {
     const threadContainer = document.getElementById("activeThreadContainer");
     const thread = appState.threads.find(t => t.id === appState.activeThreadId);
 
-    if (!thread || thread.steps.length === 0) {
-        heroView.style.display = "flex";
-        threadContainer.style.display = "none";
-        threadContainer.innerHTML = "";
+    // Only fallback to hero view if there is no active thread OR if thread history is empty
+    if (!thread || (thread.steps.length === 0 && threadContainer.children.length === 0)) {
+        if (heroView) heroView.style.display = "flex";
+        if (threadContainer) {
+            threadContainer.style.display = "none";
+            threadContainer.innerHTML = "";
+        }
     } else {
-        heroView.style.display = "none";
-        threadContainer.style.display = "flex";
+        if (heroView) heroView.style.display = "none";
+        if (threadContainer) threadContainer.style.display = "flex";
 
-        threadContainer.innerHTML = thread.steps.map((step, idx) => `
-            <div class="query-thread-block">
-                <div class="user-query-heading">
-                    <i class="fa-solid fa-circle-question"></i> ${step.query}
-                </div>
-                <div class="sources-container">
-                    <div class="sources-header"><i class="fa-solid fa-globe text-cyan"></i> Verified Web Sources (${step.sources.length})</div>
-                    <div class="sources-grid">
-                        ${step.sources.map(s => `
-                            <a href="${s.url}" target="_blank" rel="noopener" class="source-card">
-                                <span class="source-card-top"><span class="source-card-num">${s.num}</span> ${s.domain}</span>
-                                <span class="source-card-title">${s.title}</span>
-                            </a>
-                        `).join('')}
+        if (thread.steps.length > 0) {
+            threadContainer.innerHTML = thread.steps.map((step, idx) => `
+                <div class="query-thread-block">
+                    <div class="user-query-heading">
+                        <i class="fa-solid fa-circle-question"></i> ${step.query}
                     </div>
+                    <div class="sources-container">
+                        <div class="sources-header"><i class="fa-solid fa-globe text-cyan"></i> Verified Web Sources (${step.sources.length})</div>
+                        <div class="sources-grid">
+                            ${step.sources.map(s => `
+                                <a href="${s.url}" target="_blank" rel="noopener" class="source-card">
+                                    <span class="source-card-top"><span class="source-card-num">${s.num}</span> ${s.domain}</span>
+                                    <span class="source-card-title">${s.title}</span>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="ai-answer-box">${step.answer}</div>
                 </div>
-                <div class="ai-answer-box">${step.answer}</div>
-            </div>
-        `).join('');
+            `).join('');
+        }
+    }
+}
     }
 }
 
