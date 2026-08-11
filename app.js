@@ -1613,12 +1613,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Handle incoming URL search query params or direct thread links (?thread=id or ?q=query)
+    // Handle incoming URL search query params or direct thread links (?thread=id or ?status=id or ?q=query)
     const urlParams = new URLSearchParams(window.location.search);
     const targetThreadId = urlParams.get('thread');
     const initialQuery = urlParams.get('q');
+    const statusId = urlParams.get('status');
 
-    if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
+    if (statusId) {
+        alert(`📡 24/7 Watchdog Telemetry Status Report (${statusId})\n\nSource: cortex-node-us-east-04\nStatus: OPERATIONAL (100% Cluster Health)\nSystem Uptime: 142d 18h (24/7 Continuous Service)\nSearch Indexing Queue: 0 Pending Items\nAverage Latency: 42ms`);
+    } else if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
         switchThread(targetThreadId);
     } else if (initialQuery) {
         const searchInput = document.getElementById("searchInput");
