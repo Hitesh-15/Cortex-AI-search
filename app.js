@@ -1465,8 +1465,6 @@ function renderViewport() {
         }
     }
 }
-    }
-}
 
 function renderThreadHistory() {
     const container = document.getElementById("threadHistoryList");
