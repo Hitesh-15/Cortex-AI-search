@@ -581,6 +581,9 @@ async function testDiscordWebhook() {
         return;
     }
 
+    // Auto-save to localStorage immediately
+    localStorage.setItem("ambu_discord_webhook", webhookUrl);
+
     try {
         const payload = {
             content: "🔔 **Ambulkar Cortex 24/7 Watchdog Test Alert**\nYour 24/7 Background Watchdog notification pipeline is 100% operational! Live updates will ping here automatically.\n\n🔗 Dashboard: https://cortex.ambulkar.com"
