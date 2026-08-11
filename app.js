@@ -1620,7 +1620,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusId = urlParams.get('status');
 
     if (statusId) {
-        alert(`📡 24/7 Watchdog Telemetry Status Report (${statusId})\n\nSource: cortex-node-us-east-04\nStatus: OPERATIONAL (100% Cluster Health)\nSystem Uptime: 142d 18h (24/7 Continuous Service)\nSearch Indexing Queue: 0 Pending Items\nAverage Latency: 42ms`);
+        const heroView = document.getElementById("emptyHeroView");
+        if (heroView) {
+            heroView.innerHTML = `
+                <div class="telemetry-status-banner" style="margin: 20px auto; max-width: 780px; padding: 22px; background: rgba(11, 15, 25, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 14px; box-shadow: 0 0 35px rgba(56, 189, 248, 0.18); text-align: left;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+                        <h3 style="color: #38bdf8; font-size: 1.15rem; margin: 0; display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-server text-cyan"></i> Ambulkar Cortex Telemetry Report (${statusId})
+                        </h3>
+                        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #a7f3d0; padding: 4px 12px; border-radius: 9999px; font-size: 0.76rem; font-weight: 600;">
+                            ● 100% Operational
+                        </span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 16px;">
+                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
+                            <span style="color: #94a3b8; font-size: 0.75rem;">Cluster Source:</span><br>
+                            <strong style="color: #fff;">cortex-node-us-east-04</strong>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
+                            <span style="color: #94a3b8; font-size: 0.75rem;">System Uptime:</span><br>
+                            <strong style="color: #2dd4bf;">142d 18h (24/7 Active)</strong>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
+                            <span style="color: #94a3b8; font-size: 0.75rem;">Query Latency:</span><br>
+                            <strong style="color: #fff;">42 ms (Target: &lt;150ms)</strong>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
+                            <span style="color: #94a3b8; font-size: 0.75rem;">Ingestion Queue:</span><br>
+                            <strong style="color: #38bdf8;">0 Pending Items</strong>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <a href="https://cortex.ambulkar.com" style="color: #38bdf8; font-size: 0.82rem; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Back to Research Workspace</a>
+                    </div>
+                </div>
+            `;
+        }
     } else if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
         switchThread(targetThreadId);
     } else if (initialQuery) {
