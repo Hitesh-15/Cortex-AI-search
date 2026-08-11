@@ -1583,10 +1583,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Handle incoming URL search query params (e.g. ?q=financial+query from Aura Wealth)
+    // Handle incoming URL search query params or direct thread links (?thread=id or ?q=query)
     const urlParams = new URLSearchParams(window.location.search);
+    const targetThreadId = urlParams.get('thread');
     const initialQuery = urlParams.get('q');
-    if (initialQuery) {
+
+    if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
+        switchThread(targetThreadId);
+    } else if (initialQuery) {
         const searchInput = document.getElementById("searchInput");
         if (searchInput) searchInput.value = initialQuery;
         const heroView = document.getElementById("emptyHeroView");
