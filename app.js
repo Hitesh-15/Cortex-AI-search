@@ -602,6 +602,28 @@ async function testDiscordWebhook() {
     }
 }
 
+async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
+    const webhookUrl = localStorage.getItem("ambu_discord_webhook");
+    if (!webhookUrl) return { success: false, reason: "No Webhook URL saved." };
+
+    try {
+        const cleanText = htmlContent.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').substring(0, 700);
+        const payload = {
+            content: `🔔 **Ambulkar Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?thread=${threadId}`
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        return { success: res.ok || res.status === 204 };
+    } catch (e) {
+        return { success: false, reason: e.message };
+    }
+}
+
 // Classifier Agent for AUTO Effort
 function classifyQueryEffort(query) {
     const qLower = query.toLowerCase();
@@ -754,7 +776,31 @@ async function runAsyncSearchPipeline(userQuery) {
         </div>
     `;
 
-    document.getElementById(`${stepId}_answer`).innerHTML = synthesisResult.answerHTML + costBannerHTML;
+    // Automatic Discord Intent Detection
+    const qLower = userQuery.toLowerCase();
+    const hasDiscordIntent = qLower.includes("discord") || qLower.includes("send to discord") || qLower.includes("post to discord") || isWatchdogActive;
+
+    let discordCardHTML = "";
+    if (hasDiscordIntent) {
+        const dispatchRes = await dispatchResearchMemoToDiscord(userQuery, synthesisResult.answerHTML, thread.id);
+        if (dispatchRes.success) {
+            discordCardHTML = `
+                <div class="discord-dispatched-card" style="margin: 10px 0; padding: 10px 14px; background: rgba(88, 101, 242, 0.15); border: 1px solid rgba(88, 101, 242, 0.4); border-radius: 8px; font-size: 0.82rem; color: #a5b4fc; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-brands fa-discord" style="font-size: 1.1rem; color: #5865F2;"></i>
+                    <span><strong>Dispatched to Discord Channel!</strong> Check your Discord app on mobile or desktop for the instant executive alert.</span>
+                </div>
+            `;
+        } else {
+            discordCardHTML = `
+                <div class="discord-dispatched-card" style="margin: 10px 0; padding: 10px 14px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 8px; font-size: 0.82rem; color: #fde68a; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-brands fa-discord" style="font-size: 1.1rem; color: #f59e0b;"></i>
+                    <span><strong>Discord Dispatch Note:</strong> Please set your Discord Webhook URL in <strong>Settings</strong> to enable auto-sending alerts!</span>
+                </div>
+            `;
+        }
+    }
+
+    document.getElementById(`${stepId}_answer`).innerHTML = synthesisResult.answerHTML + discordCardHTML + costBannerHTML;
 
     // Update Session Total Spend
     appState.totalSessionSpend += synthesisResult.costUSD;
