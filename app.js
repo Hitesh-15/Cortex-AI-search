@@ -606,7 +606,8 @@ async function testDiscordWebhook() {
 }
 
 async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
-    const webhookUrl = localStorage.getItem("ambu_discord_webhook");
+    const discordInput = document.getElementById("discordWebhookInput");
+    const webhookUrl = localStorage.getItem("ambu_discord_webhook") || (discordInput ? discordInput.value.trim() : "");
     if (!webhookUrl) return { success: false, reason: "No Webhook URL saved." };
 
     try {
@@ -1566,6 +1567,14 @@ function setupSettingsModal() {
         modelSelect.addEventListener("change", (e) => {
             const customGroup = document.getElementById("customModelGroup");
             if (customGroup) customGroup.style.display = e.target.value === "custom" ? "block" : "none";
+        });
+    }
+
+    const discordInput = document.getElementById("discordWebhookInput");
+    if (discordInput) {
+        discordInput.addEventListener("input", (e) => {
+            const val = e.target.value.trim();
+            if (val) localStorage.setItem("ambu_discord_webhook", val);
         });
     }
 
