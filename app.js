@@ -1714,13 +1714,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
         switchThread(targetThreadId);
     } else if (initialQuery) {
-        const searchInput = document.getElementById("searchInput");
-        if (searchInput) searchInput.value = initialQuery;
-        const heroView = document.getElementById("emptyHeroView");
-        const container = document.getElementById("activeThreadContainer");
-        if (heroView) heroView.style.display = "none";
-        if (container) container.style.display = "flex";
-        setTimeout(() => runAsyncSearchPipeline(initialQuery), 200);
+        setTimeout(() => executeSearch(initialQuery), 100);
     }
 
     // Vault Lock Modal Setup
