@@ -612,9 +612,11 @@ async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
 
     try {
         const cleanText = htmlContent.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').substring(0, 700);
-        const encodedQ = encodeURIComponent(query);
+        const cleanQuery = query.replace(/\b(and\s+)?(send|post)\s+(it\s+)?to\s+(the\s+)?discord(\s+channel)?\b/gi, '').trim();
+        const encodedQ = encodeURIComponent(cleanQuery || query);
+
         const payload = {
-            content: `🔔 **Ambulkar Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?q=${encodedQ}&thread=${threadId}`
+            content: `🔔 **Ambulkar Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?q=${encodedQ}`
         };
 
         const res = await fetch(webhookUrl, {
@@ -660,6 +662,7 @@ function classifyQueryEffort(query) {
 
 async function runAsyncSearchPipeline(userQuery) {
     if (!userQuery) return;
+    appState.isSearching = true;
 
     let thread = appState.threads.find(t => t.id === appState.activeThreadId);
     if (!thread) {
@@ -827,6 +830,7 @@ async function runAsyncSearchPipeline(userQuery) {
 
     saveThreadsToLocalStorage();
     renderThreadHistory();
+    appState.isSearching = false;
 }
 
 function createNewThread(initialQuery = "") {
@@ -1439,6 +1443,13 @@ function renderViewport() {
     const threadContainer = document.getElementById("activeThreadContainer");
     const thread = appState.threads.find(t => t.id === appState.activeThreadId);
 
+    // Never collapse to hero view if a search pipeline is currently executing
+    if (appState.isSearching) {
+        if (heroView) heroView.style.display = "none";
+        if (threadContainer) threadContainer.style.display = "flex";
+        return;
+    }
+
     // Only fallback to hero view if there is no active thread OR if thread history is empty
     if (!thread || (thread.steps.length === 0 && threadContainer.children.length === 0)) {
         if (heroView) heroView.style.display = "flex";
@@ -1730,7 +1741,16 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
         switchThread(targetThreadId);
     } else if (initialQuery) {
-        executeSearch(initialQuery);
+        const cleanQuery = initialQuery.replace(/\b(and\s+)?(send|post)\s+(it\s+)?to\s+(the\s+)?discord(\s+channel)?\b/gi, '').trim() || initialQuery;
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) searchInput.value = cleanQuery;
+
+        const heroView = document.getElementById("emptyHeroView");
+        const container = document.getElementById("activeThreadContainer");
+        if (heroView) heroView.style.display = "none";
+        if (container) container.style.display = "flex";
+
+        executeSearch(cleanQuery);
     }
 
     // Vault Lock Modal Setup
