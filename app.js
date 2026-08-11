@@ -700,7 +700,31 @@ async function runAsyncSearchPipeline(userQuery) {
         s4El.innerHTML = `<i class="fa-solid fa-circle-check text-teal"></i> Step 4: Executive Research Memo Assembled`;
     }
 
-    document.getElementById(`${stepId}_answer`).innerHTML = synthesisResult.answerHTML;
+    // Accumulate cost & total runs per individual thread
+    if (!thread.cumulativeCostUSD) thread.cumulativeCostUSD = 0;
+    if (!thread.totalRuns) thread.totalRuns = 0;
+    thread.totalRuns += 1;
+    thread.cumulativeCostUSD += (synthesisResult.costUSD || 0.00015);
+    thread.isWatchdogActive = isWatchdogActive;
+
+    // Render 24/7 Watchdog Cumulative Cost Banner inside answer
+    const costBannerHTML = `
+        <div class="thread-watchdog-cost-card" style="margin: 14px 0; padding: 10px 14px; background: rgba(56, 189, 248, 0.07); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
+                <i class="fa-solid fa-calculator text-cyan"></i>
+                <span><strong>24/7 Thread Cost Tracker:</strong> <strong style="color: #38bdf8;">$${thread.cumulativeCostUSD.toFixed(5)} USD</strong> (${thread.totalRuns} total runs)</span>
+            </div>
+            ${thread.isWatchdogActive ? `
+                <button type="button" onclick="stopThreadWatchdog('${thread.id}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                    <i class="fa-solid fa-stop"></i> Stop 24/7 Watchdog
+                </button>
+            ` : `
+                <span style="font-size: 0.72rem; color: #94a3b8;"><i class="fa-solid fa-circle-check text-teal"></i> Single Search Run</span>
+            `}
+        </div>
+    `;
+
+    document.getElementById(`${stepId}_answer`).innerHTML = synthesisResult.answerHTML + costBannerHTML;
 
     // Update Session Total Spend
     appState.totalSessionSpend += synthesisResult.costUSD;
@@ -1366,14 +1390,35 @@ function renderThreadHistory() {
         return;
     }
 
-    container.innerHTML = appState.threads.map(t => `
-        <div class="thread-item ${t.id === appState.activeThreadId ? 'active' : ''}" onclick="switchThread('${t.id}')">
-            <span class="thread-item-title"><i class="fa-regular fa-message text-muted" style="margin-right:6px;"></i> ${t.title}</span>
-            <button class="thread-del-btn" onclick="event.stopPropagation(); deleteThread('${t.id}')" title="Delete Thread">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-    `).join('');
+    container.innerHTML = appState.threads.map(t => {
+        const costStr = t.cumulativeCostUSD ? `$${t.cumulativeCostUSD.toFixed(4)}` : "$0.0000";
+        const isWatchdog = t.isWatchdogActive;
+        return `
+            <div class="thread-item ${t.id === appState.activeThreadId ? 'active' : ''}" onclick="switchThread('${t.id}')" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="thread-item-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 135px;">
+                    <i class="fa-regular fa-message text-muted" style="margin-right:5px;"></i> ${t.title}
+                </span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    ${isWatchdog ? `<span title="24/7 Watchdog Active" style="font-size: 0.65rem; color: #2dd4bf; background: rgba(45,212,191,0.15); padding: 1px 5px; border-radius: 4px; font-weight: 600;"><i class="fa-solid fa-bell"></i> 24/7</span>` : ''}
+                    <span style="font-size: 0.65rem; color: #94a3b8; font-family: monospace;" title="Cumulative Thread Cost">${costStr}</span>
+                    <button class="thread-del-btn" onclick="event.stopPropagation(); deleteThread('${t.id}')" title="Delete Thread">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function stopThreadWatchdog(threadId) {
+    const thread = appState.threads.find(t => t.id === threadId);
+    if (thread) {
+        thread.isWatchdogActive = false;
+        saveThreadsToLocalStorage();
+        renderThreadHistory();
+        renderViewport();
+        alert("🛑 24/7 Background Watchdog stopped for this thread. Zero future background tokens will be used!");
+    }
 }
 
 function switchThread(threadId) {
