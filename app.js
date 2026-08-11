@@ -572,6 +572,36 @@ function toggleWatchdogState() {
     }
 }
 
+async function testDiscordWebhook() {
+    const discordInput = document.getElementById("discordWebhookInput");
+    const webhookUrl = (discordInput ? discordInput.value.trim() : "") || localStorage.getItem("ambu_discord_webhook");
+
+    if (!webhookUrl) {
+        alert("⚠️ Please paste a valid Discord Webhook URL into the input field first!");
+        return;
+    }
+
+    try {
+        const payload = {
+            content: "🔔 **Ambulkar Cortex 24/7 Watchdog Test Alert**\nYour 24/7 Background Watchdog notification pipeline is 100% operational! Live updates will ping here automatically.\n\n🔗 Dashboard: https://cortex.ambulkar.com"
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok || res.status === 204) {
+            alert("✅ Discord Test Alert Sent Successfully! Check your Discord channel on your phone or browser.");
+        } else {
+            alert("❌ Discord returned status code: " + res.status + ". Please verify your Webhook URL.");
+        }
+    } catch (err) {
+        alert("❌ Error sending test alert: " + err.message);
+    }
+}
+
 // Classifier Agent for AUTO Effort
 function classifyQueryEffort(query) {
     const qLower = query.toLowerCase();
