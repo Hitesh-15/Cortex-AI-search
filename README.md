@@ -50,7 +50,7 @@ flowchart TD
 ## ✨ Key Features
 
 - 🌐 **Deep Web Crawler (20+ Sources per Query)**: Simultaneously crawls and cross-references DuckDuckGo, Wikipedia, HackerNews, Reuters, Bloomberg, ArXiv, MIT Technology Review, Nature, SEC EDGAR, GitHub, StackOverflow, and PubMed.
-- 🎨 **Perplexity-Style Clean UX**:
+- 🎨 **Content-First Clean UX**:
   - **Answer-First Viewport**: Executive memos are 100% visible at the top immediately with zero scrolling.
   - **Compact Inline Sources Strip (36px)**: Displays top verified chips alongside an on-demand slide-out sources drawer for all 20+ references.
   - **Natural Inline Citations**: Seamless clickable superscript citations (`[1]`, `[2]`, `[5]`) embedded directly in text without bracket clutter.
