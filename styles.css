@@ -1829,7 +1829,7 @@ select option:checked {
     }
 }
 
-/* Mobile Phone Displays (under 600px) - Ultra-Clean Perplexity Style */
+/* Mobile Phone Displays (under 600px) - Ultra-Clean Content-First Style */
 @media (max-width: 600px) {
     .spend-ticker-pill {
         display: none !important;

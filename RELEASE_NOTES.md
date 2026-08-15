@@ -5,7 +5,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v3.2.0] — 2026-08-15
-### **Deep Web Knowledge Aggregation & Perplexity-Style UX Redesign**
+### **Deep Web Knowledge Aggregation & Content-First UX Redesign**
 
 #### 🌐 Deep Web Crawler & 20+ Multi-Index Ingestion
 - **Parallel Multi-Index Ingestion**: Upgraded web source extraction to query multiple live web indices simultaneously:
@@ -18,7 +18,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
   - `MEDIUM Effort`: Aggregates **12+ sources**.
   - `LOW Effort`: Aggregates **8+ sources**.
 
-#### 🎨 Perplexity-Style Clean UX Redesign
+#### 🎨 Content-First Clean UX Redesign
 - **Answer-First Viewport**: Eliminated full-page source card grids. The synthesized research memo is now 100% visible at the top of the screen immediately upon completion with zero scrolling required.
 - **Compact Inline Sources Strip (Height: 36px)**: Shows top 3 verified source chips (`[1] reuters.com`, `[2] bloomberg.com`, `[3] arxiv.org`) alongside an interactive `[ +17 more ▾ ]` button.
 - **On-Demand Sources Drawer**: Clicking `+more` opens a slide-out overlay drawer displaying all 20+ sources with their snippets, titles, and direct external links.
