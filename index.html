@@ -35,7 +35,7 @@
                     <i class="fa-solid fa-brain"></i>
                 </div>
                 <div class="brand-text">
-                    <h1>Cortex<span>Desk</span></h1>
+                    <h1>Cortex</h1>
                     <span class="brand-tag">cortex.ambulkar.com</span>
                 </div>
                 <button id="btnMobileCloseSidebar" class="btn-mobile-close" aria-label="Close Sidebar">
@@ -77,6 +77,9 @@
             </div>
 
             <div class="sidebar-footer">
+                <button id="btnOpenReleaseNotes" class="btn-sidebar-footer" onclick="openReleaseNotesModal()" title="View Continuous Release Notes & Changelog">
+                    <i class="fa-solid fa-sparkles text-cyan"></i> Release Notes (v3.2)
+                </button>
                 <button id="btnOpenLockModal" class="btn-sidebar-footer" onclick="openLockModal()" title="Manage Dual-Lock 2FA Security Vault">
                     <i class="fa-solid fa-vault text-cyan"></i> Dual-Lock 2FA Vault
                 </button>
@@ -96,13 +99,6 @@
                 <button id="btnMobileToggle" class="btn-mobile-toggle" aria-label="Toggle Mobile Navigation Menu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
-
-                <div class="model-badge-group">
-                    <div class="vault-status-pill" id="vaultStatusPill" onclick="openLockModal()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-size: 0.78rem; font-weight: 600; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.35); color: #38bdf8;" title="Click to manage Dual-Lock 2FA Security Vault">
-                        <i class="fa-solid fa-lock text-cyan"></i>
-                        <span id="vaultStatusText">Dual-Lock: Protected</span>
-                    </div>
-                </div>
             </header>
 
             <!-- ANSWERS & THREAD VIEWPORT -->
@@ -110,11 +106,11 @@
                 <!-- Empty State Hero (Default View) -->
                 <div class="empty-hero" id="emptyHeroView">
                     <h2 class="hero-title">Market Intelligence & <span style="background: linear-gradient(135deg, #38bdf8, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Executive Research.</span></h2>
-                    <p class="hero-subtitle">Real-time web research, Cortex frontier model routing, and Dual-Lock security vault for your devices.</p>
+                    <p class="hero-subtitle">Real-time web research and Cortex frontier model routing.</p>
 
                     <div class="privacy-badge-banner" style="margin: 10px auto 22px auto; max-width: 580px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); color: #a7f3d0; padding: 8px 18px; border-radius: 20px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 8px;">
                         <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i>
-                        <span><strong>Dual-Lock Protected:</strong> Master keys stay encrypted in your local device vault. Zero server tracking.</span>
+                        <span><strong>100% Local Privacy:</strong> API keys stay encrypted directly in your browser. Zero server tracking.</span>
                     </div>
 
                     <div class="suggested-cards-grid">
@@ -153,15 +149,13 @@
 
             <!-- FLOATING BOTTOM SEARCH INPUT BAR -->
             <div class="bottom-search-wrapper">
-                <form id="searchForm" class="search-box-container" onsubmit="event.preventDefault(); const q = document.getElementById('searchInput').value.trim(); if(q){ executeSearch(q); document.getElementById('searchInput').value = ''; }">
+                <form id="searchForm" class="search-box-container">
                     <div class="search-input-row">
                         <input type="text" id="searchInput" class="search-input"
                             placeholder="Enter a research topic, market query, or analysis request..."
-                            autocomplete="off"
-                            onkeydown="if(event.key==='Enter'){ event.preventDefault(); const q = this.value.trim(); if(q){ executeSearch(q); this.value = ''; } }">
+                            autocomplete="off">
                         <div class="submit-btn-group">
-                            <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Research"
-                                onclick="event.preventDefault(); const q = document.getElementById('searchInput').value.trim(); if(q){ executeSearch(q); document.getElementById('searchInput').value = ''; }">
+                            <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Research">
                                 <i class="fa-solid fa-arrow-up"></i>
                             </button>
                         </div>
@@ -236,42 +230,70 @@
 
     <!-- MODAL: CORTEX NEURAL GATEWAY SETTINGS -->
     <div id="settingsModal" class="modal-backdrop" onclick="if(event.target===this) closeSettingsModal()">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width: 560px;">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-sliders text-cyan"></i> Cortex Neural Gateway Settings</h3>
+                <h3><i class="fa-solid fa-sliders text-cyan"></i> Cortex Model & OpenRouter Gateway</h3>
                 <button class="modal-close" id="btnCloseSettingsModal" onclick="closeSettingsModal()">&times;</button>
             </div>
             <form id="settingsForm">
                 <div class="form-group">
                     <label for="providerSelect"><i class="fa-solid fa-network-wired text-cyan"></i> Gateway Route</label>
-                    <select id="providerSelect">
-                        <option value="openrouter">Cortex Neural Gateway (Unified 2026 Models)</option>
-                        <option value="local">Cortex Gateway Free Fallback Route</option>
+                    <select id="providerSelect" class="text-input" style="width: 100%; padding: 8px 12px; border-radius: 6px; background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                        <option value="openrouter">OpenRouter Gateway (Access 300+ AI Models)</option>
+                        <option value="local">Local Free Fallback Engine</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="modelSelect"><i class="fa-solid fa-microchip text-purple"></i> Active Model</label>
-                    <select id="modelSelect">
-                        <option value="openrouter:auto">cortex/auto (August 2026 Top Frontier)</option>
-                        <option value="openrouter:perplexity/sonar-pro">perplexity/sonar-pro (Live Search)</option>
-                        <option value="openrouter:anthropic/claude-5-sonnet">anthropic/claude-5-sonnet</option>
-                        <option value="openrouter:google/gemini-3.6-flash">google/gemini-3.6-flash</option>
+                <!-- API KEY GROUP -->
+                <div class="form-group" id="apiKeyGroup" style="margin-top: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label for="apiKeyInput" id="apiKeyLabel"><i class="fa-solid fa-key text-gold"></i> OpenRouter API Key</label>
+                        <button type="button" id="btnTestApiKey" class="btn-secondary" onclick="testOpenRouterApiKeyNow()" style="font-size: 0.75rem; padding: 4px 10px; border-radius: 4px;">
+                            <i class="fa-solid fa-bolt text-cyan"></i> Test Key & Load Models
+                        </button>
+                    </div>
+                    <div style="position: relative;">
+                        <input type="password" id="apiKeyInput" class="text-input" placeholder="sk-or-v1-..." style="width: 100%; padding: 8px 40px 8px 12px; font-size: 0.85rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                        <button type="button" id="btnToggleKeyVis" onclick="toggleApiKeyVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer;">
+                            <i class="fa-solid fa-eye" id="apiKeyEyeIcon"></i>
+                        </button>
+                    </div>
+                    <div id="apiKeyStatusMessage" style="font-size: 0.78rem; margin-top: 6px; min-height: 18px; color: #94a3b8;">
+                        Stored 100% locally in your browser's private storage.
+                    </div>
+                </div>
+
+                <!-- MODEL SELECTION GROUP -->
+                <div class="form-group" style="margin-top: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label for="modelSelect"><i class="fa-solid fa-microchip text-purple"></i> Active AI Model</label>
+                        <button type="button" class="btn-secondary" onclick="fetchLatestModelsAuto(true)" style="font-size: 0.75rem; padding: 3px 8px; border-radius: 4px;" title="Refresh models from OpenRouter">
+                            <i class="fa-solid fa-arrows-rotate text-cyan"></i> Refresh All
+                        </button>
+                    </div>
+                    <select id="modelSelect" class="text-input" style="width: 100%; padding: 8px 12px; border-radius: 6px; background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                        <!-- Populated dynamically -->
                     </select>
+                </div>
+
+                <!-- CUSTOM MODEL SLUG INPUT -->
+                <div class="form-group" id="customModelGroup" style="display: none; margin-top: 12px;">
+                    <label for="customModelInput"><i class="fa-solid fa-terminal text-cyan"></i> Custom OpenRouter Model ID</label>
+                    <input type="text" id="customModelInput" class="text-input" placeholder="e.g. meta-llama/llama-3.3-70b-instruct or deepseek/deepseek-r1" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
                 </div>
 
                 <div class="form-group" style="margin-top: 14px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <label for="discordWebhookInput"><i class="fa-brands fa-discord text-purple"></i> Discord Alert Webhook URL (100% Free)</label>
+                        <label for="discordWebhookInput"><i class="fa-brands fa-discord text-purple"></i> Discord Alert Webhook URL (Optional)</label>
                         <button type="button" class="btn-secondary" onclick="testDiscordWebhook()" style="font-size: 0.75rem; padding: 3px 10px; border-radius: 4px;">
-                            <i class="fa-solid fa-paper-plane text-teal"></i> Test Alert Now
+                            <i class="fa-solid fa-paper-plane text-teal"></i> Test Alert
                         </button>
                     </div>
                     <input type="password" id="discordWebhookInput" class="text-input" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
-                    <span class="help-text" style="font-size: 0.75rem; color: #94a3b8;">Optional: Paste your Discord channel webhook URL for instant 24/7 background alerts. Zero cost.</span>
+                    <span class="help-text" style="font-size: 0.75rem; color: #94a3b8;">Optional: Paste your Discord channel webhook URL for instant 24/7 background alerts.</span>
                 </div>
 
-                <div class="modal-footer">
+                <div class="modal-footer" style="margin-top: 20px;">
                     <button type="button" class="btn-secondary" id="btnCancelSettings" onclick="closeSettingsModal()">Cancel</button>
                     <button type="submit" class="btn-primary">Save Settings</button>
                 </div>
@@ -279,8 +301,54 @@
         </div>
     </div>
 
+    <!-- RELEASE NOTES MODAL -->
+    <div class="modal-overlay" id="releaseNotesModal">
+        <div class="modal-card" style="max-width: 660px; max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-sparkles text-cyan"></i>
+                    <span>Cortex Continuous Release Notes</span>
+                </div>
+                <button class="btn-icon" id="btnCloseReleaseNotes" onclick="closeReleaseNotesModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" style="padding-top: 10px; font-size: 0.88rem; line-height: 1.6; color: #cbd5e1;">
+                <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+                    <strong style="color: #38bdf8; font-size: 0.95rem;">🌟 Version 3.2.0 (Active Live Release)</strong>
+                    <p style="margin-top: 4px; font-size: 0.82rem; color: #94a3b8;">Continuously updated with latest features, multi-index web crawlers, and parallel model routing.</p>
+                </div>
+
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-globe text-cyan"></i> Deep Web Knowledge Aggregator (20+ Sources)</h4>
+                <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
+                    <li><strong>Parallel Multi-Engine Search:</strong> Crawls DuckDuckGo, Wikipedia OpenSearch API, and HackerNews/Tech Algolia APIs simultaneously.</li>
+                    <li><strong>Global Intelligence Domain Index:</strong> Direct queries across Reuters, Bloomberg, ArXiv, MIT Technology Review, Nature, SEC EDGAR, GitHub, StackOverflow, Yahoo Finance, PubMed, and Federal Reserve data.</li>
+                    <li><strong>20+ Sources per Research Memo:</strong> Up to 20+ verified real-time sources analyzed per high-effort query.</li>
+                </ul>
+
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-bolt text-teal"></i> Parallel Frontier Model Reasoning Pipeline</h4>
+                <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
+                    <li><strong>Fast Extraction ➔ Deep Reasoning:</strong> Stage 1 fast factual extraction via Gemini 3.7 Flash chained into Stage 2 deep calculation via Claude Sonnet 5.</li>
+                    <li><strong>Post-Query Executed Model Telemetry:</strong> Verifies and displays the exact model executed by the gateway.</li>
+                </ul>
+
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-paintbrush text-purple"></i> Perplexity-Style Content-First UI Redesign</h4>
+                <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
+                    <li><strong>Answer-First Viewport:</strong> Research memo is 100% visible at the top immediately with zero scrolling.</li>
+                    <li><strong>36px Compact Sources Strip:</strong> Top source chips with on-demand slide-out sources drawer.</li>
+                    <li><strong>Zero-Bracket Natural Citations:</strong> Interactive citations embedded naturally into paragraphs.</li>
+                </ul>
+
+                <div class="modal-footer" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <a href="https://github.com/Hitesh-15/Cortex-AI-search/blob/main/RELEASE_NOTES.md" target="_blank" rel="noopener" style="font-size: 0.8rem; color: #38bdf8; text-decoration: none;">
+                        <i class="fa-brands fa-github"></i> View Full GitHub Changelog ➔
+                    </a>
+                    <button type="button" class="btn-primary" onclick="closeReleaseNotesModal()">Got It</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.11.99"></script>
+    <script src="app.js?v=2026.08.15.14"></script>
 </body>
 
 </html>
