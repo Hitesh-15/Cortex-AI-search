@@ -20,9 +20,9 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 #### 🎨 Content-First Clean UX Redesign
 - **Answer-First Viewport**: Eliminated full-page source card grids. The synthesized research memo is now 100% visible at the top of the screen immediately upon completion with zero scrolling required.
-- **Compact Inline Sources Strip (Height: 36px)**: Shows top 3 verified source chips (`[1] reuters.com`, `[2] bloomberg.com`, `[3] arxiv.org`) alongside an interactive `[ +17 more ▾ ]` button.
+- **Compact Inline Sources Strip (Height: 36px)**: Displays top 3 verified source chips (such as Reuters, Bloomberg, and ArXiv) alongside an interactive `+17 more ▾` button.
 - **On-Demand Sources Drawer**: Clicking `+more` opens a slide-out overlay drawer displaying all 20+ sources with their snippets, titles, and direct external links.
-- **Natural Inline Citations**: Removed bracket walls (`[1] [2] [3]...`) and embedded subtle, clickable superscript citations directly inside sentences (`[1]`, `[2]`, `[5]`).
+- **Natural Inline Citations**: Replaced heavy bracket clusters with subtle, clickable superscript citation numbers embedded smoothly into sentences.
 
 #### ⚡ Parallel Frontier Multi-Model Routing
 - **Two-Stage Parallel Reasoning**: Introduced parallel multi-model routing capability:
