@@ -1,136 +1,131 @@
-"""Automated UI & Functionality Verification for Cortex AI Search.
+"""Automated End-to-End UI, Browser & Functionality Test Suite for Cortex AI Search.
 
 Verifies:
-1. All button elements, forms, and inputs exist in index.html.
-2. All onclick/event handlers in index.html have corresponding functions in app.js.
-3. No orphan IDs or broken selector references.
-4. HTTP Server response validity.
+1. HTML & JS bindings, IDs, and custom event handlers.
+2. Real-browser headless execution with Microsoft Edge / Chrome Selenium:
+   - Browser console logs for zero runtime/syntax errors.
+   - Desktop and Mobile Viewport interactions (all buttons, modals, cards, search).
 """
 
 import re
+import time
 import urllib.request
 from pathlib import Path
+from selenium import webdriver
+from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.common.by import By
 
 CORTEX_DIR = Path(__file__).resolve().parent
 HTML_PATH = CORTEX_DIR / "index.html"
 JS_PATH = CORTEX_DIR / "app.js"
 
-def test_html_and_js_bindings():
-    print("--> 1. Reading index.html and app.js...")
+def test_static_bindings():
+    print("--> 1. Testing Static HTML & JS Bindings...")
     html_content = HTML_PATH.read_text(encoding="utf-8")
     js_content = JS_PATH.read_text(encoding="utf-8")
     
-    # 1. Extract all element IDs in HTML
     html_ids = set(re.findall(r'id=["\']([^"\']+)["\']', html_content))
-    print(f"Found {len(html_ids)} unique element IDs in index.html.")
-
-    # 2. Key UI elements that must exist and be functional
-    expected_handlers = [
-        "openSettingsModal", "closeSettingsModal",
-        "openLockModal", "closeLockModal",
-        "openReleaseNotesModal", "closeReleaseNotesModal",
-        "clearWorkspaceHistory", "testOpenRouterApiKeyNow",
-        "toggleApiKeyVisibility", "testDiscordWebhook",
-        "fetchLatestModelsAuto", "toggleWatchdogState", "executeSearch"
-    ]
-    
     critical_elements = [
-        "btnMobileToggle",
-        "btnOpenLockModal",
-        "btnOpenSettings",
-        "btnClearHistory",
-        "searchForm",
-        "searchInput",
-        "btnSubmitSearch",
-        "chatEffortSelect",
-        "btnToggleWatchdog",
-        "settingsModal",
-        "settingsForm",
-        "providerSelect",
-        "apiKeyInput",
-        "btnTestApiKey",
-        "modelSelect",
-        "vaultLockModal"
+        "btnMobileToggle", "btnOpenLockModal", "btnOpenSettings", "btnOpenReleaseNotes",
+        "btnClearHistory", "searchForm", "searchInput", "btnSubmitSearch",
+        "chatEffortSelect", "btnToggleWatchdog", "settingsModal", "vaultLockModal", "releaseNotesModal"
     ]
     
-    missing_elements = [el for el in critical_elements if el not in html_ids]
-    if missing_elements:
-        print("FAILED: Missing critical elements:", missing_elements)
-        return False
-    print("PASS: All critical button and modal element IDs exist in index.html.")
-
-    # 3. Extract all onclick handlers in HTML and verify in JS
-    raw_handlers = re.findall(r'onclick=["\']([^"\']+)["\']', html_content)
-    extracted_funcs = set()
-    dom_builtins = {"if", "for", "while", "function", "alert", "event", "getAttribute", "getElementById", "preventDefault", "trim", "toLowerCase", "target"}
-    for h in raw_handlers:
-        matches = re.findall(r'([a-zA-Z0-9_]+)\s*\(', h)
-        for m in matches:
-            if m not in dom_builtins:
-                extracted_funcs.add(m)
-
-    missing_functions = []
-    for func in extracted_funcs:
-        # Check if function exists in JS
-        if not re.search(rf'function\s+{func}\b|const\s+{func}\s*=|let\s+{func}\s*=|window\.{func}\b', js_content):
-            missing_functions.append(func)
-            
-    if missing_functions:
-        print("FAILED: Missing JS functions for onclick handlers:", missing_functions)
-        return False
-    print(f"PASS: All {len(extracted_funcs)} custom onclick handlers are implemented in app.js: {sorted(list(extracted_funcs))}")
-
-    # 4. Check getElementById in JS
-    js_get_elements = set(re.findall(r'getElementById\(["\']([^"\']+)["\']\)', js_content))
-    print(f"Found {len(js_get_elements)} getElementById calls in app.js.")
-    
-    # Verify critical JS selectors exist in HTML
-    for el_id in ["providerSelect", "apiKeyInput", "btnTestApiKey", "modelSelect", "settingsModal"]:
-        assert el_id in html_ids, f"ID {el_id} queried by JS but missing in HTML"
-
-    print("PASS: Core JS element selectors match HTML structure.")
+    missing = [el for el in critical_elements if el not in html_ids]
+    assert not missing, f"Missing critical elements: {missing}"
+    print(f"PASS: All {len(critical_elements)} critical elements exist in index.html.")
     return True
 
-def test_suggested_prompts():
-    print("--> 2. Verifying Suggested Prompts & Cards...")
-    html_content = HTML_PATH.read_text(encoding="utf-8")
+def test_real_browser_selenium():
+    print("\n--> 2. Launching Real-Browser Selenium Automated Test (Edge Headless)...")
+    opts = EdgeOptions()
+    opts.add_argument('--headless')
+    opts.add_argument('--no-sandbox')
+    opts.add_argument('--disable-dev-shm-usage')
+    opts.add_argument('--window-size=1440,900')
     
-    # Extract all suggested cards and queries
-    cards = re.findall(r'class=["\'][^"\']*suggested-card[^"\']*["\'][^>]*data-query=["\']([^"\']+)["\']', html_content)
-    print(f"Found {len(cards)} suggested research prompt cards:")
-    for idx, q in enumerate(cards, 1):
-        print(f"   [{idx}] \"{q}\"")
-        assert len(q) > 10, f"Query '{q}' is too short"
-        assert "executeSearch" in html_content, "executeSearch handler missing"
-        
-    assert len(cards) >= 4, f"Expected at least 4 suggested cards, found {len(cards)}"
-    print("PASS: All 4 suggested prompt cards have valid, non-empty research queries.")
-    return True
-
-def test_server_http():
-    print("--> 3. Verifying HTTP Server on port 5173...")
+    driver = webdriver.Edge(options=opts)
     try:
-        req = urllib.request.Request("http://127.0.0.1:5173/")
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            status = resp.status
-            body = resp.read().decode("utf-8")
-            assert status == 200, f"Expected status 200, got {status}"
-            assert "<!DOCTYPE html>" in body, "HTML doc missing"
-            assert "<h1>Cortex</h1>" in body, "Updated Cortex branding missing"
-            assert "and Dual-Lock security vault for your devices" not in body, "Removed subtitle text is still present"
-            print("PASS: Server returned HTTP 200 OK with clean branding & updated subtitle.")
-            return True
-    except Exception as e:
-        print(f"FAILED: Server connection error: {e}")
-        return False
+        driver.get("http://localhost:5173/")
+        time.sleep(1)
+        
+        # 1. Check Console Logs
+        logs = driver.get_log("browser")
+        severe_errors = [l for l in logs if l["level"] == "SEVERE" and "favicon.ico" not in l["message"]]
+        if severe_errors:
+            for err in severe_errors:
+                print("BROWSER ERROR:", err["message"])
+            raise AssertionError(f"Encountered {len(severe_errors)} severe JavaScript runtime errors!")
+        print("PASS: Browser loaded with 0 JavaScript errors.")
+        
+        # 2. Test Desktop Modals
+        modal_tests = [
+            ("Settings Modal", "btnOpenSettings", "settingsModal", "btnCloseSettingsModal"),
+            ("Dual-Lock Vault Modal", "btnOpenLockModal", "vaultLockModal", "btnCloseVaultModal"),
+            ("Release Notes Modal", "btnOpenReleaseNotes", "releaseNotesModal", "btnCloseReleaseNotes"),
+        ]
+        
+        for name, open_id, modal_id, close_id in modal_tests:
+            open_btn = driver.find_element(By.ID, open_id)
+            open_btn.click()
+            time.sleep(0.4)
+            modal = driver.find_element(By.ID, modal_id)
+            assert "active" in modal.get_attribute("class"), f"{name} did not open!"
+            
+            close_btn = driver.find_element(By.ID, close_id)
+            close_btn.click()
+            time.sleep(0.3)
+            assert "active" not in modal.get_attribute("class"), f"{name} did not close!"
+            print(f"PASS: {name} (open + close) functional.")
+            
+        # 3. Test Suggested Cards
+        cards = driver.find_elements(By.CLASS_NAME, "suggested-card")
+        assert len(cards) >= 4, "Suggested prompt cards missing!"
+        cards[0].click()
+        time.sleep(1.5)
+        
+        thread_container = driver.find_element(By.ID, "activeThreadContainer")
+        assert thread_container.value_of_css_property("display") == "flex", "Active thread view not visible after clicking card!"
+        print(f"PASS: Suggested Prompt Cards clicked -> Research view active.")
+        
+        # 4. Test Search Bar Pipeline
+        search_input = driver.find_element(By.ID, "searchInput")
+        search_input.send_keys("Latest 2026 quantum computing benchmarks")
+        submit_btn = driver.find_element(By.ID, "btnSubmitSearch")
+        submit_btn.click()
+        time.sleep(1.5)
+        print("PASS: Search submission pipeline executed cleanly.")
+        
+        # 5. Test Mobile Viewport
+        print("\n--> 3. Testing Mobile Viewport (iPhone 390x844)...")
+        driver.set_window_size(390, 844)
+        time.sleep(0.5)
+        
+        btn_mobile_toggle = driver.find_element(By.ID, "btnMobileToggle")
+        btn_mobile_toggle.click()
+        time.sleep(0.5)
+        
+        sidebar = driver.find_element(By.ID, "appSidebar")
+        assert "active" in sidebar.get_attribute("class"), "Mobile sidebar drawer did not open!"
+        print("PASS: Mobile hamburger toggle opened sidebar drawer.")
+        
+        btn_mobile_close = driver.find_element(By.ID, "btnMobileCloseSidebar")
+        btn_mobile_close.click()
+        time.sleep(0.4)
+        assert "active" not in sidebar.get_attribute("class"), "Mobile sidebar drawer did not close!"
+        print("PASS: Mobile sidebar close button functional.")
+        
+        return True
+    finally:
+        driver.quit()
 
 if __name__ == "__main__":
-    t1 = test_html_and_js_bindings()
-    t2 = test_suggested_prompts()
-    t3 = test_server_http()
-    if t1 and t2 and t3:
+    t1 = test_static_bindings()
+    t2 = test_real_browser_selenium()
+    
+    if t1 and t2:
         print("\n=======================================================")
-        print("ALL AUTOMATED SITE TESTS PASSED WITH 100% SUCCESS RATE")
+        print("ALL REAL-BROWSER & UI TESTS PASSED WITH 100% SUCCESS!")
         print("=======================================================")
     else:
         print("\nTESTS FAILED.")

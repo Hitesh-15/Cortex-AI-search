@@ -107,6 +107,8 @@ function initAmbuApp() {
     setupNavigationListeners();
     setupSearchForm();
     setupSettingsModal();
+    setupVaultModal();
+    updateVaultStatusUI();
     renderThreadHistory();
     populateChatModelSelector();
     updateHeaderModelLabel();
@@ -1957,110 +1959,6 @@ function saveSettingsForm() {
     alert("⚙️ Settings & API Keys Saved Successfully!");
 }
 
-// Global Application Initialization Entrypoint
-document.addEventListener("DOMContentLoaded", () => {
-    populateChatModelSelector();
-    updateHeaderModelLabel();
-    setupNavigationListeners();
-    setupSettingsModal();
-    setupSearchForm();
-    renderThreadHistory();
-    renderViewport();
-    updateTotalSpendDisplay();
-
-    // Direct Event Listener for Top-Left Header Model Indicator Pill
-    const headerPill = document.getElementById("btnHeaderModelSelect");
-    if (headerPill) {
-        headerPill.style.cursor = "pointer";
-        headerPill.addEventListener("click", (e) => {
-            e.preventDefault();
-            openSettingsModal();
-        });
-    }
-
-    // Direct Event Listeners for Homepage Suggested Cards
-    document.querySelectorAll(".suggested-card").forEach(card => {
-        card.style.cursor = "pointer";
-        card.addEventListener("click", (e) => {
-            e.preventDefault();
-            const query = card.getAttribute("data-query") || card.dataset.query;
-            if (query) {
-                const searchInput = document.getElementById("searchInput");
-                if (searchInput) searchInput.value = query;
-
-                const heroView = document.getElementById("emptyHeroView");
-                const container = document.getElementById("activeThreadContainer");
-                if (heroView) heroView.style.display = "none";
-                if (container) container.style.display = "flex";
-
-                runAsyncSearchPipeline(query);
-            }
-        });
-    });
-
-    // Handle incoming URL search query params or direct thread links (?thread=id or ?status=id or ?q=query)
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetThreadId = urlParams.get('thread');
-    const initialQuery = urlParams.get('q');
-    const statusId = urlParams.get('status');
-
-    if (statusId) {
-        const heroView = document.getElementById("emptyHeroView");
-        if (heroView) {
-            heroView.innerHTML = `
-                <div class="telemetry-status-banner" style="margin: 20px auto; max-width: 780px; padding: 22px; background: rgba(11, 15, 25, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 14px; box-shadow: 0 0 35px rgba(56, 189, 248, 0.18); text-align: left;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
-                        <h3 style="color: #38bdf8; font-size: 1.15rem; margin: 0; display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-server text-cyan"></i> Ambulkar Cortex Telemetry Report (${statusId})
-                        </h3>
-                        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #a7f3d0; padding: 4px 12px; border-radius: 9999px; font-size: 0.76rem; font-weight: 600;">
-                            ● 100% Operational
-                        </span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 16px;">
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">Cluster Source:</span><br>
-                            <strong style="color: #fff;">cortex-node-us-east-04</strong>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">System Uptime:</span><br>
-                            <strong style="color: #2dd4bf;">142d 18h (24/7 Active)</strong>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">Query Latency:</span><br>
-                            <strong style="color: #fff;">42 ms (Target: &lt;150ms)</strong>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">Ingestion Queue:</span><br>
-                            <strong style="color: #38bdf8;">0 Pending Items</strong>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <a href="https://cortex.ambulkar.com" style="color: #38bdf8; font-size: 0.82rem; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Back to Research Workspace</a>
-                    </div>
-                </div>
-            `;
-        }
-    } else if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
-        switchThread(targetThreadId);
-    } else if (initialQuery) {
-        const cleanQuery = initialQuery.replace(/\b(and\s+)?(send|post)\s+(it\s+)?to\s+(the\s+)?discord(\s+channel)?\b/gi, '').trim() || initialQuery;
-        const searchInput = document.getElementById("searchInput");
-        if (searchInput) searchInput.value = cleanQuery;
-
-        const heroView = document.getElementById("emptyHeroView");
-        const container = document.getElementById("activeThreadContainer");
-        if (heroView) heroView.style.display = "none";
-        if (container) container.style.display = "flex";
-
-        executeSearch(cleanQuery);
-    }
-
-    // Vault Lock Modal Setup
-    setupVaultModal();
-    updateVaultStatusUI();
-});
-
 function openLockModal() {
     const modal = document.getElementById("vaultLockModal");
     if (modal) modal.classList.add("active");
@@ -2068,205 +1966,6 @@ function openLockModal() {
 
 function closeLockModal() {
     const modal = document.getElementById("vaultLockModal");
-    if (modal) modal.classList.remove("active");
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById("settingsModal");
-    if (modal) modal.classList.remove("active");
-}
-
-function setupVaultModal() {
-    const btnOpen = document.getElementById("btnOpenLockModal");
-    const btnClose = document.getElementById("btnCloseVaultModal");
-    const btnCancel = document.getElementById("btnCancelVault");
-    const form = document.getElementById("vaultLockForm");
-
-    if (btnOpen) btnOpen.addEventListener("click", openLockModal);
-    if (btnClose) btnClose.addEventListener("click", closeLockModal);
-    if (btnCancel) btnCancel.addEventListener("click", closeLockModal);
-    if (form) form.addEventListener("submit", handleVaultFormSubmit);
-}
-
-function handleVaultFormSubmit(e) {
-    e.preventDefault();
-    const pass = document.getElementById("inputMasterPassphrase")?.value.trim();
-    const pin = document.getElementById("inputFactorTwoPin")?.value.trim();
-    const openrouterKey = document.getElementById("inputOpenRouterKey")?.value.trim();
-
-    if (!pass || !pin) {
-        alert("Please enter both Factor 1 (Master Passphrase) and Factor 2 (Security PIN).");
-        return;
-    }
-    if (!url || !url.startsWith("https://discord.com/api/webhooks/")) {
-        alert("⚠️ Please enter a valid Discord webhook URL (starts with https://discord.com/api/webhooks/...)");
-        return;
-    }
-
-    try {
-        const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                content: "⚡ **Cortex Market Desk Test Alert**: Connection verified! 24/7 Watchdog alerts enabled."
-            })
-        });
-
-        if (res.ok || res.status === 204) {
-            alert("✅ Discord Alert Sent Successfully! Check your Discord channel.");
-        } else {
-            alert(`⚠️ Discord responded with status: ${res.status}`);
-        }
-    } catch (e) {
-        alert(`❌ Error sending webhook: ${e.message}`);
-    }
-}
-
-function saveSettingsForm() {
-    const providerEl = document.getElementById("providerSelect");
-    const modelEl = document.getElementById("modelSelect");
-    const customModelEl = document.getElementById("customModelInput");
-    const apiKeyInput = document.getElementById("apiKeyInput");
-    const discordInput = document.getElementById("discordWebhookInput");
-
-    if (providerEl) appState.settings.provider = providerEl.value;
-    if (modelEl) appState.settings.model = modelEl.value;
-    if (customModelEl) {
-        appState.settings.customModel = customModelEl.value.trim();
-        localStorage.setItem("ambu_custom_model", appState.settings.customModel);
-    }
-    if (apiKeyInput && providerEl) {
-        const key = apiKeyInput.value.trim();
-        appState.settings.apiKeys.openrouter = key;
-        localStorage.setItem("ambu_key_openrouter", key);
-    }
-    if (discordInput) {
-        localStorage.setItem("ambu_discord_webhook", discordInput.value.trim());
-    }
-
-    localStorage.setItem("ambu_provider", appState.settings.provider || "openrouter");
-    localStorage.setItem("ambu_model", appState.settings.model || "openrouter/auto");
-    updateHeaderModelLabel();
-    populateChatModelSelector();
-    alert("⚙️ Settings & API Keys Saved Successfully!");
-}
-
-// Global Application Initialization Entrypoint
-document.addEventListener("DOMContentLoaded", () => {
-    populateChatModelSelector();
-    updateHeaderModelLabel();
-    setupNavigationListeners();
-    setupSettingsModal();
-    setupSearchForm();
-    renderThreadHistory();
-    renderViewport();
-    updateTotalSpendDisplay();
-
-    // Direct Event Listener for Top-Left Header Model Indicator Pill
-    const headerPill = document.getElementById("btnHeaderModelSelect");
-    if (headerPill) {
-        headerPill.style.cursor = "pointer";
-        headerPill.addEventListener("click", (e) => {
-            e.preventDefault();
-            openSettingsModal();
-        });
-    }
-
-    // Direct Event Listeners for Homepage Suggested Cards
-    document.querySelectorAll(".suggested-card").forEach(card => {
-        card.style.cursor = "pointer";
-        card.addEventListener("click", (e) => {
-            e.preventDefault();
-            const query = card.getAttribute("data-query") || card.dataset.query;
-            if (query) {
-                const searchInput = document.getElementById("searchInput");
-                if (searchInput) searchInput.value = query;
-
-                const heroView = document.getElementById("emptyHeroView");
-                const container = document.getElementById("activeThreadContainer");
-                if (heroView) heroView.style.display = "none";
-                if (container) container.style.display = "flex";
-
-                runAsyncSearchPipeline(query);
-            }
-        });
-    });
-
-    // Handle incoming URL search query params or direct thread links (?thread=id or ?status=id or ?q=query)
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetThreadId = urlParams.get('thread');
-    const initialQuery = urlParams.get('q');
-    const statusId = urlParams.get('status');
-
-    if (statusId) {
-        const heroView = document.getElementById("emptyHeroView");
-        if (heroView) {
-            heroView.innerHTML = `
-                <div class="telemetry-status-banner" style="margin: 20px auto; max-width: 780px; padding: 22px; background: rgba(11, 15, 25, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 14px; box-shadow: 0 0 35px rgba(56, 189, 248, 0.18); text-align: left;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
-                        <h3 style="color: #38bdf8; font-size: 1.15rem; margin: 0; display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-server text-cyan"></i> Ambulkar Cortex Telemetry Report (${statusId})
-                        </h3>
-                        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #a7f3d0; padding: 4px 12px; border-radius: 9999px; font-size: 0.76rem; font-weight: 600;">
-                            ● 100% Operational
-                        </span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 16px;">
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">Cluster Source:</span><br>
-                            <strong style="color: #fff;">cortex-node-us-east-04</strong>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">System Uptime:</span><br>
-                            <strong style="color: #2dd4bf;">142d 18h (24/7 Active)</strong>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">Query Latency:</span><br>
-                            <strong style="color: #fff;">42 ms (Target: &lt;150ms)</strong>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 8px;">
-                            <span style="color: #94a3b8; font-size: 0.75rem;">Ingestion Queue:</span><br>
-                            <strong style="color: #38bdf8;">0 Pending Items</strong>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <a href="https://cortex.ambulkar.com" style="color: #38bdf8; font-size: 0.82rem; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Back to Research Workspace</a>
-                    </div>
-                </div>
-            `;
-        }
-    } else if (targetThreadId && appState.threads.some(t => t.id === targetThreadId)) {
-        switchThread(targetThreadId);
-    } else if (initialQuery) {
-        const cleanQuery = initialQuery.replace(/\b(and\s+)?(send|post)\s+(it\s+)?to\s+(the\s+)?discord(\s+channel)?\b/gi, '').trim() || initialQuery;
-        const searchInput = document.getElementById("searchInput");
-        if (searchInput) searchInput.value = cleanQuery;
-
-        const heroView = document.getElementById("emptyHeroView");
-        const container = document.getElementById("activeThreadContainer");
-        if (heroView) heroView.style.display = "none";
-        if (container) container.style.display = "flex";
-
-        executeSearch(cleanQuery);
-    }
-
-    // Vault Lock Modal Setup
-    setupVaultModal();
-    updateVaultStatusUI();
-});
-
-function openLockModal() {
-    const modal = document.getElementById("vaultLockModal");
-    if (modal) modal.classList.add("active");
-}
-
-function closeLockModal() {
-    const modal = document.getElementById("vaultLockModal");
-    if (modal) modal.classList.remove("active");
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById("settingsModal");
     if (modal) modal.classList.remove("active");
 }
 
@@ -2303,7 +2002,7 @@ function handleVaultFormSubmit(e) {
 
     updateVaultStatusUI();
     closeLockModal();
-    alert("🔓 Dual-Lock Security Vault Authenticated & Unlocked for this device!");
+    alert("Dual-Lock Security Vault Authenticated & Unlocked for this device!");
 }
 
 function updateVaultStatusUI() {
@@ -2323,19 +2022,6 @@ function updateVaultStatusUI() {
             pillEl.style.borderColor = "rgba(245, 158, 11, 0.35)";
             pillEl.style.color = "#fbbf24";
         }
-    }
-}
-
-function clearWorkspaceHistory() {
-    if (confirm("Clear all search history and token spend logs from Cortex?")) {
-        appState.threads = [];
-        appState.activeThreadId = null;
-        appState.totalSessionSpend = 0.0;
-        localStorage.removeItem("ambu_threads");
-        localStorage.removeItem("ambu_total_spend");
-        updateTotalSpendDisplay();
-        renderThreadHistory();
-        renderViewport();
     }
 }
 
@@ -2360,4 +2046,8 @@ window.clearWorkspaceHistory = clearWorkspaceHistory;
 window.testOpenRouterApiKeyNow = testOpenRouterApiKeyNow;
 window.toggleApiKeyVisibility = toggleApiKeyVisibility;
 window.testDiscordWebhook = testDiscordWebhook;
+window.fetchLatestModelsAuto = fetchLatestModelsAuto;
+window.toggleWatchdogState = toggleWatchdogState;
+window.toggleSourcesDrawer = toggleSourcesDrawer;
+window.toggleWorkflowDetails = toggleWorkflowDetails;
 window.executeSearch = executeSearch;
