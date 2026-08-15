@@ -527,11 +527,11 @@ function toggleWatchdogState() {
     if (isWatchdogActive) {
         if (btn) btn.classList.add("active");
         if (icon) icon.className = "fa-solid fa-bell text-teal";
-        if (label) label.textContent = "24/7 Watchdog: Active (Discord)";
+        if (label) label.textContent = "Track Topic: Active (Discord)";
     } else {
         if (btn) btn.classList.remove("active");
         if (icon) icon.className = "fa-solid fa-bell-slash";
-        if (label) label.textContent = "24/7 Watchdog: Off";
+        if (label) label.textContent = "Track Topic: Off";
     }
 }
 
@@ -549,7 +549,7 @@ async function testDiscordWebhook() {
 
     try {
         const payload = {
-            content: "🔔 **Ambulkar Cortex 24/7 Watchdog Test Alert**\nYour 24/7 Background Watchdog notification pipeline is 100% operational! Live updates will ping here automatically.\n\n🔗 Dashboard: https://cortex.ambulkar.com"
+            content: "🔔 **Ambulkar Cortex Topic Tracker Alert**\nYour background topic tracking pipeline is active! Major news and breakthrough developments will ping here automatically.\n\n🔗 Dashboard: https://cortex.ambulkar.com"
         };
 
         const res = await fetch(webhookUrl, {
@@ -749,16 +749,16 @@ async function runAsyncSearchPipeline(userQuery) {
         thread.cumulativeCostUSD += (synthesisResult.costUSD || 0.00015);
         thread.isWatchdogActive = isWatchdogActive;
 
-        // Render 24/7 Watchdog Cumulative Cost Banner inside answer
+        // Render Topic Tracking Cumulative Cost Banner inside answer
         const costBannerHTML = `
             <div class="thread-watchdog-cost-card" style="margin: 14px 0; padding: 10px 14px; background: rgba(56, 189, 248, 0.07); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
                     <i class="fa-solid fa-calculator text-cyan"></i>
-                    <span><strong>24/7 Thread Cost Tracker:</strong> <strong style="color: #38bdf8;">$${thread.cumulativeCostUSD.toFixed(5)} USD</strong> (${thread.totalRuns} total runs)</span>
+                    <span><strong>Topic Tracking Cost:</strong> <strong style="color: #38bdf8;">$${thread.cumulativeCostUSD.toFixed(5)} USD</strong> (${thread.totalRuns} total runs)</span>
                 </div>
                 ${thread.isWatchdogActive ? `
                     <button type="button" onclick="stopThreadWatchdog('${thread.id}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
-                        <i class="fa-solid fa-stop"></i> Stop 24/7 Watchdog
+                        <i class="fa-solid fa-stop"></i> Stop Tracking Topic
                     </button>
                 ` : `
                     <span style="font-size: 0.72rem; color: #94a3b8;"><i class="fa-solid fa-circle-check text-teal"></i> Single Search Run</span>
@@ -1662,7 +1662,7 @@ function renderThreadHistory() {
                     <i class="fa-regular fa-message text-muted" style="margin-right:5px;"></i> ${t.title}
                 </span>
                 <div style="display: flex; align-items: center; gap: 4px;">
-                    ${isWatchdog ? `<span title="24/7 Watchdog Active" style="font-size: 0.65rem; color: #2dd4bf; background: rgba(45,212,191,0.15); padding: 1px 5px; border-radius: 4px; font-weight: 600;"><i class="fa-solid fa-bell"></i> 24/7</span>` : ''}
+                    ${isWatchdog ? `<span title="Topic Tracking Active" style="font-size: 0.65rem; color: #2dd4bf; background: rgba(45,212,191,0.15); padding: 1px 5px; border-radius: 4px; font-weight: 600;"><i class="fa-solid fa-bell"></i> Tracking</span>` : ''}
                     <span style="font-size: 0.65rem; color: #94a3b8; font-family: monospace;" title="Cumulative Thread Cost">${costStr}</span>
                     <button class="thread-del-btn" onclick="event.stopPropagation(); deleteThread('${t.id}')" title="Delete Thread">
                         <i class="fa-solid fa-xmark"></i>
@@ -1680,7 +1680,7 @@ function stopThreadWatchdog(threadId) {
         saveThreadsToLocalStorage();
         renderThreadHistory();
         renderViewport();
-        alert("🛑 24/7 Background Watchdog stopped for this thread. Zero future background tokens will be used!");
+        alert("🛑 Topic Tracking stopped for this research memo. Zero background tokens will be used!");
     }
 }
 

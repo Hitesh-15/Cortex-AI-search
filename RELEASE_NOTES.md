@@ -38,15 +38,15 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 💎 [v3.1.0] — 2026-08-14
-### **Dual-Lock 2FA Vault & 24/7 Watchdog Automation**
+### **Dual-Lock 2FA Vault & Topic Tracker Automation**
 
 #### 🔒 Dual-Lock Web Vault
 - **AES-256 Local Encryption**: Browser-based encrypted vault with custom 2FA passphrase lock.
 - **Zero Server Tracking**: 100% client-side privacy where API keys never touch any intermediary server.
 
-#### 🤖 24/7 Background Research Watchdog
+#### 🔔 Autonomous Background Topic Tracker
 - **Autonomous Scheduled Queries**: Configurable recurring background searches (every 15 min, 1 hr, 6 hrs, 24 hrs).
-- **Discord Webhook Alerts**: Automatic push notifications of executive memos directly to Discord channels.
+- **Discord Webhook Alerts**: Automatic push notifications of executive memos directly to Discord channels whenever major news or breakthroughs break.
 - **Session Spend Ticker**: Real-time USD spend calculations based on official provider rate cards.
 
 ---
