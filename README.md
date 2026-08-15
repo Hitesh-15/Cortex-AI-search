@@ -1,105 +1,98 @@
-# Ambulkar Cortex 🧠
+# Cortex 🧠
 
-> **Frontier AI Search Engine & Multi-Model Neural Gateway**  
-> Custom Domain: [cortex.ambulkar.com](https://cortex.ambulkar.com)
+> **Frontier AI Search Engine, Deep Web Knowledge Aggregator & Parallel Multi-Model Reasoning Gateway**  
+> Live App: [cortex.ambulkar.com](https://cortex.ambulkar.com) • [Release Notes](RELEASE_NOTES.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
-[![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20JS-blue.svg)](https://developer.mozilla.org/)
-[![AI: Frontier LLMs](https://img.shields.io/badge/AI-Multi--Model%20Gateway-cyan.svg)](#-features)
-[![Vibe Coding](https://img.shields.io/badge/Vibe%20Coding-AI%20Pair%20Programmed-emerald.svg)](#-vibe-coding--architectural-highlights)
+[![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B-blue.svg)](https://developer.mozilla.org/)
+[![AI: Multi-Model Gateway](https://img.shields.io/badge/AI-Parallel%20Multi--Model%20Routing-cyan.svg)](#-features)
+[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v3.2.0-emerald.svg)](RELEASE_NOTES.md)
 
-Ambulkar Cortex is a state-of-the-art AI search engine and reasoning gateway. It aggregates real-time web citations, agentic deep reasoning, and cost-aware multi-model execution across frontier LLMs.
+Cortex is a state-of-the-art AI search engine and executive research memo platform. It synthesizes real-time facts across **10 to 20+ verified web sources**, executes parallel multi-model reasoning across frontier LLMs, and maintains 100% client-side privacy.
 
 ---
 
-## 🏗 Architecture & Agentic Workflow
+## 🏗 Architecture & Research Pipeline
 
 ```mermaid
 flowchart TD
-    User(["User Search Prompt"]) --> Classifier["Effort & Query Classifier Agent"]
-    Classifier --> FocusMode{"Focus Mode Router"}
+    User(["User Research Query"]) --> Classifier["Effort & Focus Mode Classifier Agent"]
     
-    FocusMode -->|All Web| ExtractDDG["DuckDuckGo Real-Time Search Engine"]
-    FocusMode -->|Academic Papers| SearchArxiv["Targeted ArXiv, PubMed & Nature Search"]
-    FocusMode -->|Code & Repos| SearchGithub["Targeted GitHub, StackOverflow & MDN Search"]
-    FocusMode -->|Financial Markets| SearchSEC["Targeted SEC EDGAR & Yahoo Finance Search"]
-    FocusMode -->|Writing & Creative| CreativeSynthesizer["Structured Creative Synthesis Engine"]
+    Classifier --> MultiCrawler["Deep Parallel Web Crawler"]
+    MultiCrawler --> DDG["DuckDuckGo Instant API"]
+    MultiCrawler --> Wiki["Wikipedia Live OpenSearch API"]
+    MultiCrawler --> HN["HackerNews / Tech Algolia API"]
+    MultiCrawler --> DomainIdx["Global Indices (Reuters, Bloomberg, ArXiv, SEC, Nature, GitHub)"]
     
-    ExtractDDG --> MultiModelGateway["Multi-Model Provider Router"]
-    SearchArxiv --> MultiModelGateway
-    SearchGithub --> MultiModelGateway
-    SearchSEC --> MultiModelGateway
-    CreativeSynthesizer --> MultiModelGateway
+    DDG --> SourcesAggregator["20+ Verified Sources Aggregator & Deduplicator"]
+    Wiki --> SourcesAggregator
+    HN --> SourcesAggregator
+    DomainIdx --> SourcesAggregator
     
-    MultiModelGateway -->|Default Free Route| FreeNeuralRoute["Ambulkar Engine (Gemini Free Neural)"]
-    MultiModelGateway -->|Gemini API| Gemini3["Google Gemini 3.6 / 3.1 Pro"]
-    MultiModelGateway -->|OpenAI API| GPT5["OpenAI GPT-5.6 Sol / Terra"]
-    MultiModelGateway -->|Claude API| Claude5["Anthropic Claude 5 Sonnet / Opus"]
+    SourcesAggregator --> Router{"Frontier Model Router"}
     
-    FreeNeuralRoute -->|Quota Busy Fallback| LocalSynthesizer["Local Citation Synthesizer"]
-    FreeNeuralRoute --> Telemetry["Estimated Token & USD Spend Telemetry"]
-    LocalSynthesizer --> Telemetry
-    Gemini3 --> Telemetry
-    GPT5 --> Telemetry
-    Claude5 --> Telemetry
+    Router -->|Parallel Pipeline| Stage1["Stage 1: Fast Factual Extraction (Gemini 3.7 Flash)"]
+    Stage1 --> Stage2["Stage 2: Deep Mathematical Reasoning & Synthesis (Claude Sonnet 5)"]
     
-    Telemetry --> UI["Interactive Citations & Responsive Chat View"]
+    Router -->|Standard Route| SingleModel["Frontier Model (Gemini 3.7 / GPT-4o / Claude 5 / OpenRouter Auto)"]
+    Router -->|Free Engine| FreeNeural["Cortex Free Neural Engine"]
+    
+    Stage2 --> MemoAssembler["Executive Research Memo Assembler"]
+    SingleModel --> MemoAssembler
+    FreeNeural --> MemoAssembler
+    
+    MemoAssembler --> CleanUI["Content-First UI (Compact Sources Strip + Natural Inline Citations)"]
+    MemoAssembler --> DiscordDispatch["Discord Executive Alert Dispatcher"]
 ```
 
 ---
 
 ## ✨ Key Features
 
-- ⚡ **Ambulkar Engine (Free Neural)**: Out-of-the-box 100% free live neural AI search powered by Gemini 3.6 Flash (zero user key required).
-- 🧠 **Frontier Multi-Model Router**: Native routing for GPT-5.6 (Sol / Terra), Gemini 3.6 Flash / 3.1 Pro, Claude 5 (Sonnet / Opus), Kimi K3, GLM 5.2, Grok 4.5, and Nemotron 3 Ultra.
-- 🎯 **Targeted Focus Search Modes**: Real-time domain search for All Web, Academic Papers (arXiv/PubMed), Code Repos (GitHub/StackOverflow), and Financial Markets (SEC EDGAR/Yahoo Finance).
-- 🎨 **Dynamic Hero Query Suggestions**: Interactive, context-aware query suggestion cards that update automatically per Focus Mode.
-- 📱 **Ultra-Clean Responsive Mobile UI**: Perplexity-style slide-over navigation drawer, single-row search bar controls, and compact typography scaling for all phone and tablet viewports.
-- 💰 **Cost & Token Telemetry**: Real-time estimated USD spend ticker calculated based on published provider rate cards ($ USD / 1M tokens).
-- 🔒 **100% Local Privacy Guarantee**: All API keys, search queries, and chat history remain exclusively inside the user's browser `localStorage`. Zero server tracking.
+- 🌐 **Deep Web Crawler (20+ Sources per Query)**: Simultaneously crawls and cross-references DuckDuckGo, Wikipedia, HackerNews, Reuters, Bloomberg, ArXiv, MIT Technology Review, Nature, SEC EDGAR, GitHub, StackOverflow, and PubMed.
+- 🎨 **Perplexity-Style Clean UX**:
+  - **Answer-First Viewport**: Executive memos are 100% visible at the top immediately with zero scrolling.
+  - **Compact Inline Sources Strip (36px)**: Displays top verified chips alongside an on-demand slide-out sources drawer for all 20+ references.
+  - **Natural Inline Citations**: Seamless clickable superscript citations (`[1]`, `[2]`, `[5]`) embedded directly in text without bracket clutter.
+- ⚡ **Parallel Multi-Model Execution**: Supports chaining fast extraction models (e.g. Gemini 3.7 Flash) into deep reasoning models (e.g. Claude Sonnet 5) for ultra-accurate synthesis.
+- 📊 **Post-Query Executed Model Telemetry**: Automatically displays the exact model executed by the gateway, prompt/completion tokens, and estimated USD spend calculated from official rate cards.
+- 🔒 **Dual-Lock 2FA Vault & Local Privacy**: AES-256 local browser encryption for API keys. Zero server tracking, zero cloud key storage.
+- 🤖 **24/7 Autonomous Watchdog**: Background research monitoring with automatic push alerts dispatched to Discord webhook channels.
+- 📱 **Ultra-Responsive Dark Glassmorphic Design**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JavaScript for blazing fast load times (<50ms).
 
 ---
 
-## ⚡ Vibe Coding & Architectural Highlights
+## 📅 Release Notes & Daily Updates
 
-This repository was designed and engineered as a showcase of modern **Vibe Coding** and **GenAI Software Architecture**:
-- **Zero Heavy Framework Bloat**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JS for instant load times (<50ms).
-- **Automated Testing Suite**: Includes an automated Microsoft Edge Selenium test suite (`test_edge_automation.py`) validating DOM interactions and browser state.
-- **Client-Side Privacy Architecture**: Solves cloud security by leveraging local browser `localStorage` encryption for API keys.
+We maintain a comprehensive changelog documenting all daily, weekly, and monthly improvements:
+👉 **[View Full Release Notes & Changelog (RELEASE_NOTES.md)](RELEASE_NOTES.md)**
 
 ---
 
 ## 🚀 Quick Start
 
-1. Clone or open the repository:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/ambulkar-cortex.git
-   cd ambulkar-cortex
+   git clone https://github.com/Hitesh-15/Cortex-AI-search.git
+   cd Cortex-AI-search
    ```
 2. Serve locally with any static web server:
    ```bash
-   python -m http.server 8000
+   python -m http.server 5173
    ```
-3. Open `http://localhost:8000/` in your browser.
+3. Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## 🛠 Tech Stack
+## 🧪 Automated Testing
 
-- **Frontend**: Vanilla HTML5, Modern CSS3 (Dark Glassmorphism UI), Vanilla JavaScript (ES6+).
-- **Icons & Typography**: Font Awesome 6 (Free License), Google Fonts (*Outfit*, *Plus Jakarta Sans*, *JetBrains Mono* - Open Font License).
-- **Testing**: Selenium Edge Automated Testing Suite.
-
----
-
-## 🔒 Security & API Key Privacy
-
-- **Zero Hardcoded Keys**: No API keys or secrets exist in the source code or Git history.
-- **Client-Side Storage**: All API keys entered in the UI are saved strictly in the user's local browser `localStorage`.
-- **Direct API Calls**: API calls are made directly from the user's browser to the official provider endpoints (Google Gemini, OpenAI, Anthropic, OpenRouter). No intermediate server stores or sees your keys.
+Run the automated UI test suite to verify element bindings, DOM structure, and HTTP response:
+```bash
+python test_cortex_ui.py
+```
 
 ---
 
 ## 📜 License
 
-This project is licensed under the [MIT License](LICENSE) — free to use, modify, and showcase for personal portfolios, educational demos, and open-source contributions.
+This project is licensed under the [MIT License](LICENSE) — free to use and modify for open-source contributions and portfolio showcases.
