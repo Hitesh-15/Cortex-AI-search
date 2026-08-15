@@ -12,16 +12,16 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
   - **DuckDuckGo API**: Real-time topic extraction & semantic abstracts.
   - **Wikipedia Live OpenSearch API**: Live encyclopedic definitions and historical background.
   - **HackerNews / Tech Algolia API**: Active engineering discussions, developer evaluations, and tech breaking news.
-  - **Global Intelligence Domain Catalog**: Automatic domain expansion across **Reuters, Bloomberg, MIT Technology Review, Nature, ArXiv, TechCrunch, SEC EDGAR, GitHub, StackOverflow, Yahoo Finance, MarketWatch, PubMed, and Federal Reserve Data**.
-- **Effort-Scaled Depth**:
-  - `HIGH Effort / Deep Research`: Aggregates **20+ verified live sources**.
-  - `MEDIUM Effort`: Aggregates **12+ sources**.
-  - `LOW Effort`: Aggregates **8+ sources**.
+  - **Global Intelligence Domain Catalog**: Automatic domain expansion across Reuters, Bloomberg, MIT Technology Review, Nature, ArXiv, TechCrunch, SEC EDGAR, GitHub, StackOverflow, Yahoo Finance, MarketWatch, PubMed, and Federal Reserve Data.
+- **Effort-Scaled Research Depth**:
+  - **High Effort (Deep Research)**: Aggregates 20+ verified live sources.
+  - **Medium Effort**: Aggregates 12+ verified sources.
+  - **Low Effort**: Aggregates 8+ verified sources.
 
 #### 🎨 Content-First Clean UX Redesign
 - **Answer-First Viewport**: Eliminated full-page source card grids. The synthesized research memo is now 100% visible at the top of the screen immediately upon completion with zero scrolling required.
-- **Compact Inline Sources Strip (Height: 36px)**: Displays top 3 verified source chips (such as Reuters, Bloomberg, and ArXiv) alongside an interactive `+17 more ▾` button.
-- **On-Demand Sources Drawer**: Clicking `+more` opens a slide-out overlay drawer displaying all 20+ sources with their snippets, titles, and direct external links.
+- **Compact Inline Sources Strip (Height: 36px)**: Displays top verified source chips (such as Reuters, Bloomberg, and ArXiv) alongside an expandable sources counter.
+- **On-Demand Sources Drawer**: Added an expandable slide-out overlay drawer displaying all 20+ sources with their snippets, titles, and direct external links.
 - **Natural Inline Citations**: Replaced heavy bracket clusters with subtle, clickable superscript citation numbers embedded smoothly into sentences.
 
 #### ⚡ Parallel Frontier Multi-Model Routing
@@ -32,8 +32,8 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 #### 🛠 Stability & Bug Fixes
 - **Debounce & Loop Guard**: Fixed chatbox re-submission loops and ensured search input is cleared immediately upon submission.
-- **Temporal Dead Zone Fix**: Hoisted global `appState` to prevent startup reference errors across Brave, Edge, and Chrome browsers.
-- **Safe Fallbacks**: Guaranteed synthesis text and model telemetry never evaluate to `undefined`.
+- **Temporal Dead Zone Fix**: Hoisted global app state to prevent startup reference errors across Brave, Edge, and Chrome browsers.
+- **Safe Fallbacks**: Guaranteed synthesis text and model telemetry never evaluate to undefined.
 
 ---
 
