@@ -18,6 +18,12 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
   - **Medium Effort**: Aggregates 12+ verified sources.
   - **Low Effort**: Aggregates 8+ verified sources.
 
+#### 🔥 Dynamic Trending Prompt Engine (Google News, HackerNews & ArXiv)
+- **Real-Time Live Web Ingestion**: Connected Cortex suggested prompt cards to live public web feeds (Google News Technology, Google Business & Finance, HackerNews Front Page, and Wikipedia Frontier Science).
+- **Auto-Updating Trending Prompts**: Automatically generates 4 fresh, cutting-edge research query cards per desk whenever new technological breakthroughs or market catalysts occur.
+- **Smart 3-Hour TTL Caching**: Prompts load with 0ms latency from local cache on repeat visits, while auto-refreshing in the background every 3 hours.
+- **Zero-Dependency Resilience**: Seamlessly falls back to curated baseline research templates if network feeds are offline or latency occurs.
+
 #### 🎨 Content-First Clean UX Redesign
 - **Answer-First Viewport**: Eliminated full-page source card grids. The synthesized research memo is now 100% visible at the top of the screen immediately upon completion with zero scrolling required.
 - **Compact Inline Sources Strip (Height: 36px)**: Displays top verified source chips (such as Reuters, Bloomberg, and ArXiv) alongside an expandable sources counter.

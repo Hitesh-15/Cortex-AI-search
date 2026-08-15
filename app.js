@@ -2,12 +2,47 @@
    CORTEX INTELLIGENCE - MULTI-MODEL SEARCH ENGINE & OPENROUTER GATEWAY
    ========================================================================== */
 
+// Baseline Curated Fallback Suggestions
+const FALLBACK_DESK_SUGGESTIONS = {
+    web: [
+        { icon: "fa-atom", title: "2026 AI & Quantum Breakthroughs", sub: "Real-time tech web research", query: "What are the top 2026 AI breakthroughs and quantum computing updates?" },
+        { icon: "fa-chart-pie", title: "S&P 500 vs. Inflation Benchmark", sub: "Financial market analysis", query: "Compare S&P 500 YTD return vs. Federal Reserve inflation targets" },
+        { icon: "fa-code", title: "Python Async Scraper Pipeline", sub: "Clean code & data pipeline", query: "Write a clean Python async pipeline to scrape and process API data" },
+        { icon: "fa-bolt", title: "Fusion Energy Reactor Milestones", sub: "Scientific web updates", query: "Explain how fusion energy net-gain milestones work in modern reactors" }
+    ],
+    academic: [
+        { icon: "fa-graduation-cap", title: "arXiv Transformer Research Papers", sub: "Computer Science & LLM papers", query: "Find recent arXiv papers on sparse attention transformers and LLM efficiency" },
+        { icon: "fa-dna", title: "PubMed Clinical CRISPR Trials", sub: "Biomedical peer-reviewed studies", query: "Summarize latest PubMed clinical trials on CRISPR gene editing therapies" },
+        { icon: "fa-microchip", title: "Quantum Supremacy Proofs", sub: "Physics & IEEE papers", query: "What are recent peer-reviewed paper findings on error-corrected quantum supremacy?" },
+        { icon: "fa-network-wired", title: "Neural Architecture Search (NAS)", sub: "AI arXiv repository research", query: "Search IEEE & arXiv research on automated neural architecture search (NAS)" }
+    ],
+    code: [
+        { icon: "fa-cubes", title: "Next.js 15 Server Actions & TS", sub: "Full-stack Web Dev pattern", query: "Write a production Next.js 15 Server Action with TypeScript validation" },
+        { icon: "fa-python", title: "FastAPI + PyDantic V2 Async API", sub: "Backend API implementation", query: "Show clean FastAPI code with PyDantic V2 models and WebSockets" },
+        { icon: "fa-gear", title: "Rust Tokio High-Throughput Server", sub: "Systems programming example", query: "Provide Rust tokio async TCP server example with zero-copy parsing" },
+        { icon: "fa-docker", title: "Docker Multi-Stage Optimization", sub: "DevOps & Containerization", query: "How to write a multi-stage Dockerfile for Node.js microservices under 50MB" }
+    ],
+    finance: [
+        { icon: "fa-file-invoice-dollar", title: "SEC 10-K & EDGAR Filings Analysis", sub: "Corporate financial disclosures", query: "Search SEC 10-K filings for Big Tech revenue breakdown and capital expenditure" },
+        { icon: "fa-landmark", title: "Fed Interest Rates & Treasury Yields", sub: "Macroeconomic & Bond markets", query: "Summarize current FOMC interest rate forecasts and 10-Year Treasury Yield trends" },
+        { icon: "fa-scale-balanced", title: "High Yield Savings vs S&P 500", sub: "Asset allocation benchmarks", query: "Compare high yield savings rates vs S&P 500 real inflation-adjusted returns" },
+        { icon: "fa-chart-line", title: "AI Semiconductor Earnings Metrics", sub: "Market earnings forecasts", query: "Analyze NVIDIA & TSMC quarterly earnings margins and GPU demand forecasts" }
+    ],
+    writing: [
+        { icon: "fa-pen-nib", title: "Executive Summary & Pitch Deck", sub: "Business & Startup writing", query: "Write a compelling 1-page executive summary for an AI startup seed round" },
+        { icon: "fa-paper-plane", title: "Enterprise Outreach Email", sub: "B2B Sales & Communication", query: "Draft a professional high-converting outreach email to enterprise CTOs" },
+        { icon: "fa-file-code", title: "Microservice RFC Architecture Doc", sub: "Technical documentation", query: "Write a clear RFC specification document for a distributed microservice system" },
+        { icon: "fa-lightbulb", title: "Sci-Fi Quantum Memory Concept", sub: "Creative & Worldbuilding", query: "Brainstorm a sci-fi world concept where memory can be backed up to quantum storage" }
+    ]
+};
+
 // Application State (Declared at Top of Module)
 var appState = {
     threads: JSON.parse(localStorage.getItem("ambu_threads") || "[]"),
     activeThreadId: null,
     activeFocusMode: "web",
     activeEffortLevel: localStorage.getItem("ambu_effort_level") || "auto",
+    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_dynamic_prompts_v2") || "null") || FALLBACK_DESK_SUGGESTIONS,
     isProSearch: false,
     isSearching: false,
     totalSessionSpend: parseFloat(localStorage.getItem("ambu_total_spend") || "0.00000"),
@@ -115,6 +150,7 @@ function initAmbuApp() {
     updateTotalSpendDisplay();
     syncEffortPillUI();
     fetchLatestModelsAuto(false);
+    fetchDynamicTrendingPrompts(false);
 }
 
 // Populate Chat Bar Inline Model Dropdown
@@ -404,47 +440,98 @@ function renderSuggestedCards(mode) {
     const grid = document.querySelector(".suggested-cards-grid");
     if (!grid) return;
 
-    const cardsMap = {
-        web: [
-            { icon: "fa-atom", title: "2026 AI & Quantum Breakthroughs", sub: "Real-time tech web research", query: "What are the top 2026 AI breakthroughs and quantum computing updates?" },
-            { icon: "fa-chart-pie", title: "S&P 500 vs. Inflation Benchmark", sub: "Financial market analysis", query: "Compare S&P 500 YTD return vs. Federal Reserve inflation targets" },
-            { icon: "fa-code", title: "Python Async Scraper Pipeline", sub: "Clean code & data pipeline", query: "Write a clean Python async pipeline to scrape and process API data" },
-            { icon: "fa-bolt", title: "Fusion Energy Reactor Milestones", sub: "Scientific web updates", query: "Explain how fusion energy net-gain milestones work in modern reactors" }
-        ],
-        academic: [
-            { icon: "fa-graduation-cap", title: "arXiv Transformer Research Papers", sub: "Computer Science & LLM papers", query: "Find recent arXiv papers on sparse attention transformers and LLM efficiency" },
-            { icon: "fa-dna", title: "PubMed Clinical CRISPR Trials", sub: "Biomedical peer-reviewed studies", query: "Summarize latest PubMed clinical trials on CRISPR gene editing therapies" },
-            { icon: "fa-microchip", title: "Quantum Supremacy Proofs", sub: "Physics & IEEE papers", query: "What are recent peer-reviewed paper findings on error-corrected quantum supremacy?" },
-            { icon: "fa-network-wired", title: "Neural Architecture Search (NAS)", sub: "AI arXiv repository research", query: "Search IEEE & arXiv research on automated neural architecture search (NAS)" }
-        ],
-        code: [
-            { icon: "fa-cubes", title: "Next.js 15 Server Actions & TS", sub: "Full-stack Web Dev pattern", query: "Write a production Next.js 15 Server Action with TypeScript validation" },
-            { icon: "fa-python", title: "FastAPI + PyDantic V2 Async API", sub: "Backend API implementation", query: "Show clean FastAPI code with PyDantic V2 models and WebSockets" },
-            { icon: "fa-gear", title: "Rust Tokio High-Throughput Server", sub: "Systems programming example", query: "Provide Rust tokio async TCP server example with zero-copy parsing" },
-            { icon: "fa-docker", title: "Docker Multi-Stage Optimization", sub: "DevOps & Containerization", query: "How to write a multi-stage Dockerfile for Node.js microservices under 50MB" }
-        ],
-        finance: [
-            { icon: "fa-file-invoice-dollar", title: "SEC 10-K & EDGAR Filings Analysis", sub: "Corporate financial disclosures", query: "Search SEC 10-K filings for Big Tech revenue breakdown and capital expenditure" },
-            { icon: "fa-landmark", title: "Fed Interest Rates & Treasury Yields", sub: "Macroeconomic & Bond markets", query: "Summarize current FOMC interest rate forecasts and 10-Year Treasury Yield trends" },
-            { icon: "fa-scale-balanced", title: "High Yield Savings vs S&P 500", sub: "Asset allocation benchmarks", query: "Compare high yield savings rates vs S&P 500 real inflation-adjusted returns" },
-            { icon: "fa-chart-line", title: "AI Semiconductor Earnings Metrics", sub: "Market earnings forecasts", query: "Analyze NVIDIA & TSMC quarterly earnings margins and GPU demand forecasts" }
-        ],
-        writing: [
-            { icon: "fa-pen-nib", title: "Executive Summary & Pitch Deck", sub: "Business & Startup writing", query: "Write a compelling 1-page executive summary for an AI startup seed round" },
-            { icon: "fa-paper-plane", title: "Enterprise Outreach Email", sub: "B2B Sales & Communication", query: "Draft a professional high-converting outreach email to enterprise CTOs" },
-            { icon: "fa-file-code", title: "Microservice RFC Architecture Doc", sub: "Technical documentation", query: "Write a clear RFC specification document for a distributed microservice system" },
-            { icon: "fa-lightbulb", title: "Sci-Fi Quantum Memory Concept", sub: "Creative & Worldbuilding", query: "Brainstorm a sci-fi world concept where memory can be backed up to quantum storage" }
-        ]
-    };
+    const suggestions = (appState.dynamicSuggestions && appState.dynamicSuggestions[mode]) 
+        ? appState.dynamicSuggestions[mode] 
+        : (FALLBACK_DESK_SUGGESTIONS[mode] || FALLBACK_DESK_SUGGESTIONS.web);
 
-    const cards = cardsMap[mode] || cardsMap.web;
-    grid.innerHTML = cards.map(c => `
+    grid.innerHTML = suggestions.map(c => `
         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
             <i class="fa-solid ${c.icon} suggested-card-icon"></i>
             <div class="suggested-card-text">${c.title}</div>
             <div class="suggested-card-sub">${c.sub}</div>
         </div>
     `).join('');
+}
+
+// Dynamic Trending Engine: Fetches real-time trending topics from Google News, HackerNews, Wikipedia & Financial RSS
+async function fetchDynamicTrendingPrompts(forceRefresh = false) {
+    const lastFetch = parseInt(localStorage.getItem("cortex_dynamic_prompts_ts") || "0", 10);
+    const now = Date.now();
+    const THREE_HOURS = 3 * 60 * 60 * 1000;
+
+    // Use cached prompts if younger than 3 hours unless force refreshed
+    if (!forceRefresh && (now - lastFetch < THREE_HOURS) && appState.dynamicSuggestions) {
+        return;
+    }
+
+    function cleanHeadline(t) {
+        if (!t) return "";
+        return t.replace(/\s+[-|–—]\s+[A-Za-z0-9\s.]+$/, "").trim();
+    }
+
+    try {
+        const newSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
+
+        const [gNewsRes, hnRes, gBizRes, wikiRes] = await Promise.allSettled([
+            fetch("https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fheadlines%2Fsection%2Ftopic%2FTECHNOLOGY"),
+            fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=6"),
+            fetch("https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fheadlines%2Fsection%2Ftopic%2FBUSINESS"),
+            fetch("https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=frontier+artificial+intelligence+OR+quantum+computing&format=json&origin=*")
+        ]);
+
+        // Process Google Tech News
+        if (gNewsRes.status === "fulfilled" && gNewsRes.value.ok) {
+            const gData = await gNewsRes.value.json().catch(() => null);
+            if (gData && Array.isArray(gData.items) && gData.items.length >= 2) {
+                const t0 = cleanHeadline(gData.items[0].title);
+                const t1 = cleanHeadline(gData.items[1].title);
+                if (t0) newSuggestions.web[0] = { icon: "fa-globe", title: t0.length > 50 ? t0.substring(0, 47) + "..." : t0, sub: "Live Trending • Google News", query: `Provide a comprehensive research briefing and verified facts on: ${t0}` };
+                if (t1) newSuggestions.web[1] = { icon: "fa-atom", title: t1.length > 50 ? t1.substring(0, 47) + "..." : t1, sub: "Live Trending • Google News", query: `Detailed technical analysis and market implications of: ${t1}` };
+            }
+        }
+
+        // Process HackerNews Front Page
+        if (hnRes.status === "fulfilled" && hnRes.value.ok) {
+            const hnData = await hnRes.value.json().catch(() => null);
+            if (hnData && Array.isArray(hnData.hits) && hnData.hits.length >= 2) {
+                const h0 = cleanHeadline(hnData.hits[0].title);
+                const h1 = cleanHeadline(hnData.hits[1].title);
+                if (h0) newSuggestions.web[2] = { icon: "fa-bolt", title: h0.length > 50 ? h0.substring(0, 47) + "..." : h0, sub: "Trending Discussion • HackerNews", query: `Analyze developer consensus and technical breakthroughs for: ${h0}` };
+                if (h1) newSuggestions.code[0] = { icon: "fa-code", title: h1.length > 50 ? h1.substring(0, 47) + "..." : h1, sub: "Live Dev Trending • HackerNews", query: `Technical architecture breakdown and code implementation for: ${h1}` };
+            }
+        }
+
+        // Process Google Business & Finance News
+        if (gBizRes.status === "fulfilled" && gBizRes.value.ok) {
+            const bData = await gBizRes.value.json().catch(() => null);
+            if (bData && Array.isArray(bData.items) && bData.items.length >= 2) {
+                const b0 = cleanHeadline(bData.items[0].title);
+                const b1 = cleanHeadline(bData.items[1].title);
+                if (b0) newSuggestions.finance[0] = { icon: "fa-chart-line", title: b0.length > 50 ? b0.substring(0, 47) + "..." : b0, sub: "Live Market Catalyst • Google Finance", query: `Financial analysis, corporate disclosures, and earnings impact of: ${b0}` };
+                if (b1) newSuggestions.writing[0] = { icon: "fa-pen-nib", title: b1.length > 50 ? b1.substring(0, 47) + "..." : b1, sub: "Macro Strategy Memo • Global Business", query: `Draft an executive strategic memo evaluating the market impact of: ${b1}` };
+            }
+        }
+
+        // Process Wikipedia Frontier Science & Academic Research
+        if (wikiRes.status === "fulfilled" && wikiRes.value.ok) {
+            const wData = await wikiRes.value.json().catch(() => null);
+            if (wData && wData.query && Array.isArray(wData.query.search) && wData.query.search.length >= 2) {
+                const w0 = wData.query.search[0].title;
+                const w1 = wData.query.search[1].title;
+                if (w0) newSuggestions.academic[0] = { icon: "fa-graduation-cap", title: `${w0} Frontier Research`, sub: "Peer-Reviewed & Academic Papers", query: `Search latest IEEE and arXiv peer-reviewed research papers on: ${w0}` };
+                if (w1) newSuggestions.academic[1] = { icon: "fa-microchip", title: `${w1} Architecture`, sub: "Scientific Papers & Benchmarks", query: `Find experimental proofs and published literature regarding: ${w1}` };
+            }
+        }
+
+        appState.dynamicSuggestions = newSuggestions;
+        localStorage.setItem("cortex_dynamic_prompts_v2", JSON.stringify(newSuggestions));
+        localStorage.setItem("cortex_dynamic_prompts_ts", Date.now().toString());
+
+        // Re-render hero cards with live trending topics
+        renderSuggestedCards(appState.activeFocusMode || "web");
+    } catch (err) {
+        console.warn("Dynamic trending feed sync error (using baseline fallback):", err);
+    }
 }
 
 function setEffortLevel(effort) {
@@ -2050,4 +2137,6 @@ window.fetchLatestModelsAuto = fetchLatestModelsAuto;
 window.toggleWatchdogState = toggleWatchdogState;
 window.toggleSourcesDrawer = toggleSourcesDrawer;
 window.toggleWorkflowDetails = toggleWorkflowDetails;
+window.fetchDynamicTrendingPrompts = fetchDynamicTrendingPrompts;
+window.renderSuggestedCards = renderSuggestedCards;
 window.executeSearch = executeSearch;
