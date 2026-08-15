@@ -57,6 +57,7 @@ flowchart TD
 - ⚡ **Parallel Multi-Model Execution**: Supports chaining fast extraction models (e.g. Gemini 3.7 Flash) into deep reasoning models (e.g. Claude Sonnet 5) for ultra-accurate synthesis.
 - 📊 **Post-Query Executed Model Telemetry**: Automatically displays the exact model executed by the gateway, prompt/completion tokens, and estimated USD spend calculated from official rate cards.
 - 🔒 **Dual-Lock 2FA Vault & Local Privacy**: AES-256 local browser encryption for API keys. Zero server tracking, zero cloud key storage.
+- 🔥 **Dynamic Trending Prompt Engine**: Real-time ingestion from Google News, HackerNews, and Wikipedia that auto-updates suggested research prompt cards with live breakthroughs so queries never get stale.
 - 🔔 **Autonomous Topic Tracker**: Continuous background monitoring that dispatches instant Discord alerts whenever major news or breakthroughs break on your tracked topics.
 - 📱 **Ultra-Responsive Dark Glassmorphic Design**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JavaScript for blazing fast load times (<50ms).
 
