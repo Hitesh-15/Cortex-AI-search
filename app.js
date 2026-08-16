@@ -897,8 +897,9 @@ async function runAsyncSearchPipeline(userQuery) {
         localStorage.setItem("ambu_total_spend", appState.totalSessionSpend.toString());
         updateTotalSpendDisplay();
 
-        // Related Follow-up Questions
-        const relatedQuestions = generateRelatedQuestions(userQuery, appState.activeFocusMode);
+        // Related Follow-up Questions (Dynamically Contextualized from Answer, Sources & Thread History)
+        const previousSteps = thread.steps || [];
+        const relatedQuestions = generateRelatedQuestions(userQuery, appState.activeFocusMode, synthesisResult.answerHTML, sources, previousSteps);
         renderRelatedQuestions(stepElement, relatedQuestions);
 
         thread.steps.push({
@@ -1771,40 +1772,151 @@ async function callClaudeProvider(query, sources, model, apiKey) {
     }
 }
 
-async function callOpenRouterProvider(query, sources, model, apiKey) {
-    try {
-        const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey.trim()}` },
-            body: JSON.stringify({
-                model: model,
-                messages: [{ role: "user", content: `Synthesize clean HTML answer for query: "${query}" using sources:\n${sourceContext}` }]
-            })
-        });
-        if (!res.ok) throw new Error("OpenRouter API request failed");
-        const data = await res.json();
-        const rawText = data.choices?.[0]?.message?.content || "";
-        return formatAIResponseHTML(rawText);
-    } catch (e) {
-        return `<span class="text-red"><i class="fa-solid fa-xmark"></i> OpenRouter API Note: ${e.message}</span><br>` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
+// Clean Query Core Subject Extractor (Strips artificial prompt prefixes & noise)
+function extractCoreSubject(rawQuery) {
+    if (!rawQuery) return "this topic";
+    let q = rawQuery.trim();
+
+    // Strip common AI prompt wrappers & dynamic trending prefix phrases
+    const prefixPatterns = [
+        /^financial analysis,\s*corporate disclosures,\s*and earnings impact of:\s*/i,
+        /^detailed technical analysis and market implications of:\s*/i,
+        /^provide a comprehensive research briefing and market overview for:\s*/i,
+        /^analyze developer consensus and technical breakthroughs regarding:\s*/i,
+        /^search for recent research,\s*breakthroughs,\s*and analysis on:\s*/i,
+        /^what are the top 2026 ai breakthroughs and\s*/i,
+        /^explain how\s*/i,
+        /^what are\s*/i,
+        /^how does\s*/i,
+        /^summarize\s*/i
+    ];
+
+    for (const pat of prefixPatterns) {
+        q = q.replace(pat, '');
     }
+
+    // Strip trailing punctuation
+    q = q.replace(/[?.!]+$/, '').trim();
+
+    // If query is still long, take the most salient clause
+    if (q.length > 80) {
+        const parts = q.split(/[,:;–—\-]/);
+        if (parts[0] && parts[0].trim().length > 15) {
+            q = parts[0].trim();
+        }
+    }
+
+    return q || rawQuery.replace(/[?.!]+$/, '').trim();
 }
 
-// Related Questions Generator
-function generateRelatedQuestions(query, focusMode) {
-    return [
-        `What are the key technical risks associated with ${query}?`,
-        `How does this compare to alternative approaches in 2026?`,
-        `What are the long-term growth and adoption projections?`
-    ];
+// Dynamic Context-Aware Follow-up Questions Generator
+function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [], previousSteps = []) {
+    // 1. Check if LLM embedded custom follow-up questions in output
+    if (answerHTML) {
+        const followupsMatch = answerHTML.match(/<div class="cortex-followups"[^>]*>(.*?)<\/div>/is);
+        if (followupsMatch && followupsMatch[1]) {
+            const parsed = followupsMatch[1].split('|').map(s => s.trim().replace(/^[\d\.\-\*\s]+/, '')).filter(s => s.length > 10);
+            if (parsed.length >= 3) {
+                return parsed.slice(0, 3);
+            }
+        }
+    }
+
+    const coreSubject = extractCoreSubject(query);
+
+    // 2. Extract salient entities & keywords from answer HTML and sources
+    const entities = [];
+    if (answerHTML) {
+        // Extract terms inside strong tags
+        const strongMatches = answerHTML.match(/<strong>([^<]+)<\/strong>/gi) || [];
+        strongMatches.forEach(m => {
+            const clean = m.replace(/<\/?strong>/gi, '').trim().replace(/[:.,]+$/, '');
+            if (clean.length > 3 && clean.length < 35 && !/^(executive summary|key takeaways|forward outlook|strategic outlook|summary|breakthroughs|conclusion|overview)$/i.test(clean)) {
+                entities.push(clean);
+            }
+        });
+    }
+
+    if (sources && sources.length > 0) {
+        sources.slice(0, 4).forEach(s => {
+            if (s.title) {
+                const cleanT = s.title.replace(/\s+[-|–—]\s+.*$/, '').trim();
+                if (cleanT.length > 5 && cleanT.length < 40 && cleanT.toLowerCase() !== coreSubject.toLowerCase()) {
+                    entities.push(cleanT);
+                }
+            }
+        });
+    }
+
+    const uniqueEntities = [...new Set(entities)].filter(e => e.toLowerCase() !== coreSubject.toLowerCase());
+    const topEntity = uniqueEntities[0] || "";
+    const secondEntity = uniqueEntities[1] || "";
+
+    // 3. Collect previously asked follow-up questions in this thread to ensure zero repetition
+    const seenQuestions = new Set();
+    if (Array.isArray(previousSteps)) {
+        previousSteps.forEach(step => {
+            if (step.related && Array.isArray(step.related)) {
+                step.related.forEach(q => seenQuestions.add(q.toLowerCase()));
+            }
+            if (step.query) seenQuestions.add(step.query.toLowerCase());
+        });
+    }
+    const currentStepCount = previousSteps.length;
+
+    // 4. Domain-Specific Dynamic Question Pools
+    let questionPool = [];
+
+    if (focusMode === "finance") {
+        questionPool = [
+            `What are the projected balance sheet impacts and margin headwinds from ${coreSubject}?`,
+            `How are institutional investors and central banks hedging against ${coreSubject}?`,
+            `What is the consensus analyst price target and EPS forecast adjustment for companies exposed to ${coreSubject}?`,
+            topEntity ? `How will ${topEntity} specifically affect the quarterly guidance and supply chain costs?` : `What are the primary leading economic indicators signaling a pivot in ${coreSubject}?`,
+            `How does the current market response compare to previous inflationary/monetary cycles?`,
+            `What are the downside tail risks and worst-case macroeconomic scenarios over the next 12 months?`
+        ];
+    } else if (focusMode === "academic" || focusMode === "code") {
+        questionPool = [
+            `What are the primary architectural bottlenecks and algorithmic trade-offs in ${coreSubject}?`,
+            topEntity ? `How does ${topEntity} benchmark against state-of-the-art alternative implementations in 2026?` : `What do recent peer-reviewed arXiv/IEEE publications conclude about ${coreSubject}?`,
+            `What are the key open research questions and theoretical constraints remaining for ${coreSubject}?`,
+            `How can this approach be optimized for low-latency, distributed production workloads?`,
+            `What empirical reproducibility challenges have researchers identified with ${coreSubject}?`,
+            secondEntity ? `What is the integration pathway between ${coreSubject} and ${secondEntity}?` : `What security vulnerabilities or edge cases exist in ${coreSubject}?`
+        ];
+    } else {
+        // Market & Web general
+        questionPool = [
+            `What are the immediate market and consumer ramifications of ${coreSubject}?`,
+            topEntity ? `What regulatory policies or government interventions are being considered for ${topEntity}?` : `What regulatory frameworks and international policy responses are emerging for ${coreSubject}?`,
+            `What are the strongest dissenting arguments and counter-perspectives from industry specialists?`,
+            `How is this expected to reshape competitive dynamics heading into 2027?`,
+            secondEntity ? `What role does ${secondEntity} play in accelerating or mitigating ${coreSubject}?` : `What are the key technological catalysts required to drive widespread adoption?`,
+            `What are the long-term societal and economic ripple effects forecast over the next 3 to 5 years?`
+        ];
+    }
+
+    // Filter out previously seen questions and pick top 3 unique questions with step-based rotation
+    const finalQuestions = [];
+
+    // Offset starting index based on thread iteration so sequential searches on the same topic always get fresh angles
+    const offset = currentStepCount % questionPool.length;
+    for (let i = 0; i < questionPool.length && finalQuestions.length < 3; i++) {
+        const candidate = questionPool[(offset + i) % questionPool.length];
+        if (!finalQuestions.includes(candidate)) {
+            finalQuestions.push(candidate);
+        }
+    }
+
+    return finalQuestions;
 }
 
 function renderRelatedQuestions(parentContainer, questions) {
     const wrapper = document.createElement("div");
     wrapper.className = "related-questions-wrapper";
     wrapper.innerHTML = `
-        <span class="related-label"><i class="fa-solid fa-lightbulb text-gold"></i> Ambu Suggested Follow-up Searches:</span>
+        <span class="related-label"><i class="fa-solid fa-lightbulb text-cyan"></i> Cortex Suggested Follow-up Searches:</span>
         <div class="related-chips">
             ${questions.map(q => `
                 <button class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}')">
