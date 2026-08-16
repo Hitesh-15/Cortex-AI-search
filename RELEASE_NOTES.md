@@ -4,6 +4,16 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.6.3] — 2026-08-16
+### **Decluttered Mobile Viewport Architecture & Touch-Optimized Swipeable Trays**
+
+#### 📱 Minimalist Mobile Architecture (Web vs Mobile Separation)
+- **Swipeable Mobile Hero Pill Tray**: Replaced tall, multi-card grids on mobile devices with a sleek horizontal swipeable action tray. Desktop maintains the full multi-card research view, while mobile gets a fast, zero-clutter interface.
+- **Floating Mobile Search Capsule**: Engineered a touch-friendly rounded search capsule with a circular send button (`↑`), streamlined effort pill, and horizontal `@model` quick-tag strip.
+- **Spacious Mobile Reading Layout**: Optimized mobile research answer margins, header cards, and source strips with zero horizontal overflow and fluid vertical rhythm.
+
+---
+
 ## 🌟 [v3.6.2] — 2026-08-16
 ### **Bento Executive Memo Layout, Auto-Section Chunking & Welcoming Visual Hierarchy**
 
