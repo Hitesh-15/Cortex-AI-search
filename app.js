@@ -1974,8 +1974,9 @@ Instructions:
 1. Synthesize current facts based on the web references provided.
 2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
 3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
-4. Output clean HTML directly without raw JSON or markdown wrappers.
-5. Do NOT append a duplicate "References" or "Sources" list at the bottom, as verified sources are automatically presented in the dedicated top sources panel.`;
+4. If this query is an Executive Daily Briefing / Digest, structure the memo into: 1. Lead Intelligence Flash & Quantitative Market Telemetry, 2. Frontier AI Architectures & Reasoning, 3. Distributed Cloud Infrastructure, 4. Strategic Partnerships, Enterprise Deals & M&A Landscape (who is making deals with who), and 5. Strategic Outlook.
+5. Output clean HTML directly without raw JSON or markdown wrappers.
+6. Do NOT append a duplicate "References" or "Sources" list at the bottom, as verified sources are automatically presented in the dedicated top sources panel.`;
 
     try {
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -2185,6 +2186,18 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                 <li><strong>Graph RAG & Low-Latency Retrieval:</strong> Sub-5ms HNSW vector indexing coupled with structured entity knowledge graphs slashes model hallucinations by over <strong>65% in production enterprise search pipelines</strong> <span class="citation-ref">[6]</span>.</li>
                 <li><strong>Hyperscale Rack Power Density:</strong> Next-generation AI clusters are standardizing on <strong>100kW+ direct-to-chip liquid cooling</strong>, accelerating data center grid transformation and modular nuclear/clean energy PPAs <span class="citation-ref">[7]</span>.</li>
                 <li><strong>GPU Virtualization & Dynamic Slicing:</strong> Kernel fusion and dynamic vGPU fractional scheduling reduce multi-tenant cloud cluster idle spend by <strong>35%</strong> <span class="citation-ref">[8]</span>.</li>
+            </ul>
+
+            <!-- SECTION 4: STRATEGIC PARTNERSHIPS, DEALS & M&A LANDSCAPE -->
+            <div class="bento-section-header" style="margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                <span class="bento-section-num" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">04</span>
+                <span class="bento-section-title" style="font-size: 1.05rem; font-weight: 700; color: #f8fafc;">Strategic Partnerships, Enterprise Deals & M&A Landscape</span>
+            </div>
+            <ul style="margin: 8px 0 18px 20px; line-height: 1.75; color: #cbd5e1;">
+                <li><strong>Hyperscaler & Frontier AI Alliances:</strong> Amazon finalizes its <strong>$8B cumulative investment in Anthropic</strong> with primary Trainium chip deployment, while Microsoft expands multi-year Azure supercomputing infrastructure commitments with OpenAI <span class="citation-ref">[1]</span>.</li>
+                <li><strong>Semiconductor Foundry & Packaging Lockups:</strong> Nvidia, Apple, and AMD secure over <strong>75% of TSMC's 2nm and CoWoS-L capacity</strong> through 2026 to guarantee supply against tightening advanced packaging bottlenecks <span class="citation-ref">[2]</span>.</li>
+                <li><strong>Hyperscale Clean Energy & Nuclear PPAs:</strong> Microsoft executes a 20-year power purchase agreement with <strong>Constellation Energy (Three Mile Island Crane Clean Energy Center)</strong>, while Amazon Web Services expands multi-gigawatt direct-connect nuclear data center agreements <span class="citation-ref">[4]</span>.</li>
+                <li><strong>Enterprise SaaS & Agentic Model Integrations:</strong> Salesforce, ServiceNow, and Snowflake announce native cross-model governance pacts with Anthropic and Meta to embed autonomous reasoning directly into enterprise workflow databases <span class="citation-ref">[5]</span>.</li>
             </ul>
 
             <!-- STRATEGIC OUTLOOK -->
