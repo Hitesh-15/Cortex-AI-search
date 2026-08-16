@@ -141,7 +141,7 @@ let PROVIDER_MODELS = {
         { id: "deep", name: "🧠 Claude Sonnet 5 / Claude 3.7 Sonnet" },
         { id: "fast", name: "⚡ Gemini 3.7 Flash / Gemini 2.5 Flash" },
         { id: "grok", name: "🎯 Grok 4.6 / Grok 3 / Grok 2" },
-        { id: "gpt4", name: "🔮 OpenAI o3-mini / GPT-4o" },
+        { id: "chatgpt", name: "🔮 ChatGPT (OpenAI o3-mini)" },
         { id: "deepseek", name: "🧪 DeepSeek R1 / V3" },
         { id: "parallel", name: "🚀 Parallel: Gemini Flash ➔ Claude Sonnet" },
         { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
@@ -255,7 +255,7 @@ async function fetchLatestModelsAuto(isManual = false) {
                     { id: "deep", name: "🧠 Claude Sonnet 5 / Claude 3.7 Sonnet" },
                     { id: "fast", name: "⚡ Gemini 3.7 Flash / Gemini 2.5 Flash" },
                     { id: "grok", name: "🎯 Grok 4.6 / Grok 3 / Grok 2" },
-                    { id: "gpt4", name: "🔮 OpenAI o3-mini / GPT-4o" },
+                    { id: "chatgpt", name: "🔮 ChatGPT (OpenAI o3-mini)" },
                     { id: "deepseek", name: "🧪 DeepSeek R1 / V3" },
                     { id: "parallel", name: "🚀 Parallel: Gemini Flash ➔ Claude Sonnet" },
                     { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
@@ -613,7 +613,7 @@ const AT_MENTION_MODELS = [
     { tag: "@batch", name: "📉 Gemini 3.7 Flash (Batch)", desc: "50% Discounted Topic Tracking" },
     { tag: "@thinking", name: "🏆 Ensemble Thinking (Best-of-N Frontier Tournament)", desc: "Evaluates Opus 5, Sonnet 5, Gemini Thinking & DeepSeek R1" },
     { tag: "@grok", name: "🎯 Grok 4.6", desc: "Real-time Indexing & Sentiment" },
-    { tag: "@gpt4", name: "🔮 OpenAI o3-mini / GPT-4o", desc: "High-Precision Algorithmic Coding" },
+    { tag: "@chatgpt", name: "🔮 ChatGPT (OpenAI o3-mini)", desc: "Frontier Algorithmic Coding & High-Precision Logic" },
     { tag: "@deepseek", name: "🧪 DeepSeek R1", desc: "671B MoE Open Reasoning" },
     { tag: "@free", name: "🎁 100% Free Neural Tier", desc: "Zero Token Spend" }
 ];
@@ -998,8 +998,8 @@ async function runAsyncSearchPipeline(userQuery) {
             targetModelOverride = "google/gemini-3.7-flash";
         } else if (rawTag === "grok" || rawTag === "xai" || rawTag === "grok4" || rawTag === "grok3" || rawTag === "grok2") {
             targetModelOverride = "x-ai/grok-4.6";
-        } else if (rawTag === "gpt4" || rawTag === "gpt4o" || rawTag === "openai" || rawTag === "o3" || rawTag === "chatgpt") {
-            targetModelOverride = "openai/gpt-4o";
+        } else if (rawTag === "chatgpt" || rawTag === "chat" || rawTag === "openai" || rawTag === "o3" || rawTag === "o3mini" || rawTag === "gpt4" || rawTag === "gpt4o" || rawTag === "gpt5") {
+            targetModelOverride = "openai/o3-mini";
         } else if (rawTag === "deepseek" || rawTag === "r1" || rawTag === "reasoner") {
             targetModelOverride = "deepseek/deepseek-r1";
         } else if (rawTag === "parallel" || rawTag === "pipeline" || rawTag === "chain") {
@@ -1541,7 +1541,7 @@ function formatSingleModelName(rawId) {
     if (id === "fast") return "Gemini 3.7 Flash";
     if (id === "deep") return "Claude Sonnet 5";
     if (id === "grok") return "Grok 4.6";
-    if (id === "gpt4") return "GPT-4o";
+    if (id === "chatgpt" || id === "gpt4" || id === "openai") return "ChatGPT (o3-mini)";
     if (id === "deepseek") return "DeepSeek R1";
     if (id === "free") return "Nemotron 3.5 Lightning";
     if (id === "ambulkar-cortex-engine" || id === "local") return "Cortex Neural Engine";
@@ -1562,16 +1562,10 @@ function formatSingleModelName(rawId) {
         "google/gemini-2.5-flash": "Gemini 2.5 Flash",
         "google/gemini-2.0-flash": "Gemini 2.0 Flash",
         "google/gemini-2.0-flash-001": "Gemini 2.0 Flash",
-        "google/gemini-2.0-flash-001": "Gemini 2.0 Flash",
-        "anthropic/claude-3.7-sonnet": "Claude 3.7 Sonnet",
-        "anthropic/claude-3.7-sonnet:thinking": "Claude 3.7 Sonnet (Thinking)",
-        "anthropic/claude-3.5-sonnet": "Claude 3.5 Sonnet",
-        "anthropic/claude-sonnet-5": "Claude Sonnet 5",
-        "anthropic/claude-3-opus": "Claude 3 Opus",
-        "openai/gpt-4o": "GPT-4o",
-        "openai/gpt-4o-mini": "GPT-4o Mini",
-        "openai/o3-mini": "o3-mini",
-        "openai/o1": "o1 Reasoning",
+        "openai/o3-mini": "ChatGPT (o3-mini)",
+        "openai/gpt-4o": "ChatGPT (GPT-4o)",
+        "openai/gpt-4o-mini": "ChatGPT (GPT-4o Mini)",
+        "openai/o1": "ChatGPT (o1 Reasoning)",
         "x-ai/grok-2": "Grok 2",
         "x-ai/grok-3": "Grok 3",
         "x-ai/grok-4.6": "Grok 4.6",
@@ -1756,9 +1750,9 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
     } else if (tier === "grok") {
         primaryModel = "x-ai/grok-4.6";
         fallbackChain = ["x-ai/grok-4.6", "x-ai/grok-3", "x-ai/grok-2", "x-ai/grok-beta"];
-    } else if (tier === "gpt4" || tier === "openai") {
-        primaryModel = "openai/gpt-4o";
-        fallbackChain = ["openai/gpt-4o", "openai/o3-mini", "openai/gpt-4o-mini"];
+    } else if (tier === "chatgpt" || tier === "gpt4" || tier === "openai") {
+        primaryModel = "openai/o3-mini";
+        fallbackChain = ["openai/o3-mini", "openai/gpt-4o", "openai/gpt-4o-mini"];
     } else if (tier === "deepseek") {
         primaryModel = "deepseek/deepseek-r1";
         fallbackChain = ["deepseek/deepseek-r1", "deepseek/deepseek-chat"];

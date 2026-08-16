@@ -53,7 +53,7 @@ flowchart TD
         Router -->|@parallel Pipeline| Stage1["Stage 1: Fast Fact Extraction\n(Gemini 3.7 Flash)"]
         Stage1 --> Stage2["Stage 2: Deep Synthesis & Reasoning\n(Claude Sonnet 5)"]
         Router -->|@compare Mode| Compare50["50/50 Dual Split View\n(Gemini 3.7 Flash vs Claude Sonnet 5)"]
-        Router -->|Direct Tag Route| SingleModel["Frontier LLMs\n(Claude Opus 5 • Claude Sonnet 5 • Gemini 3.7 Flash • Grok 4.6 • GPT-4o • DeepSeek R1)"]
+        Router -->|Direct Tag Route| SingleModel["Frontier LLMs\n(Claude Opus 5 • Claude Sonnet 5 • Gemini 3.7 Flash • Grok 4.6 • ChatGPT o3-mini • DeepSeek R1)"]
         Router -->|@free Tier| FreeNeural["Cortex Free Neural Engine"]
     end
 
