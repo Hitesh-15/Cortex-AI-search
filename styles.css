@@ -3138,13 +3138,95 @@ select option:checked {
     line-height: 1.55;
 }
 
+/* Sparklines & Mini Market Telemetry Grid */
+.sparkline-pill-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.sparkline-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 4px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.sparkline-pill.up {
+    color: #34d399;
+    border-color: rgba(52, 211, 153, 0.25);
+    background: rgba(52, 211, 153, 0.06);
+}
+
+.sparkline-pill.down {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.25);
+    background: rgba(248, 113, 113, 0.06);
+}
+
+.sparkline-pill.neutral {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.06);
+}
+
+.sparkline-svg {
+    width: 32px;
+    height: 14px;
+    overflow: visible;
+}
+
+/* Accordion Drawer in Bento Cards */
+.digest-accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, margin-top 0.25s ease;
+    opacity: 0;
+    margin-top: 0;
+}
+
+.digest-accordion-body.open {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 10px;
+}
+
 .digest-card-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     padding-top: 10px;
-    margin-top: 4px;
+    margin-top: 6px;
+}
+
+.btn-digest-accordion {
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    transition: all 0.15s ease !important;
+    outline: none !important;
+    font-family: inherit !important;
+}
+
+.btn-digest-accordion:hover {
+    color: #f1f5f9 !important;
+    background: rgba(255, 255, 255, 0.06) !important;
 }
 
 .btn-digest-deepdive {
