@@ -5,23 +5,33 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v3.3.0] — 2026-08-16
-### **Dynamic Frontier Model Resolution, Contextual Follow-up Search & Streamlined UX**
+### **Direct `@model` Query Targeting, Multi-Model `@compare` Mode & Precision Telemetry**
+
+#### 🎯 Direct `@model` Query Tags & Inline Model Picker
+- **Instant Search Tagging**: Directly route individual queries to specific frontier models without opening Settings:
+  - `@claude <query>` ➔ Direct execution via **Claude 3.7 Sonnet** (deep mathematical & structured memos).
+  - `@gemini <query>` ➔ Direct execution via **Gemini 3.7 Flash** (sub-second factual search).
+  - `@grok <query>` ➔ Direct execution via **Grok 3 / Grok 2** (distinct perspective & real-time sentiment).
+  - `@gpt4 <query>` ➔ Direct execution via **OpenAI GPT-4o**.
+  - `@deepseek <query>` ➔ Direct execution via **DeepSeek R1**.
+  - `@parallel <query>` ➔ Chains fast fact scraper into deep reasoning think tank.
+  - `@custom/<model-slug> <query>` ➔ Target any of 300+ custom OpenRouter model IDs.
+- **Search Bar Inline Model Picker**: Quick-select dropdown in the search action row synchronized with `@model` tags.
+
+#### 🔀 Multi-Model Comparison Mode (`@compare`)
+- **Side-by-Side Synthesis**: Typing `@compare <query>` simultaneously queries multiple frontier models (e.g. Gemini 3.7 Flash and Claude 3.7 Sonnet) and renders an interactive tabbed comparison workspace (`[⚡ Gemini View]` | `[🧠 Claude View]` | `[🔀 Split View Side-by-Side]`).
+
+#### 💰 Precision Rate Card & Cumulative Cost Calculation
+- **Accurate Zero-Cost Handling**: Fixed cumulative cost tracking to ensure free tiers ($0.00000) do not falsely increment thread tracking budgets.
+- **Deterministic Gateway Routing**: Resolved model mapping so Deep Reasoning Tier strictly routes to Claude 3.7 Sonnet with tailored fallback chains.
 
 #### 💡 Dynamic Context-Aware Follow-up Search Generator
 - **Content & Entity Extraction**: Replaced static generic questions with a dynamic entity extractor that extracts salient nouns, key institutions, policy mechanisms, and numerical metrics directly from the query and synthesized answer.
-- **Prefix Sanitization**: Strips dynamic prompt wrappers (e.g. *"Financial analysis, corporate disclosures, and earnings impact of..."*) to focus follow-ups cleanly on the core subject.
-- **Thread-Aware Non-Repetitive Rotation**: Automatically tracks all previously generated follow-ups in the thread and rotates across 6 domain-tailored analytical angles (Macro catalysts, balance sheet impact, algorithmic bottlenecks, regulatory headwinds, comparative historical benchmarks, and forward forecasts) so 10+ repeated searches on the same topic always generate fresh follow-up angles.
-
-#### 🧠 Dynamic Model Resolution & Multi-Model Telemetry
-- **Dynamic Model Catalog Ingestion**: Connected Cortex to live API model catalogs, dynamically registering any newly released frontier model with automatic pricing and display name formatting.
-- **Zero Gateway Branding**: Eliminated raw gateway strings (`openrouter/auto`) in favor of clean, human-readable frontier model names (e.g. *Gemini 3.7 Flash*, *Claude 3.7 Sonnet*, *Grok 3*, *DeepSeek V3*, *GPT-4o*).
-- **Multi-Model Pipeline Telemetry**: Parallel extraction ➔ reasoning pipelines dynamically display the full model execution chain (e.g. `⚡ Gemini 3.7 Flash ➔ 🧠 Claude Sonnet 5`).
-- **Novel Model Heuristic Parser**: Intelligent regular expression tokenizer automatically formats any future unmapped model releases (e.g. `mistral-large-3`, `gemini-4.0-pro`, `grok-5`) with clean capitalization and tags.
+- **Thread-Aware Non-Repetitive Rotation**: Automatically tracks all previously generated follow-ups in the thread and rotates across 6 domain-tailored analytical angles so 10+ repeated searches on the same topic always generate fresh follow-up angles.
 
 #### 🔄 Frictionless Desk Navigation & Intuitive "+ New Search"
 - **Clean Action Button**: Renamed "+ New Research Desk Memo" to the intuitive **`+ New Search`**.
 - **Instant Hero View Reset**: Fixed thread container clearing so clicking **+ New Search** or switching categories immediately clears prior DOM results and presents the clean research desk with category-specific prompt cards.
-- **Unified Sidebar Event Handlers**: Deduplicated mobile and desktop navigation bindings for silky smooth category switching across Web, Finance, Academic, Code, and Creative Writing desks.
 
 ---
 

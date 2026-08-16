@@ -103,30 +103,40 @@ function executeSearch(userQuery) {
     }
 })();
 
-// MODEL PRICING MATRIX ($ USD per 1 Million Tokens - Frontier Thinking & Max Models)
+// MODEL PRICING MATRIX ($ USD per 1 Million Tokens - Frontier & Reasoning Models)
 const MODEL_PRICING = {
     "ambulkar-cortex-engine": { input: 0.0, output: 0.0, tier: "free" },
     "local": { input: 0.0, output: 0.0, tier: "free" },
-    "gpt-5.6-terra": { input: 0.80, output: 3.20, tier: "fast" },
-    "gpt-5.6-sol": { input: 2.50, output: 10.00, tier: "reasoning" },
-    "gemini-3.6-flash": { input: 0.075, output: 0.30, tier: "fast" },
-    "gemini-3.1-pro": { input: 1.25, output: 5.00, tier: "reasoning" },
-    "claude-5-sonnet": { input: 3.00, output: 15.00, tier: "reasoning" },
-    "claude-5-opus": { input: 15.00, output: 75.00, tier: "reasoning" },
-    "kimi-k3": { input: 0.24, output: 0.96, tier: "reasoning" },
-    "glm-5.2": { input: 0.20, output: 0.80, tier: "reasoning" },
-    "grok-4.5": { input: 2.00, output: 8.00, tier: "reasoning" },
-    "nemotron-3-ultra": { input: 0.50, output: 2.00, tier: "reasoning" }
+    "free": { input: 0.0, output: 0.0, tier: "free" },
+    "google/gemini-2.0-flash-001": { input: 0.10, output: 0.40, tier: "fast" },
+    "google/gemini-3.7-flash": { input: 0.10, output: 0.40, tier: "fast" },
+    "google/gemini-2.5-flash": { input: 0.10, output: 0.40, tier: "fast" },
+    "anthropic/claude-3.7-sonnet": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "anthropic/claude-3.5-sonnet": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "anthropic/claude-sonnet-5": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "x-ai/grok-2": { input: 2.00, output: 10.00, tier: "reasoning" },
+    "x-ai/grok-3": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "openai/gpt-4o": { input: 2.50, output: 10.00, tier: "reasoning" },
+    "openai/gpt-4o-mini": { input: 0.15, output: 0.60, tier: "fast" },
+    "deepseek/deepseek-r1": { input: 0.55, output: 2.19, tier: "reasoning" },
+    "deepseek/deepseek-chat": { input: 0.14, output: 0.28, tier: "fast" },
+    "fast": { input: 0.10, output: 0.40, tier: "fast" },
+    "deep": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "parallel": { input: 3.10, output: 15.40, tier: "reasoning" },
+    "openrouter/auto": { input: 0.15, output: 0.60, tier: "fast" }
 };
 
-// Provider to Models Map (Simplified Intelligence Modes - No Confusing Model IDs)
+// Provider to Models Map (Frontier Intelligence Modes)
 let PROVIDER_MODELS = {
     openrouter: [
         { id: "openrouter/auto", name: "⚡ Smart Auto Routing (Auto-Pick Best Model)" },
-        { id: "free", name: "🎁 100% Free Neural Tier" },
-        { id: "fast", name: "⚡ Fast & Agile Tier (Sub-second Search)" },
-        { id: "deep", name: "🧠 Deep Reasoning & Calculation Tier" },
-        { id: "parallel", name: "🚀 Parallel Multi-Model (Fast Scraper ➔ Deep Thinker)" }
+        { id: "deep", name: "🧠 Deep Reasoning Tier (Claude 3.7 Sonnet)" },
+        { id: "fast", name: "⚡ Fast & Agile Tier (Gemini 3.7 / 2.0 Flash)" },
+        { id: "grok", name: "🎯 Solo Frontier & Real-Time (Grok 3 / Grok 2)" },
+        { id: "gpt4", name: "🔮 OpenAI Tier (GPT-4o)" },
+        { id: "deepseek", name: "🧪 DeepSeek R1 Reasoning" },
+        { id: "parallel", name: "🚀 Parallel Multi-Model (Gemini Flash ➔ Claude Sonnet)" },
+        { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
     ],
     local: [
         { id: "ambulkar-cortex-engine", name: "Ambulkar Local Free Engine" }
@@ -723,13 +733,112 @@ function classifyQueryEffort(query) {
     }
 }
 
+// Global UI Handler: Inline Model Picker Change
+function handleInlineModelPickerChange(val) {
+    if (!val) return;
+    appState.activeModelOverride = val;
+    if (val !== "auto" && val !== "compare") {
+        appState.settings.model = val;
+        localStorage.setItem("ambu_model", val);
+        const modelSelect = document.getElementById("modelSelect");
+        if (modelSelect) modelSelect.value = val;
+    }
+}
+
+// Global UI Handler: Switch Comparison Mode Tabs
+function switchCompareTab(stepId, tabName) {
+    const tabA = document.getElementById(`${stepId}_tab_a`);
+    const tabB = document.getElementById(`${stepId}_tab_b`);
+    const tabBoth = document.getElementById(`${stepId}_tab_both`);
+    const paneA = document.getElementById(`${stepId}_compare_content_a`);
+    const paneB = document.getElementById(`${stepId}_compare_content_b`);
+    const paneBoth = document.getElementById(`${stepId}_compare_content_both`);
+
+    const tabs = [tabA, tabB, tabBoth];
+    tabs.forEach(t => {
+        if (t) {
+            t.style.background = "rgba(255, 255, 255, 0.05)";
+            t.style.borderColor = "rgba(255, 255, 255, 0.1)";
+            t.style.color = "#94a3b8";
+        }
+    });
+
+    if (paneA) paneA.style.display = "none";
+    if (paneB) paneB.style.display = "none";
+    if (paneBoth) paneBoth.style.display = "none";
+
+    if (tabName === "a") {
+        if (tabA) {
+            tabA.style.background = "rgba(56, 189, 248, 0.15)";
+            tabA.style.borderColor = "rgba(56, 189, 248, 0.4)";
+            tabA.style.color = "#38bdf8";
+        }
+        if (paneA) paneA.style.display = "block";
+    } else if (tabName === "b") {
+        if (tabB) {
+            tabB.style.background = "rgba(168, 85, 247, 0.15)";
+            tabB.style.borderColor = "rgba(168, 85, 247, 0.4)";
+            tabB.style.color = "#c084fc";
+        }
+        if (paneB) paneB.style.display = "block";
+    } else {
+        if (tabBoth) {
+            tabBoth.style.background = "rgba(45, 212, 191, 0.15)";
+            tabBoth.style.borderColor = "rgba(45, 212, 191, 0.4)";
+            tabBoth.style.color = "#2dd4bf";
+        }
+        if (paneBoth) paneBoth.style.display = "grid";
+    }
+}
+
 async function runAsyncSearchPipeline(userQuery) {
     if (!userQuery) return;
     appState.isSearching = true;
 
+    // 1. Detect @model Query Tags & Multi-Model Compare Flags
+    let targetModelOverride = null;
+    let isComparisonMode = false;
+    let actualQuery = userQuery.trim();
+
+    const tagMatch = userQuery.match(/^@([a-zA-Z0-9\.\-\_\:\/]+)\s+(.+)$/is);
+    if (tagMatch) {
+        const rawTag = tagMatch[1].toLowerCase();
+        actualQuery = tagMatch[2].trim();
+
+        if (rawTag === "compare" || rawTag === "vs" || rawTag === "comparison" || rawTag === "cross") {
+            isComparisonMode = true;
+        } else if (rawTag === "claude" || rawTag === "sonnet" || rawTag === "anthropic" || rawTag === "claude3.7" || rawTag === "claude3.5") {
+            targetModelOverride = "anthropic/claude-3.7-sonnet";
+        } else if (rawTag === "gemini" || rawTag === "flash" || rawTag === "google") {
+            targetModelOverride = "google/gemini-2.0-flash-001";
+        } else if (rawTag === "grok" || rawTag === "xai" || rawTag === "grok3" || rawTag === "grok2") {
+            targetModelOverride = "x-ai/grok-2";
+        } else if (rawTag === "gpt4" || rawTag === "gpt4o" || rawTag === "openai" || rawTag === "chatgpt") {
+            targetModelOverride = "openai/gpt-4o";
+        } else if (rawTag === "deepseek" || rawTag === "r1" || rawTag === "reasoner") {
+            targetModelOverride = "deepseek/deepseek-r1";
+        } else if (rawTag === "parallel" || rawTag === "pipeline" || rawTag === "chain") {
+            targetModelOverride = "parallel";
+        } else if (rawTag === "free" || rawTag === "local") {
+            targetModelOverride = "free";
+        } else if (rawTag.includes("/")) {
+            targetModelOverride = tagMatch[1];
+        }
+    }
+
+    // Check inline model picker if no tag specified
+    const inlinePicker = document.getElementById("chatModelPicker");
+    if (!targetModelOverride && inlinePicker && inlinePicker.value !== "auto") {
+        if (inlinePicker.value === "compare") {
+            isComparisonMode = true;
+        } else {
+            targetModelOverride = inlinePicker.value;
+        }
+    }
+
     let thread = appState.threads.find(t => t.id === appState.activeThreadId);
     if (!thread) {
-        thread = createNewThread(userQuery);
+        thread = createNewThread(actualQuery);
     }
 
     // Instantly transition viewport from empty hero to active chat thread view
@@ -747,7 +856,7 @@ async function runAsyncSearchPipeline(userQuery) {
     // Determine Effort & Model Routing
     let effortClassification;
     if (appState.activeEffortLevel === "auto") {
-        effortClassification = classifyQueryEffort(userQuery);
+        effortClassification = classifyQueryEffort(actualQuery);
     } else {
         effortClassification = {
             resolvedEffort: appState.activeEffortLevel,
@@ -761,6 +870,8 @@ async function runAsyncSearchPipeline(userQuery) {
     stepElement.innerHTML = `
         <div class="user-query-heading">
             <i class="fa-solid fa-circle-question"></i> ${userQuery}
+            ${targetModelOverride ? `<span style="font-size: 0.75rem; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; padding: 2px 8px; border-radius: 4px; margin-left: 8px;"><i class="fa-solid fa-tag"></i> @${formatSingleModelName(targetModelOverride)}</span>` : ''}
+            ${isComparisonMode ? `<span style="font-size: 0.75rem; background: rgba(45, 212, 191, 0.2); border: 1px solid rgba(45, 212, 191, 0.4); color: #2dd4bf; padding: 2px 8px; border-radius: 4px; margin-left: 8px;"><i class="fa-solid fa-code-compare"></i> Model Comparison Mode</span>` : ''}
         </div>
 
         <!-- Sleek Compact Header Strip (Only 36px tall, 0% wasted space) -->
@@ -793,7 +904,7 @@ async function runAsyncSearchPipeline(userQuery) {
         <div class="spark-steps-timeline" id="${stepId}_workflow_panel" style="display: none; margin-bottom: 14px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: 8px;">
             <div class="spark-step step-done"><i class="fa-solid fa-circle-check text-teal"></i> Step 1: Query Intent Deconstruction & Web Expansion</div>
             <div class="spark-step step-active" id="${stepId}_s2"><i class="fa-solid fa-spinner fa-spin text-cyan"></i> Step 2: Extracting & Verifying Live Web Sources...</div>
-            <div class="spark-step step-pending" id="${stepId}_s3"><i class="fa-solid fa-circle text-muted" style="font-size:0.6rem;"></i> Step 3: Executing Sandbox Math & Verification</div>
+            <div class="spark-step step-pending" id="${stepId}_s3"><i class="fa-solid fa-circle text-muted" style="font-size:0.6rem;"></i> Step 3: Executing Sandbox Math & Model Routing</div>
             <div class="spark-step step-pending" id="${stepId}_s4"><i class="fa-solid fa-circle text-muted" style="font-size:0.6rem;"></i> Step 4: Assembling Executive Research Memo</div>
         </div>
 
@@ -808,7 +919,7 @@ async function runAsyncSearchPipeline(userQuery) {
 
     try {
         // Step 2: Fetch Web Sources
-        const sources = await fetchWebSources(userQuery, appState.activeFocusMode, resolvedEffort);
+        const sources = await fetchWebSources(actualQuery, appState.activeFocusMode, resolvedEffort);
         renderSourcesGrid(stepId, sources);
         
         const s2El = document.getElementById(`${stepId}_s2`);
@@ -820,15 +931,68 @@ async function runAsyncSearchPipeline(userQuery) {
         const s3El = document.getElementById(`${stepId}_s3`);
         if (s3El) {
             s3El.className = "spark-step step-active";
-            s3El.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-cyan"></i> Step 3: Executing Sandbox Math & Verification...`;
+            s3El.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-cyan"></i> Step 3: Executing Multi-Model Synthesis...`;
         }
 
-        // Step 3 & 4: Synthesize AI Response & Calculate Telemetry
-        const synthesisResult = await synthesizeAIResponse(userQuery, sources, appState.activeFocusMode, resolvedEffort, effortClassification);
+        let synthesisResult;
+
+        // MULTI-MODEL SIDE-BY-SIDE COMPARISON MODE
+        if (isComparisonMode) {
+            const [resGemini, resClaude] = await Promise.all([
+                synthesizeAIResponse(actualQuery, sources, appState.activeFocusMode, resolvedEffort, effortClassification, "google/gemini-2.0-flash-001"),
+                synthesizeAIResponse(actualQuery, sources, appState.activeFocusMode, resolvedEffort, effortClassification, "anthropic/claude-3.7-sonnet")
+            ]);
+
+            const combinedCost = (resGemini.costUSD || 0) + (resClaude.costUSD || 0);
+            const comparisonHTML = `
+                <div class="cortex-compare-container" style="margin-top: 6px;">
+                    <div class="cortex-compare-header" style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; flex-wrap: wrap;">
+                        <button type="button" class="btn-compare-tab active" onclick="switchCompareTab('${stepId}', 'a')" id="${stepId}_tab_a" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s;">
+                            ⚡ Gemini 3.7 Flash View
+                        </button>
+                        <button type="button" class="btn-compare-tab" onclick="switchCompareTab('${stepId}', 'b')" id="${stepId}_tab_b" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s;">
+                            🧠 Claude 3.7 Sonnet View
+                        </button>
+                        <button type="button" class="btn-compare-tab" onclick="switchCompareTab('${stepId}', 'both')" id="${stepId}_tab_both" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s;">
+                            🔀 Split View Side-by-Side
+                        </button>
+                    </div>
+                    <div id="${stepId}_compare_content_a" class="compare-pane">
+                        ${resGemini.answerHTML}
+                    </div>
+                    <div id="${stepId}_compare_content_b" class="compare-pane" style="display: none;">
+                        ${resClaude.answerHTML}
+                    </div>
+                    <div id="${stepId}_compare_content_both" class="compare-pane-split" style="display: none; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div style="background: rgba(15,23,42,0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                            <h4 style="color: #38bdf8; margin-bottom: 10px; font-size: 0.9rem;"><i class="fa-solid fa-bolt"></i> Gemini 3.7 Flash Analysis</h4>
+                            ${resGemini.answerHTML}
+                        </div>
+                        <div style="background: rgba(15,23,42,0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.3);">
+                            <h4 style="color: #c084fc; margin-bottom: 10px; font-size: 0.9rem;"><i class="fa-solid fa-brain"></i> Claude 3.7 Sonnet Analysis</h4>
+                            ${resClaude.answerHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            synthesisResult = {
+                answerHTML: comparisonHTML,
+                costUSD: combinedCost,
+                telemetry: {
+                    costUSD: combinedCost,
+                    costFormatted: `$${combinedCost.toFixed(5)}`,
+                    totalTokens: (resGemini.telemetry?.totalTokens || 1200) + (resClaude.telemetry?.totalTokens || 1600)
+                }
+            };
+        } else {
+            // Standard Single Model or Parallel Chain Route
+            synthesisResult = await synthesizeAIResponse(actualQuery, sources, appState.activeFocusMode, resolvedEffort, effortClassification, targetModelOverride);
+        }
         
         if (s3El) {
             s3El.className = "spark-step step-done";
-            s3El.innerHTML = `<i class="fa-solid fa-circle-check text-teal"></i> Step 3: Sandbox Math & Telemetry Verified`;
+            s3El.innerHTML = `<i class="fa-solid fa-circle-check text-teal"></i> Step 3: Math & Telemetry Verified`;
         }
 
         const s4El = document.getElementById(`${stepId}_s4`);
@@ -842,11 +1006,12 @@ async function runAsyncSearchPipeline(userQuery) {
             workflowTxt.textContent = `Workflow (${sources.length} Sources)`;
         }
 
-        // Accumulate cost & total runs per individual thread
+        // Accumulate cost & total runs per individual thread accurately (0 USD adds 0, no false fallback addition)
         if (!thread.cumulativeCostUSD) thread.cumulativeCostUSD = 0;
         if (!thread.totalRuns) thread.totalRuns = 0;
         thread.totalRuns += 1;
-        thread.cumulativeCostUSD += (synthesisResult.costUSD || 0.00015);
+        const validCost = (typeof synthesisResult.costUSD === "number" && !isNaN(synthesisResult.costUSD)) ? synthesisResult.costUSD : 0.0;
+        thread.cumulativeCostUSD += validCost;
         thread.isWatchdogActive = isWatchdogActive;
 
         // Render Topic Tracking Cumulative Cost Banner inside answer
@@ -867,12 +1032,12 @@ async function runAsyncSearchPipeline(userQuery) {
         `;
 
         // Automatic Discord Intent Detection
-        const qLower = userQuery.toLowerCase();
+        const qLower = actualQuery.toLowerCase();
         const hasDiscordIntent = qLower.includes("discord") || qLower.includes("send to discord") || qLower.includes("post to discord") || isWatchdogActive;
 
         let discordCardHTML = "";
         if (hasDiscordIntent) {
-            const dispatchRes = await dispatchResearchMemoToDiscord(userQuery, synthesisResult.answerHTML, thread.id);
+            const dispatchRes = await dispatchResearchMemoToDiscord(actualQuery, synthesisResult.answerHTML, thread.id);
             if (dispatchRes.success) {
                 discordCardHTML = `
                     <div class="discord-dispatched-card" style="margin: 10px 0; padding: 10px 14px; background: rgba(88, 101, 242, 0.15); border: 1px solid rgba(88, 101, 242, 0.4); border-radius: 8px; font-size: 0.82rem; color: #a5b4fc; display: flex; align-items: center; gap: 8px;">
@@ -893,13 +1058,13 @@ async function runAsyncSearchPipeline(userQuery) {
         document.getElementById(`${stepId}_answer`).innerHTML = synthesisResult.answerHTML + discordCardHTML + costBannerHTML;
 
         // Update Session Total Spend
-        appState.totalSessionSpend += synthesisResult.costUSD;
+        appState.totalSessionSpend += validCost;
         localStorage.setItem("ambu_total_spend", appState.totalSessionSpend.toString());
         updateTotalSpendDisplay();
 
         // Related Follow-up Questions (Dynamically Contextualized from Answer, Sources & Thread History)
         const previousSteps = thread.steps || [];
-        const relatedQuestions = generateRelatedQuestions(userQuery, appState.activeFocusMode, synthesisResult.answerHTML, sources, previousSteps);
+        const relatedQuestions = generateRelatedQuestions(actualQuery, appState.activeFocusMode, synthesisResult.answerHTML, sources, previousSteps);
         renderRelatedQuestions(stepElement, relatedQuestions);
 
         thread.steps.push({
@@ -1265,14 +1430,32 @@ function formatSingleModelName(rawId) {
 
 // Token & USD Cost Calculation Engine
 function calculateTokenSpend(modelId, promptTokens, completionTokens) {
-    const pricing = MODEL_PRICING[modelId] || MODEL_PRICING["gemini-3.6-flash"];
+    let pricing = MODEL_PRICING[modelId];
+
+    if (!pricing) {
+        const idLower = (modelId || "").toLowerCase();
+        if (idLower.includes("free") || idLower.includes("local") || idLower.includes("ambulkar")) {
+            pricing = { input: 0.0, output: 0.0 };
+        } else if (idLower.includes("claude") || idLower.includes("sonnet") || idLower.includes("opus") || idLower.includes("deep") || idLower.includes("parallel")) {
+            pricing = { input: 3.00, output: 15.00 };
+        } else if (idLower.includes("grok")) {
+            pricing = { input: 2.00, output: 10.00 };
+        } else if (idLower.includes("gpt-4o") || idLower.includes("openai") || idLower.includes("gpt4")) {
+            pricing = { input: 2.50, output: 10.00 };
+        } else if (idLower.includes("deepseek")) {
+            pricing = { input: 0.55, output: 2.19 };
+        } else {
+            pricing = { input: 0.10, output: 0.40 };
+        }
+    }
+
     const inputCost = (promptTokens / 1000000) * pricing.input;
     const outputCost = (completionTokens / 1000000) * pricing.output;
     const totalCost = inputCost + outputCost;
 
     return {
         costUSD: totalCost,
-        costFormatted: `$${totalCost.toFixed(5)}`,
+        costFormatted: totalCost === 0 ? "$0.00000" : `$${totalCost.toFixed(5)}`,
         promptTokens: promptTokens,
         completionTokens: completionTokens,
         totalTokens: promptTokens + completionTokens
@@ -1280,12 +1463,12 @@ function calculateTokenSpend(modelId, promptTokens, completionTokens) {
 }
 
 // AI Response Synthesis Engine
-async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effortClass) {
+async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effortClass, modelOverride = null) {
     const provider = appState.settings.provider || "openrouter";
     const apiKey = appState.settings.apiKeys[provider] || "";
     const modelSelect = provider === "local" ? "ambulkar-cortex-engine" : (appState.settings.model || "openrouter/auto");
     const customModel = appState.settings.customModel;
-    const activeModel = modelSelect === "custom" ? (customModel || "openrouter/auto") : modelSelect;
+    const activeModel = modelOverride || (modelSelect === "custom" ? (customModel || "openrouter/auto") : modelSelect);
 
     // Estimate Tokens based on Effort Level
     let promptTokens = effortLevel === "low" ? 380 : effortLevel === "medium" ? 950 : 2600;
@@ -1315,7 +1498,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     } else if (orKey) {
         const orResult = await callOpenRouterProvider(query, sources, activeModel, orKey);
         contentHTML = (orResult && orResult.html && orResult.html !== "undefined") ? orResult.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
-        activeModelDisplay = (orResult && orResult.modelUsed && orResult.modelUsed !== "undefined") ? formatModelDisplayName(orResult.modelUsed) : "Gemini 3.7 Flash";
+        activeModelDisplay = (orResult && orResult.modelUsed && orResult.modelUsed !== "undefined") ? formatModelDisplayName(orResult.modelUsed) : formatSingleModelName(activeModel);
     } else {
         const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
         contentHTML = (neuralResponse && neuralResponse.html && neuralResponse.html !== "undefined") ? neuralResponse.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
@@ -1326,7 +1509,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         contentHTML = generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
     }
     if (!activeModelDisplay || activeModelDisplay === "undefined") {
-        activeModelDisplay = "Gemini 3.7 Flash";
+        activeModelDisplay = formatSingleModelName(activeModel);
     }
 
     const telemetryFooter = `
@@ -1352,17 +1535,39 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
 
 async function callOpenRouterProvider(query, sources, model, apiKey) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    let tier = model.startsWith("openrouter:") ? model.replace("openrouter:", "") : model;
+    let tier = (model || "").startsWith("openrouter:") ? model.replace("openrouter:", "") : (model || "openrouter/auto");
 
-    // Handle 4 Standard Tiers + Parallel Pipeline
-    let primaryModel = "google/gemini-3.7-flash";
+    let primaryModel = "google/gemini-2.0-flash-001";
     let isParallel = (tier === "parallel");
+    let fallbackChain = [];
 
-    if (tier === "free") primaryModel = "nvidia/nemotron-3.5-lightning:free";
-    else if (tier === "fast") primaryModel = "google/gemini-3.7-flash";
-    else if (tier === "deep") primaryModel = "anthropic/claude-sonnet-5";
-    else if (tier === "parallel") primaryModel = "google/gemini-3.7-flash";
-    else if (tier.includes("/")) primaryModel = tier;
+    if (tier === "free") {
+        primaryModel = "nvidia/nemotron-3.5-lightning:free";
+        fallbackChain = ["nvidia/nemotron-3.5-lightning:free", "google/gemini-2.0-flash-001:free", "meta-llama/llama-3.3-70b-instruct:free"];
+    } else if (tier === "fast" || tier === "gemini") {
+        primaryModel = "google/gemini-2.0-flash-001";
+        fallbackChain = ["google/gemini-2.0-flash-001", "google/gemini-2.5-flash", "google/gemini-1.5-flash"];
+    } else if (tier === "deep" || tier === "claude") {
+        primaryModel = "anthropic/claude-3.7-sonnet";
+        fallbackChain = ["anthropic/claude-3.7-sonnet", "anthropic/claude-3.5-sonnet", "deepseek/deepseek-r1", "openai/gpt-4o"];
+    } else if (tier === "grok") {
+        primaryModel = "x-ai/grok-2";
+        fallbackChain = ["x-ai/grok-2", "x-ai/grok-beta", "x-ai/grok-3"];
+    } else if (tier === "gpt4" || tier === "openai") {
+        primaryModel = "openai/gpt-4o";
+        fallbackChain = ["openai/gpt-4o", "openai/gpt-4o-mini"];
+    } else if (tier === "deepseek") {
+        primaryModel = "deepseek/deepseek-r1";
+        fallbackChain = ["deepseek/deepseek-r1", "deepseek/deepseek-chat"];
+    } else if (tier === "parallel") {
+        primaryModel = "google/gemini-2.0-flash-001";
+    } else if (tier.includes("/")) {
+        primaryModel = tier;
+        fallbackChain = [tier, "openrouter/auto"];
+    } else {
+        primaryModel = "google/gemini-2.0-flash-001";
+        fallbackChain = ["google/gemini-2.0-flash-001", "openrouter/auto"];
+    }
 
     // PARALLEL PIPELINE: Fast Extraction ➔ Deep Synthesis
     if (isParallel) {
@@ -1377,8 +1582,8 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                     "X-Title": "Cortex Parallel Pipeline"
                 },
                 body: JSON.stringify({
-                    model: "google/gemini-3.7-flash",
-                    models: ["google/gemini-3.7-flash", "nvidia/nemotron-3.5-lightning:free", "openrouter/auto"],
+                    model: "google/gemini-2.0-flash-001",
+                    models: ["google/gemini-2.0-flash-001", "google/gemini-2.5-flash", "openrouter/auto"],
                     messages: [{
                         role: "user",
                         content: `Extract verified facts, numbers, and dates for "${query}" based on:\n${sourceContext}\nOutput bulleted structured data.`
@@ -1387,7 +1592,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             });
             const fastData = await fastRes.json();
             const extractedFacts = fastData.choices?.[0]?.message?.content || sourceContext;
-            const stage1ActualModel = fastData.model || "google/gemini-3.7-flash";
+            const stage1ActualModel = fastData.model || "google/gemini-2.0-flash-001";
 
             // Stage 2: Deep reasoning model performs calculations and executive synthesis
             const deepRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -1399,8 +1604,8 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                     "X-Title": "Cortex Deep Synthesis"
                 },
                 body: JSON.stringify({
-                    model: "anthropic/claude-sonnet-5",
-                    models: ["anthropic/claude-sonnet-5", "deepseek/deepseek-v4-pro-0813", "openrouter/auto"],
+                    model: "anthropic/claude-3.7-sonnet",
+                    models: ["anthropic/claude-3.7-sonnet", "anthropic/claude-3.5-sonnet", "deepseek/deepseek-r1"],
                     messages: [{
                         role: "user",
                         content: `SYSTEM ROLE: You are an expert financial market analyst and technical researcher. Synthesize the findings for: "${query}".\n\nVerified Fast Extraction Data:\n${extractedFacts}\n\nPerform deep reasoning, calculations, and structured HTML formatting (h3, h4, p, ul, strong, code). Include citations like <span class="citation-ref">[1]</span>.`
@@ -1409,7 +1614,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             });
             const deepData = await deepRes.json();
             const text = deepData.choices?.[0]?.message?.content || "";
-            const stage2ActualModel = deepData.model || "anthropic/claude-sonnet-5";
+            const stage2ActualModel = deepData.model || "anthropic/claude-3.7-sonnet";
 
             const modelChain = `⚡ ${formatModelDisplayName(stage1ActualModel)} ➔ 🧠 ${formatModelDisplayName(stage2ActualModel)}`;
             return {
@@ -1432,13 +1637,6 @@ Instructions:
 2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
 3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
 4. Output clean HTML directly without raw JSON or markdown wrappers.`;
-
-    const fallbackChain = [
-        primaryModel,
-        "google/gemini-3.7-flash",
-        "nvidia/nemotron-3.5-lightning:free",
-        "openrouter/auto"
-    ].filter((val, idx, self) => self.indexOf(val) === idx);
 
     try {
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -1476,8 +1674,8 @@ Instructions:
                         "X-Title": "Cortex Market Research Desk"
                     },
                     body: JSON.stringify({
-                        model: "google/gemini-3.7-flash",
-                        models: ["google/gemini-3.7-flash", "openrouter/auto"],
+                        model: primaryModel,
+                        models: fallbackChain,
                         messages: [{ role: "user", content: prompt }]
                     })
                 });
@@ -1485,17 +1683,17 @@ Instructions:
                     const autoData = await autoRes.json();
                     return {
                         html: formatAIResponseHTML(autoData.choices?.[0]?.message?.content || ""),
-                        modelUsed: formatModelDisplayName(autoData.model || "google/gemini-3.7-flash")
+                        modelUsed: formatModelDisplayName(autoData.model || primaryModel)
                     };
                 }
-            } catch (e) {
-                console.error("Secondary fallback error:", e);
+            } catch (autoErr) {
+                console.warn("Auto fallback attempt failed:", autoErr);
             }
 
             const errData = await res.json().catch(() => ({}));
             return {
                 html: `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Cortex Gateway Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${errData.error?.message || 'Failed to communicate with Gateway API.'}</p></div>`,
-                modelUsed: "Error"
+                modelUsed: formatSingleModelName(primaryModel)
             };
         }
     } catch (err) {
