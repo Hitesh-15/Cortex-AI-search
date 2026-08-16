@@ -34,7 +34,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
   - **Claude Sonnet 5** (`@sonnet`): Flagship hybrid reasoning, structured memos, and superior instruction-following (`anthropic/claude-sonnet-5`).
   - **Gemini 3.7 Flash** (`@gemini`): Sub-second frontier extraction workhorse with native `:batch` (50% discount) and `:thinking` reasoning modes (`google/gemini-3.7-flash`).
   - **Grok 4.6** (`@grok`): Real-time knowledge indexing, market sentiment analysis, and uncensored perspectives (`x-ai/grok-4.6`).
-  - **OpenAI o3-mini / GPT-4o** (`@gpt4`): High-precision algorithmic coding and reasoning logic (`openai/o3-mini`, `openai/gpt-4o`).
+  - **ChatGPT (OpenAI o3-mini)** (`@chatgpt`): High-precision algorithmic coding and reasoning logic (`openai/o3-mini`, `openai/gpt-4o`).
   - **DeepSeek R1** (`@deepseek`): Open-weights 671B parameter Mixture-of-Experts reasoning engine (`deepseek/deepseek-r1`).
   - **Parallel Pipeline** (`@parallel`): Chained execution (Gemini 3.7 Flash Scraper ➔ Claude Sonnet 5 Thinker).
   - **Live Dynamic Model Sync**: Real-time background sync against OpenRouter model catalog with wildcard `@custom/<slug>` routing.
