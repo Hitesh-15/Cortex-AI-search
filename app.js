@@ -405,7 +405,7 @@ function setupNavigationListeners() {
             const q = card.getAttribute("data-query") || card.dataset.query;
             if (q) {
                 const searchInput = document.getElementById("searchInput");
-                if (searchInput) searchInput.value = q;
+                if (searchInput) searchInput.value = "";
                 executeSearch(q);
             }
         });
@@ -791,9 +791,24 @@ function switchCompareTab(stepId, tabName) {
     }
 }
 
+function executeSearch(query) {
+    if (!query) return;
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.value = "";
+    }
+    runAsyncSearchPipeline(query);
+}
+
 async function runAsyncSearchPipeline(userQuery) {
     if (!userQuery) return;
     appState.isSearching = true;
+
+    // Guarantee search input box is immediately cleared
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.value = "";
+    }
 
     // 1. Detect @model Query Tags & Multi-Model Compare Flags
     let targetModelOverride = null;
