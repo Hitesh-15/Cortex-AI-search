@@ -1814,7 +1814,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                         body: JSON.stringify({
                             model: candModel,
                             messages: [
-                                { role: "system", content: "You are an elite reasoning engine. Synthesize an exhaustive, logically rigorous research briefing using clean HTML (h3, h4, p, ul, strong, code). Embed citations like <span class=\"citation-ref\">[1]</span>." },
+                                { role: "system", content: "You are an elite reasoning engine. Synthesize an exhaustive, logically rigorous research briefing using clean HTML (h3, h4, p, ul, strong, code). Embed inline citations like <span class=\"citation-ref\">[1]</span>. Do NOT output a trailing references bibliography list at the end." },
                                 { role: "user", content: `Query: "${query}"\n\nVerified Sources:\n${sourceContext}` }
                             ]
                         })
@@ -1926,7 +1926,8 @@ Instructions:
 1. Synthesize current facts based on the web references provided.
 2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
 3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
-4. Output clean HTML directly without raw JSON or markdown wrappers.`;
+4. Output clean HTML directly without raw JSON or markdown wrappers.
+5. Do NOT append a duplicate "References" or "Sources" list at the bottom, as verified sources are automatically presented in the dedicated top sources panel.`;
 
     try {
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -2179,6 +2180,10 @@ function formatAIResponseHTML(text) {
             <i class="fa-solid fa-circle-check text-teal"></i> Synthesized from verified primary web sources • ${srcText.trim()}
         </div>`;
     });
+
+    // Strip redundant trailing "References", "References referenced", or "Sources" bibliography sections
+    // (since verified web sources are already rendered in the dedicated top sources panel)
+    clean = clean.replace(/(?:<h[1-4][^>]*>|<p[^>]*>|<strong>|<div[^>]*>)?\s*(?:References referenced|References\b|Sources cited|Citations\b|Sources list)(?:<\/h[1-4]>|<\/p>|<\/strong>|<\/div>)?:?\s*(?:<ul[^>]*>[\s\S]*?<\/ul>|<ol[^>]*>[\s\S]*?<\/ol>|(?:<p[^>]*>)?\s*\[[0-9]+\][\s\S]*)/gi, '');
 
     // Convert raw citations [1], [2], [11] into styled citation pills
     clean = clean.replace(/(?<!class="citation-ref">)\[([0-9]{1,2})\]/g, '<span class="citation-ref">[$1]</span>');
