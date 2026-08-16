@@ -2118,96 +2118,146 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
         const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
         return `
-            <!-- LEAD INTELLIGENCE FLASH: MACRO & HYPERSCALER SURGE -->
-            <div class="lead-story-card" style="background: rgba(56, 189, 248, 0.08); border-left: 4px solid #38bdf8; padding: 18px 22px; border-radius: 0 10px 10px 0; margin-bottom: 22px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                    <span style="font-size: 0.78rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.8px;">
-                        <i class="fa-solid fa-bolt"></i> Lead Intelligence Flash • Global Macro & Hyperscaler Surge
-                    </span>
-                    <span style="font-size: 0.75rem; color: #94a3b8; font-family: monospace;">${todayStr}</span>
+            <div class="digest-dashboard-container">
+                <!-- LEAD FLASH BANNER -->
+                <div class="digest-lead-banner">
+                    <div class="digest-lead-top">
+                        <span class="digest-lead-badge"><i class="fa-solid fa-bolt"></i> Lead Intelligence Flash • Hyperscaler CapEx Surge</span>
+                        <span class="digest-lead-date">${todayStr}</span>
+                    </div>
+                    <h3 class="digest-lead-headline">Hyperscaler AI Infrastructure CapEx Surges Past $220B as Frontier Reasoning Reshapes Enterprise Compute</h3>
+                    <p class="digest-lead-desc">
+                        Unprecedented capital deployment across Microsoft, Alphabet, Amazon, and Meta reaches multi-year highs, while central bank rate stabilization provides sustained valuation support for high-free-cash-flow SaaS and advanced silicon.
+                    </p>
                 </div>
-                <h3 style="margin: 0 0 8px 0; color: #f8fafc; font-size: 1.15rem; font-weight: 700; line-height: 1.4;">
-                    Hyperscaler AI CapEx Surges Past $220B as Frontier Reasoning Compute Reshapes Enterprise Infrastructure
-                </h3>
-                <p style="margin: 0; font-size: 0.94rem; line-height: 1.65; color: #cbd5e1;">
-                    Global technology markets are digesting unprecedented capital allocation cycles across Microsoft, Alphabet, Amazon, and Meta, with trailing 12-month data center and silicon infrastructure investments reaching multi-year highs. Central banks signal rate stabilization, providing valuation support for high-free-cash-flow SaaS and semiconductor platforms.
-                </p>
-            </div>
 
-            <!-- SECTION 1: QUANTITATIVE MARKET & COMMODITY TELEMETRY -->
-            <div class="bento-section-header" style="margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                <span class="bento-section-num" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">01</span>
-                <span class="bento-section-title" style="font-size: 1.05rem; font-weight: 700; color: #f8fafc;">Global Markets, Equities & Capital Asset Telemetry</span>
-            </div>
-            <div class="market-ticker-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 12px 0 16px 0;">
-                <div class="ticker-box" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 8px;">
-                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">S&P 500</div>
-                    <div style="font-size: 0.98rem; font-weight: 700; color: #34d399;">5,980.40 <span style="font-size: 0.72rem;">+0.62%</span></div>
-                </div>
-                <div class="ticker-box" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 8px;">
-                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">NASDAQ-100</div>
-                    <div style="font-size: 0.98rem; font-weight: 700; color: #34d399;">21,340.10 <span style="font-size: 0.72rem;">+0.94%</span></div>
-                </div>
-                <div class="ticker-box" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 8px;">
-                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">10-YR TREASURY</div>
-                    <div style="font-size: 0.98rem; font-weight: 700; color: #38bdf8;">4.26% <span style="font-size: 0.72rem;">-3 bps</span></div>
-                </div>
-                <div class="ticker-box" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 8px;">
-                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">BRENT CRUDE</div>
-                    <div style="font-size: 0.98rem; font-weight: 700; color: #f87171;">$76.80 <span style="font-size: 0.72rem;">-1.1%</span></div>
-                </div>
-                <div class="ticker-box" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 8px;">
-                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">GOLD (XAU/USD)</div>
-                    <div style="font-size: 0.98rem; font-weight: 700; color: #fbbf24;">$2,910 <span style="font-size: 0.72rem;">+0.45%</span></div>
-                </div>
-            </div>
-            <ul style="margin: 8px 0 18px 20px; line-height: 1.75; color: #cbd5e1;">
-                <li><strong>Semiconductor Sector Rotation:</strong> Advanced packaging and foundry supply chains (TSMC, ASML, Nvidia, Broadcom) continue outperforming broader industrials on accelerating CoWoS and HBM4 tape-outs <span class="citation-ref">[1]</span>.</li>
-                <li><strong>Macroeconomic Policy & Rate Trajectory:</strong> Fixed-income yield curves reflect expectations of synchronized central bank rate moderation, lowering enterprise refinancing hurdles and cost of capital <span class="citation-ref">[2]</span>.</li>
-            </ul>
+                <!-- 2x2 SCANNABLE BENTO GRID -->
+                <div class="digest-bento-grid">
+                    <!-- CARD 01: MARKETS & CAPITAL TELEMETRY -->
+                    <div class="digest-bento-card">
+                        <div>
+                            <div class="digest-card-header">
+                                <div class="digest-card-title-group">
+                                    <span class="digest-num-pill c-cyan">01</span>
+                                    <span class="digest-card-title">Global Markets & Capital Telemetry</span>
+                                </div>
+                                <i class="fa-solid fa-chart-line text-cyan" style="font-size: 0.85rem;"></i>
+                            </div>
+                            <div class="digest-card-content" style="margin-top: 10px;">
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+                                    <span style="background: rgba(52, 211, 153, 0.12); color: #34d399; font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">S&P 500 +0.62%</span>
+                                    <span style="background: rgba(52, 211, 153, 0.12); color: #34d399; font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">NASDAQ +0.94%</span>
+                                    <span style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">10Y 4.26%</span>
+                                </div>
+                                <ul>
+                                    <li><strong>Semiconductor Outperformance:</strong> TSMC, ASML, Nvidia, and Broadcom surge on CoWoS & HBM4 tape-out demand <span class="citation-ref">[1]</span>.</li>
+                                    <li><strong>Monetary Policy:</strong> Central bank stabilization signals lower enterprise debt refinancing hurdles <span class="citation-ref">[2]</span>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: Global semiconductor capital expenditure and TSMC CoWoS supply chain')">
+                                <i class="fa-solid fa-arrow-right"></i> Explore Markets
+                            </button>
+                        </div>
+                    </div>
 
-            <!-- SECTION 2: FRONTIER AI ARCHITECTURES & TEST-TIME REASONING -->
-            <div class="bento-section-header" style="margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                <span class="bento-section-num" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">02</span>
-                <span class="bento-section-title" style="font-size: 1.05rem; font-weight: 700; color: #f8fafc;">Frontier AI Architectures, Test-Time Reasoning & Agentic Systems</span>
-            </div>
-            <ul style="margin: 8px 0 18px 20px; line-height: 1.75; color: #cbd5e1;">
-                <li><strong>Hybrid Compute & Test-Time Reasoning Scaling:</strong> Mainstream adoption of reasoning architectures (Claude 3.7 Sonnet, DeepSeek-R1, OpenAI o3-mini) proves that dynamic compute allocation at inference time reduces pre-training cluster dependencies by up to <strong>4.2x</strong> while setting new records on SWE-bench and AIME mathematical proofs <span class="citation-ref">[3]</span>.</li>
-                <li><strong>Open-Weight Model Economics:</strong> State-of-the-art open models (Llama 3.3 70B, Qwen 2.5) achieve <strong>88.4% HumanEval</strong> code benchmarks, enabling Fortune 500 private on-prem deployments at a <strong>70% discount to proprietary hosted APIs</strong> <span class="citation-ref">[4]</span>.</li>
-                <li><strong>Agentic Tool-Use & Autonomous Context:</strong> Multi-agent orchestration frameworks (MCP, autonomous tool loops) transition from experimental scripts to production systems with multi-step validation loops <span class="citation-ref">[5]</span>.</li>
-            </ul>
+                    <!-- CARD 02: FRONTIER AI & REASONING -->
+                    <div class="digest-bento-card">
+                        <div>
+                            <div class="digest-card-header">
+                                <div class="digest-card-title-group">
+                                    <span class="digest-num-pill c-purple">02</span>
+                                    <span class="digest-card-title">Frontier AI & Reasoning Models</span>
+                                </div>
+                                <i class="fa-solid fa-brain text-purple" style="font-size: 0.85rem;"></i>
+                            </div>
+                            <div class="digest-card-content" style="margin-top: 10px;">
+                                <ul>
+                                    <li><strong>Test-Time Reasoning:</strong> Claude 3.7 Sonnet, DeepSeek-R1, and o3-mini deliver <strong>4.2x compute efficiency</strong> via dynamic chain-of-thought allocation <span class="citation-ref">[3]</span>.</li>
+                                    <li><strong>Open-Weight Disruption:</strong> Llama 3.3 70B & Qwen 2.5 hit <strong>88.4% HumanEval</strong>, cutting private inference serving costs by 70% <span class="citation-ref">[4]</span>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: Test-time compute reasoning scaling in Claude 3.7 Sonnet and DeepSeek R1')">
+                                <i class="fa-solid fa-arrow-right"></i> Explore AI Frontier
+                            </button>
+                        </div>
+                    </div>
 
-            <!-- SECTION 3: CLOUD INFRASTRUCTURE, HARDWARE & LOW-LATENCY RETRIEVAL -->
-            <div class="bento-section-header" style="margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                <span class="bento-section-num" style="background: rgba(45, 212, 191, 0.15); color: #2dd4bf; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">03</span>
-                <span class="bento-section-title" style="font-size: 1.05rem; font-weight: 700; color: #f8fafc;">Distributed Cloud Infrastructure, Power Density & Vector Scale</span>
-            </div>
-            <ul style="margin: 8px 0 18px 20px; line-height: 1.75; color: #cbd5e1;">
-                <li><strong>Graph RAG & Low-Latency Retrieval:</strong> Sub-5ms HNSW vector indexing coupled with structured entity knowledge graphs slashes model hallucinations by over <strong>65% in production enterprise search pipelines</strong> <span class="citation-ref">[6]</span>.</li>
-                <li><strong>Hyperscale Rack Power Density:</strong> Next-generation AI clusters are standardizing on <strong>100kW+ direct-to-chip liquid cooling</strong>, accelerating data center grid transformation and modular nuclear/clean energy PPAs <span class="citation-ref">[7]</span>.</li>
-                <li><strong>GPU Virtualization & Dynamic Slicing:</strong> Kernel fusion and dynamic vGPU fractional scheduling reduce multi-tenant cloud cluster idle spend by <strong>35%</strong> <span class="citation-ref">[8]</span>.</li>
-            </ul>
+                    <!-- CARD 03: CLOUD INFRASTRUCTURE & POWER -->
+                    <div class="digest-bento-card">
+                        <div>
+                            <div class="digest-card-header">
+                                <div class="digest-card-title-group">
+                                    <span class="digest-num-pill c-teal">03</span>
+                                    <span class="digest-card-title">Distributed Cloud & Power Scale</span>
+                                </div>
+                                <i class="fa-solid fa-server text-teal" style="font-size: 0.85rem;"></i>
+                            </div>
+                            <div class="digest-card-content" style="margin-top: 10px;">
+                                <ul>
+                                    <li><strong>Sub-5ms Graph RAG:</strong> HNSW indexing coupled with entity graphs reduces enterprise hallucinations by <strong>65%</strong> <span class="citation-ref">[6]</span>.</li>
+                                    <li><strong>100kW+ Rack Density:</strong> Direct-to-chip liquid cooling standardizes across next-gen gigawatt AI clusters <span class="citation-ref">[7]</span>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: 100kW direct-to-chip liquid cooling and Graph RAG low-latency architecture')">
+                                <i class="fa-solid fa-arrow-right"></i> Explore Cloud Infra
+                            </button>
+                        </div>
+                    </div>
 
-            <!-- SECTION 4: STRATEGIC PARTNERSHIPS, DEALS & M&A LANDSCAPE -->
-            <div class="bento-section-header" style="margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                <span class="bento-section-num" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">04</span>
-                <span class="bento-section-title" style="font-size: 1.05rem; font-weight: 700; color: #f8fafc;">Strategic Partnerships, Enterprise Deals & M&A Landscape</span>
-            </div>
-            <ul style="margin: 8px 0 18px 20px; line-height: 1.75; color: #cbd5e1;">
-                <li><strong>Hyperscaler & Frontier AI Alliances:</strong> Amazon finalizes its <strong>$8B cumulative investment in Anthropic</strong> with primary Trainium chip deployment, while Microsoft expands multi-year Azure supercomputing infrastructure commitments with OpenAI <span class="citation-ref">[1]</span>.</li>
-                <li><strong>Semiconductor Foundry & Packaging Lockups:</strong> Nvidia, Apple, and AMD secure over <strong>75% of TSMC's 2nm and CoWoS-L capacity</strong> through 2026 to guarantee supply against tightening advanced packaging bottlenecks <span class="citation-ref">[2]</span>.</li>
-                <li><strong>Hyperscale Clean Energy & Nuclear PPAs:</strong> Microsoft executes a 20-year power purchase agreement with <strong>Constellation Energy (Three Mile Island Crane Clean Energy Center)</strong>, while Amazon Web Services expands multi-gigawatt direct-connect nuclear data center agreements <span class="citation-ref">[4]</span>.</li>
-                <li><strong>Enterprise SaaS & Agentic Model Integrations:</strong> Salesforce, ServiceNow, and Snowflake announce native cross-model governance pacts with Anthropic and Meta to embed autonomous reasoning directly into enterprise workflow databases <span class="citation-ref">[5]</span>.</li>
-            </ul>
-
-            <!-- STRATEGIC OUTLOOK -->
-            <div class="memo-conclusion-box" style="margin-top: 22px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 10px; padding: 18px 22px;">
-                <div class="conclusion-label" style="color: #38bdf8; font-weight: 800; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-chart-line text-teal"></i> Executive Research Desk • Strategic Portfolio Outlook
+                    <!-- CARD 04: DEALS, ALLIANCES & M&A -->
+                    <div class="digest-bento-card">
+                        <div>
+                            <div class="digest-card-header">
+                                <div class="digest-card-title-group">
+                                    <span class="digest-num-pill c-amber">04</span>
+                                    <span class="digest-card-title">Strategic Deals, Alliances & M&A</span>
+                                </div>
+                                <i class="fa-solid fa-handshake text-amber" style="font-size: 0.85rem;"></i>
+                            </div>
+                            <div class="digest-card-content" style="margin-top: 10px;">
+                                <ul>
+                                    <li><strong>Hyperscaler Alliances:</strong> Amazon finalizes <strong>$8B Anthropic pact</strong>; Microsoft scales Azure OpenAI superclusters <span class="citation-ref">[1]</span>.</li>
+                                    <li><strong>Foundry & Clean Energy:</strong> TSMC 2nm capacity secured by Nvidia/Apple; Microsoft signs 20-yr nuclear PPA with Constellation <span class="citation-ref">[2]</span>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: Hyperscaler clean energy nuclear PPAs and AI lab compute partnerships')">
+                                <i class="fa-solid fa-arrow-right"></i> Explore Deals & M&A
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <p style="margin: 0; font-size: 0.92rem; color: #cbd5e1; line-height: 1.65;">
-                    <strong>Strategic Directive for Technical & Financial Leadership:</strong> Prioritize hybrid reasoning LLM integration to compress API cost structures; secure long-lead power and specialized compute contracts; and deploy Graph RAG over raw vector stores to safeguard enterprise data integrity.
-                </p>
+
+                <!-- 1-CLICK DISCOVERY DRILL-DOWN PROMPTS -->
+                <div class="digest-discovery-section">
+                    <div class="digest-discovery-title"><i class="fa-solid fa-compass"></i> Discover & Drill Down Further:</div>
+                    <div class="digest-discovery-chips">
+                        <button type="button" class="digest-topic-chip" onclick="executeSearch('Detailed breakdown: TSMC 2nm wafer allocation and CoWoS packaging bottlenecks for 2026')">
+                            <i class="fa-solid fa-microchip text-cyan"></i> TSMC 2nm & CoWoS Supply Chain
+                        </button>
+                        <button type="button" class="digest-topic-chip" onclick="executeSearch('Detailed breakdown: Microsoft and Amazon nuclear power purchase agreements for AI data centers')">
+                            <i class="fa-solid fa-atom text-amber"></i> Hyperscale Nuclear PPAs
+                        </button>
+                        <button type="button" class="digest-topic-chip" onclick="executeSearch('Detailed comparison: Claude 3.7 Sonnet hybrid reasoning vs DeepSeek R1 MoE efficiency')">
+                            <i class="fa-solid fa-brain text-purple"></i> Hybrid Reasoning Benchmarks
+                        </button>
+                        <button type="button" class="digest-topic-chip" onclick="executeSearch('Detailed analysis: Enterprise SaaS agentic workflow integrations across Salesforce and Snowflake')">
+                            <i class="fa-solid fa-building-lock text-teal"></i> Enterprise SaaS & AI Integrations
+                        </button>
+                    </div>
+                </div>
+
+                <!-- EXECUTIVE STRATEGIC OUTLOOK -->
+                <div class="digest-outlook-box">
+                    <strong style="color: #38bdf8;"><i class="fa-solid fa-chart-pie"></i> Strategic Directive:</strong> Prioritize hybrid reasoning LLMs to compress inference budgets, secure long-lead power/cooling commitments, and implement Graph RAG over raw vector indexing for enterprise data integrity.
+                </div>
             </div>
         `;
     }
