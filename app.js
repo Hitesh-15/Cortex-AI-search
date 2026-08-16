@@ -2702,6 +2702,8 @@ function openSettingsModal() {
     if (apiKeyInput) apiKeyInput.value = appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
     if (customModelInput) customModelInput.value = appState.settings.customModel || "";
     if (discordInput) discordInput.value = localStorage.getItem("ambu_discord_webhook") || "";
+    const passInput = document.getElementById("inputMasterPassphrase");
+    if (passInput) passInput.value = localStorage.getItem("cortex_master_passphrase") || "";
 
     updateModelDropdownOptions(currentProvider);
     updateApiKeyVisibility(currentProvider);
@@ -2853,6 +2855,11 @@ function saveSettingsForm() {
     }
     if (discordInput) {
         localStorage.setItem("ambu_discord_webhook", discordInput.value.trim());
+    }
+    const passInput = document.getElementById("inputMasterPassphrase");
+    if (passInput && passInput.value.trim()) {
+        localStorage.setItem("cortex_master_passphrase", passInput.value.trim());
+        localStorage.setItem("cortex_vault_authenticated", "true");
     }
 
     localStorage.setItem("ambu_provider", appState.settings.provider || "openrouter");
