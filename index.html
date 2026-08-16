@@ -71,27 +71,32 @@
                 </div>
             </div>
 
-            <span class="sidebar-section-title">Research Memos History</span>
+            <div class="sidebar-section-header" style="display: flex; align-items: center; justify-content: space-between; margin: 14px 8px 6px 8px;">
+                <span class="sidebar-section-title" style="margin: 0;">Search History</span>
+                <span id="threadCountBadge" style="font-size: 0.68rem; color: #94a3b8; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 10px;">0</span>
+            </div>
             <div class="thread-history-list" id="threadHistoryList">
                 <!-- Dynamically populated by JS -->
             </div>
 
             <div class="sidebar-footer">
-                <button id="btnGenerateMorningDigest" class="btn-sidebar-footer" onclick="generateExecutiveMorningDigest()" title="Synthesize 24-Hour Executive Morning Digest across all active topics">
-                    <i class="fa-solid fa-sun text-gold"></i> Executive Daily Digest
+                <button id="btnGenerateMorningDigest" class="btn-sidebar-digest" onclick="generateExecutiveMorningDigest()" title="Synthesize 24-Hour Executive Daily Digest across active topics">
+                    <i class="fa-solid fa-sun text-gold"></i> <span>Executive Daily Digest</span>
                 </button>
-                <button id="btnOpenReleaseNotes" class="btn-sidebar-footer" onclick="openReleaseNotesModal()" title="View Continuous Release Notes & Changelog">
-                    <i class="fa-solid fa-sparkles text-cyan"></i> Release Notes (v3.7.0)
-                </button>
-                <button id="btnOpenLockModal" class="btn-sidebar-footer" onclick="openLockModal()" title="Manage Dual-Lock 2FA Security Vault">
-                    <i class="fa-solid fa-vault text-cyan"></i> Dual-Lock 2FA Vault
-                </button>
-                <button id="btnOpenSettings" class="btn-sidebar-footer" onclick="openSettingsModal()" title="Open Cortex AI Gateway Settings">
-                    <i class="fa-solid fa-sliders text-cyan"></i> Cortex Gateway Settings
-                </button>
-                <button id="btnClearHistory" class="btn-sidebar-footer" onclick="clearWorkspaceHistory()" title="Clear Workspace Thread History">
-                    <i class="fa-solid fa-trash-can text-muted"></i> Clear Workspace
-                </button>
+                <div class="sidebar-icon-bar">
+                    <button id="btnOpenSettings" class="btn-icon-footer" onclick="openSettingsModal()" title="Cortex Gateway Settings">
+                        <i class="fa-solid fa-sliders"></i>
+                    </button>
+                    <button id="btnOpenLockModal" class="btn-icon-footer" onclick="openLockModal()" title="Dual-Lock 2FA Vault">
+                        <i class="fa-solid fa-vault"></i>
+                    </button>
+                    <button id="btnOpenReleaseNotes" class="btn-icon-footer" onclick="openReleaseNotesModal()" title="Release Notes (v3.7.0)">
+                        <i class="fa-solid fa-sparkles"></i>
+                    </button>
+                    <button id="btnClearHistory" class="btn-icon-footer text-muted" onclick="clearWorkspaceHistory()" title="Clear Workspace History">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
             </div>
         </aside>
 
