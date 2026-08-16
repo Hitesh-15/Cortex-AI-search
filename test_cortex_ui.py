@@ -196,11 +196,11 @@ def test_full_cortex_suite():
         time.sleep(0.3)
         rn_modal = driver.find_element(By.ID, "releaseNotesModal")
         assert "active" in rn_modal.get_attribute("class"), "Release Notes modal failed to open!"
-        assert "3.7.0" in rn_modal.text, "v3.7.0 not found in release notes modal!"
+        assert "3.7.1" in rn_modal.text, "v3.7.1 not found in release notes modal!"
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)
         assert "active" not in rn_modal.get_attribute("class"), "Release Notes modal failed to close!"
-        print("PASS: Release Notes modal v3.7.0 opened & verified.")
+        print("PASS: Release Notes modal v3.7.1 opened & verified.")
         
         # 1.8 Executive Daily Digest Trigger
         print("--> Testing Executive Daily Digest Synthesis...")
