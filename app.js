@@ -2691,20 +2691,11 @@ function updateApiKeyVisibility(provider) {
 
 function openSettingsModal() {
     const modal = document.getElementById("settingsModal");
-    const providerEl = document.getElementById("providerSelect");
-    const modelEl = document.getElementById("modelSelect");
     const apiKeyInput = document.getElementById("apiKeyInput");
-    const customModelInput = document.getElementById("customModelInput");
     const discordInput = document.getElementById("discordWebhookInput");
 
-    const currentProvider = appState.settings.provider || "openrouter";
-    if (providerEl) providerEl.value = currentProvider;
     if (apiKeyInput) apiKeyInput.value = appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
-    if (customModelInput) customModelInput.value = appState.settings.customModel || "";
     if (discordInput) discordInput.value = localStorage.getItem("ambu_discord_webhook") || "";
-
-    updateModelDropdownOptions(currentProvider);
-    updateApiKeyVisibility(currentProvider);
 
     if (modal) modal.classList.add("active");
 }
@@ -2833,20 +2824,12 @@ async function testDiscordWebhook() {
     }
 }
 
-function saveSettingsForm() {
-    const providerEl = document.getElementById("providerSelect");
-    const modelEl = document.getElementById("modelSelect");
-    const customModelEl = document.getElementById("customModelInput");
+function saveSettingsForm(e) {
+    if (e && e.preventDefault) e.preventDefault();
     const apiKeyInput = document.getElementById("apiKeyInput");
     const discordInput = document.getElementById("discordWebhookInput");
 
-    if (providerEl) appState.settings.provider = providerEl.value;
-    if (modelEl) appState.settings.model = modelEl.value;
-    if (customModelEl) {
-        appState.settings.customModel = customModelEl.value.trim();
-        localStorage.setItem("ambu_custom_model", appState.settings.customModel);
-    }
-    if (apiKeyInput && providerEl) {
+    if (apiKeyInput) {
         const key = apiKeyInput.value.trim();
         appState.settings.apiKeys.openrouter = key;
         localStorage.setItem("ambu_key_openrouter", key);
@@ -2855,11 +2838,8 @@ function saveSettingsForm() {
         localStorage.setItem("ambu_discord_webhook", discordInput.value.trim());
     }
 
-    localStorage.setItem("ambu_provider", appState.settings.provider || "openrouter");
-    localStorage.setItem("ambu_model", appState.settings.model || "openrouter/auto");
-    updateHeaderModelLabel();
-    populateChatModelSelector();
-    alert("⚙️ Settings & API Keys Saved Successfully!");
+    closeSettingsModal();
+    alert("⚙️ Settings saved successfully!");
 }
 
 function openLockModal() {
