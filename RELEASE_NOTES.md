@@ -4,6 +4,27 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.6.1] — 2026-08-16
+### **Human-Touch Editorial Workspace, Resilient Dynamic Synthesis & Instant Copy Memo Action**
+
+#### ✍️ Human-Crafted Editorial Workspace & Typography
+- **Executive Slate Glass Gradient**: Replaced flat monochrome boxes with a vertical slate glass gradient (`rgba(15, 23, 42, 0.75)` to `rgba(10, 15, 29, 0.85)`) crowned by a subtle cyan top-border accent.
+- **Reading Rhythm & Contrast**: Increased paragraph line-height to `1.78` and enhanced text contrast (`#cbd5e1` body / `#f8fafc` headings) for effortless long-form reading.
+- **Tactile Citation Micro-Chips**: Interactive inline citations (`[1]`, `[2]`) now feature a soft violet glow and smooth hover animations.
+- **Clean Executive Research Titles**: Removed leading question mark icons from query headings for a sharp, distraction-free reading experience.
+
+#### ⚡ Resilient Dynamic Evidence Synthesis (Zero Dead Outputs)
+- **Real-Time Fact Synthesis**: Replaced static templates with a dynamic research memo synthesizer that transforms live crawled search snippets and domains into structured **Executive Takeaways** and **Key Findings Matrices**.
+- **Fail-Safe Briefings**: In the event of upstream API latency or rate limits, Cortex automatically constructs a coherent factual briefing directly from live crawled web sources so users never see *"No response generated."*
+
+#### 📋 One-Click "Copy Memo" Action Toolbar
+- **Direct Clipboard Export**: Built an executive `📋 Copy Memo` button directly into the telemetry footer. It automatically strips telemetry pills and copies the clean, formatted research text straight to the user's clipboard with instant `✓ Copied!` feedback.
+
+#### 🧭 "Explore Next Dimensions" Discovery Cards
+- **Interactive Follow-up Cards**: Redesigned related questions into interactive discovery cards with cyan left-border accents, subtle hover lifts, and clean arrow indicators `➔`.
+
+---
+
 ## 🌟 [v3.6.0] — 2026-08-16
 ### **Interactive `@` Mention Autocomplete, Explicit `@sonnet`/`@opus` Tagging & Multi-Model Ensemble Thinking Tournament**
 
@@ -16,6 +37,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 #### 🏆 Multi-Model Ensemble Thinking Tournament (`@thinking`)
 - **Parallel Best-of-N Tournament**: Typing `@thinking` (or `@ensemble`, `@best`) simultaneously queries all top 5 frontier reasoning engines (**Claude Opus 5**, **Claude Sonnet 5**, **Gemini 3.7 Flash Thinking**, **DeepSeek R1 MoE**, and **OpenAI o3-mini**) in parallel.
+
 #### 📱 Mobile UI/UX Overhaul & Decluttering
 - **Decluttered Mobile Viewport**: Streamlined floating bottom search bar, optimized action row padding, and reduced mobile answer container margins for maximized viewport content visibility.
 - **Consolidated Single-Row Telemetry**: Merged spend, tokens, effort level, and model badges into a sleek, unified responsive telemetry strip, removing redundant duplicate boxes on single search runs.
