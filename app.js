@@ -611,7 +611,7 @@ const AT_MENTION_MODELS = [
     { tag: "@compare", name: "🔀 Multi-Model Compare", desc: "50/50 Dual Split View: Gemini vs Claude" },
     { tag: "@parallel", name: "🚀 Parallel Pipeline", desc: "Gemini 3.7 Flash ➔ Claude Sonnet 5" },
     { tag: "@batch", name: "📉 Gemini 3.7 Flash (Batch)", desc: "50% Discounted Topic Tracking" },
-    { tag: "@thinking", name: "💭 Gemini 3.7 Flash (Thinking)", desc: "Chain-of-Thought Logic" },
+    { tag: "@thinking", name: "🏆 Ensemble Thinking (Best-of-N Frontier Tournament)", desc: "Evaluates Opus 5, Sonnet 5, Gemini Thinking & DeepSeek R1" },
     { tag: "@grok", name: "🎯 Grok 4.6", desc: "Real-time Indexing & Sentiment" },
     { tag: "@gpt4", name: "🔮 OpenAI o3-mini / GPT-4o", desc: "High-Precision Algorithmic Coding" },
     { tag: "@deepseek", name: "🧪 DeepSeek R1", desc: "671B MoE Open Reasoning" },
@@ -988,9 +988,11 @@ async function runAsyncSearchPipeline(userQuery) {
 
         if (rawTag === "compare" || rawTag === "vs" || rawTag === "comparison" || rawTag === "cross") {
             isComparisonMode = true;
+        } else if (rawTag === "thinking" || rawTag === "ensemble" || rawTag === "best" || rawTag === "tournament" || rawTag === "reasoning") {
+            targetModelOverride = "thinking";
         } else if (rawTag === "opus" || rawTag === "opus5" || rawTag === "claude-opus" || rawTag === "claude-opus-5") {
             targetModelOverride = "anthropic/claude-opus-5";
-        } else if (rawTag === "claude" || rawTag === "sonnet" || rawTag === "sonnet5" || rawTag === "anthropic" || rawTag === "claude3.7" || rawTag === "claude3.5") {
+        } else if (rawTag === "sonnet" || rawTag === "sonnet5" || rawTag === "claude-sonnet" || rawTag === "claude-sonnet-5" || rawTag === "claude" || rawTag === "anthropic") {
             targetModelOverride = "anthropic/claude-sonnet-5";
         } else if (rawTag === "gemini" || rawTag === "flash" || rawTag === "google" || rawTag === "gemini3.7") {
             targetModelOverride = "google/gemini-3.7-flash";
@@ -1002,6 +1004,8 @@ async function runAsyncSearchPipeline(userQuery) {
             targetModelOverride = "deepseek/deepseek-r1";
         } else if (rawTag === "parallel" || rawTag === "pipeline" || rawTag === "chain") {
             targetModelOverride = "parallel";
+        } else if (rawTag === "batch") {
+            targetModelOverride = "google/gemini-3.7-flash:batch";
         } else if (rawTag === "free" || rawTag === "local") {
             targetModelOverride = "free";
         } else if (rawTag.includes("/")) {
@@ -1768,6 +1772,75 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
         fallbackChain = ["google/gemini-3.7-flash", "google/gemini-2.5-flash", "openrouter/auto"];
     }
 
+    // ENSEMBLE THINKING MODE: Evaluates all frontier thinking models in parallel & selects the best
+    if (tier === "thinking") {
+        try {
+            const candidateModels = [
+                "anthropic/claude-opus-5",
+                "anthropic/claude-sonnet-5",
+                "google/gemini-3.7-flash:thinking",
+                "deepseek/deepseek-r1",
+                "openai/o3-mini"
+            ];
+
+            const candidatesPromises = candidateModels.map(async (candModel) => {
+                try {
+                    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${apiKey}`,
+                            "Content-Type": "application/json",
+                            "HTTP-Referer": "https://cortex.ambulkar.com",
+                            "X-Title": "Cortex Ensemble Thinking"
+                        },
+                        body: JSON.stringify({
+                            model: candModel,
+                            messages: [
+                                { role: "system", content: "You are an elite reasoning engine. Synthesize an exhaustive, logically rigorous research briefing using clean HTML (h3, h4, p, ul, strong, code). Embed citations like <span class=\"citation-ref\">[1]</span>." },
+                                { role: "user", content: `Query: "${query}"\n\nVerified Sources:\n${sourceContext}` }
+                            ]
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const content = data.choices?.[0]?.message?.content || "";
+                        if (content.length > 50) {
+                            return {
+                                model: data.model || candModel,
+                                content: content,
+                                score: (content.length * 0.3) + (content.includes("citation-ref") ? 250 : 0) + (content.includes("<h3>") ? 150 : 0)
+                            };
+                        }
+                    }
+                } catch (candErr) {}
+                return null;
+            });
+
+            const settled = await Promise.allSettled(candidatesPromises);
+            const validResults = settled
+                .filter(r => r.status === "fulfilled" && r.value != null)
+                .map(r => r.value);
+
+            if (validResults.length > 0) {
+                validResults.sort((a, b) => b.score - a.score);
+                const winner = validResults[0];
+                const evaluatedNames = validResults.map(r => formatSingleModelName(r.model)).join(", ");
+                const ensembleHeader = `
+                    <div class="ensemble-badge" style="background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 0.82rem; color: #cbd5e1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div><i class="fa-solid fa-trophy text-gold"></i> <strong>Frontier Thinking Tournament:</strong> Evaluated ${validResults.length} models (${evaluatedNames}) ➔ Selected highest-rigor output from <strong>${formatSingleModelName(winner.model)}</strong></div>
+                        <span style="font-family: monospace; font-size: 0.72rem; color: #c084fc; background: rgba(168, 85, 247, 0.2); padding: 2px 6px; border-radius: 4px;">Top Best-of-N Synthesis</span>
+                    </div>
+                `;
+                return {
+                    html: ensembleHeader + formatAIResponseHTML(winner.content),
+                    modelUsed: `🧠 Best-of-N Winner: ${formatModelDisplayName(winner.model)}`
+                };
+            }
+        } catch (e) {
+            console.error("Ensemble thinking execution fallback:", e);
+        }
+    }
+
     // PARALLEL PIPELINE: Fast Extraction ➔ Deep Synthesis
     if (isParallel) {
         try {
@@ -1781,8 +1854,8 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                     "X-Title": "Cortex Parallel Pipeline"
                 },
                 body: JSON.stringify({
-                    model: "google/gemini-2.0-flash-001",
-                    models: ["google/gemini-2.0-flash-001", "google/gemini-2.5-flash", "openrouter/auto"],
+                    model: "google/gemini-3.7-flash",
+                    models: ["google/gemini-3.7-flash", "google/gemini-2.5-flash", "openrouter/auto"],
                     messages: [{
                         role: "user",
                         content: `Extract verified facts, numbers, and dates for "${query}" based on:\n${sourceContext}\nOutput bulleted structured data.`
@@ -1791,7 +1864,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             });
             const fastData = await fastRes.json();
             const extractedFacts = fastData.choices?.[0]?.message?.content || sourceContext;
-            const stage1ActualModel = fastData.model || "google/gemini-2.0-flash-001";
+            const stage1ActualModel = fastData.model || "google/gemini-3.7-flash";
 
             // Stage 2: Deep reasoning model performs calculations and executive synthesis
             const deepRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -1803,8 +1876,8 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                     "X-Title": "Cortex Deep Synthesis"
                 },
                 body: JSON.stringify({
-                    model: "anthropic/claude-3.7-sonnet",
-                    models: ["anthropic/claude-3.7-sonnet", "anthropic/claude-3.5-sonnet", "deepseek/deepseek-r1"],
+                    model: "anthropic/claude-sonnet-5",
+                    models: ["anthropic/claude-sonnet-5", "anthropic/claude-opus-5", "anthropic/claude-3.7-sonnet", "deepseek/deepseek-r1"],
                     messages: [{
                         role: "user",
                         content: `SYSTEM ROLE: You are an expert financial market analyst and technical researcher. Synthesize the findings for: "${query}".\n\nVerified Fast Extraction Data:\n${extractedFacts}\n\nPerform deep reasoning, calculations, and structured HTML formatting (h3, h4, p, ul, strong, code). Include citations like <span class="citation-ref">[1]</span>.`
@@ -1813,7 +1886,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             });
             const deepData = await deepRes.json();
             const text = deepData.choices?.[0]?.message?.content || "";
-            const stage2ActualModel = deepData.model || "anthropic/claude-3.7-sonnet";
+            const stage2ActualModel = deepData.model || "anthropic/claude-sonnet-5";
 
             const modelChain = `⚡ ${formatModelDisplayName(stage1ActualModel)} ➔ 🧠 ${formatModelDisplayName(stage2ActualModel)}`;
             return {
