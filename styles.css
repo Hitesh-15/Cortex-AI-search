@@ -2804,11 +2804,48 @@ select option:checked {
     transform: translateY(-1px);
 }
 
-/* Print & PDF Export Stylesheet */
+/* Print & PDF Export Stylesheet (Multi-Page High-Contrast Layout) */
+@page {
+    size: letter portrait;
+    margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+}
+
 @media print {
-    body {
+    html, body {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow: visible !important;
         background: #ffffff !important;
         color: #0f172a !important;
+        font-size: 11pt !important;
+        line-height: 1.6 !important;
+    }
+    .app-layout {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+    }
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+    }
+    .view-scroll-area {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 0 !important;
+        position: static !important;
+    }
+    #activeThreadContainer {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
     }
     .app-sidebar,
     .bottom-search-wrapper,
@@ -2816,44 +2853,82 @@ select option:checked {
     .modal-backdrop,
     .unified-telemetry-actions,
     .dynamic-followups-container,
+    .related-questions-wrapper,
     .btn-memo-action,
-    .at-mention-menu {
+    .at-mention-menu,
+    .research-compact-header-bar,
+    .sources-drawer-panel,
+    .workflow-details-panel {
         display: none !important;
     }
-    .main-content {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
+    .thread-step-card {
+        page-break-after: auto;
+        break-after: auto;
+        margin-bottom: 2rem !important;
     }
-    .view-scroll-area {
-        overflow: visible !important;
-        padding: 0 !important;
+    .user-query-heading {
+        color: #0f172a !important;
+        font-size: 18pt !important;
+        margin-bottom: 12pt !important;
+        page-break-after: avoid;
+        break-after: avoid;
     }
     .ai-answer-box {
         background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        border: 1px solid #e2e8f0 !important;
         color: #0f172a !important;
         box-shadow: none !important;
+        padding: 1.5rem !important;
+        border-radius: 8px !important;
+        page-break-inside: auto;
+        break-inside: auto;
     }
     .memo-hero-header {
-        background: #f1f5f9 !important;
+        background: #f8fafc !important;
         border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
     }
     .memo-hero-title {
         color: #0f172a !important;
+    }
+    .bento-section-header {
+        page-break-after: avoid;
+        break-after: avoid;
+        margin-top: 14pt !important;
+    }
+    .bento-section-num {
+        background: #e0f2fe !important;
+        color: #0369a1 !important;
+        border: 1px solid #bae6fd !important;
     }
     .bento-section-title {
         color: #0284c7 !important;
     }
     .memo-callout-note {
-        background: #f8fafc !important;
-        border: 1px solid #cbd5e1 !important;
-        color: #334155 !important;
+        background: #f0f9ff !important;
+        border: 1px solid #bae6fd !important;
+        color: #0369a1 !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
     }
     .memo-conclusion-box {
         background: #f0fdf4 !important;
         border: 1px solid #86efac !important;
         color: #14532d !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    .unified-telemetry-bar {
+        border-top: 1px solid #e2e8f0 !important;
+        background: #f8fafc !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    .unified-pill {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #334155 !important;
     }
 }
 

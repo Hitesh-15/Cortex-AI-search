@@ -117,7 +117,7 @@ def test_cortex_v37_suite():
             cards[0].click()
         else:
             search_input = driver.find_element(By.ID, "searchInput")
-            search_input.send_keys("Explain Android Enterprise AMAPI architecture")
+            search_input.send_keys("Explain distributed vector database indexing architectures")
             driver.find_element(By.ID, "btnSubmitSearch").click()
         
         from selenium.webdriver.support.ui import WebDriverWait
