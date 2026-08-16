@@ -1746,8 +1746,6 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         activeModelDisplay = formatSingleModelName(activeModel);
     }
 
-    const followupsHTML = generateDynamicFollowUpHTML(query, sources);
-
     const telemetryFooter = `
         <div class="unified-telemetry-bar">
             <div class="unified-telemetry-left">
@@ -1768,7 +1766,6 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
                 </button>
             </div>
         </div>
-        ${followupsHTML}
     `;
 
     return {
@@ -2547,24 +2544,29 @@ function renderViewport() {
 
 function renderThreadHistory() {
     const container = document.getElementById("threadHistoryList");
+    const countBadge = document.getElementById("threadCountBadge");
     if (!container) return;
 
+    if (countBadge) {
+        countBadge.textContent = appState.threads.length;
+    }
+
     if (appState.threads.length === 0) {
-        container.innerHTML = `<span class="text-muted" style="font-size:0.75rem; padding:8px;">No search history yet.</span>`;
+        container.innerHTML = `<span class="text-muted" style="font-size:0.75rem; padding:8px 6px;">No search history yet.</span>`;
         return;
     }
 
     container.innerHTML = appState.threads.map(t => {
-        const costStr = t.cumulativeCostUSD ? `$${t.cumulativeCostUSD.toFixed(4)}` : "$0.0000";
+        const costStr = t.cumulativeCostUSD ? `$${t.cumulativeCostUSD.toFixed(4)}` : "";
         const isWatchdog = t.isWatchdogActive;
         return `
-            <div class="thread-item ${t.id === appState.activeThreadId ? 'active' : ''}" onclick="switchThread('${t.id}')" style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="thread-item-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 135px;">
-                    <i class="fa-regular fa-message text-muted" style="margin-right:5px;"></i> ${t.title}
+            <div class="thread-item ${t.id === appState.activeThreadId ? 'active' : ''}" onclick="switchThread('${t.id}')" title="${t.title}">
+                <span class="thread-item-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
+                    <i class="fa-regular fa-message text-muted" style="margin-right: 6px; font-size: 0.75rem;"></i> ${t.title}
                 </span>
-                <div style="display: flex; align-items: center; gap: 4px;">
-                    ${isWatchdog ? `<span title="Topic Tracking Active" style="font-size: 0.65rem; color: #2dd4bf; background: rgba(45,212,191,0.15); padding: 1px 5px; border-radius: 4px; font-weight: 600;"><i class="fa-solid fa-bell"></i> Tracking</span>` : ''}
-                    <span style="font-size: 0.65rem; color: #94a3b8; font-family: monospace;" title="Cumulative Thread Cost">${costStr}</span>
+                <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 4px;">
+                    ${isWatchdog ? `<span title="Topic Tracking Active" style="font-size: 0.62rem; color: #2dd4bf; background: rgba(45,212,191,0.15); padding: 1px 4px; border-radius: 4px; font-weight: 600;"><i class="fa-solid fa-bell"></i></span>` : ''}
+                    ${costStr ? `<span style="font-size: 0.65rem; color: #94a3b8; font-family: monospace;" title="Cumulative Thread Cost">${costStr}</span>` : ''}
                     <button class="thread-del-btn" onclick="event.stopPropagation(); deleteThread('${t.id}')" title="Delete Thread">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
