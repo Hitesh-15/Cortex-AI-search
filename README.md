@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B-blue.svg)](https://developer.mozilla.org/)
 [![AI: Multi-Model Gateway](https://img.shields.io/badge/AI-Parallel%20Multi--Model%20Routing-cyan.svg)](#-features)
-[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v3.5.0-emerald.svg)](RELEASE_NOTES.md)
+[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v3.6.0-emerald.svg)](RELEASE_NOTES.md)
 
 Cortex is a state-of-the-art AI search engine and executive research memo platform. It synthesizes real-time facts across **10 to 20+ verified web sources**, executes parallel multi-model reasoning across frontier LLMs, and maintains 100% client-side privacy.
 
@@ -17,7 +17,7 @@ Cortex is a state-of-the-art AI search engine and executive research memo platfo
 ```mermaid
 flowchart TD
     subgraph Ingestion["1. Query Ingestion & Context Routing"]
-        UserQ["User Research Query / + New Search"]
+        UserQ["User Research Query / + New Search\n(@mention Autocomplete • Quick Hints)"]
         TrendingFeeds["Dynamic Trending Feeds\n(Google News • HackerNews • Wikipedia)"]
         Classifier["Effort & Focus Mode Router\n(Market • Financial • Academic • Code • Writing)"]
         UserQ --> Classifier
@@ -44,16 +44,17 @@ flowchart TD
     end
 
     subgraph Gateway["3. Frontier Model & Reasoning Gateway"]
-        Router{"Dynamic Model Router"}
+        Router{"Dynamic Model Router\n(@opus • @sonnet • @gemini • @thinking • @compare)"}
         Vault["Dual-Lock 2FA Vault\n(AES-256 Client-Side Key Storage)"]
         Vault -.->|Decrypts API Keys Locally| Router
         SourcesAggregator --> Router
         
-        Router -->|Parallel Pipeline| Stage1["Stage 1: Fast Fact Extraction\n(Gemini 3.7 Flash)"]
+        Router -->|@thinking Ensemble Tournament| ThinkingTournament["Stage 2: Best-of-N Tournament\n(Claude Opus 5 • Claude Sonnet 5 • Gemini 3.7 Thinking • DeepSeek R1 • o3-mini)"]
+        Router -->|@parallel Pipeline| Stage1["Stage 1: Fast Fact Extraction\n(Gemini 3.7 Flash)"]
         Stage1 --> Stage2["Stage 2: Deep Synthesis & Reasoning\n(Claude Sonnet 5)"]
-        
-        Router -->|Standard Route| SingleModel["Frontier LLM\n(Gemini 3.7 • Claude 3.7 • Grok 3 • GPT-4o)"]
-        Router -->|Free Tier| FreeNeural["Cortex Free Neural Engine"]
+        Router -->|@compare Mode| Compare50["50/50 Dual Split View\n(Gemini 3.7 Flash vs Claude Sonnet 5)"]
+        Router -->|Direct Tag Route| SingleModel["Frontier LLMs\n(Claude Opus 5 • Claude Sonnet 5 • Gemini 3.7 Flash • Grok 4.6 • GPT-4o • DeepSeek R1)"]
+        Router -->|@free Tier| FreeNeural["Cortex Free Neural Engine"]
     end
 
     subgraph Processing["4. Synthesis, Telemetry & Post-Processing"]
