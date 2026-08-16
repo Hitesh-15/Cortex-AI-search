@@ -1414,6 +1414,24 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                     }
                 }
             } catch (e) {}
+        })(),
+
+        // Endpoint D: GitHub Open Source Code & Repository API (Fetches verified codebases & star rankings)
+        (async () => {
+            try {
+                const ghUrl = `https://api.github.com/search/repositories?q=${encodeURIComponent(cleanQuery)}&sort=stars&order=desc&per_page=5`;
+                const res = await fetch(ghUrl, {
+                    headers: { "Accept": "application/vnd.github.v3+json" }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.items && Array.isArray(data.items)) {
+                        data.items.forEach(repo => {
+                            addSource(`${repo.full_name} (${repo.stargazers_count.toLocaleString()}★)`, "github.com", repo.html_url, repo.description || `Verified open source codebase: ${repo.full_name} with ${repo.stargazers_count} GitHub stars.`);
+                        });
+                    }
+                }
+            } catch (e) {}
         })()
     ];
 
@@ -1728,6 +1746,8 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         activeModelDisplay = formatSingleModelName(activeModel);
     }
 
+    const followupsHTML = generateDynamicFollowUpHTML(query, sources);
+
     const telemetryFooter = `
         <div class="unified-telemetry-bar">
             <div class="unified-telemetry-left">
@@ -1740,8 +1760,15 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
                 <button type="button" class="btn-memo-action" onclick="copyMemoContent(this)" title="Copy Executive Memo to Clipboard">
                     <i class="fa-solid fa-copy"></i> <span>Copy Memo</span>
                 </button>
+                <button type="button" class="btn-memo-action" onclick="exportMemoMarkdown(this)" title="Download Executive Memo as Markdown (.md)">
+                    <i class="fa-solid fa-download"></i> <span>Export .MD</span>
+                </button>
+                <button type="button" class="btn-memo-action" onclick="printExecutiveMemo(this)" title="Print or Save as Clean PDF">
+                    <i class="fa-solid fa-print"></i> <span>Print / PDF</span>
+                </button>
             </div>
         </div>
+        ${followupsHTML}
     `;
 
     return {
@@ -2011,7 +2038,7 @@ Instructions:
     // 1. Attempt Free Neural Engine
     try {
         const freeKey = atob("QVEuQWI4Uk42STg5U00yYWh6cmFvMVBiTHB0X2V3eXRYZlZLNVFhU2tUWEhsbWxuU2pLZ2c=");
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${freeKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${freeKey}`;
         const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -2933,6 +2960,110 @@ function copyMemoContent(btn) {
     });
 }
 
+function exportMemoMarkdown(btn) {
+    if (!btn) return;
+    const parentBox = btn.closest(".ai-answer-box");
+    if (!parentBox) return;
+
+    const clone = parentBox.cloneNode(true);
+    clone.querySelector(".unified-telemetry-bar")?.remove();
+    clone.querySelector(".dynamic-followups-container")?.remove();
+    clone.querySelector(".thread-watchdog-cost-card")?.remove();
+    clone.querySelector(".discord-dispatched-card")?.remove();
+
+    const titleEl = document.querySelector(".user-query-heading") || { innerText: "Cortex Executive Memo" };
+    const cleanTitle = titleEl.innerText.replace(/^[^\w]+/, '').trim();
+    const dateStr = new Date().toISOString().split('T')[0];
+
+    const contentText = clone.innerText.trim();
+    const markdownDoc = `# Executive Research Memo: ${cleanTitle}\n*Date: ${dateStr} | Synthesized by Cortex AI Search (cortex.ambulkar.com)*\n\n---\n\n${contentText}\n\n---\n*Verified web intelligence synthesized via Cortex multi-index research engine.*`;
+
+    const blob = new Blob([markdownDoc], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cortex_executive_memo_${dateStr}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = `<i class="fa-solid fa-check text-teal"></i> <span style="color:#2dd4bf;">Saved!</span>`;
+    setTimeout(() => { btn.innerHTML = originalHTML; }, 2200);
+}
+
+function printExecutiveMemo(btn) {
+    window.print();
+}
+
+function generateDynamicFollowUpHTML(query, sources) {
+    const cleanQ = (query || "").replace(/["']/g, "").trim();
+    const keywords = cleanQ.split(" ").filter(w => w.length > 3);
+    const baseWord = keywords[0] || "Architecture";
+
+    const followups = [
+        `Compare 2026 enterprise performance trade-offs for ${baseWord}`,
+        `What are key security & compliance considerations for ${cleanQ}?`,
+        `Explore real-world production case studies and deployment benchmarks`
+    ];
+
+    const chipsHTML = followups.map(f => {
+        return `<button type="button" class="dynamic-followup-chip" onclick="executeSearch('${f.replace(/'/g, "\\'")}')" title="Explore deeper research dimension"><i class="fa-solid fa-arrow-right"></i> ${f}</button>`;
+    }).join("");
+
+    return `
+        <div class="dynamic-followups-container">
+            <div class="dynamic-followups-label"><i class="fa-solid fa-arrows-split-up-and-left text-cyan"></i> Deep Dive Inquiries</div>
+            <div class="dynamic-followups-chips">
+                ${chipsHTML}
+            </div>
+        </div>
+    `;
+}
+
+function toggleComparisonMode(enable) {
+    const stdRow = document.getElementById("standardInputRow");
+    const cmpRow = document.getElementById("compareInputRow");
+    const inputA = document.getElementById("compareInputA");
+
+    if (enable) {
+        if (stdRow) stdRow.style.display = "none";
+        if (cmpRow) cmpRow.style.display = "flex";
+        if (inputA) inputA.focus();
+    } else {
+        if (cmpRow) cmpRow.style.display = "none";
+        if (stdRow) stdRow.style.display = "flex";
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) searchInput.focus();
+    }
+}
+
+async function executeComparisonSearch() {
+    const inputA = document.getElementById("compareInputA");
+    const inputB = document.getElementById("compareInputB");
+    if (!inputA || !inputB) return;
+
+    const valA = inputA.value.trim();
+    const valB = inputB.value.trim();
+
+    if (!valA || !valB) {
+        alert("Please enter both Entity A and Entity B to launch comparison.");
+        return;
+    }
+
+    const comparisonQuery = `Head-to-head comparison: ${valA} vs ${valB}`;
+    toggleComparisonMode(false);
+    executeSearch(comparisonQuery);
+}
+
+function generateExecutiveMorningDigest() {
+    const defaultTopics = ["AI Frontier Models 2026", "Enterprise Cloud & Android Fleet Modernization", "Macroeconomic Interest Rates & Tech Equities"];
+    const topicList = defaultTopics.join(" • ");
+    const digestQuery = `Synthesize 24-Hour Executive Morning Digest covering: ${topicList}`;
+    executeSearch(digestQuery);
+}
+
 // Explicit window bindings to guarantee 100% button functionality across Edge, Brave, Chrome, Safari
 window.openSettingsModal = openSettingsModal;
 window.closeSettingsModal = closeSettingsModal;
@@ -2955,3 +3086,9 @@ window.insertAtTag = insertAtTag;
 window.applyChosenMentionTag = applyChosenMentionTag;
 window.closeAtMentionMenu = closeAtMentionMenu;
 window.copyMemoContent = copyMemoContent;
+window.exportMemoMarkdown = exportMemoMarkdown;
+window.printExecutiveMemo = printExecutiveMemo;
+window.generateDynamicFollowUpHTML = generateDynamicFollowUpHTML;
+window.toggleComparisonMode = toggleComparisonMode;
+window.executeComparisonSearch = executeComparisonSearch;
+window.generateExecutiveMorningDigest = generateExecutiveMorningDigest;

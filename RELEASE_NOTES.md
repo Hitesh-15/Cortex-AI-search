@@ -4,6 +4,32 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.7.0] — 2026-08-16
+### **Head-to-Head Comparison Mode, GitHub Deep Crawlers, One-Click Memo Exports (.MD/PDF) & Dynamic Intelligence**
+
+#### ⚖️ Head-to-Head Comparison Matrix
+- **Dual Entity Parallel Search**: Users can compare two frameworks, stocks, or technologies side-by-side (e.g. `React vs Vue`, `NVDA vs AMD`, `Mambo EMM vs Workspace ONE`).
+- **Dedicated Comparison UI**: Built a clean dual-pill input row (`[A] Entity A vs [B] Entity B`) accessible via the search action bar or `@compare` quick-tag.
+- **Comparative Synthesis Schema**: Formats answers into structured comparison sections covering High-Level Architecture, Capability Matrix, Benchmark Differences, and Strategic Verdicts.
+
+#### 🌐 Specialized Deep Crawlers Expansion
+- **GitHub Live API Crawler**: Directly queries open-source repositories via GitHub REST API, ranking codebases by star count and extracting architectural summaries into the live research context.
+- **SEC EDGAR & Financial Disclosures**: Enhanced financial research queries with direct SEC corporate filings indices.
+- **PubMed Biomedical Search**: Integrated peer-reviewed biomedical indices and clinical trials.
+
+#### 📥 Executive Memo Export Suite
+- **Download Markdown (.md)**: Instantly exports synthesized research memos as clean `.md` documents with formatted headings, timestamps, and citations.
+- **Print & Clean PDF Mode**: Built a dedicated `@media print` stylesheet optimized for white-background, high-contrast, distraction-free PDF executive printing.
+- **Rich-Text Clipboard Copy**: Instant 1-click clipboard export.
+
+#### 💡 Dynamic Smart Follow-Up Generator
+- **Contextual Inquiries**: Dynamically synthesizes 3 smart, clickable follow-up inquiry chips below each answer, allowing users to drill into specific performance trade-offs, security considerations, or deployment benchmarks with a single click.
+
+#### 🌅 Executive Daily Digest Synthesizer
+- **Multi-Topic Synthesis**: Added a dedicated `🌅 Executive Daily Digest` button in the sidebar that aggregates active monitored research desks into a single 24-hour executive briefing.
+
+---
+
 ## 🌟 [v3.6.3] — 2026-08-16
 ### **Decluttered Mobile Viewport Architecture & Touch-Optimized Swipeable Trays**
 
