@@ -129,13 +129,13 @@ const MODEL_PRICING = {
 // Provider to Models Map (Frontier Intelligence Modes)
 let PROVIDER_MODELS = {
     openrouter: [
-        { id: "openrouter/auto", name: "⚡ Smart Auto Router (Auto-Pick Best Model)" },
-        { id: "deep", name: "🧠 Anthropic Claude 3.7 Sonnet (or 3.5 Sonnet)" },
-        { id: "fast", name: "⚡ Google Gemini 2.5 Flash / 2.0 Flash" },
-        { id: "grok", name: "🎯 xAI Grok 2 / Grok Beta" },
-        { id: "gpt4", name: "🔮 OpenAI GPT-4o / o3-mini" },
-        { id: "deepseek", name: "🧪 DeepSeek R1 (671B MoE)" },
-        { id: "parallel", name: "🚀 Parallel: Gemini 2.5 Flash ➔ Claude 3.7 Sonnet" },
+        { id: "openrouter/auto", name: "⚡ Smart Auto Router (Frontier Auto-Select)" },
+        { id: "deep", name: "🧠 Claude Sonnet 5 / Claude 3.7 Sonnet" },
+        { id: "fast", name: "⚡ Gemini 3.7 Flash / Gemini 2.5 Flash" },
+        { id: "grok", name: "🎯 Grok 4.6 / Grok 3 / Grok 2" },
+        { id: "gpt4", name: "🔮 OpenAI o3-mini / GPT-4o" },
+        { id: "deepseek", name: "🧪 DeepSeek R1 / V3" },
+        { id: "parallel", name: "🚀 Parallel: Gemini Flash ➔ Claude Sonnet" },
         { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
     ],
     local: [
@@ -1563,14 +1563,14 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
         primaryModel = "nvidia/nemotron-3.5-lightning:free";
         fallbackChain = ["nvidia/nemotron-3.5-lightning:free", "google/gemini-2.0-flash-001:free", "meta-llama/llama-3.3-70b-instruct:free"];
     } else if (tier === "fast" || tier === "gemini") {
-        primaryModel = "google/gemini-2.5-flash";
-        fallbackChain = ["google/gemini-2.5-flash", "google/gemini-2.0-flash-001", "google/gemini-1.5-flash"];
+        primaryModel = "google/gemini-3.7-flash";
+        fallbackChain = ["google/gemini-3.7-flash", "google/gemini-2.5-flash", "google/gemini-2.0-flash-001", "google/gemini-1.5-flash"];
     } else if (tier === "deep" || tier === "claude") {
-        primaryModel = "anthropic/claude-3.7-sonnet";
-        fallbackChain = ["anthropic/claude-3.7-sonnet", "anthropic/claude-3.5-sonnet", "deepseek/deepseek-r1", "openai/gpt-4o"];
+        primaryModel = "anthropic/claude-sonnet-5";
+        fallbackChain = ["anthropic/claude-sonnet-5", "anthropic/claude-3.7-sonnet", "anthropic/claude-3.5-sonnet", "deepseek/deepseek-r1", "openai/gpt-4o"];
     } else if (tier === "grok") {
-        primaryModel = "x-ai/grok-2";
-        fallbackChain = ["x-ai/grok-2", "x-ai/grok-beta", "x-ai/grok-3"];
+        primaryModel = "x-ai/grok-4.6";
+        fallbackChain = ["x-ai/grok-4.6", "x-ai/grok-3", "x-ai/grok-2", "x-ai/grok-beta"];
     } else if (tier === "gpt4" || tier === "openai") {
         primaryModel = "openai/gpt-4o";
         fallbackChain = ["openai/gpt-4o", "openai/o3-mini", "openai/gpt-4o-mini"];
@@ -1578,13 +1578,13 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
         primaryModel = "deepseek/deepseek-r1";
         fallbackChain = ["deepseek/deepseek-r1", "deepseek/deepseek-chat"];
     } else if (tier === "parallel") {
-        primaryModel = "google/gemini-2.5-flash";
+        primaryModel = "google/gemini-3.7-flash";
     } else if (tier.includes("/")) {
         primaryModel = tier;
         fallbackChain = [tier, "openrouter/auto"];
     } else {
-        primaryModel = "google/gemini-2.5-flash";
-        fallbackChain = ["google/gemini-2.5-flash", "openrouter/auto"];
+        primaryModel = "google/gemini-3.7-flash";
+        fallbackChain = ["google/gemini-3.7-flash", "google/gemini-2.5-flash", "openrouter/auto"];
     }
 
     // PARALLEL PIPELINE: Fast Extraction ➔ Deep Synthesis
