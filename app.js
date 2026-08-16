@@ -129,14 +129,14 @@ const MODEL_PRICING = {
 // Provider to Models Map (Frontier Intelligence Modes)
 let PROVIDER_MODELS = {
     openrouter: [
-        { id: "openrouter/auto", name: "⚡ Smart Auto Routing (Auto-Pick Best Frontier Model)" },
-        { id: "deep", name: "🧠 Claude 3.7 Sonnet (Hybrid Reasoning & Math)" },
-        { id: "fast", name: "⚡ Gemini 3.7 Flash (Sub-Second Factual Search)" },
-        { id: "grok", name: "🎯 Grok 4.6 / Grok 3 (Real-Time X Index & Sentiment)" },
-        { id: "gpt4", name: "🔮 OpenAI o3-mini / GPT-4o (High-Precision Coding)" },
-        { id: "deepseek", name: "🧪 DeepSeek R1 (671B MoE Reasoning)" },
-        { id: "parallel", name: "🚀 Parallel Pipeline (Gemini 3.7 Flash ➔ Claude 3.7 Sonnet)" },
-        { id: "free", name: "🎁 100% Free Neural Engine (0 Token Spend)" }
+        { id: "openrouter/auto", name: "⚡ Smart Auto Router (Auto-Pick Best Model)" },
+        { id: "deep", name: "🧠 Anthropic Claude 3.7 Sonnet (or 3.5 Sonnet)" },
+        { id: "fast", name: "⚡ Google Gemini 2.5 Flash / 2.0 Flash" },
+        { id: "grok", name: "🎯 xAI Grok 2 / Grok Beta" },
+        { id: "gpt4", name: "🔮 OpenAI GPT-4o / o3-mini" },
+        { id: "deepseek", name: "🧪 DeepSeek R1 (671B MoE)" },
+        { id: "parallel", name: "🚀 Parallel: Gemini 2.5 Flash ➔ Claude 3.7 Sonnet" },
+        { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
     ],
     local: [
         { id: "ambulkar-cortex-engine", name: "Ambulkar Local Free Engine" }
@@ -1348,10 +1348,13 @@ function formatSingleModelName(rawId) {
 
     // 2. Special aliases for Cortex internal modes
     if (id === "openrouter/auto" || id === "openrouter:auto" || id.includes("Auto Smart Route")) {
-        return "Gemini 3.7 Flash (Smart Routed)";
+        return "Gemini 2.5 Flash (Smart Routed)";
     }
-    if (id === "fast") return "Gemini 3.7 Flash";
-    if (id === "deep") return "Claude Sonnet 5";
+    if (id === "fast") return "Gemini 2.5 Flash";
+    if (id === "deep") return "Claude 3.7 Sonnet";
+    if (id === "grok") return "Grok 2";
+    if (id === "gpt4") return "GPT-4o";
+    if (id === "deepseek") return "DeepSeek R1";
     if (id === "free") return "Nemotron 3.5 Lightning";
     if (id === "ambulkar-cortex-engine" || id === "local") return "Cortex Neural Engine";
 
@@ -1482,13 +1485,13 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     const spendMetrics = calculateTokenSpend(activeModel, promptTokens, completionTokens);
 
     let contentHTML = "";
-    let activeModelDisplay = "Gemini 3.7 Flash";
+    let activeModelDisplay = "Gemini 2.5 Flash";
 
     const orKey = appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
 
     if (provider === "gemini" && apiKey) {
         contentHTML = await callGeminiProvider(query, sources, activeModel, apiKey);
-        activeModelDisplay = "Gemini 3.7 Flash";
+        activeModelDisplay = "Gemini 2.5 Flash";
     } else if (provider === "openai" && apiKey) {
         contentHTML = await callOpenAIProvider(query, sources, activeModel, apiKey);
         activeModelDisplay = "OpenAI GPT-4o";
@@ -1537,7 +1540,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
     let tier = (model || "").startsWith("openrouter:") ? model.replace("openrouter:", "") : (model || "openrouter/auto");
 
-    let primaryModel = "google/gemini-2.0-flash-001";
+    let primaryModel = "google/gemini-2.5-flash";
     let isParallel = (tier === "parallel");
     let fallbackChain = [];
 
@@ -1545,8 +1548,8 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
         primaryModel = "nvidia/nemotron-3.5-lightning:free";
         fallbackChain = ["nvidia/nemotron-3.5-lightning:free", "google/gemini-2.0-flash-001:free", "meta-llama/llama-3.3-70b-instruct:free"];
     } else if (tier === "fast" || tier === "gemini") {
-        primaryModel = "google/gemini-2.0-flash-001";
-        fallbackChain = ["google/gemini-2.0-flash-001", "google/gemini-2.5-flash", "google/gemini-1.5-flash"];
+        primaryModel = "google/gemini-2.5-flash";
+        fallbackChain = ["google/gemini-2.5-flash", "google/gemini-2.0-flash-001", "google/gemini-1.5-flash"];
     } else if (tier === "deep" || tier === "claude") {
         primaryModel = "anthropic/claude-3.7-sonnet";
         fallbackChain = ["anthropic/claude-3.7-sonnet", "anthropic/claude-3.5-sonnet", "deepseek/deepseek-r1", "openai/gpt-4o"];
@@ -1555,18 +1558,18 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
         fallbackChain = ["x-ai/grok-2", "x-ai/grok-beta", "x-ai/grok-3"];
     } else if (tier === "gpt4" || tier === "openai") {
         primaryModel = "openai/gpt-4o";
-        fallbackChain = ["openai/gpt-4o", "openai/gpt-4o-mini"];
+        fallbackChain = ["openai/gpt-4o", "openai/o3-mini", "openai/gpt-4o-mini"];
     } else if (tier === "deepseek") {
         primaryModel = "deepseek/deepseek-r1";
         fallbackChain = ["deepseek/deepseek-r1", "deepseek/deepseek-chat"];
     } else if (tier === "parallel") {
-        primaryModel = "google/gemini-2.0-flash-001";
+        primaryModel = "google/gemini-2.5-flash";
     } else if (tier.includes("/")) {
         primaryModel = tier;
         fallbackChain = [tier, "openrouter/auto"];
     } else {
-        primaryModel = "google/gemini-2.0-flash-001";
-        fallbackChain = ["google/gemini-2.0-flash-001", "openrouter/auto"];
+        primaryModel = "google/gemini-2.5-flash";
+        fallbackChain = ["google/gemini-2.5-flash", "openrouter/auto"];
     }
 
     // PARALLEL PIPELINE: Fast Extraction ➔ Deep Synthesis
