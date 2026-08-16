@@ -23,7 +23,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 - **Unbounded Multi-Page Flow**: Fixed `@media print` layout rules (`@page { size: letter portrait; margin: 1.5cm; }` and overflow overrides) to eliminate single-page clipping during PDF exports.
 
 #### 🧪 Comprehensive Multi-Device Test Suite
-- **100% Automated Coverage**: Validated static bindings, real-time comparisons, dynamic follow-up drill-downs, in-chat `@` model autocomplete, and mobile/tablet drawers across Desktop, iPad, and iPhone 14 viewports.
+- **100% Automated Coverage**: Validated static bindings, real-time comparisons, dynamic follow-up drill-downs, in-chat `@` model autocomplete, and mobile/tablet drawers across desktop, tablet, and phone viewports.
 
 ---
 
