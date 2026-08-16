@@ -271,73 +271,45 @@
         </div>
     </div>
 
-    <!-- MODAL: CORTEX SETTINGS & NEURAL GATEWAY -->
+    <!-- MODAL: CORTEX SETTINGS & API CONFIG -->
     <div id="settingsModal" class="modal-backdrop" onclick="if(event.target===this) closeSettingsModal()">
-        <div class="modal-box" style="max-width: 580px; max-height: 88vh; overflow-y: auto;">
+        <div class="modal-box" style="max-width: 500px;">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-gear text-cyan"></i> Cortex Settings & AI Gateway</h3>
+                <h3><i class="fa-solid fa-gear text-cyan"></i> Cortex Settings</h3>
                 <button class="modal-close" id="btnCloseSettingsModal" onclick="closeSettingsModal()">&times;</button>
             </div>
             <form id="settingsForm">
-                <div class="form-group">
-                    <label for="providerSelect"><i class="fa-solid fa-network-wired text-cyan"></i> Gateway Route</label>
-                    <select id="providerSelect" class="text-input" style="width: 100%; padding: 8px 12px; border-radius: 6px; background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
-                        <option value="openrouter">OpenRouter Gateway (Access 300+ AI Models)</option>
-                        <option value="local">Local Free Fallback Engine</option>
-                    </select>
-                </div>
-
                 <!-- API KEY GROUP -->
-                <div class="form-group" id="apiKeyGroup" style="margin-top: 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <label for="apiKeyInput" id="apiKeyLabel"><i class="fa-solid fa-key text-gold"></i> OpenRouter API Key</label>
                         <button type="button" id="btnTestApiKey" class="btn-secondary" onclick="testOpenRouterApiKeyNow()" style="font-size: 0.75rem; padding: 4px 10px; border-radius: 4px;">
-                            <i class="fa-solid fa-bolt text-cyan"></i> Test Key & Load Models
+                            <i class="fa-solid fa-bolt text-cyan"></i> Test Key
                         </button>
                     </div>
                     <div style="position: relative;">
-                        <input type="password" id="apiKeyInput" class="text-input" placeholder="sk-or-v1-..." style="width: 100%; padding: 8px 40px 8px 12px; font-size: 0.85rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                        <input type="password" id="apiKeyInput" class="text-input" placeholder="sk-or-v1-..." style="width: 100%; padding: 10px 40px 10px 12px; font-size: 0.88rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
                         <button type="button" id="btnToggleKeyVis" onclick="toggleApiKeyVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer;">
                             <i class="fa-solid fa-eye" id="apiKeyEyeIcon"></i>
                         </button>
                     </div>
                     <div id="apiKeyStatusMessage" style="font-size: 0.78rem; margin-top: 6px; min-height: 18px; color: #94a3b8;">
-                        Stored 100% locally in your browser's private storage.
+                        Stored 100% locally in your browser. If empty, Cortex automatically uses the free built-in engine.
                     </div>
                 </div>
 
-
-                <!-- MODEL SELECTION GROUP -->
-                <div class="form-group" style="margin-top: 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <label for="modelSelect"><i class="fa-solid fa-microchip text-purple"></i> Active AI Model</label>
-                        <button type="button" class="btn-secondary" onclick="fetchLatestModelsAuto(true)" style="font-size: 0.75rem; padding: 3px 8px; border-radius: 4px;" title="Refresh models from OpenRouter">
-                            <i class="fa-solid fa-arrows-rotate text-cyan"></i> Refresh All
-                        </button>
-                    </div>
-                    <select id="modelSelect" class="text-input" style="width: 100%; padding: 8px 12px; border-radius: 6px; background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
-                        <!-- Populated dynamically -->
-                    </select>
-                </div>
-
-                <!-- CUSTOM MODEL SLUG INPUT -->
-                <div class="form-group" id="customModelGroup" style="display: none; margin-top: 12px;">
-                    <label for="customModelInput"><i class="fa-solid fa-terminal text-cyan"></i> Custom OpenRouter Model ID</label>
-                    <input type="text" id="customModelInput" class="text-input" placeholder="e.g. meta-llama/llama-3.3-70b-instruct or deepseek/deepseek-r1" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
-                </div>
-
-                <div class="form-group" style="margin-top: 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <label for="discordWebhookInput"><i class="fa-brands fa-discord text-purple"></i> Discord Alert Webhook URL (Optional)</label>
-                        <button type="button" class="btn-secondary" onclick="testDiscordWebhook()" style="font-size: 0.75rem; padding: 3px 10px; border-radius: 4px;">
+                <div class="form-group" style="margin-top: 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label for="discordWebhookInput"><i class="fa-brands fa-discord text-purple"></i> Discord Alert Webhook (Optional)</label>
+                        <button type="button" class="btn-secondary" onclick="testDiscordWebhook()" style="font-size: 0.75rem; padding: 4px 10px; border-radius: 4px;">
                             <i class="fa-solid fa-paper-plane text-teal"></i> Test Alert
                         </button>
                     </div>
-                    <input type="password" id="discordWebhookInput" class="text-input" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
-                    <span class="help-text" style="font-size: 0.75rem; color: #94a3b8;">Optional: Paste your Discord channel webhook URL for instant 24/7 background alerts.</span>
+                    <input type="password" id="discordWebhookInput" class="text-input" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; padding: 10px 12px; font-size: 0.88rem; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                    <span class="help-text" style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px; display: block;">Receive automated 24/7 background research alerts directly in your Discord channel.</span>
                 </div>
 
-                <div class="modal-footer" style="margin-top: 20px;">
+                <div class="modal-footer" style="margin-top: 24px;">
                     <button type="button" class="btn-secondary" id="btnCancelSettings" onclick="closeSettingsModal()">Cancel</button>
                     <button type="submit" class="btn-primary">Save Settings</button>
                 </div>
