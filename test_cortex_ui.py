@@ -13,8 +13,8 @@ Coverage:
 10. Workspace Thread History Management (Thread switching, deletion, and clear history).
 11. Responsive Multi-Device Audits:
     - Desktop Viewport (1440x900)
-    - Tablet Viewport (768x1024 - iPad)
-    - Mobile Viewport (390x844 - iPhone 14)
+    - Tablet Viewport (768x1024)
+    - Phone Viewport (390x844)
 """
 
 import re
@@ -213,9 +213,9 @@ def test_full_cortex_suite():
         print("PASS: Executive Daily Digest synthesized multi-topic briefing successfully.")
         
         # ==========================================
-        # 2. TABLET VIEWPORT (768x1024 - iPad)
+        # 2. TABLET VIEWPORT (768x1024)
         # ==========================================
-        print("\n[PHASE 2: TABLET AUDIT] - 768x1024 (iPad)...")
+        print("\n[PHASE 2: TABLET AUDIT] - 768x1024...")
         driver.set_window_size(768, 1024)
         time.sleep(0.5)
         
@@ -229,23 +229,23 @@ def test_full_cortex_suite():
         overlay.click()
         time.sleep(0.3)
         assert "active" not in sidebar.get_attribute("class"), "Tablet sidebar drawer did not close on overlay click!"
-        print("PASS: iPad viewport responsive drawer toggle & overlay verified.")
+        print("PASS: Tablet viewport responsive drawer toggle & overlay verified.")
         
         # ==========================================
-        # 3. MOBILE VIEWPORT (390x844 - iPhone 14)
+        # 3. PHONE VIEWPORT (390x844)
         # ==========================================
-        print("\n[PHASE 3: MOBILE AUDIT] - 390x844 (iPhone 14)...")
+        print("\n[PHASE 3: PHONE AUDIT] - 390x844...")
         driver.set_window_size(390, 844)
         time.sleep(0.5)
         
         btn_mobile_toggle.click()
         time.sleep(0.3)
-        assert "active" in sidebar.get_attribute("class"), "Mobile sidebar drawer did not open!"
+        assert "active" in sidebar.get_attribute("class"), "Phone sidebar drawer did not open!"
         
         driver.find_element(By.ID, "btnMobileCloseSidebar").click()
         time.sleep(0.3)
-        assert "active" not in sidebar.get_attribute("class"), "Mobile sidebar drawer did not close on close button click!"
-        print("PASS: iPhone 14 mobile viewport navigation drawer verified.")
+        assert "active" not in sidebar.get_attribute("class"), "Phone sidebar drawer did not close on close button click!"
+        print("PASS: Phone viewport navigation drawer verified.")
         
         print("\n==========================================================================")
         print("[SUCCESS] FULL AUTOMATED TEST SUITE COMPLETED (100% PASS - 0 ERRORS)!")
