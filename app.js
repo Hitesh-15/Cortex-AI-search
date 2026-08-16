@@ -2193,8 +2193,12 @@ function formatAIResponseHTML(text) {
         .replace(/\n\n/g, '</p><p class="memo-paragraph">')
         .replace(/\n/g, '<br>');
 
-    // Clean up empty tags
-    clean = clean.replace(/<p[^>]*>\s*<\/p>/g, '').replace(/(?:<br>\s*){3,}/g, '<br><br>');
+    // Clean up empty tags and strip excess br tags immediately following bento headers
+    clean = clean.replace(/<p[^>]*>\s*<\/p>/g, '');
+    clean = clean.replace(/(<\/div>)\s*(?:<br\s*\/?>)+/gi, '$1');
+    clean = clean.replace(/(?:<br\s*\/?>)+\s*(<div class="bento-section-header")/gi, '$1');
+    clean = clean.replace(/(<div class="bento-section-header">[\s\S]*?<\/div>)\s*(?:<br\s*\/?>)+/gi, '$1');
+    clean = clean.replace(/(?:<br\s*\/?>){2,}/g, '<br>');
 
     return clean;
 }
