@@ -5,7 +5,12 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v3.3.0] — 2026-08-16
-### **Dynamic Frontier Model Resolution & Seamless Workspace Navigation UX**
+### **Dynamic Frontier Model Resolution, Contextual Follow-up Search & Streamlined UX**
+
+#### 💡 Dynamic Context-Aware Follow-up Search Generator
+- **Content & Entity Extraction**: Replaced static generic questions with a dynamic entity extractor that extracts salient nouns, key institutions, policy mechanisms, and numerical metrics directly from the query and synthesized answer.
+- **Prefix Sanitization**: Strips dynamic prompt wrappers (e.g. *"Financial analysis, corporate disclosures, and earnings impact of..."*) to focus follow-ups cleanly on the core subject.
+- **Thread-Aware Non-Repetitive Rotation**: Automatically tracks all previously generated follow-ups in the thread and rotates across 6 domain-tailored analytical angles (Macro catalysts, balance sheet impact, algorithmic bottlenecks, regulatory headwinds, comparative historical benchmarks, and forward forecasts) so 10+ repeated searches on the same topic always generate fresh follow-up angles.
 
 #### 🧠 Dynamic Model Resolution & Multi-Model Telemetry
 - **Dynamic Model Catalog Ingestion**: Connected Cortex to live API model catalogs, dynamically registering any newly released frontier model with automatic pricing and display name formatting.
@@ -13,8 +18,9 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 - **Multi-Model Pipeline Telemetry**: Parallel extraction ➔ reasoning pipelines dynamically display the full model execution chain (e.g. `⚡ Gemini 3.7 Flash ➔ 🧠 Claude Sonnet 5`).
 - **Novel Model Heuristic Parser**: Intelligent regular expression tokenizer automatically formats any future unmapped model releases (e.g. `mistral-large-3`, `gemini-4.0-pro`, `grok-5`) with clean capitalization and tags.
 
-#### 🔄 Frictionless Desk Navigation & New Search Reset
-- **Instant Hero View Reset**: Fixed thread container clearing so clicking **+ New Thread** or switching categories immediately clears prior DOM results and presents the clean research desk with category-specific prompt cards.
+#### 🔄 Frictionless Desk Navigation & Intuitive "+ New Search"
+- **Clean Action Button**: Renamed "+ New Research Desk Memo" to the intuitive **`+ New Search`**.
+- **Instant Hero View Reset**: Fixed thread container clearing so clicking **+ New Search** or switching categories immediately clears prior DOM results and presents the clean research desk with category-specific prompt cards.
 - **Unified Sidebar Event Handlers**: Deduplicated mobile and desktop navigation bindings for silky smooth category switching across Web, Finance, Academic, Code, and Creative Writing desks.
 
 ---
