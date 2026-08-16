@@ -167,6 +167,7 @@ function initAmbuApp() {
     updateHeaderModelLabel();
     updateTotalSpendDisplay();
     syncEffortPillUI();
+    renderSuggestedCards(appState.activeFocusMode || "web");
     fetchLatestModelsAuto(false);
     fetchDynamicTrendingPrompts(false);
 }
