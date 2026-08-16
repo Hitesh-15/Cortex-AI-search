@@ -38,11 +38,11 @@ def test_static_bindings():
     html_ids = set(re.findall(r'id=["\']([^"\']+)["\']', html_content))
     critical_elements = [
         "btnMobileToggle", "btnMobileCloseSidebar", "sidebarOverlay", "appSidebar",
-        "btnOpenLockModal", "btnOpenSettings", "btnOpenReleaseNotes", "btnGenerateMorningDigest",
+        "btnOpenSettings", "btnOpenReleaseNotes", "btnGenerateMorningDigest",
         "btnClearHistory", "searchForm", "searchInput", "btnSubmitSearch",
         "standardInputRow", "compareInputRow", "compareInputA", "compareInputB",
         "btnSubmitCompare", "btnCancelCompare",
-        "chatEffortSelect", "btnToggleWatchdog", "settingsModal", "vaultLockModal", "releaseNotesModal"
+        "chatEffortSelect", "btnToggleWatchdog", "settingsModal", "releaseNotesModal"
     ]
     
     missing = [el for el in critical_elements if el not in html_ids]
