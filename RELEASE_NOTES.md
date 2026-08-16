@@ -4,6 +4,18 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.6.2] — 2026-08-16
+### **Bento Executive Memo Layout, Auto-Section Chunking & Welcoming Visual Hierarchy**
+
+#### 🍱 Bento Section Chunking & Visual Hierarchy
+- **Auto-Section Chunking Engine**: Automatically transforms raw AI output and markdown sections into distinct, beautifully formatted **Bento Section Cards** with gradient numbered pills (`01`, `02`, `03`), sub-heading badges, and hairline borders.
+- **Hero Executive Intelligence Banner**: Renders a dedicated gradient hero card (`.memo-hero-header`) for top-level memo headings with cyan accent badges.
+- **Translucent Metadata Strip**: Auto-formats `Date | Prepared for | Classification` into tactile, security-badged meta chips.
+- **Strategic Outlook Callout Card**: Auto-detects `Conclusion:` or `Strategic Outlook:` sections and wraps them in an emerald-accented callout box with a chart-line icon.
+- **Context Callout Notes**: Highlights `Context note:` statements in clean cyan callouts for effortless executive scanning.
+
+---
+
 ## 🌟 [v3.6.1] — 2026-08-16
 ### **Human-Touch Editorial Workspace, Resilient Dynamic Synthesis & Instant Copy Memo Action**
 
