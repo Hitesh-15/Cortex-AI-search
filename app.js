@@ -1077,7 +1077,7 @@ async function runAsyncSearchPipeline(userQuery) {
 
     stepElement.innerHTML = `
         <div class="user-query-heading">
-            <i class="fa-solid fa-circle-question"></i> ${userQuery}
+            <i class="fa-solid fa-magnifying-glass text-cyan"></i> ${userQuery}
             ${targetModelOverride ? `<span style="font-size: 0.75rem; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; padding: 2px 8px; border-radius: 4px; margin-left: 8px;"><i class="fa-solid fa-tag"></i> @${formatSingleModelName(targetModelOverride)}</span>` : ''}
             ${isComparisonMode ? `<span style="font-size: 0.75rem; background: rgba(45, 212, 191, 0.2); border: 1px solid rgba(45, 212, 191, 0.4); color: #2dd4bf; padding: 2px 8px; border-radius: 4px; margin-left: 8px;"><i class="fa-solid fa-code-compare"></i> Model Comparison Mode</span>` : ''}
         </div>
@@ -2448,7 +2448,7 @@ function renderViewport() {
             threadContainer.innerHTML = thread.steps.map((step, idx) => `
                 <div class="query-thread-block">
                     <div class="user-query-heading">
-                        <i class="fa-solid fa-circle-question"></i> ${step.query}
+                        <i class="fa-solid fa-magnifying-glass text-cyan"></i> ${step.query}
                     </div>
                     <div class="sources-container">
                         <div class="sources-header"><i class="fa-solid fa-globe text-cyan"></i> Verified Web Sources (${step.sources.length})</div>
