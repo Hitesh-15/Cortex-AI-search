@@ -16,7 +16,10 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 #### 🏆 Multi-Model Ensemble Thinking Tournament (`@thinking`)
 - **Parallel Best-of-N Tournament**: Typing `@thinking` (or `@ensemble`, `@best`) simultaneously queries all top 5 frontier reasoning engines (**Claude Opus 5**, **Claude Sonnet 5**, **Gemini 3.7 Flash Thinking**, **DeepSeek R1 MoE**, and **OpenAI o3-mini**) in parallel.
-- **Automated Rigor Scoring & Telemetry**: Automatically evaluates logical depth, proof structures, and citation fidelity to select and render the highest-scoring output accompanied by a tournament banner.
+#### 📱 Mobile UI/UX Overhaul & Decluttering
+- **Decluttered Mobile Viewport**: Streamlined floating bottom search bar, optimized action row padding, and reduced mobile answer container margins for maximized viewport content visibility.
+- **Consolidated Single-Row Telemetry**: Merged spend, tokens, effort level, and model badges into a sleek, unified responsive telemetry strip, removing redundant duplicate boxes on single search runs.
+- **Precision Rate Card Sanitization**: Fixed OpenRouter unmetered pricing bug (`-1`) that previously caused negative cost displays on variable-priced models, ensuring 100% accurate, strictly non-negative USD telemetry ($0.00000).
 
 ---
 

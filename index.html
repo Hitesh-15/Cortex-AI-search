@@ -325,19 +325,21 @@
             </div>
             <div style="padding-top: 4px; font-size: 0.88rem; line-height: 1.6; color: #cbd5e1;">
                 <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
-                    <strong style="color: #38bdf8; font-size: 0.95rem;">🌟 Version 3.5.0 (Active Live Release)</strong>
-                    <p style="margin-top: 4px; font-size: 0.82rem; color: #94a3b8;">Fluid responsive 50/50 split view for dual-model comparisons (@compare) and updated August 2026 frontier intelligence models.</p>
+                    <strong style="color: #38bdf8; font-size: 0.95rem;">🌟 Version 3.6.0 (Active Live Release)</strong>
+                    <p style="margin-top: 4px; font-size: 0.82rem; color: #94a3b8;">Interactive @mention autocomplete popup, Ensemble Thinking tournament (@thinking), and streamlined Mobile UI/UX overhaul.</p>
                 </div>
 
-                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-columns text-cyan"></i> Responsive 50/50 Dual Split View (@compare)</h4>
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-mobile-screen-button text-cyan"></i> Mobile UI/UX Overhaul & Decluttering</h4>
                 <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
-                    <li><strong>Full Viewport Real Estate:</strong> Expanded container boundaries to 1440px with responsive fluid padding to utilize the full display across ultrawide monitors and laptops.</li>
-                    <li><strong>Exact 50/50 Columns:</strong> Two-column CSS grid (<code>minmax(0, 1fr)</code>) ensures side-by-side Gemini vs Claude analyses render in equal 50% split view with zero text clipping.</li>
+                    <li><strong>Decluttered Mobile Viewport:</strong> Cleaned bottom search bar spacing, action row padding, and reduced mobile answer container margins.</li>
+                    <li><strong>Consolidated Single-Row Telemetry:</strong> Merged spend, tokens, effort level, and model badges into a single compact bar.</li>
+                    <li><strong>Precision Rate Card Sanitization:</strong> Clamped unmetered variable pricing rates to prevent negative cost calculation glitches.</li>
                 </ul>
 
-                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-tag text-purple"></i> Direct @model Tags & Comparison Mode</h4>
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-at text-purple"></i> Interactive @ Mention Autocomplete & Ensemble Thinking</h4>
                 <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
-                    <li><strong>Instant Model Tagging:</strong> Run any query with <code>@opus</code>, <code>@claude</code>, <code>@gemini</code>, <code>@batch</code>, <code>@grok</code>, <code>@gpt4</code>, <code>@deepseek</code>, <code>@parallel</code>, <code>@compare</code>, <code>@free</code>, or <code>@custom/&lt;slug&gt;</code> without opening Settings.</li>
+                    <li><strong>Search Chatbox Autocomplete:</strong> Type <code>@</code> in the search box to trigger an instant autocomplete menu with arrow-key and click selection.</li>
+                    <li><strong>Ensemble Thinking Tournament:</strong> <code>@thinking</code> evaluates all top 5 frontier reasoning models (Opus 5, Sonnet 5, Gemini Thinking, DeepSeek R1, o3-mini) in parallel.</li>
                 </ul>
 
                 <div class="modal-footer" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
