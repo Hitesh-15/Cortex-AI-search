@@ -606,7 +606,7 @@ function updateTotalSpendDisplay() {
 // Search Execution & Pipeline
 const AT_MENTION_MODELS = [
     { tag: "@opus", name: "👑 Claude Opus 5", desc: "Maximum Frontier Intelligence" },
-    { tag: "@claude", name: "🧠 Claude Sonnet 5", desc: "Flagship Hybrid Reasoning & Synthesis" },
+    { tag: "@sonnet", name: "🧠 Claude Sonnet 5", desc: "Flagship Hybrid Reasoning & Synthesis" },
     { tag: "@gemini", name: "⚡ Gemini 3.7 Flash", desc: "Sub-Second Search & Extraction" },
     { tag: "@compare", name: "🔀 Multi-Model Compare", desc: "50/50 Dual Split View: Gemini vs Claude" },
     { tag: "@parallel", name: "🚀 Parallel Pipeline", desc: "Gemini 3.7 Flash ➔ Claude Sonnet 5" },
