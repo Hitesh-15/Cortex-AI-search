@@ -17,9 +17,9 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v3.6.1] — 2026-08-16
-### **Human-Touch Editorial Workspace, Resilient Dynamic Synthesis & Instant Copy Memo Action**
+### **Executive Editorial Workspace, Resilient Dynamic Synthesis & Instant Copy Memo Action**
 
-#### ✍️ Human-Crafted Editorial Workspace & Typography
+#### ✍️ Executive Editorial Workspace & Typography
 - **Executive Slate Glass Gradient**: Replaced flat monochrome boxes with a vertical slate glass gradient (`rgba(15, 23, 42, 0.75)` to `rgba(10, 15, 29, 0.85)`) crowned by a subtle cyan top-border accent.
 - **Reading Rhythm & Contrast**: Increased paragraph line-height to `1.78` and enhanced text contrast (`#cbd5e1` body / `#f8fafc` headings) for effortless long-form reading.
 - **Tactile Citation Micro-Chips**: Interactive inline citations (`[1]`, `[2]`) now feature a soft violet glow and smooth hover animations.
