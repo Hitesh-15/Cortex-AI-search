@@ -13,13 +13,14 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 - **Mobile Stack Resilience**: Automatically transitions from two-column side-by-side to stacked/tabbed navigation on devices below 920px width.
 
 #### 🧠 Frontier Intelligence Model Refresh (August 2026)
-- **Updated Frontier Catalog**: Synchronized the inline selector and gateway settings with the latest August 2026 model releases:
-  - **Claude 3.7 Sonnet / 3.5 Sonnet** (`@claude`): Best-in-class instruction following, code structuring, and hybrid reasoning.
-  - **Gemini 2.5 Flash / 2.0 Flash** (`@gemini`): Ultra-fast workhorse, 1M+ context window, fractions of a cent per query.
-  - **Grok 2 / Grok Beta** (`@grok`): Solo verifier, real-time sentiment, and distinct perspective.
-  - **OpenAI GPT-4o / o3-mini** (`@gpt4`): High-precision algorithmic coding and reasoning logic.
-  - **DeepSeek R1** (`@deepseek`): Open-weights 671B parameter Mixture-of-Experts reasoning engine.
-  - **Parallel Pipeline** (`@parallel`): Chained execution (Gemini 2.5 Flash Scraper ➔ Claude 3.7 Sonnet Thinker).
+- **Updated Frontier Catalog**: Synchronized the inline selector, search query tags, and gateway settings with the latest August 2026 model releases:
+  - **Claude Opus 5** (`@opus`): Maximum frontier intelligence for deep multi-step reasoning, architectural designs, and complex proofs (`anthropic/claude-opus-5`).
+  - **Claude Sonnet 5** (`@claude`): Flagship hybrid reasoning, structured memos, and superior instruction-following (`anthropic/claude-sonnet-5`).
+  - **Gemini 3.7 Flash** (`@gemini`): Sub-second frontier extraction workhorse with native `:batch` (50% discount) and `:thinking` reasoning modes (`google/gemini-3.7-flash`).
+  - **Grok 4.6** (`@grok`): Real-time knowledge indexing, market sentiment analysis, and uncensored perspectives (`x-ai/grok-4.6`).
+  - **OpenAI o3-mini / GPT-4o** (`@gpt4`): High-precision algorithmic coding and reasoning logic (`openai/o3-mini`, `openai/gpt-4o`).
+  - **DeepSeek R1** (`@deepseek`): Open-weights 671B parameter Mixture-of-Experts reasoning engine (`deepseek/deepseek-r1`).
+  - **Parallel Pipeline** (`@parallel`): Chained execution (Gemini 3.7 Flash Scraper ➔ Claude Sonnet 5 Thinker).
   - **Live Dynamic Model Sync**: Real-time background sync against OpenRouter model catalog with wildcard `@custom/<slug>` routing.
 
 ---
