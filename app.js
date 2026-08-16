@@ -3074,3 +3074,5 @@ window.generateDynamicFollowUpHTML = generateDynamicFollowUpHTML;
 window.toggleComparisonMode = toggleComparisonMode;
 window.executeComparisonSearch = executeComparisonSearch;
 window.generateExecutiveMorningDigest = generateExecutiveMorningDigest;
+window.appState = appState;
+
