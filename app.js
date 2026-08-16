@@ -1800,6 +1800,16 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
 }
 
 async function callOpenRouterProvider(query, sources, model, apiKey) {
+    const cleanKey = (apiKey || appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || localStorage.getItem("openrouter_api_key") || "").trim();
+
+    if (!cleanKey) {
+        const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
+        return {
+            html: (fallback && fallback.html) ? fallback.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
+            modelUsed: fallback?.modelName || "Cortex Neural Engine"
+        };
+    }
+
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
     let tier = (model || "").startsWith("openrouter:") ? model.replace("openrouter:", "") : (model || "openrouter/auto");
 
@@ -1854,7 +1864,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                         method: "POST",
                         headers: {
-                            "Authorization": `Bearer ${apiKey}`,
+                            "Authorization": `Bearer ${cleanKey}`,
                             "Content-Type": "application/json",
                             "HTTP-Referer": "https://cortex.ambulkar.com",
                             "X-Title": "Cortex Ensemble Thinking"
@@ -1914,7 +1924,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             const fastRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${apiKey}`,
+                    "Authorization": `Bearer ${cleanKey}`,
                     "Content-Type": "application/json",
                     "HTTP-Referer": "https://cortex.ambulkar.com",
                     "X-Title": "Cortex Parallel Pipeline"
@@ -1936,7 +1946,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             const deepRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${apiKey}`,
+                    "Authorization": `Bearer ${cleanKey}`,
                     "Content-Type": "application/json",
                     "HTTP-Referer": "https://cortex.ambulkar.com",
                     "X-Title": "Cortex Deep Synthesis"
@@ -1982,7 +1992,7 @@ Instructions:
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${apiKey}`,
+                "Authorization": `Bearer ${cleanKey}`,
                 "Content-Type": "application/json",
                 "HTTP-Referer": "https://cortex.ambulkar.com",
                 "X-Title": "Cortex Market Research Desk"
@@ -2003,43 +2013,24 @@ Instructions:
                 modelUsed: formatModelDisplayName(actualModel)
             };
         } else {
-            // Auto fallback retry
-            try {
-                const autoRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${apiKey}`,
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "https://cortex.ambulkar.com",
-                        "X-Title": "Cortex Market Research Desk"
-                    },
-                    body: JSON.stringify({
-                        model: primaryModel,
-                        models: fallbackChain,
-                        messages: [{ role: "user", content: prompt }]
-                    })
-                });
-                if (autoRes.ok) {
-                    const autoData = await autoRes.json();
-                    return {
-                        html: formatAIResponseHTML(autoData.choices?.[0]?.message?.content || ""),
-                        modelUsed: formatModelDisplayName(autoData.model || primaryModel)
-                    };
-                }
-            } catch (autoErr) {
-                console.warn("Auto fallback attempt failed:", autoErr);
+            // Auto fallback retry with free neural engine
+            const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
+            if (fallback && fallback.html) {
+                return fallback;
             }
-
-            const errData = await res.json().catch(() => ({}));
             return {
-                html: `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Cortex Gateway Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${errData.error?.message || 'Failed to communicate with Gateway API.'}</p></div>`,
-                modelUsed: formatSingleModelName(primaryModel)
+                html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
+                modelUsed: "Cortex Local Engine (Fallback)"
             };
         }
     } catch (err) {
+        const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
+        if (fallback && fallback.html) {
+            return fallback;
+        }
         return {
-            html: `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Connection Error</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${err.message}</p></div>`,
-            modelUsed: "Connection Error"
+            html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
+            modelUsed: "Cortex Local Engine"
         };
     }
 }
