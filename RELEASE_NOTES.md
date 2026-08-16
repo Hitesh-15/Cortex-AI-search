@@ -4,11 +4,34 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.7.1] — 2026-08-16
+### **Executive Daily Digest Engine, Streamlined Settings & Multi-Page Print Layout**
+
+#### 🌅 3-Section Executive Daily Digest
+- **Structured Executive Intelligence**: Upgraded the Daily Digest synthesizer to generate a crisp, multi-section briefing:
+  - **`01` Frontier AI Models & Reasoning**: Real benchmarks on test-time compute scaling (DeepSeek-R1, Claude 3.7 Sonnet, OpenAI o3-mini) and open-weight efficiency gains.
+  - **`02` Distributed Cloud Infrastructure**: Production Graph RAG, sub-5ms HNSW vector retrieval, and dynamic GPU virtualization.
+  - **`03` Macroeconomic Policy & CapEx**: Hyperscaler data center/semiconductor expenditure growth and interest rate dynamics.
+- **Clean Briefing Titles**: Eliminated raw query echoes in favor of authoritative, clean headings (`Executive Daily Intelligence Briefing`).
+
+#### ⚙️ Streamlined Client-Side Settings Architecture
+- **Unified Dialog**: Merged separate redundant "Gateway" and "Vault" modals into a single, focused **Settings Modal**.
+- **Transparent Client-Side Storage**: Clarified browser-isolated `localStorage` key management; removed confusing cross-device vault claims and redundant dropdowns.
+- **Symmetrical 3-Button Sidebar Footer**: Clean layout featuring `Daily Digest` + 3 high-utility buttons (`[⚙️ Settings]`, `[📜 Release Notes]`, `[🗑️ Clear]`).
+
+#### 🖨️ Multi-Page Print & PDF Architecture
+- **Unbounded Multi-Page Flow**: Fixed `@media print` layout rules (`@page { size: letter portrait; margin: 1.5cm; }` and overflow overrides) to eliminate single-page clipping during PDF exports.
+
+#### 🧪 Comprehensive Multi-Device Test Suite
+- **100% Automated Coverage**: Validated static bindings, real-time comparisons, dynamic follow-up drill-downs, in-chat `@` model autocomplete, and mobile/tablet drawers across Desktop, iPad, and iPhone 14 viewports.
+
+---
+
 ## 🌟 [v3.7.0] — 2026-08-16
 ### **Head-to-Head Comparison Mode, GitHub Deep Crawlers, One-Click Memo Exports (.MD/PDF) & Dynamic Intelligence**
 
 #### ⚖️ Head-to-Head Comparison Matrix
-- **Dual Entity Parallel Search**: Users can compare two frameworks, stocks, or technologies side-by-side (e.g. `React vs Vue`, `NVDA vs AMD`, `FastAPI vs Express`).
+- **Dual Entity Parallel Search**: Compare two frameworks, companies, or technologies side-by-side (e.g. `React vs Vue`, `NVDA vs AMD`, `FastAPI vs Express`).
 - **Dedicated Comparison UI**: Built a clean dual-pill input row (`[A] Entity A vs [B] Entity B`) accessible via the search action bar or `@compare` quick-tag.
 - **Comparative Synthesis Schema**: Formats answers into structured comparison sections covering High-Level Architecture, Capability Matrix, Benchmark Differences, and Strategic Verdicts.
 
@@ -24,9 +47,6 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 #### 💡 Dynamic Smart Follow-Up Generator
 - **Contextual Inquiries**: Dynamically synthesizes 3 smart, clickable follow-up inquiry chips below each answer, allowing users to drill into specific performance trade-offs, security considerations, or deployment benchmarks with a single click.
-
-#### 🌅 Executive Daily Digest Synthesizer
-- **Multi-Topic Synthesis**: Added a dedicated `🌅 Executive Daily Digest` button in the sidebar that aggregates active monitored research desks into a single 24-hour executive briefing.
 
 ---
 
