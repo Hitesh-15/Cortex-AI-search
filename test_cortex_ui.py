@@ -196,21 +196,28 @@ def test_full_cortex_suite():
         time.sleep(0.3)
         rn_modal = driver.find_element(By.ID, "releaseNotesModal")
         assert "active" in rn_modal.get_attribute("class"), "Release Notes modal failed to open!"
-        assert "3.8.0" in rn_modal.text, "v3.8.0 not found in release notes modal!"
+        assert "3.8.1" in rn_modal.text, "v3.8.1 not found in release notes modal!"
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)
         assert "active" not in rn_modal.get_attribute("class"), "Release Notes modal failed to close!"
-        print("PASS: Release Notes modal v3.8.0 opened & verified.")
+        print("PASS: Release Notes modal v3.8.1 opened & verified.")
         
-        # 1.8 Executive Daily Digest Trigger
-        print("--> Testing Executive Daily Digest Synthesis...")
+        # 1.8 Executive Daily Digest Trigger & Accordion Audit
+        print("--> Testing Executive Daily Digest Synthesis & Accordion Drawer...")
         digest_btn = driver.find_element(By.ID, "btnGenerateMorningDigest")
         digest_btn.click()
         WebDriverWait(driver, 12).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "btn-memo-action"))
+            EC.presence_of_element_located((By.CLASS_NAME, "btn-digest-accordion"))
         )
         time.sleep(0.5)
-        print("PASS: Executive Daily Digest synthesized multi-topic briefing successfully.")
+        
+        # Click accordion drawer
+        acc_btn = driver.find_element(By.CLASS_NAME, "btn-digest-accordion")
+        acc_btn.click()
+        time.sleep(0.4)
+        acc_body = driver.find_element(By.ID, "acc-card-1")
+        assert "open" in acc_body.get_attribute("class"), "Accordion drawer failed to open!"
+        print("PASS: Executive Daily Digest synthesized with interactive accordion drawer verified.")
         
         # ==========================================
         # 2. TABLET VIEWPORT (768x1024)

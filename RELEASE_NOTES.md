@@ -4,6 +4,20 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.8.1] — 2026-08-16
+### **Visual Metric Sparklines, Progressive-Disclosure Accordion Expanders & CSS Screen Media Patch**
+
+#### 📈 Embedded Visual Metric Sparklines
+- **Lightweight SVG Trendlines**: Embedded SVG neon trend sparklines directly inside market pills (`S&P +0.62%`, `NASDAQ +0.94%`, `10Y 4.26%`, `Oil $76.80`), displaying asset trajectories at a glance.
+
+#### 📂 Inline Accordion Drawers (`[ ▾ Breakdown / ▴ Collapse ]`)
+- **Progressive Disclosure**: Keeps cards at a 5-second scannable height by default, while allowing users to smoothly unfold detailed compute percentages, supply chain deals, and monetary data points directly in place with smooth CSS transitions.
+
+#### 🛠️ CSS Media Query Hierarchy Patch
+- **Screen Media Fix**: Ensured global screen stylesheet boundaries are properly closed before `@media print` rules, guaranteeing glassmorphism, responsive grid geometry, and themed glowing borders render reliably across all mobile, tablet, and desktop web engines.
+
+---
+
 ## 🌟 [v3.8.0] — 2026-08-16
 ### **Executive Bento Dashboard, Strategic Deals & M&A Tracker, 1-Click Discovery Chips & Institutional Telemetry**
 

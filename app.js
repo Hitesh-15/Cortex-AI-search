@@ -2144,18 +2144,49 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                                 <i class="fa-solid fa-chart-line text-cyan" style="font-size: 0.85rem;"></i>
                             </div>
                             <div class="digest-card-content" style="margin-top: 10px;">
-                                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
-                                    <span style="background: rgba(52, 211, 153, 0.12); color: #34d399; font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">S&P 500 +0.62%</span>
-                                    <span style="background: rgba(52, 211, 153, 0.12); color: #34d399; font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">NASDAQ +0.94%</span>
-                                    <span style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">10Y 4.26%</span>
+                                <!-- VISUAL SPARKLINE MINI-CHARTS -->
+                                <div class="sparkline-pill-row">
+                                    <span class="sparkline-pill up" title="S&P 500 Index">
+                                        <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 11L8 8L15 9L22 4L31 2" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        S&P +0.62%
+                                    </span>
+                                    <span class="sparkline-pill up" title="NASDAQ-100 Tech Index">
+                                        <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 12L9 9L16 6L23 7L31 2" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        NASDAQ +0.94%
+                                    </span>
+                                    <span class="sparkline-pill neutral" title="10-Year US Treasury Yield">
+                                        <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 7L10 6L20 8L31 6" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        10Y 4.26%
+                                    </span>
+                                    <span class="sparkline-pill down" title="Brent Crude Oil">
+                                        <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 3L11 5L20 9L31 12" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        Oil $76.80
+                                    </span>
                                 </div>
-                                <ul>
-                                    <li><strong>Semiconductor Outperformance:</strong> TSMC, ASML, Nvidia, and Broadcom surge on CoWoS & HBM4 tape-out demand <span class="citation-ref">[1]</span>.</li>
-                                    <li><strong>Monetary Policy:</strong> Central bank stabilization signals lower enterprise debt refinancing hurdles <span class="citation-ref">[2]</span>.</li>
-                                </ul>
+                                <p style="margin: 0; font-size: 0.86rem; color: #f1f5f9; line-height: 1.5;">
+                                    Semiconductor equities lead broader indices as advanced packaging and foundry demand accelerates.
+                                </p>
+                                <!-- ACCORDION COLLAPSIBLE DRAWER -->
+                                <div id="acc-card-1" class="digest-accordion-body">
+                                    <ul>
+                                        <li><strong>Advanced Packaging Surge:</strong> TSMC, ASML, Nvidia, and Broadcom rally on record CoWoS and HBM4 tape-outs <span class="citation-ref">[1]</span>.</li>
+                                        <li><strong>Monetary Policy Landscape:</strong> Synchronized central bank rate moderation signals lower enterprise debt refinancing hurdles <span class="citation-ref">[2]</span>.</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-accordion" onclick="toggleDigestAccordion('acc-card-1', this)">
+                                <i class="fa-solid fa-chevron-down"></i> Breakdown
+                            </button>
                             <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: Global semiconductor capital expenditure and TSMC CoWoS supply chain')">
                                 <i class="fa-solid fa-arrow-right"></i> Explore Markets
                             </button>
@@ -2173,13 +2204,22 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                                 <i class="fa-solid fa-brain text-purple" style="font-size: 0.85rem;"></i>
                             </div>
                             <div class="digest-card-content" style="margin-top: 10px;">
-                                <ul>
-                                    <li><strong>Test-Time Reasoning:</strong> Claude 3.7 Sonnet, DeepSeek-R1, and o3-mini deliver <strong>4.2x compute efficiency</strong> via dynamic chain-of-thought allocation <span class="citation-ref">[3]</span>.</li>
-                                    <li><strong>Open-Weight Disruption:</strong> Llama 3.3 70B & Qwen 2.5 hit <strong>88.4% HumanEval</strong>, cutting private inference serving costs by 70% <span class="citation-ref">[4]</span>.</li>
-                                </ul>
+                                <p style="margin: 0; font-size: 0.86rem; color: #f1f5f9; line-height: 1.5;">
+                                    Test-time compute reasoning models deliver up to <strong>4.2x compute efficiency</strong> over classic dense architectures.
+                                </p>
+                                <!-- ACCORDION COLLAPSIBLE DRAWER -->
+                                <div id="acc-card-2" class="digest-accordion-body">
+                                    <ul>
+                                        <li><strong>Hybrid Reasoning Benchmarks:</strong> Claude 3.7 Sonnet, DeepSeek-R1, and o3-mini set new records on SWE-bench and mathematical reasoning <span class="citation-ref">[3]</span>.</li>
+                                        <li><strong>Open-Weight Disruption:</strong> Llama 3.3 70B & Qwen 2.5 reach <strong>88.4% HumanEval</strong>, cutting enterprise private serving costs by 70% <span class="citation-ref">[4]</span>.</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-accordion" onclick="toggleDigestAccordion('acc-card-2', this)">
+                                <i class="fa-solid fa-chevron-down"></i> Breakdown
+                            </button>
                             <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: Test-time compute reasoning scaling in Claude 3.7 Sonnet and DeepSeek R1')">
                                 <i class="fa-solid fa-arrow-right"></i> Explore AI Frontier
                             </button>
@@ -2197,13 +2237,22 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                                 <i class="fa-solid fa-server text-teal" style="font-size: 0.85rem;"></i>
                             </div>
                             <div class="digest-card-content" style="margin-top: 10px;">
-                                <ul>
-                                    <li><strong>Sub-5ms Graph RAG:</strong> HNSW indexing coupled with entity graphs reduces enterprise hallucinations by <strong>65%</strong> <span class="citation-ref">[6]</span>.</li>
-                                    <li><strong>100kW+ Rack Density:</strong> Direct-to-chip liquid cooling standardizes across next-gen gigawatt AI clusters <span class="citation-ref">[7]</span>.</li>
-                                </ul>
+                                <p style="margin: 0; font-size: 0.86rem; color: #f1f5f9; line-height: 1.5;">
+                                    Direct-to-chip 100kW+ liquid cooling and sub-5ms Graph RAG standardize enterprise cloud deployments.
+                                </p>
+                                <!-- ACCORDION COLLAPSIBLE DRAWER -->
+                                <div id="acc-card-3" class="digest-accordion-body">
+                                    <ul>
+                                        <li><strong>Sub-5ms Graph RAG:</strong> HNSW indexing coupled with structured entity graphs slashes model hallucinations by over <strong>65%</strong> <span class="citation-ref">[6]</span>.</li>
+                                        <li><strong>Hyperscale Rack Power:</strong> Modular nuclear and clean energy PPAs scale to meet 100kW+ rack density compute demands <span class="citation-ref">[7]</span>.</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-accordion" onclick="toggleDigestAccordion('acc-card-3', this)">
+                                <i class="fa-solid fa-chevron-down"></i> Breakdown
+                            </button>
                             <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: 100kW direct-to-chip liquid cooling and Graph RAG low-latency architecture')">
                                 <i class="fa-solid fa-arrow-right"></i> Explore Cloud Infra
                             </button>
@@ -2221,13 +2270,22 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                                 <i class="fa-solid fa-handshake text-amber" style="font-size: 0.85rem;"></i>
                             </div>
                             <div class="digest-card-content" style="margin-top: 10px;">
-                                <ul>
-                                    <li><strong>Hyperscaler Alliances:</strong> Amazon finalizes <strong>$8B Anthropic pact</strong>; Microsoft scales Azure OpenAI superclusters <span class="citation-ref">[1]</span>.</li>
-                                    <li><strong>Foundry & Clean Energy:</strong> TSMC 2nm capacity secured by Nvidia/Apple; Microsoft signs 20-yr nuclear PPA with Constellation <span class="citation-ref">[2]</span>.</li>
-                                </ul>
+                                <p style="margin: 0; font-size: 0.86rem; color: #f1f5f9; line-height: 1.5;">
+                                    Hyperscalers lock down multi-gigawatt energy PPAs and multi-billion AI lab supercluster alliances.
+                                </p>
+                                <!-- ACCORDION COLLAPSIBLE DRAWER -->
+                                <div id="acc-card-4" class="digest-accordion-body">
+                                    <ul>
+                                        <li><strong>Hyperscaler Alliances:</strong> Amazon finalizes <strong>$8B Anthropic pact</strong>; Microsoft scales multi-year OpenAI Azure superclusters <span class="citation-ref">[1]</span>.</li>
+                                        <li><strong>Foundry & Clean Energy:</strong> TSMC 2nm capacity secured by Nvidia/Apple; Microsoft signs 20-yr nuclear PPA with Constellation <span class="citation-ref">[2]</span>.</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="digest-card-footer">
+                            <button type="button" class="btn-digest-accordion" onclick="toggleDigestAccordion('acc-card-4', this)">
+                                <i class="fa-solid fa-chevron-down"></i> Breakdown
+                            </button>
                             <button type="button" class="btn-digest-deepdive" onclick="executeSearch('Deep dive: Hyperscaler clean energy nuclear PPAs and AI lab compute partnerships')">
                                 <i class="fa-solid fa-arrow-right"></i> Explore Deals & M&A
                             </button>
@@ -3223,6 +3281,20 @@ function generateExecutiveMorningDigest() {
     executeSearch(digestQuery);
 }
 
+function toggleDigestAccordion(accId, btn) {
+    if (!accId || !btn) return;
+    const el = document.getElementById(accId);
+    if (!el) return;
+    const isOpen = el.classList.contains("open");
+    if (isOpen) {
+        el.classList.remove("open");
+        btn.innerHTML = `<i class="fa-solid fa-chevron-down"></i> Breakdown`;
+    } else {
+        el.classList.add("open");
+        btn.innerHTML = `<i class="fa-solid fa-chevron-up"></i> Collapse`;
+    }
+}
+
 // Explicit window bindings to guarantee 100% button functionality across Edge, Brave, Chrome, Safari
 window.openSettingsModal = openSettingsModal;
 window.closeSettingsModal = closeSettingsModal;
@@ -3251,5 +3323,6 @@ window.generateDynamicFollowUpHTML = generateDynamicFollowUpHTML;
 window.toggleComparisonMode = toggleComparisonMode;
 window.executeComparisonSearch = executeComparisonSearch;
 window.generateExecutiveMorningDigest = generateExecutiveMorningDigest;
+window.toggleDigestAccordion = toggleDigestAccordion;
 window.appState = appState;
 
