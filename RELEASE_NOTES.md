@@ -4,18 +4,34 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.6.0] — 2026-08-16
+### **Interactive `@` Mention Autocomplete, Explicit `@sonnet`/`@opus` Tagging & Multi-Model Ensemble Thinking Tournament**
+
+#### 🎯 Interactive `@` Mention Autocomplete Popup & Quick-Routing Hints
+- **Zero-Friction Search Bar**: Replaced the static dropdown select menu with an interactive floating `@` mention autocomplete popup directly inside the search chatbox with full arrow-key and enter/click selection.
+- **Visual Quick-Routing Hint Strip**: Clean interactive buttons (`@opus`, `@sonnet`, `@gemini`, `@compare`, `@parallel`) allow one-click insertion of workflow tags directly into the search bar.
+
+#### 🧠 Explicit Claude Family Model Separation
+- **Precise Family Mapping**: Differentiated Claude models so `@sonnet` explicitly routes to **Claude Sonnet 5** (`anthropic/claude-sonnet-5`) and `@opus` explicitly routes to **Claude Opus 5** (`anthropic/claude-opus-5`), eliminating ambiguous parent family tags.
+
+#### 🏆 Multi-Model Ensemble Thinking Tournament (`@thinking`)
+- **Parallel Best-of-N Tournament**: Typing `@thinking` (or `@ensemble`, `@best`) simultaneously queries all top 5 frontier reasoning engines (**Claude Opus 5**, **Claude Sonnet 5**, **Gemini 3.7 Flash Thinking**, **DeepSeek R1 MoE**, and **OpenAI o3-mini**) in parallel.
+- **Automated Rigor Scoring & Telemetry**: Automatically evaluates logical depth, proof structures, and citation fidelity to select and render the highest-scoring output accompanied by a tournament banner.
+
+---
+
 ## 🌟 [v3.5.0] — 2026-08-16
 ### **Fluid Responsive 50/50 Dual Split View & Frontier Intelligence Model Refresh**
 
 #### 🖥️ Fluid Responsive Dual Split View (`@compare`)
 - **Full Viewport Space Utilization**: Replaced static 40% margin clamps with responsive, fluid workspace boundaries (`max-width: 1440px`), liberating screen real-estate on ultrawide, desktop, laptop, and tablet displays.
-- **Exact 50/50 Side-by-Side Grid**: Engineered a non-overflowing two-column CSS grid (`minmax(0, 1fr) minmax(0, 1fr)`) with explicit word-wrapping so both Gemini 3.7 Flash and Claude 3.7 Sonnet cards receive equal 50% split width without right-edge clipping.
+- **Exact 50/50 Side-by-Side Grid**: Engineered a non-overflowing two-column CSS grid (`minmax(0, 1fr) minmax(0, 1fr)`) with explicit word-wrapping so both Gemini 3.7 Flash and Claude Sonnet 5 cards receive equal 50% split width without right-edge clipping.
 - **Mobile Stack Resilience**: Automatically transitions from two-column side-by-side to stacked/tabbed navigation on devices below 920px width.
 
 #### 🧠 Frontier Intelligence Model Refresh (August 2026)
 - **Updated Frontier Catalog**: Synchronized the inline selector, search query tags, and gateway settings with the latest August 2026 model releases:
   - **Claude Opus 5** (`@opus`): Maximum frontier intelligence for deep multi-step reasoning, architectural designs, and complex proofs (`anthropic/claude-opus-5`).
-  - **Claude Sonnet 5** (`@claude`): Flagship hybrid reasoning, structured memos, and superior instruction-following (`anthropic/claude-sonnet-5`).
+  - **Claude Sonnet 5** (`@sonnet`): Flagship hybrid reasoning, structured memos, and superior instruction-following (`anthropic/claude-sonnet-5`).
   - **Gemini 3.7 Flash** (`@gemini`): Sub-second frontier extraction workhorse with native `:batch` (50% discount) and `:thinking` reasoning modes (`google/gemini-3.7-flash`).
   - **Grok 4.6** (`@grok`): Real-time knowledge indexing, market sentiment analysis, and uncensored perspectives (`x-ai/grok-4.6`).
   - **OpenAI o3-mini / GPT-4o** (`@gpt4`): High-precision algorithmic coding and reasoning logic (`openai/o3-mini`, `openai/gpt-4o`).
