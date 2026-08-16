@@ -114,14 +114,19 @@ const MODEL_PRICING = {
     "anthropic/claude-3.7-sonnet": { input: 3.00, output: 15.00, tier: "reasoning" },
     "anthropic/claude-3.5-sonnet": { input: 3.00, output: 15.00, tier: "reasoning" },
     "anthropic/claude-sonnet-5": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "anthropic/claude-opus-5": { input: 15.00, output: 75.00, tier: "reasoning" },
+    "anthropic/claude-3-opus": { input: 15.00, output: 75.00, tier: "reasoning" },
     "x-ai/grok-2": { input: 2.00, output: 10.00, tier: "reasoning" },
     "x-ai/grok-3": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "x-ai/grok-4.6": { input: 3.00, output: 15.00, tier: "reasoning" },
     "openai/gpt-4o": { input: 2.50, output: 10.00, tier: "reasoning" },
     "openai/gpt-4o-mini": { input: 0.15, output: 0.60, tier: "fast" },
+    "openai/o3-mini": { input: 1.10, output: 4.40, tier: "reasoning" },
     "deepseek/deepseek-r1": { input: 0.55, output: 2.19, tier: "reasoning" },
     "deepseek/deepseek-chat": { input: 0.14, output: 0.28, tier: "fast" },
     "fast": { input: 0.10, output: 0.40, tier: "fast" },
     "deep": { input: 3.00, output: 15.00, tier: "reasoning" },
+    "opus": { input: 15.00, output: 75.00, tier: "reasoning" },
     "parallel": { input: 3.10, output: 15.40, tier: "reasoning" },
     "openrouter/auto": { input: 0.15, output: 0.60, tier: "fast" }
 };
@@ -130,6 +135,7 @@ const MODEL_PRICING = {
 let PROVIDER_MODELS = {
     openrouter: [
         { id: "openrouter/auto", name: "⚡ Smart Auto Router (Frontier Auto-Select)" },
+        { id: "opus", name: "👑 Claude Opus 5 (Maximum Frontier Intelligence)" },
         { id: "deep", name: "🧠 Claude Sonnet 5 / Claude 3.7 Sonnet" },
         { id: "fast", name: "⚡ Gemini 3.7 Flash / Gemini 2.5 Flash" },
         { id: "grok", name: "🎯 Grok 4.6 / Grok 3 / Grok 2" },
@@ -822,13 +828,15 @@ async function runAsyncSearchPipeline(userQuery) {
 
         if (rawTag === "compare" || rawTag === "vs" || rawTag === "comparison" || rawTag === "cross") {
             isComparisonMode = true;
-        } else if (rawTag === "claude" || rawTag === "sonnet" || rawTag === "anthropic" || rawTag === "claude3.7" || rawTag === "claude3.5") {
-            targetModelOverride = "anthropic/claude-3.7-sonnet";
-        } else if (rawTag === "gemini" || rawTag === "flash" || rawTag === "google") {
-            targetModelOverride = "google/gemini-2.0-flash-001";
-        } else if (rawTag === "grok" || rawTag === "xai" || rawTag === "grok3" || rawTag === "grok2") {
-            targetModelOverride = "x-ai/grok-2";
-        } else if (rawTag === "gpt4" || rawTag === "gpt4o" || rawTag === "openai" || rawTag === "chatgpt") {
+        } else if (rawTag === "opus" || rawTag === "opus5" || rawTag === "claude-opus" || rawTag === "claude-opus-5") {
+            targetModelOverride = "anthropic/claude-opus-5";
+        } else if (rawTag === "claude" || rawTag === "sonnet" || rawTag === "sonnet5" || rawTag === "anthropic" || rawTag === "claude3.7" || rawTag === "claude3.5") {
+            targetModelOverride = "anthropic/claude-sonnet-5";
+        } else if (rawTag === "gemini" || rawTag === "flash" || rawTag === "google" || rawTag === "gemini3.7") {
+            targetModelOverride = "google/gemini-3.7-flash";
+        } else if (rawTag === "grok" || rawTag === "xai" || rawTag === "grok4" || rawTag === "grok3" || rawTag === "grok2") {
+            targetModelOverride = "x-ai/grok-4.6";
+        } else if (rawTag === "gpt4" || rawTag === "gpt4o" || rawTag === "openai" || rawTag === "o3" || rawTag === "chatgpt") {
             targetModelOverride = "openai/gpt-4o";
         } else if (rawTag === "deepseek" || rawTag === "r1" || rawTag === "reasoner") {
             targetModelOverride = "deepseek/deepseek-r1";
@@ -1363,11 +1371,12 @@ function formatSingleModelName(rawId) {
 
     // 2. Special aliases for Cortex internal modes
     if (id === "openrouter/auto" || id === "openrouter:auto" || id.includes("Auto Smart Route")) {
-        return "Gemini 2.5 Flash (Smart Routed)";
+        return "Gemini 3.7 Flash (Smart Routed)";
     }
-    if (id === "fast") return "Gemini 2.5 Flash";
-    if (id === "deep") return "Claude 3.7 Sonnet";
-    if (id === "grok") return "Grok 2";
+    if (id === "opus") return "Claude Opus 5";
+    if (id === "fast") return "Gemini 3.7 Flash";
+    if (id === "deep") return "Claude Sonnet 5";
+    if (id === "grok") return "Grok 4.6";
     if (id === "gpt4") return "GPT-4o";
     if (id === "deepseek") return "DeepSeek R1";
     if (id === "free") return "Nemotron 3.5 Lightning";
@@ -1375,11 +1384,18 @@ function formatSingleModelName(rawId) {
 
     // 3. Exact mappings for standard frontier models
     const MAPPINGS = {
+        "anthropic/claude-opus-5": "Claude Opus 5",
+        "anthropic/claude-sonnet-5": "Claude Sonnet 5",
+        "anthropic/claude-3.7-sonnet": "Claude 3.7 Sonnet",
+        "anthropic/claude-3.7-sonnet:thinking": "Claude 3.7 Sonnet (Thinking)",
+        "anthropic/claude-3.5-sonnet": "Claude 3.5 Sonnet",
+        "anthropic/claude-3-opus": "Claude 3 Opus",
         "google/gemini-3.7-flash": "Gemini 3.7 Flash",
         "google/gemini-3.7-flash-thinking": "Gemini 3.7 Flash Thinking",
         "google/gemini-2.5-pro": "Gemini 2.5 Pro",
         "google/gemini-2.5-flash": "Gemini 2.5 Flash",
         "google/gemini-2.0-flash": "Gemini 2.0 Flash",
+        "google/gemini-2.0-flash-001": "Gemini 2.0 Flash",
         "google/gemini-2.0-flash-001": "Gemini 2.0 Flash",
         "anthropic/claude-3.7-sonnet": "Claude 3.7 Sonnet",
         "anthropic/claude-3.7-sonnet:thinking": "Claude 3.7 Sonnet (Thinking)",
@@ -1562,6 +1578,9 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
     if (tier === "free") {
         primaryModel = "nvidia/nemotron-3.5-lightning:free";
         fallbackChain = ["nvidia/nemotron-3.5-lightning:free", "google/gemini-2.0-flash-001:free", "meta-llama/llama-3.3-70b-instruct:free"];
+    } else if (tier === "opus") {
+        primaryModel = "anthropic/claude-opus-5";
+        fallbackChain = ["anthropic/claude-opus-5", "anthropic/claude-sonnet-5", "anthropic/claude-3-opus", "openai/o1"];
     } else if (tier === "fast" || tier === "gemini") {
         primaryModel = "google/gemini-3.7-flash";
         fallbackChain = ["google/gemini-3.7-flash", "google/gemini-2.5-flash", "google/gemini-2.0-flash-001", "google/gemini-1.5-flash"];
