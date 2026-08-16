@@ -8,7 +8,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ### **Head-to-Head Comparison Mode, GitHub Deep Crawlers, One-Click Memo Exports (.MD/PDF) & Dynamic Intelligence**
 
 #### ⚖️ Head-to-Head Comparison Matrix
-- **Dual Entity Parallel Search**: Users can compare two frameworks, stocks, or technologies side-by-side (e.g. `React vs Vue`, `NVDA vs AMD`, `Mambo EMM vs Workspace ONE`).
+- **Dual Entity Parallel Search**: Users can compare two frameworks, stocks, or technologies side-by-side (e.g. `React vs Vue`, `NVDA vs AMD`, `FastAPI vs Express`).
 - **Dedicated Comparison UI**: Built a clean dual-pill input row (`[A] Entity A vs [B] Entity B`) accessible via the search action bar or `@compare` quick-tag.
 - **Comparative Synthesis Schema**: Formats answers into structured comparison sections covering High-Level Architecture, Capability Matrix, Benchmark Differences, and Strategic Verdicts.
 
