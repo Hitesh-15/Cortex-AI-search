@@ -12,37 +12,71 @@ Cortex is a state-of-the-art AI search engine and executive research memo platfo
 
 ---
 
-## 🏗 Architecture & Research Pipeline
+## 🏗 Architecture & Real-Time Research Pipeline
 
 ```mermaid
 flowchart TD
-    User(["User Research Query"]) --> Classifier["Effort & Focus Mode Classifier Agent"]
-    
-    Classifier --> MultiCrawler["Deep Parallel Web Crawler"]
-    MultiCrawler --> DDG["DuckDuckGo Instant API"]
-    MultiCrawler --> Wiki["Wikipedia Live OpenSearch API"]
-    MultiCrawler --> HN["HackerNews / Tech Algolia API"]
-    MultiCrawler --> DomainIdx["Global Indices (Reuters, Bloomberg, ArXiv, SEC, Nature, GitHub)"]
-    
-    DDG --> SourcesAggregator["20+ Verified Sources Aggregator & Deduplicator"]
-    Wiki --> SourcesAggregator
-    HN --> SourcesAggregator
-    DomainIdx --> SourcesAggregator
-    
-    SourcesAggregator --> Router{"Dynamic Frontier Model Router"}
-    
-    Router -->|Parallel Pipeline| Stage1["Stage 1: Fast Factual Extraction (Gemini 3.7 Flash)"]
-    Stage1 --> Stage2["Stage 2: Deep Mathematical Reasoning & Synthesis (Claude Sonnet 5)"]
-    
-    Router -->|Standard Route| SingleModel["Frontier Model (Gemini 3.7 / Claude 3.7 / Grok 3 / GPT-4o)"]
-    Router -->|Free Engine| FreeNeural["Cortex Free Neural Engine"]
-    
-    Stage2 --> MemoAssembler["Executive Research Memo Assembler"]
-    SingleModel --> MemoAssembler
-    FreeNeural --> MemoAssembler
-    
-    MemoAssembler --> CleanUI["Content-First UI (Compact Sources Strip + Natural Inline Citations)"]
-    MemoAssembler --> DiscordDispatch["Discord Executive Alert Dispatcher"]
+    subgraph Ingestion["1. Query Ingestion & Context Routing"]
+        UserQ["User Research Query / + New Search"]
+        TrendingFeeds["Dynamic Trending Feeds\n(Google News • HackerNews • Wikipedia)"]
+        Classifier["Effort & Focus Mode Router\n(Market • Financial • Academic • Code • Writing)"]
+        UserQ --> Classifier
+        TrendingFeeds --> Classifier
+    end
+
+    subgraph Crawler["2. Deep Parallel Web Crawler"]
+        MultiCrawler["Multi-Engine Parallel Crawler"]
+        DDG["DuckDuckGo Instant API"]
+        Wiki["Wikipedia OpenSearch API"]
+        HN["HackerNews Algolia API"]
+        DomainIdx["Global Intelligence Index\n(Reuters, Bloomberg, ArXiv, SEC, Nature, PubMed, GitHub)"]
+        
+        Classifier --> MultiCrawler
+        MultiCrawler --> DDG
+        MultiCrawler --> Wiki
+        MultiCrawler --> HN
+        MultiCrawler --> DomainIdx
+        
+        DDG --> SourcesAggregator["20+ Verified Sources Aggregator & Deduplicator"]
+        Wiki --> SourcesAggregator
+        HN --> SourcesAggregator
+        DomainIdx --> SourcesAggregator
+    end
+
+    subgraph Gateway["3. Frontier Model & Reasoning Gateway"]
+        Router{"Dynamic Model Router"}
+        Vault["Dual-Lock 2FA Vault\n(AES-256 Client-Side Key Storage)"]
+        Vault -.->|Decrypts API Keys Locally| Router
+        SourcesAggregator --> Router
+        
+        Router -->|Parallel Pipeline| Stage1["Stage 1: Fast Fact Extraction\n(Gemini 3.7 Flash)"]
+        Stage1 --> Stage2["Stage 2: Deep Synthesis & Reasoning\n(Claude Sonnet 5)"]
+        
+        Router -->|Standard Route| SingleModel["Frontier LLM\n(Gemini 3.7 • Claude 3.7 • Grok 3 • GPT-4o)"]
+        Router -->|Free Tier| FreeNeural["Cortex Free Neural Engine"]
+    end
+
+    subgraph Processing["4. Synthesis, Telemetry & Post-Processing"]
+        MemoAssembler["Executive Research Memo Assembler\n(Natural Inline Citations • 36px Compact Sources Drawer)"]
+        Telemetry["Dynamic Model Telemetry & USD Spend Tracker\n(Live Rate Cards • Exact Model Name Resolution)"]
+        FollowUps["Entity-Aware Dynamic Follow-up Engine\n(Thread-Aware Non-Repetitive Rotation)"]
+        Discord["Autonomous Topic Tracker & Discord Alerts"]
+        
+        Stage2 --> MemoAssembler
+        SingleModel --> MemoAssembler
+        FreeNeural --> MemoAssembler
+        
+        MemoAssembler --> Telemetry
+        MemoAssembler --> FollowUps
+        MemoAssembler --> Discord
+    end
+
+    subgraph Output["5. User Presentation"]
+        CleanUI["Content-First Minimalist Workspace\n(100% Top-Visible Memo + Interactive Verified Sources Drawer)"]
+        MemoAssembler --> CleanUI
+        FollowUps --> CleanUI
+        Telemetry --> CleanUI
+    end
 ```
 
 ---
