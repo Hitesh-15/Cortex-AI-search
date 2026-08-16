@@ -3058,7 +3058,7 @@ async function executeComparisonSearch() {
 }
 
 function generateExecutiveMorningDigest() {
-    const defaultTopics = ["AI Frontier Models 2026", "Enterprise Cloud & Android Fleet Modernization", "Macroeconomic Interest Rates & Tech Equities"];
+    const defaultTopics = ["AI Frontier Models & Reasoning Architectures", "Distributed Cloud Infrastructure & Microservices", "Macroeconomic Interest Rates & Tech Equities"];
     const topicList = defaultTopics.join(" • ");
     const digestQuery = `Synthesize 24-Hour Executive Morning Digest covering: ${topicList}`;
     executeSearch(digestQuery);
