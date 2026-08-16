@@ -4,6 +4,26 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.8.0] — 2026-08-16
+### **Executive Bento Dashboard, Strategic Deals & M&A Tracker, 1-Click Discovery Chips & Institutional Telemetry**
+
+#### 🍱 Executive 2x2 Bento Dashboard
+- **Scannable Institutional Grid**: Replaced long text walls with a balanced, highly responsive 2x2 Bento Grid:
+  - **`01` Global Markets & Capital Telemetry**: Real-time asset badges (S&P 500, NASDAQ, 10Y Yields) and semiconductor foundry supply chain rotation (TSMC, ASML, Nvidia CoWoS & HBM4).
+  - **`02` Frontier AI & Reasoning**: Hybrid test-time compute benchmarks (Claude 3.7 Sonnet, DeepSeek-R1, OpenAI o3-mini) and open-weight serving economics (Llama 3.3 70B, Qwen 2.5).
+  - **`03` Distributed Cloud & Power**: Sub-5ms Graph RAG hallucination reduction and 100kW+ direct-to-chip liquid-cooled rack density.
+  - **`04` Strategic Deals, Alliances & M&A**: Amazon's $8B Anthropic/Trainium investment, TSMC 2nm wafer capacity lockups, and hyperscale nuclear power purchase agreements (Constellation Energy Three Mile Island).
+- **Themed Glowing Micro-Borders**: Custom glowing glassmorphic hover effects tailored to each research domain (Cyan, Purple, Teal, Amber).
+
+#### 🔍 Interactive Deep Dives & Prompt Discovery Strip
+- **Card-Level Exploration Buttons**: Every Bento card features a 1-click **`→ Explore [Topic]`** button to trigger dedicated drill-downs into market specifics without retyping.
+- **1-Click Topic Discovery Chips**: Dedicated discovery strip below the grid enabling instant drill-downs into TSMC supply chains, Nuclear PPAs, Reasoning Benchmarks, and Enterprise SaaS M&A.
+
+#### 🏛️ Premier Institutional Source Ingestion
+- **Authoritative Desk Prioritization**: Prioritizes premier global reporting outlets across Reuters Global Markets, Bloomberg, MIT Technology Review, Wall Street Journal, Financial Times, ArXiv, Nature Machine Intelligence, and SEC EDGAR.
+
+---
+
 ## 🌟 [v3.7.1] — 2026-08-16
 ### **Executive Daily Digest Engine, Streamlined Settings & Multi-Page Print Layout**
 

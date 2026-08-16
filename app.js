@@ -2134,7 +2134,7 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                 <!-- 2x2 SCANNABLE BENTO GRID -->
                 <div class="digest-bento-grid">
                     <!-- CARD 01: MARKETS & CAPITAL TELEMETRY -->
-                    <div class="digest-bento-card">
+                    <div class="digest-bento-card card-markets">
                         <div>
                             <div class="digest-card-header">
                                 <div class="digest-card-title-group">
@@ -2163,7 +2163,7 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                     </div>
 
                     <!-- CARD 02: FRONTIER AI & REASONING -->
-                    <div class="digest-bento-card">
+                    <div class="digest-bento-card card-ai">
                         <div>
                             <div class="digest-card-header">
                                 <div class="digest-card-title-group">
@@ -2187,7 +2187,7 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                     </div>
 
                     <!-- CARD 03: CLOUD INFRASTRUCTURE & POWER -->
-                    <div class="digest-bento-card">
+                    <div class="digest-bento-card card-cloud">
                         <div>
                             <div class="digest-card-header">
                                 <div class="digest-card-title-group">
@@ -2211,7 +2211,7 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                     </div>
 
                     <!-- CARD 04: DEALS, ALLIANCES & M&A -->
-                    <div class="digest-bento-card">
+                    <div class="digest-bento-card card-deals">
                         <div>
                             <div class="digest-card-header">
                                 <div class="digest-card-title-group">
