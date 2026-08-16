@@ -188,6 +188,9 @@ function populateChatModelSelector() {
     chatSelect.innerHTML = html;
 }
 
+// Dynamic Model Catalog Cache & Discovery Store
+var DYNAMIC_MODEL_CATALOG = JSON.parse(localStorage.getItem("cortex_dynamic_model_catalog") || "{}");
+
 // Auto-Fetch & Dynamic Model Discovery Engine from OpenRouter
 async function fetchLatestModelsAuto(isManual = false) {
     const btnRefresh = document.getElementById("btnRefreshModels");
@@ -208,8 +211,11 @@ async function fetchLatestModelsAuto(isManual = false) {
             if (data.data && Array.isArray(data.data)) {
                 const fetchedModels = data.data;
 
-                // Update MODEL_PRICING matrix dynamically
+                // Update MODEL_PRICING matrix & Dynamic Model Catalog dynamically
                 fetchedModels.forEach(m => {
+                    if (m.id && m.name) {
+                        DYNAMIC_MODEL_CATALOG[m.id] = m.name;
+                    }
                     const promptPrice = m.pricing?.prompt ? (parseFloat(m.pricing.prompt) * 1000000) : 0.20;
                     const completionPrice = m.pricing?.completion ? (parseFloat(m.pricing.completion) * 1000000) : 0.60;
 
@@ -219,6 +225,10 @@ async function fetchLatestModelsAuto(isManual = false) {
                         tier: (m.id.includes("pro") || m.id.includes("opus") || m.id.includes("r1") || m.id.includes("reasoning")) ? "reasoning" : "fast"
                     };
                 });
+
+                try {
+                    localStorage.setItem("cortex_dynamic_model_catalog", JSON.stringify(DYNAMIC_MODEL_CATALOG));
+                } catch (storeErr) {}
 
                 // Keep UI dropdown clean with high-level intelligence tiers
                 PROVIDER_MODELS.openrouter = [
@@ -235,12 +245,12 @@ async function fetchLatestModelsAuto(isManual = false) {
                 }
 
                 if (isManual) {
-                    alert(`✅ OpenRouter Sync Complete! Connected to ${fetchedModels.length} models across all tiers.`);
+                    alert(`✅ Dynamic Model Sync Complete! Connected to ${fetchedModels.length} models across all tiers.`);
                 }
             }
         } else {
             if (isManual) {
-                alert(`⚠️ Note: Fetched default OpenRouter catalog.`);
+                alert(`⚠️ Note: Fetched default model catalog.`);
             }
         }
     } catch (e) {
@@ -301,17 +311,25 @@ function setupNavigationListeners() {
         });
     }
 
-    // New Thread Button
-    document.getElementById("btnNewThread").addEventListener("click", () => {
-        createNewThread();
-        closeMobileSidebar();
-    });
+    // New Thread Button (+ New / New Thread)
+    const btnNewThread = document.getElementById("btnNewThread");
+    if (btnNewThread) {
+        btnNewThread.addEventListener("click", (e) => {
+            e.preventDefault();
+            createNewThread();
+            closeMobileSidebar();
+        });
+    }
 
     // Sidebar Focus Nav Items
     document.querySelectorAll(".focus-nav-item").forEach(item => {
-        item.addEventListener("click", () => {
-            const mode = item.dataset.mode;
-            setFocusMode(mode);
+        item.addEventListener("click", (e) => {
+            e.preventDefault();
+            const mode = item.getAttribute("data-mode") || item.dataset.mode;
+            if (mode) {
+                setFocusMode(mode);
+                closeMobileSidebar();
+            }
         });
     });
 
@@ -326,9 +344,12 @@ function setupNavigationListeners() {
 
     // Bottom Focus Pills
     document.querySelectorAll(".focus-pill").forEach(pill => {
-        pill.addEventListener("click", () => {
-            const mode = pill.dataset.pill;
-            setFocusMode(mode);
+        pill.addEventListener("click", (e) => {
+            e.preventDefault();
+            const mode = pill.getAttribute("data-pill") || pill.dataset.pill;
+            if (mode) {
+                setFocusMode(mode);
+            }
         });
     });
 
@@ -380,28 +401,6 @@ function setupNavigationListeners() {
         });
     });
 
-    // Sidebar Focus Nav Items Click Event Listener
-    document.querySelectorAll(".focus-nav-item").forEach(item => {
-        item.addEventListener("click", (e) => {
-            e.preventDefault();
-            const mode = item.getAttribute("data-mode") || item.dataset.mode;
-            if (mode) {
-                setFocusMode(mode);
-                closeMobileSidebar();
-            }
-        });
-    });
-
-    const btnNewThread = document.getElementById("btnNewThread");
-    if (btnNewThread) {
-        btnNewThread.addEventListener("click", () => {
-            createNewThread();
-            renderThreadHistory();
-            renderViewport();
-            closeMobileSidebar();
-        });
-    }
-
     // Keyboard Shortcuts (Cmd/Ctrl + K)
     document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -416,6 +415,10 @@ function setFocusMode(mode) {
     appState.activeFocusMode = mode;
     document.querySelectorAll(".focus-nav-item").forEach(el => {
         const elMode = el.getAttribute("data-mode") || el.dataset.mode;
+        el.classList.toggle("active", elMode === mode);
+    });
+    document.querySelectorAll(".focus-pill").forEach(el => {
+        const elMode = el.getAttribute("data-pill") || el.dataset.pill;
         el.classList.toggle("active", elMode === mode);
     });
 
@@ -434,6 +437,16 @@ function setFocusMode(mode) {
 
     // Render Dynamic Hero Suggested Query Cards for Selected Focus Mode
     renderSuggestedCards(mode);
+
+    // If not actively searching, switch to clean Hero view so user sees new category prompt cards
+    if (!appState.isSearching) {
+        appState.activeThreadId = null;
+        renderThreadHistory();
+        renderViewport();
+        if (searchInput) {
+            searchInput.focus();
+        }
+    }
 }
 
 function renderSuggestedCards(mode) {
@@ -1132,6 +1145,123 @@ function toggleWorkflowDetails(stepId) {
 window.toggleSourcesDrawer = toggleSourcesDrawer;
 window.toggleWorkflowDetails = toggleWorkflowDetails;
 
+// Clean Display Name Formatter for Frontier Models (Zero Gateway Branding)
+// Dynamically resolves model names from live API catalog + intelligent heuristic formatting for newly released models
+function formatModelDisplayName(modelInput) {
+    if (!modelInput || modelInput === "undefined" || modelInput === "Error") return "Gemini 3.7 Flash";
+    
+    // 1. Array of executed models (e.g. [stage1, stage2])
+    if (Array.isArray(modelInput)) {
+        return modelInput.map(m => formatSingleModelName(m)).join(" ➔ ");
+    }
+    
+    // 2. Already formatted arrow chain
+    if (typeof modelInput === "string" && (modelInput.includes("➔") || modelInput.includes("->"))) {
+        const separator = modelInput.includes("➔") ? "➔" : "->";
+        return modelInput.split(separator)
+            .map(part => formatSingleModelName(part.trim()))
+            .join(" ➔ ");
+    }
+
+    return formatSingleModelName(modelInput);
+}
+
+function formatSingleModelName(rawId) {
+    if (!rawId) return "Gemini 3.7 Flash";
+    let id = rawId.trim();
+
+    // 1. Check if model was dynamically registered in live catalog
+    if (DYNAMIC_MODEL_CATALOG && DYNAMIC_MODEL_CATALOG[id]) {
+        let catalogName = DYNAMIC_MODEL_CATALOG[id];
+        // Clean company prefixes (e.g. "Google: ", "Anthropic: ", "OpenAI: ", "Meta: ")
+        catalogName = catalogName.replace(/^(Google|Anthropic|OpenAI|Meta|xAI|Mistral|DeepSeek|Qwen|NVIDIA|Cohere|Microsoft):\s*/i, '');
+        // Remove noise tags like "(self-moderated)" or "(free)"
+        catalogName = catalogName.replace(/\s*\((self-moderated|free|beta|nitro|online|base)\)/gi, '').trim();
+        if (catalogName.length > 2) return catalogName;
+    }
+
+    // 2. Special aliases for Cortex internal modes
+    if (id === "openrouter/auto" || id === "openrouter:auto" || id.includes("Auto Smart Route")) {
+        return "Gemini 3.7 Flash (Smart Routed)";
+    }
+    if (id === "fast") return "Gemini 3.7 Flash";
+    if (id === "deep") return "Claude Sonnet 5";
+    if (id === "free") return "Nemotron 3.5 Lightning";
+    if (id === "ambulkar-cortex-engine" || id === "local") return "Cortex Neural Engine";
+
+    // 3. Exact mappings for standard frontier models
+    const MAPPINGS = {
+        "google/gemini-3.7-flash": "Gemini 3.7 Flash",
+        "google/gemini-3.7-flash-thinking": "Gemini 3.7 Flash Thinking",
+        "google/gemini-2.5-pro": "Gemini 2.5 Pro",
+        "google/gemini-2.5-flash": "Gemini 2.5 Flash",
+        "google/gemini-2.0-flash": "Gemini 2.0 Flash",
+        "google/gemini-2.0-flash-001": "Gemini 2.0 Flash",
+        "anthropic/claude-3.7-sonnet": "Claude 3.7 Sonnet",
+        "anthropic/claude-3.7-sonnet:thinking": "Claude 3.7 Sonnet (Thinking)",
+        "anthropic/claude-3.5-sonnet": "Claude 3.5 Sonnet",
+        "anthropic/claude-sonnet-5": "Claude Sonnet 5",
+        "anthropic/claude-3-opus": "Claude 3 Opus",
+        "openai/gpt-4o": "GPT-4o",
+        "openai/gpt-4o-mini": "GPT-4o Mini",
+        "openai/o3-mini": "o3-mini",
+        "openai/o1": "o1 Reasoning",
+        "x-ai/grok-2": "Grok 2",
+        "x-ai/grok-3": "Grok 3",
+        "x-ai/grok-4.6": "Grok 4.6",
+        "x-ai/grok-beta": "Grok Beta",
+        "deepseek/deepseek-chat": "DeepSeek V3",
+        "deepseek/deepseek-r1": "DeepSeek R1",
+        "meta-llama/llama-3.3-70b-instruct": "Llama 3.3 70B",
+        "nvidia/nemotron-3.5-lightning:free": "Nemotron 3.5 Lightning"
+    };
+
+    if (MAPPINGS[id]) return MAPPINGS[id];
+
+    // 4. Dynamic Heuristic Parser for ANY newly released model ID (e.g. "google/gemini-4.0-pro", "mistralai/mistral-large-3", "x-ai/grok-5")
+    let clean = id;
+    if (clean.includes("/")) {
+        clean = clean.split("/").slice(1).join("/");
+    }
+
+    let suffix = "";
+    if (clean.includes(":")) {
+        const parts = clean.split(":");
+        clean = parts[0];
+        const s = parts[1].toLowerCase();
+        if (s === "thinking") suffix = " (Thinking)";
+        else if (s === "extended") suffix = " (Extended)";
+    }
+
+    const words = clean.split(/[-_]/).filter(Boolean);
+    const formattedWords = words.map(word => {
+        const lower = word.toLowerCase();
+        if (/^(ai|llm|gpt|r1|r2|r3|v1|v2|v3|v4|v5|v6|3d|2d|4o|70b|8b|14b|32b|7b|13b|405b|dbrx)$/i.test(word)) {
+            return word.toUpperCase();
+        }
+        if (lower === "claude") return "Claude";
+        if (lower === "gemini") return "Gemini";
+        if (lower === "grok") return "Grok";
+        if (lower === "sonnet") return "Sonnet";
+        if (lower === "opus") return "Opus";
+        if (lower === "haiku") return "Haiku";
+        if (lower === "flash") return "Flash";
+        if (lower === "pro") return "Pro";
+        if (lower === "ultra") return "Ultra";
+        if (lower === "deepseek") return "DeepSeek";
+        if (lower === "nemotron") return "Nemotron";
+        if (lower === "llama") return "Llama";
+        if (lower === "mistral") return "Mistral";
+        if (lower === "codestral") return "Codestral";
+        if (lower === "qwen") return "Qwen";
+        if (/^\d+(\.\d+)*$/.test(word)) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    });
+
+    const parsed = formattedWords.join(" ") + suffix;
+    return parsed || "Frontier Model";
+}
+
 // Token & USD Cost Calculation Engine
 function calculateTokenSpend(modelId, promptTokens, completionTokens) {
     const pricing = MODEL_PRICING[modelId] || MODEL_PRICING["gemini-3.6-flash"];
@@ -1168,34 +1298,34 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     const spendMetrics = calculateTokenSpend(activeModel, promptTokens, completionTokens);
 
     let contentHTML = "";
-    let activeModelDisplay = "Ambulkar Neural Engine";
+    let activeModelDisplay = "Gemini 3.7 Flash";
 
     const orKey = appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
 
     if (provider === "gemini" && apiKey) {
         contentHTML = await callGeminiProvider(query, sources, activeModel, apiKey);
-        activeModelDisplay = "Google Gemini 3.6 Flash";
+        activeModelDisplay = "Gemini 3.7 Flash";
     } else if (provider === "openai" && apiKey) {
         contentHTML = await callOpenAIProvider(query, sources, activeModel, apiKey);
         activeModelDisplay = "OpenAI GPT-4o";
     } else if (provider === "claude" && apiKey) {
         contentHTML = await callClaudeProvider(query, sources, activeModel, apiKey);
-        activeModelDisplay = "Anthropic Claude 5";
+        activeModelDisplay = "Claude 3.7 Sonnet";
     } else if (orKey) {
         const orResult = await callOpenRouterProvider(query, sources, activeModel, orKey);
         contentHTML = (orResult && orResult.html && orResult.html !== "undefined") ? orResult.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
-        activeModelDisplay = (orResult && orResult.modelUsed && orResult.modelUsed !== "undefined") ? orResult.modelUsed : "OpenRouter Auto";
+        activeModelDisplay = (orResult && orResult.modelUsed && orResult.modelUsed !== "undefined") ? formatModelDisplayName(orResult.modelUsed) : "Gemini 3.7 Flash";
     } else {
         const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
         contentHTML = (neuralResponse && neuralResponse.html && neuralResponse.html !== "undefined") ? neuralResponse.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
-        activeModelDisplay = (neuralResponse && neuralResponse.modelName && neuralResponse.modelName !== "undefined") ? neuralResponse.modelName : "Ambulkar Free Engine";
+        activeModelDisplay = (neuralResponse && neuralResponse.modelName && neuralResponse.modelName !== "undefined") ? formatModelDisplayName(neuralResponse.modelName) : "Cortex Free Neural Engine";
     }
 
     if (!contentHTML || contentHTML.trim() === "" || contentHTML === "undefined") {
         contentHTML = generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
     }
     if (!activeModelDisplay || activeModelDisplay === "undefined") {
-        activeModelDisplay = "Ambulkar Free Engine";
+        activeModelDisplay = "Gemini 3.7 Flash";
     }
 
     const telemetryFooter = `
@@ -1224,7 +1354,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
     let tier = model.startsWith("openrouter:") ? model.replace("openrouter:", "") : model;
 
     // Handle 4 Standard Tiers + Parallel Pipeline
-    let primaryModel = "openrouter/auto";
+    let primaryModel = "google/gemini-3.7-flash";
     let isParallel = (tier === "parallel");
 
     if (tier === "free") primaryModel = "nvidia/nemotron-3.5-lightning:free";
@@ -1256,6 +1386,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             });
             const fastData = await fastRes.json();
             const extractedFacts = fastData.choices?.[0]?.message?.content || sourceContext;
+            const stage1ActualModel = fastData.model || "google/gemini-3.7-flash";
 
             // Stage 2: Deep reasoning model performs calculations and executive synthesis
             const deepRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -1277,10 +1408,12 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
             });
             const deepData = await deepRes.json();
             const text = deepData.choices?.[0]?.message?.content || "";
+            const stage2ActualModel = deepData.model || "anthropic/claude-sonnet-5";
 
+            const modelChain = `⚡ ${formatModelDisplayName(stage1ActualModel)} ➔ 🧠 ${formatModelDisplayName(stage2ActualModel)}`;
             return {
                 html: formatAIResponseHTML(text),
-                modelUsed: "⚡ Gemini 3.7 Flash ➔ 🧠 Claude Sonnet 5 (Parallel Multi-Model)"
+                modelUsed: modelChain
             };
         } catch (e) {
             console.error("Parallel execution fallback:", e);
@@ -1328,7 +1461,7 @@ Instructions:
             const actualModel = data.model || primaryModel;
             return {
                 html: formatAIResponseHTML(text),
-                modelUsed: actualModel
+                modelUsed: formatModelDisplayName(actualModel)
             };
         } else {
             // Auto fallback retry
@@ -1342,7 +1475,8 @@ Instructions:
                         "X-Title": "Cortex Market Research Desk"
                     },
                     body: JSON.stringify({
-                        model: "openrouter/auto",
+                        model: "google/gemini-3.7-flash",
+                        models: ["google/gemini-3.7-flash", "openrouter/auto"],
                         messages: [{ role: "user", content: prompt }]
                     })
                 });
@@ -1350,7 +1484,7 @@ Instructions:
                     const autoData = await autoRes.json();
                     return {
                         html: formatAIResponseHTML(autoData.choices?.[0]?.message?.content || ""),
-                        modelUsed: autoData.model || "openrouter/auto (Auto Smart Route)"
+                        modelUsed: formatModelDisplayName(autoData.model || "google/gemini-3.7-flash")
                     };
                 }
             } catch (e) {
@@ -1696,18 +1830,23 @@ function renderViewport() {
         return;
     }
 
-    // Only fallback to hero view if there is no active thread OR if thread history is empty
-    if (!thread || (thread.steps.length === 0 && threadContainer.children.length === 0)) {
+    // Fallback to hero view if there is no active thread OR if active thread has no search steps
+    if (!thread || !thread.steps || thread.steps.length === 0) {
         if (heroView) heroView.style.display = "flex";
         if (threadContainer) {
             threadContainer.style.display = "none";
             threadContainer.innerHTML = "";
         }
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchInput.value = "";
+            searchInput.focus();
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
         if (heroView) heroView.style.display = "none";
-        if (threadContainer) threadContainer.style.display = "flex";
-
-        if (thread.steps.length > 0) {
+        if (threadContainer) {
+            threadContainer.style.display = "flex";
             threadContainer.innerHTML = thread.steps.map((step, idx) => `
                 <div class="query-thread-block">
                     <div class="user-query-heading">

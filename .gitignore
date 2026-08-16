@@ -9,4 +9,7 @@ node_modules/
 dist/
 # Temporary scratch files
 scratch/
+__pycache__/
+*.pyc
+
 

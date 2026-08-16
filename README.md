@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B-blue.svg)](https://developer.mozilla.org/)
 [![AI: Multi-Model Gateway](https://img.shields.io/badge/AI-Parallel%20Multi--Model%20Routing-cyan.svg)](#-features)
-[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v3.2.0-emerald.svg)](RELEASE_NOTES.md)
+[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v3.3.0-emerald.svg)](RELEASE_NOTES.md)
 
 Cortex is a state-of-the-art AI search engine and executive research memo platform. It synthesizes real-time facts across **10 to 20+ verified web sources**, executes parallel multi-model reasoning across frontier LLMs, and maintains 100% client-side privacy.
 
@@ -29,12 +29,12 @@ flowchart TD
     HN --> SourcesAggregator
     DomainIdx --> SourcesAggregator
     
-    SourcesAggregator --> Router{"Frontier Model Router"}
+    SourcesAggregator --> Router{"Dynamic Frontier Model Router"}
     
     Router -->|Parallel Pipeline| Stage1["Stage 1: Fast Factual Extraction (Gemini 3.7 Flash)"]
     Stage1 --> Stage2["Stage 2: Deep Mathematical Reasoning & Synthesis (Claude Sonnet 5)"]
     
-    Router -->|Standard Route| SingleModel["Frontier Model (Gemini 3.7 / GPT-4o / Claude 5 / OpenRouter Auto)"]
+    Router -->|Standard Route| SingleModel["Frontier Model (Gemini 3.7 / Claude 3.7 / Grok 3 / GPT-4o)"]
     Router -->|Free Engine| FreeNeural["Cortex Free Neural Engine"]
     
     Stage2 --> MemoAssembler["Executive Research Memo Assembler"]
@@ -54,8 +54,8 @@ flowchart TD
   - **Answer-First Viewport**: Executive memos are 100% visible at the top immediately with zero scrolling.
   - **Compact Inline Sources Strip (36px)**: Displays top verified chips alongside an on-demand slide-out sources drawer for all 20+ references.
   - **Natural Inline Citations**: Seamless clickable superscript citation numbers embedded directly in text without bracket clutter.
-- ⚡ **Parallel Multi-Model Execution**: Supports chaining fast extraction models (e.g. Gemini 3.7 Flash) into deep reasoning models (e.g. Claude Sonnet 5) for ultra-accurate synthesis.
-- 📊 **Post-Query Executed Model Telemetry**: Automatically displays the exact model executed by the gateway, prompt/completion tokens, and estimated USD spend calculated from official rate cards.
+- ⚡ **Parallel Multi-Model Execution**: Supports chaining fast extraction models (e.g. Gemini 3.7 Flash) into deep reasoning models (e.g. Claude Sonnet 5) with multi-stage execution telemetry.
+- 📊 **Dynamic Frontier Model Telemetry**: Dynamically resolves and displays exact frontier model names (e.g. *Gemini 3.7 Flash*, *Claude 3.7 Sonnet*, *Grok 3*), tokens, and calculated USD spend from live rate cards with zero gateway branding.
 - 🔒 **Dual-Lock 2FA Vault & Local Privacy**: AES-256 local browser encryption for API keys. Zero server tracking, zero cloud key storage.
 - 🔥 **Dynamic Trending Prompt Engine**: Real-time ingestion from Google News, HackerNews, and Wikipedia that auto-updates suggested research prompt cards with live breakthroughs so queries never get stale.
 - 🔔 **Autonomous Topic Tracker**: Continuous background monitoring that dispatches instant Discord alerts whenever major news or breakthroughs break on your tracked topics.

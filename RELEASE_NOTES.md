@@ -4,6 +4,21 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.3.0] — 2026-08-16
+### **Dynamic Frontier Model Resolution & Seamless Workspace Navigation UX**
+
+#### 🧠 Dynamic Model Resolution & Multi-Model Telemetry
+- **Dynamic Model Catalog Ingestion**: Connected Cortex to live API model catalogs, dynamically registering any newly released frontier model with automatic pricing and display name formatting.
+- **Zero Gateway Branding**: Eliminated raw gateway strings (`openrouter/auto`) in favor of clean, human-readable frontier model names (e.g. *Gemini 3.7 Flash*, *Claude 3.7 Sonnet*, *Grok 3*, *DeepSeek V3*, *GPT-4o*).
+- **Multi-Model Pipeline Telemetry**: Parallel extraction ➔ reasoning pipelines dynamically display the full model execution chain (e.g. `⚡ Gemini 3.7 Flash ➔ 🧠 Claude Sonnet 5`).
+- **Novel Model Heuristic Parser**: Intelligent regular expression tokenizer automatically formats any future unmapped model releases (e.g. `mistral-large-3`, `gemini-4.0-pro`, `grok-5`) with clean capitalization and tags.
+
+#### 🔄 Frictionless Desk Navigation & New Search Reset
+- **Instant Hero View Reset**: Fixed thread container clearing so clicking **+ New Thread** or switching categories immediately clears prior DOM results and presents the clean research desk with category-specific prompt cards.
+- **Unified Sidebar Event Handlers**: Deduplicated mobile and desktop navigation bindings for silky smooth category switching across Web, Finance, Academic, Code, and Creative Writing desks.
+
+---
+
 ## 🌟 [v3.2.0] — 2026-08-15
 ### **Deep Web Knowledge Aggregation & Content-First UX Redesign**
 
