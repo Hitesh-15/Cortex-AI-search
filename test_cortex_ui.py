@@ -92,6 +92,26 @@ def test_multi_device_and_dynamic_trending_selenium():
         assert thread_container.value_of_css_property("display") == "flex", "Active thread view not visible after clicking dynamic card!"
         print("PASS: Dynamic prompt card clicked -> Research pipeline successfully triggered.")
 
+        # 3.5. Test @ Mention Autocomplete Popup & Hints
+        print("--> Testing @ Mention Autocomplete Popup & Quick Tag Hints...")
+        search_input = driver.find_element(By.ID, "searchInput")
+        search_input.clear()
+        search_input.send_keys("@")
+        time.sleep(0.3)
+        
+        mention_menu = driver.find_element(By.ID, "atMentionMenu")
+        assert mention_menu.is_displayed(), "@ Mention popup menu did not appear on typing '@'!"
+        items = mention_menu.find_elements(By.CLASS_NAME, "at-item")
+        assert len(items) >= 5, f"Expected at least 5 models in mention menu, got {len(items)}"
+        print(f"PASS: @ Mention popup rendered with {len(items)} models.")
+        
+        # Test clicking a hint chip
+        hint_btn = driver.find_element(By.XPATH, "//button[contains(text(), '@claude')]")
+        hint_btn.click()
+        time.sleep(0.3)
+        assert "@claude" in search_input.get_attribute("value"), "@claude tag not inserted by hint button!"
+        print("PASS: Quick Tag hint clicked -> Successfully inserted into search input.")
+
         # 4. Test Modals
         modal_tests = [
             ("Release Notes Modal", "btnOpenReleaseNotes", "releaseNotesModal", "btnCloseReleaseNotes"),
