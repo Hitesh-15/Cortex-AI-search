@@ -14,12 +14,13 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 #### 🧠 Frontier Intelligence Model Refresh (August 2026)
 - **Updated Frontier Catalog**: Synchronized the inline selector and gateway settings with the latest August 2026 model releases:
-  - **Claude 3.7 Sonnet** (`@claude`): Hybrid reasoning, deep mathematical proofs, and structured memos.
-  - **Gemini 3.7 Flash** (`@gemini`): Ultra-fast, high-speed factual retrieval and source extraction.
-  - **Grok 4.6 / Grok 3** (`@grok`): Real-time X knowledge indexing, market sentiment, and distinct perspectives.
-  - **OpenAI o3-mini / GPT-4o** (`@gpt4`): High-precision algorithmic coding and synthesis.
-  - **DeepSeek R1** (`@deepseek`): 671B parameter Mixture-of-Experts reasoning engine.
-  - **Parallel Pipeline** (`@parallel`): Chained execution (Fast Scraping ➔ Deep Synthesis).
+  - **Claude 3.7 Sonnet / 3.5 Sonnet** (`@claude`): Best-in-class instruction following, code structuring, and hybrid reasoning.
+  - **Gemini 2.5 Flash / 2.0 Flash** (`@gemini`): Ultra-fast workhorse, 1M+ context window, fractions of a cent per query.
+  - **Grok 2 / Grok Beta** (`@grok`): Solo verifier, real-time sentiment, and distinct perspective.
+  - **OpenAI GPT-4o / o3-mini** (`@gpt4`): High-precision algorithmic coding and reasoning logic.
+  - **DeepSeek R1** (`@deepseek`): Open-weights 671B parameter Mixture-of-Experts reasoning engine.
+  - **Parallel Pipeline** (`@parallel`): Chained execution (Gemini 2.5 Flash Scraper ➔ Claude 3.7 Sonnet Thinker).
+  - **Live Dynamic Model Sync**: Real-time background sync against OpenRouter model catalog with wildcard `@custom/<slug>` routing.
 
 ---
 
