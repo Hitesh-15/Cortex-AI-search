@@ -129,14 +129,14 @@ const MODEL_PRICING = {
 // Provider to Models Map (Frontier Intelligence Modes)
 let PROVIDER_MODELS = {
     openrouter: [
-        { id: "openrouter/auto", name: "⚡ Smart Auto Routing (Auto-Pick Best Model)" },
-        { id: "deep", name: "🧠 Deep Reasoning Tier (Claude 3.7 Sonnet)" },
-        { id: "fast", name: "⚡ Fast & Agile Tier (Gemini 3.7 / 2.0 Flash)" },
-        { id: "grok", name: "🎯 Solo Frontier & Real-Time (Grok 3 / Grok 2)" },
-        { id: "gpt4", name: "🔮 OpenAI Tier (GPT-4o)" },
-        { id: "deepseek", name: "🧪 DeepSeek R1 Reasoning" },
-        { id: "parallel", name: "🚀 Parallel Multi-Model (Gemini Flash ➔ Claude Sonnet)" },
-        { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
+        { id: "openrouter/auto", name: "⚡ Smart Auto Routing (Auto-Pick Best Frontier Model)" },
+        { id: "deep", name: "🧠 Claude 3.7 Sonnet (Hybrid Reasoning & Math)" },
+        { id: "fast", name: "⚡ Gemini 3.7 Flash (Sub-Second Factual Search)" },
+        { id: "grok", name: "🎯 Grok 4.6 / Grok 3 (Real-Time X Index & Sentiment)" },
+        { id: "gpt4", name: "🔮 OpenAI o3-mini / GPT-4o (High-Precision Coding)" },
+        { id: "deepseek", name: "🧪 DeepSeek R1 (671B MoE Reasoning)" },
+        { id: "parallel", name: "🚀 Parallel Pipeline (Gemini 3.7 Flash ➔ Claude 3.7 Sonnet)" },
+        { id: "free", name: "🎁 100% Free Neural Engine (0 Token Spend)" }
     ],
     local: [
         { id: "ambulkar-cortex-engine", name: "Ambulkar Local Free Engine" }
@@ -963,13 +963,13 @@ async function runAsyncSearchPipeline(userQuery) {
                     <div id="${stepId}_compare_content_b" class="compare-pane" style="display: none;">
                         ${resClaude.answerHTML}
                     </div>
-                    <div id="${stepId}_compare_content_both" class="compare-pane-split" style="display: none; grid-template-columns: 1fr 1fr; gap: 16px;">
-                        <div style="background: rgba(15,23,42,0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);">
-                            <h4 style="color: #38bdf8; margin-bottom: 10px; font-size: 0.9rem;"><i class="fa-solid fa-bolt"></i> Gemini 3.7 Flash Analysis</h4>
+                    <div id="${stepId}_compare_content_both" class="compare-pane-split" style="display: none;">
+                        <div class="compare-split-card gemini">
+                            <h4 style="color: #38bdf8; margin-bottom: 12px; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-bolt"></i> Gemini 3.7 Flash Analysis</h4>
                             ${resGemini.answerHTML}
                         </div>
-                        <div style="background: rgba(15,23,42,0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.3);">
-                            <h4 style="color: #c084fc; margin-bottom: 10px; font-size: 0.9rem;"><i class="fa-solid fa-brain"></i> Claude 3.7 Sonnet Analysis</h4>
+                        <div class="compare-split-card claude">
+                            <h4 style="color: #c084fc; margin-bottom: 12px; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-brain"></i> Claude 3.7 Sonnet Analysis</h4>
                             ${resClaude.answerHTML}
                         </div>
                     </div>

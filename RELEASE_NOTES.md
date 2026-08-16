@@ -4,6 +4,25 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v3.5.0] — 2026-08-16
+### **Fluid Responsive 50/50 Dual Split View & Frontier Intelligence Model Refresh**
+
+#### 🖥️ Fluid Responsive Dual Split View (`@compare`)
+- **Full Viewport Space Utilization**: Replaced static 40% margin clamps with responsive, fluid workspace boundaries (`max-width: 1440px`), liberating screen real-estate on ultrawide, desktop, laptop, and tablet displays.
+- **Exact 50/50 Side-by-Side Grid**: Engineered a non-overflowing two-column CSS grid (`minmax(0, 1fr) minmax(0, 1fr)`) with explicit word-wrapping so both Gemini 3.7 Flash and Claude 3.7 Sonnet cards receive equal 50% split width without right-edge clipping.
+- **Mobile Stack Resilience**: Automatically transitions from two-column side-by-side to stacked/tabbed navigation on devices below 920px width.
+
+#### 🧠 Frontier Intelligence Model Refresh (August 2026)
+- **Updated Frontier Catalog**: Synchronized the inline selector and gateway settings with the latest August 2026 model releases:
+  - **Claude 3.7 Sonnet** (`@claude`): Hybrid reasoning, deep mathematical proofs, and structured memos.
+  - **Gemini 3.7 Flash** (`@gemini`): Ultra-fast, high-speed factual retrieval and source extraction.
+  - **Grok 4.6 / Grok 3** (`@grok`): Real-time X knowledge indexing, market sentiment, and distinct perspectives.
+  - **OpenAI o3-mini / GPT-4o** (`@gpt4`): High-precision algorithmic coding and synthesis.
+  - **DeepSeek R1** (`@deepseek`): 671B parameter Mixture-of-Experts reasoning engine.
+  - **Parallel Pipeline** (`@parallel`): Chained execution (Fast Scraping ➔ Deep Synthesis).
+
+---
+
 ## 🌟 [v3.4.0] — 2026-08-16
 ### **Direct `@model` Query Tagging, Multi-Model `@compare` Mode & Precision Rate Card**
 
