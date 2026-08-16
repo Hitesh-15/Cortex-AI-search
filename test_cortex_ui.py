@@ -106,10 +106,10 @@ def test_multi_device_and_dynamic_trending_selenium():
         print(f"PASS: @ Mention popup rendered with {len(items)} models.")
         
         # Test clicking a hint chip
-        hint_btn = driver.find_element(By.XPATH, "//button[contains(text(), '@claude')]")
+        hint_btn = driver.find_element(By.XPATH, "//button[contains(text(), '@sonnet')]")
         hint_btn.click()
         time.sleep(0.3)
-        assert "@claude" in search_input.get_attribute("value"), "@claude tag not inserted by hint button!"
+        assert "@sonnet" in search_input.get_attribute("value"), "@sonnet tag not inserted by hint button!"
         print("PASS: Quick Tag hint clicked -> Successfully inserted into search input.")
 
         # 4. Test Modals
