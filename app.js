@@ -92,7 +92,7 @@ function executeSearch(userQuery) {
 
 // Auto-Sanitize & Clear Stale Legacy Cache
 (function sanitizeLegacyBrowserCache() {
-    const CURRENT_VERSION = "8.0";
+    const CURRENT_VERSION = "8.1";
     const lastVersion = localStorage.getItem("ambu_build_v");
     if (lastVersion !== CURRENT_VERSION) {
         localStorage.setItem("ambu_build_v", CURRENT_VERSION);
@@ -100,6 +100,11 @@ function executeSearch(userQuery) {
             localStorage.setItem("ambu_provider", "openrouter");
             localStorage.setItem("ambu_model", "openrouter/auto");
         }
+    }
+    // Guarantee negative spend is reset to 0
+    const storedSpend = parseFloat(localStorage.getItem("ambu_total_spend") || "0");
+    if (isNaN(storedSpend) || storedSpend < 0) {
+        localStorage.setItem("ambu_total_spend", "0.00000");
     }
 })();
 
@@ -235,8 +240,23 @@ async function fetchLatestModelsAuto(isManual = false) {
                     if (m.id && m.name) {
                         DYNAMIC_MODEL_CATALOG[m.id] = m.name;
                     }
-                    const promptPrice = m.pricing?.prompt ? (parseFloat(m.pricing.prompt) * 1000000) : 0.20;
-                    const completionPrice = m.pricing?.completion ? (parseFloat(m.pricing.completion) * 1000000) : 0.60;
+                    const rawPrompt = parseFloat(m.pricing?.prompt);
+                    const rawCompletion = parseFloat(m.pricing?.completion);
+
+                    let promptPrice = 0.20;
+                    let completionPrice = 0.60;
+
+                    if (!isNaN(rawPrompt) && rawPrompt >= 0) {
+                        promptPrice = rawPrompt * 1000000;
+                    }
+                    if (!isNaN(rawCompletion) && rawCompletion >= 0) {
+                        completionPrice = rawCompletion * 1000000;
+                    }
+
+                    if (m.id.includes(":free") || m.id.includes("free")) {
+                        promptPrice = 0.0;
+                        completionPrice = 0.0;
+                    }
 
                     MODEL_PRICING[m.id] = {
                         input: promptPrice,
@@ -1202,22 +1222,18 @@ async function runAsyncSearchPipeline(userQuery) {
         thread.cumulativeCostUSD += validCost;
         thread.isWatchdogActive = isWatchdogActive;
 
-        // Render Topic Tracking Cumulative Cost Banner inside answer
-        const costBannerHTML = `
-            <div class="thread-watchdog-cost-card" style="margin: 14px 0; padding: 10px 14px; background: rgba(56, 189, 248, 0.07); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
-                    <i class="fa-solid fa-calculator text-cyan"></i>
-                    <span><strong>Topic Tracking Cost:</strong> <strong style="color: #38bdf8;">$${thread.cumulativeCostUSD.toFixed(5)} USD</strong> (${thread.totalRuns} total runs)</span>
+        // Render Topic Tracking Cumulative Cost Banner ONLY if watchdog tracking is active
+        const costBannerHTML = thread.isWatchdogActive ? `
+            <div class="thread-watchdog-cost-card" style="margin: 10px 0; padding: 8px 12px; background: rgba(56, 189, 248, 0.07); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; font-size: 0.78rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px; color: #e2e8f0;">
+                    <i class="fa-solid fa-bell text-cyan"></i>
+                    <span><strong>Topic Tracker Active:</strong> <strong style="color: #38bdf8;">$${thread.cumulativeCostUSD.toFixed(5)} USD</strong> (${thread.totalRuns} runs)</span>
                 </div>
-                ${thread.isWatchdogActive ? `
-                    <button type="button" onclick="stopThreadWatchdog('${thread.id}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
-                        <i class="fa-solid fa-stop"></i> Stop Tracking Topic
-                    </button>
-                ` : `
-                    <span style="font-size: 0.72rem; color: #94a3b8;"><i class="fa-solid fa-circle-check text-teal"></i> Single Search Run</span>
-                `}
+                <button type="button" onclick="stopThreadWatchdog('${thread.id}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                    <i class="fa-solid fa-stop"></i> Stop Tracker
+                </button>
             </div>
-        `;
+        ` : "";
 
         // Automatic Discord Intent Detection
         const qLower = actualQuery.toLowerCase();
@@ -1631,12 +1647,14 @@ function calculateTokenSpend(modelId, promptTokens, completionTokens) {
         const idLower = (modelId || "").toLowerCase();
         if (idLower.includes("free") || idLower.includes("local") || idLower.includes("ambulkar")) {
             pricing = { input: 0.0, output: 0.0 };
-        } else if (idLower.includes("claude") || idLower.includes("sonnet") || idLower.includes("opus") || idLower.includes("deep") || idLower.includes("parallel")) {
+        } else if (idLower.includes("opus")) {
+            pricing = { input: 15.00, output: 75.00 };
+        } else if (idLower.includes("claude") || idLower.includes("sonnet") || idLower.includes("deep") || idLower.includes("parallel")) {
             pricing = { input: 3.00, output: 15.00 };
         } else if (idLower.includes("grok")) {
-            pricing = { input: 2.00, output: 10.00 };
-        } else if (idLower.includes("gpt-4o") || idLower.includes("openai") || idLower.includes("gpt4")) {
-            pricing = { input: 2.50, output: 10.00 };
+            pricing = { input: 3.00, output: 15.00 };
+        } else if (idLower.includes("gpt-4o") || idLower.includes("openai") || idLower.includes("chatgpt") || idLower.includes("o3")) {
+            pricing = { input: 1.10, output: 4.40 };
         } else if (idLower.includes("deepseek")) {
             pricing = { input: 0.55, output: 2.19 };
         } else {
@@ -1644,9 +1662,12 @@ function calculateTokenSpend(modelId, promptTokens, completionTokens) {
         }
     }
 
-    const inputCost = (promptTokens / 1000000) * pricing.input;
-    const outputCost = (completionTokens / 1000000) * pricing.output;
-    const totalCost = inputCost + outputCost;
+    const inputRate = (typeof pricing?.input === "number" && !isNaN(pricing.input)) ? Math.max(0, pricing.input) : 0.10;
+    const outputRate = (typeof pricing?.output === "number" && !isNaN(pricing.output)) ? Math.max(0, pricing.output) : 0.40;
+
+    const inputCost = (promptTokens / 1000000) * inputRate;
+    const outputCost = (completionTokens / 1000000) * outputRate;
+    const totalCost = Math.max(0, inputCost + outputCost);
 
     return {
         costUSD: totalCost,

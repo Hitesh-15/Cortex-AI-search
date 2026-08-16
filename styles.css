@@ -1194,15 +1194,52 @@ body {
 
 @media (max-width: 768px) {
     .bottom-search-wrapper {
+        padding: 8px 10px;
+    }
+    .search-box-container {
         padding: 10px 12px;
+        gap: 8px;
+        border-radius: 12px;
+    }
+    .search-input {
+        font-size: 0.9rem;
+    }
+    .search-actions-row {
+        padding-top: 6px;
+        gap: 6px;
+    }
+    .effort-picker-label {
+        display: none;
+    }
+    .chat-effort-select {
+        font-size: 0.72rem;
+        padding: 4px 8px;
+        max-width: 140px;
+    }
+    .btn-watchdog-toggle {
+        font-size: 0.72rem;
+        padding: 4px 8px;
     }
     .at-mention-menu {
-        left: 12px;
-        right: 12px;
-        max-height: 260px;
+        left: 10px;
+        right: 10px;
+        max-height: 240px;
     }
     .search-hints-strip {
         display: none;
+    }
+    .ai-answer-box {
+        padding: 16px 14px;
+        font-size: 0.94rem;
+        line-height: 1.6;
+    }
+    .unified-telemetry-bar {
+        padding: 8px 10px;
+        gap: 6px;
+    }
+    .unified-pill {
+        font-size: 0.72rem;
+        padding: 2px 7px;
     }
 }
 
