@@ -604,16 +604,166 @@ function updateTotalSpendDisplay() {
 }
 
 // Search Execution & Pipeline
+const AT_MENTION_MODELS = [
+    { tag: "@opus", name: "👑 Claude Opus 5", desc: "Maximum Frontier Intelligence" },
+    { tag: "@claude", name: "🧠 Claude Sonnet 5", desc: "Flagship Hybrid Reasoning & Synthesis" },
+    { tag: "@gemini", name: "⚡ Gemini 3.7 Flash", desc: "Sub-Second Search & Extraction" },
+    { tag: "@compare", name: "🔀 Multi-Model Compare", desc: "50/50 Dual Split View: Gemini vs Claude" },
+    { tag: "@parallel", name: "🚀 Parallel Pipeline", desc: "Gemini 3.7 Flash ➔ Claude Sonnet 5" },
+    { tag: "@batch", name: "📉 Gemini 3.7 Flash (Batch)", desc: "50% Discounted Topic Tracking" },
+    { tag: "@thinking", name: "💭 Gemini 3.7 Flash (Thinking)", desc: "Chain-of-Thought Logic" },
+    { tag: "@grok", name: "🎯 Grok 4.6", desc: "Real-time Indexing & Sentiment" },
+    { tag: "@gpt4", name: "🔮 OpenAI o3-mini / GPT-4o", desc: "High-Precision Algorithmic Coding" },
+    { tag: "@deepseek", name: "🧪 DeepSeek R1", desc: "671B MoE Open Reasoning" },
+    { tag: "@free", name: "🎁 100% Free Neural Tier", desc: "Zero Token Spend" }
+];
+
+function insertAtTag(tag) {
+    const input = document.getElementById("searchInput");
+    if (!input) return;
+
+    const val = input.value;
+    const trimmed = val.trim();
+    if (trimmed.startsWith("@")) {
+        input.value = tag + trimmed.replace(/^@[a-zA-Z0-9\.\-\_\:\/]+\s*/, '');
+    } else {
+        input.value = tag + val;
+    }
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+    closeAtMentionMenu();
+}
+
+let activeMentionIndex = 0;
+
+function setupAtMentionController() {
+    const input = document.getElementById("searchInput");
+    const menu = document.getElementById("atMentionMenu");
+    if (!input || !menu) return;
+
+    input.addEventListener("input", () => {
+        handleAtMentionQuery();
+    });
+
+    input.addEventListener("keydown", (e) => {
+        if (menu.style.display !== "none") {
+            const items = menu.querySelectorAll(".at-item");
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                activeMentionIndex = (activeMentionIndex + 1) % (items.length || 1);
+                updateActiveMentionItem(items);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                activeMentionIndex = (activeMentionIndex - 1 + (items.length || 1)) % (items.length || 1);
+                updateActiveMentionItem(items);
+            } else if (e.key === "Enter" || e.key === "Tab") {
+                if (items.length > 0 && activeMentionIndex >= 0 && activeMentionIndex < items.length) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const chosenTag = items[activeMentionIndex].getAttribute("data-tag");
+                    if (chosenTag) {
+                        applyChosenMentionTag(chosenTag);
+                    }
+                }
+            } else if (e.key === "Escape") {
+                closeAtMentionMenu();
+            }
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!menu.contains(e.target) && e.target !== input) {
+            closeAtMentionMenu();
+        }
+    });
+}
+
+function handleAtMentionQuery() {
+    const input = document.getElementById("searchInput");
+    const menu = document.getElementById("atMentionMenu");
+    if (!input || !menu) return;
+
+    const val = input.value;
+    const cursor = input.selectionStart || val.length;
+    const textBeforeCursor = val.substring(0, cursor);
+
+    const match = textBeforeCursor.match(/(?:^|\s)@([a-zA-Z0-9\.\-\_\:\/]*)$/);
+    if (!match) {
+        closeAtMentionMenu();
+        return;
+    }
+
+    const query = match[1].toLowerCase();
+    const filtered = AT_MENTION_MODELS.filter(m => 
+        m.tag.toLowerCase().includes(query) || 
+        m.name.toLowerCase().includes(query) ||
+        m.desc.toLowerCase().includes(query)
+    );
+
+    if (filtered.length === 0) {
+        closeAtMentionMenu();
+        return;
+    }
+
+    activeMentionIndex = 0;
+    menu.innerHTML = filtered.map((m, idx) => `
+        <div class="at-item ${idx === 0 ? 'active' : ''}" data-tag="${m.tag}" onclick="applyChosenMentionTag('${m.tag}')">
+            <span class="at-tag">${m.tag}</span>
+            <span class="at-name">${m.name}</span>
+            <span class="at-desc">${m.desc}</span>
+        </div>
+    `).join('');
+
+    menu.style.display = "flex";
+}
+
+function updateActiveMentionItem(items) {
+    items.forEach((it, idx) => {
+        it.classList.toggle("active", idx === activeMentionIndex);
+        if (idx === activeMentionIndex) {
+            it.scrollIntoView({ block: "nearest" });
+        }
+    });
+}
+
+function applyChosenMentionTag(tag) {
+    const input = document.getElementById("searchInput");
+    if (!input) return;
+
+    const val = input.value;
+    const cursor = input.selectionStart || val.length;
+    const textBeforeCursor = val.substring(0, cursor);
+    const textAfterCursor = val.substring(cursor);
+
+    const replacedBefore = textBeforeCursor.replace(/(?:^|\s)@([a-zA-Z0-9\.\-\_\:\/]*)$/, (match) => {
+        return match.startsWith(" ") ? ` ${tag} ` : `${tag} `;
+    });
+
+    input.value = (replacedBefore + textAfterCursor).replace(/\s+/g, ' ');
+    input.focus();
+    const newCursorPos = replacedBefore.length;
+    input.setSelectionRange(newCursorPos, newCursorPos);
+    closeAtMentionMenu();
+}
+
+function closeAtMentionMenu() {
+    const menu = document.getElementById("atMentionMenu");
+    if (menu) menu.style.display = "none";
+}
+
 function setupSearchForm() {
     const form = document.getElementById("searchForm");
     const input = document.getElementById("searchInput");
     const btnSubmit = document.getElementById("btnSubmitSearch");
+
+    setupAtMentionController();
 
     const handleSearchTrigger = (e) => {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
+        closeAtMentionMenu();
         const query = input ? input.value.trim() : "";
         if (query) {
             if (input) input.value = "";
@@ -631,6 +781,10 @@ function setupSearchForm() {
 
     if (input) {
         input.onkeydown = (e) => {
+            const menu = document.getElementById("atMentionMenu");
+            if (menu && menu.style.display !== "none" && (e.key === "Enter" || e.key === "ArrowDown" || e.key === "ArrowUp")) {
+                return; // Let mention controller handle selection
+            }
             if (e.key === "Enter" && !e.shiftKey) {
                 handleSearchTrigger(e);
             }
@@ -2634,3 +2788,6 @@ window.toggleWorkflowDetails = toggleWorkflowDetails;
 window.fetchDynamicTrendingPrompts = fetchDynamicTrendingPrompts;
 window.renderSuggestedCards = renderSuggestedCards;
 window.executeSearch = executeSearch;
+window.insertAtTag = insertAtTag;
+window.applyChosenMentionTag = applyChosenMentionTag;
+window.closeAtMentionMenu = closeAtMentionMenu;
