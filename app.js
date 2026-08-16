@@ -248,13 +248,17 @@ async function fetchLatestModelsAuto(isManual = false) {
                     localStorage.setItem("cortex_dynamic_model_catalog", JSON.stringify(DYNAMIC_MODEL_CATALOG));
                 } catch (storeErr) {}
 
-                // Keep UI dropdown clean with high-level intelligence tiers
+                // Keep UI dropdown prioritized with the latest frontier models
                 PROVIDER_MODELS.openrouter = [
-                    { id: "openrouter/auto", name: "⚡ Smart Auto-Routing (Auto-Pick Best Model)" },
-                    { id: "free", name: "🎁 100% Free Neural Tier" },
-                    { id: "fast", name: "⚡ Fast & Agile Tier (Sub-second Search)" },
-                    { id: "deep", name: "🧠 Deep Reasoning & Calculation Tier" },
-                    { id: "parallel", name: "🚀 Parallel Multi-Model (Fast Scraper ➔ Deep Thinker)" }
+                    { id: "openrouter/auto", name: "⚡ Smart Auto Router (Frontier Auto-Select)" },
+                    { id: "opus", name: "👑 Claude Opus 5 (Maximum Frontier Intelligence)" },
+                    { id: "deep", name: "🧠 Claude Sonnet 5 / Claude 3.7 Sonnet" },
+                    { id: "fast", name: "⚡ Gemini 3.7 Flash / Gemini 2.5 Flash" },
+                    { id: "grok", name: "🎯 Grok 4.6 / Grok 3 / Grok 2" },
+                    { id: "gpt4", name: "🔮 OpenAI o3-mini / GPT-4o" },
+                    { id: "deepseek", name: "🧪 DeepSeek R1 / V3" },
+                    { id: "parallel", name: "🚀 Parallel: Gemini Flash ➔ Claude Sonnet" },
+                    { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
                 ];
 
                 populateChatModelSelector();
