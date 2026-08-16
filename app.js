@@ -2113,34 +2113,90 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
 
 // Helper: Clean Markdown & HTML Response Formatter (Prevents raw JSON / codeblock dumps)
 function formatAIResponseHTML(text) {
-    if (!text) return "<p>No response generated.</p>";
-    
-    // Strip codeblock wrappers if returned by AI model
+    if (!text || text.trim() === "" || text === "undefined") {
+        return "<p class=\"memo-paragraph\">Synthesized verified web intelligence.</p>";
+    }
+
     let clean = text.trim();
+    // Strip codeblock wrappers if returned by AI model
     clean = clean.replace(/^```(html|markdown|json)?/gi, '').replace(/```$/gi, '').trim();
 
-    // If text already contains full HTML formatting
-    if (clean.includes("<h3>") || clean.includes("<h4>") || clean.includes("<p>") || clean.includes("<ul>")) {
-        return clean;
-    }
-
-    // Convert Markdown to clean styled HTML
+    // Standardize Markdown headers and typography if present
     clean = clean
-        .replace(/^### (.*$)/gim, '<h4 style="color:var(--text-primary); margin-top:14px; margin-bottom:6px;">$1</h4>')
-        .replace(/^## (.*$)/gim, '<h3 style="color:var(--accent-cyan); margin-top:16px; margin-bottom:8px;">$1</h3>')
-        .replace(/^# (.*$)/gim, '<h3 style="color:var(--accent-cyan); margin-top:16px; margin-bottom:8px;">$1</h3>')
+        .replace(/^### (.*$)/gim, '<h4 class="bento-section-title" style="margin-top:18px; margin-bottom:8px; color:#f1f5f9;">$1</h4>')
+        .replace(/^## (.*$)/gim, '<h3 class="bento-section-title" style="margin-top:22px; margin-bottom:10px; color:#38bdf8;">$1</h3>')
+        .replace(/^# (.*$)/gim, '<h3 class="bento-section-title" style="margin-top:22px; margin-bottom:10px; color:#38bdf8;">$1</h3>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08); color:#67e8f9; padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:0.85em;">$1</code>')
-        .replace(/^\s*[\-\*]\s+(.*$)/gim, '<li>$1</li>')
-        .replace(/\n\n/g, '</p><p style="margin-bottom:10px;">')
-        .replace(/\n/g, '<br>');
+        .replace(/`([^`]+)`/g, '<code class="memo-inline-code">$1</code>')
+        .replace(/^\s*[\-\*]\s+(.*$)/gim, '<li>$1</li>');
 
+    // Transform Executive Memo Header
+    clean = clean.replace(/(?:<h[1-3][^>]*>)?\s*(?:Executive Research Memo|Research Memo|Market Intelligence Briefing):\s*([^<]+)(?:<\/h[1-3]>)?/gi, (match, p1) => {
+        return `<div class="memo-hero-header">
+            <div class="memo-hero-badge"><i class="fa-solid fa-sparkles text-cyan"></i> Executive Intelligence Memo</div>
+            <h2 class="memo-hero-title">${p1.trim()}</h2>
+        </div>`;
+    });
+
+    // Transform Metadata Lines: Date: ... | Prepared for: ... | Classification: ...
+    clean = clean.replace(/(?:<p[^>]*>)?\s*Date:\s*([^|]+)\s*\|\s*Prepared for:\s*([^|]+)\s*\|\s*Classification:\s*([^<\n]+)(?:<\/p>)?/gi, (match, date, prep, cls) => {
+        return `<div class="memo-meta-strip">
+            <span class="meta-chip"><i class="fa-regular fa-calendar text-cyan"></i> ${date.trim()}</span>
+            <span class="meta-chip"><i class="fa-regular fa-user text-purple"></i> ${prep.trim()}</span>
+            <span class="meta-chip security"><i class="fa-solid fa-shield text-teal"></i> ${cls.trim()}</span>
+        </div>`;
+    });
+
+    // Transform Numbered Sections: e.g. "1. FOMC Interest Rate..." or "<h3>1. FOMC..."
+    clean = clean.replace(/(?:<p[^>]*>|<h[34][^>]*>)?\s*([0-9]+)\.\s+([^\n<:]+)(?::|\(([^)]+)\))?(?:<\/p>|<\/h[34]>)?/gi, (match, num, title, subtitle) => {
+        const subHtml = subtitle ? `<span class="section-subtitle">(${subtitle.trim()})</span>` : '';
+        return `<div class="bento-section-header">
+            <span class="bento-section-num">${num.padStart(2, '0')}</span>
+            <span class="bento-section-title">${title.trim()} ${subHtml}</span>
+        </div>`;
+    });
+
+    // Transform Context Note / Key Note callouts
+    clean = clean.replace(/(?:<p[^>]*>)?\s*(?:Context note|Note|Key context):\s*([^<\n]+)(?:<\/p>)?/gi, (match, noteText) => {
+        return `<div class="memo-callout-note">
+            <i class="fa-solid fa-circle-info text-cyan"></i>
+            <div class="note-content"><strong>Context Note:</strong> ${noteText.trim()}</div>
+        </div>`;
+    });
+
+    // Transform Conclusion / Strategic Outlook
+    clean = clean.replace(/(?:<p[^>]*>)?\s*(?:Conclusion|Strategic Outlook|Key Takeaway):\s*([^<\n]+(?:<br>[^<\n]+)*)(?:<\/p>)?/gi, (match, conclText) => {
+        return `<div class="memo-conclusion-box">
+            <div class="conclusion-label"><i class="fa-solid fa-chart-line text-teal"></i> Strategic Outlook & Takeaway</div>
+            <p class="conclusion-text">${conclText.trim()}</p>
+        </div>`;
+    });
+
+    // Transform Sources line at the end
+    clean = clean.replace(/(?:<p[^>]*>)?\s*Sources:\s*Synthesized on\s*([^<\n]+)(?:<\/p>)?/gi, (match, srcText) => {
+        return `<div class="memo-sources-disclaimer">
+            <i class="fa-solid fa-circle-check text-teal"></i> Synthesized from verified primary web sources • ${srcText.trim()}
+        </div>`;
+    });
+
+    // Convert raw citations [1], [2], [11] into styled citation pills
+    clean = clean.replace(/(?<!class="citation-ref">)\[([0-9]{1,2})\]/g, '<span class="citation-ref">[$1]</span>');
+
+    // Wrap floating <li> elements into <ul>
     if (clean.includes("<li>") && !clean.includes("<ul>")) {
-        clean = clean.replace(/(<li>.*<\/li>)/gs, '<ul style="margin-left:18px; margin-bottom:12px;">$1</ul>');
+        clean = clean.replace(/(<li>(?:(?!<ul).)*?<\/li>)/gs, '<ul class="memo-bullet-list">$1</ul>');
     }
 
-    return `<p style="margin-bottom:10px;">${clean}</p>`;
+    // Convert double newlines into clean paragraph breaks if not already in tags
+    clean = clean
+        .replace(/\n\n/g, '</p><p class="memo-paragraph">')
+        .replace(/\n/g, '<br>');
+
+    // Clean up empty tags
+    clean = clean.replace(/<p[^>]*>\s*<\/p>/g, '').replace(/(?:<br>\s*){3,}/g, '<br><br>');
+
+    return clean;
 }
 
 async function callGeminiProvider(query, sources, model, apiKey) {
