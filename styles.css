@@ -3052,15 +3052,33 @@ select option:checked {
     flex-direction: column;
     justify-content: space-between;
     gap: 12px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
 
 .digest-bento-card:hover {
-    border-color: rgba(56, 189, 248, 0.35);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.45);
+    transform: translateY(-3px);
+}
+
+.digest-bento-card.card-markets:hover {
+    border-color: rgba(56, 189, 248, 0.45);
+    box-shadow: 0 8px 26px -6px rgba(56, 189, 248, 0.2);
+}
+
+.digest-bento-card.card-ai:hover {
+    border-color: rgba(168, 85, 247, 0.45);
+    box-shadow: 0 8px 26px -6px rgba(168, 85, 247, 0.2);
+}
+
+.digest-bento-card.card-cloud:hover {
+    border-color: rgba(45, 212, 191, 0.45);
+    box-shadow: 0 8px 26px -6px rgba(45, 212, 191, 0.2);
+}
+
+.digest-bento-card.card-deals:hover {
+    border-color: rgba(251, 191, 36, 0.45);
+    box-shadow: 0 8px 26px -6px rgba(251, 191, 36, 0.2);
 }
 
 .digest-card-header {
