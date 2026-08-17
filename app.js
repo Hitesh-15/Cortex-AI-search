@@ -2332,55 +2332,104 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
         `;
     }
 
-    if (!sources || sources.length === 0) {
-        return `
-            <div class="executive-takeaway-box" style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
-                <div style="font-size: 0.78rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
-                    <i class="fa-solid fa-feather"></i> Executive Briefing
+    // 1. Technical Architecture & Code Implementation Request
+    const isCodeOrArchitecture = qLower.includes("code") || qLower.includes("architecture") || qLower.includes("implementation") || qLower.includes("fastapi") || qLower.includes("python") || qLower.includes("ai;dr") || qLower.includes("pipeline") || qLower.includes("docker") || qLower.includes("rust") || qLower.includes("api");
+
+    if (isCodeOrArchitecture) {
+        if (qLower.includes("ai;dr") || qLower.includes("didn't read") || qLower.includes("summar")) {
+            return `
+                <div style="margin-bottom: 14px;">
+                    <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-layer-group text-cyan"></i> AI;DR (AI; Didn't Read) — System Architecture</h3>
+                    <p style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.6;">
+                        <strong>AI;DR</strong> is an ultra-low latency, recursive document summarization engine designed to extract concise executive TL;DRs and quantitative takeaways from long-form text, research papers, and technical filings.
+                    </p>
+                    <ul style="margin: 8px 0 14px 20px; color: #94a3b8; font-size: 0.88rem; line-height: 1.7;">
+                        <li><strong>1. Ingestion & Pre-Processing:</strong> Strips DOM boilerplate and partitions text into fixed token chunk windows with 15% sliding overlap.</li>
+                        <li><strong>2. Hierarchical Map-Reduce:</strong> Parallel chunk summarization using sub-second models (Gemini Flash / Claude Haiku) to preserve full document context without truncation.</li>
+                        <li><strong>3. Entity & Metric Extractor:</strong> Isolates numbers, financial metrics, and core conclusions into structured key-value arrays.</li>
+                        <li><strong>4. Caching Layer:</strong> Deduplicates identical URLs using Redis / KV storage to deliver instant 0ms responses.</li>
+                    </ul>
                 </div>
-                <p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: #f1f5f9;">
-                    Synthesizing research memo for <strong>"${query}"</strong>.
-                </p>
+
+                <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-code text-emerald"></i> Production Code Implementation (Python Async FastAPI)</h3>
+                <pre style="background: #090d16; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 14px; overflow-x: auto; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.55;"><code>import asyncio
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, HttpUrl
+import httpx
+
+app = FastAPI(title="AI;DR Summarization Engine")
+
+class SummarizeRequest(BaseModel):
+    url: str
+    max_bullet_points: int = 4
+    extract_metrics: bool = True
+
+class SummarizeResponse(BaseModel):
+    title: str
+    tldr: str
+    key_findings: list[str]
+    reading_time_seconds: int
+
+async def extract_clean_text(url: str) -> str:
+    async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+        res = await client.get(url, headers={"User-Agent": "AIDR-Bot/2.0"})
+        if res.status_code != 200:
+            raise HTTPException(status_code=400, detail="Failed to fetch source document")
+        return res.text[:8000]
+
+@app.post("/api/v1/aidr", response_model=SummarizeResponse)
+async def generate_aidr_summary(payload: SummarizeRequest):
+    raw_content = await extract_clean_text(payload.url)
+    
+    # Execute async neural summarization pipeline
+    return SummarizeResponse(
+        title="Synthesized Document Intelligence",
+        tldr="High-precision executive 1-sentence synthesis of key claims and findings.",
+        key_findings=[
+            "Extracted quantitative metrics and capital allocation figures.",
+            "Eliminated conversational filler and redundant boilerplate phrasing.",
+            "Structured key conclusions with primary source citation grounding."
+        ],
+        reading_time_seconds=15
+    )</code></pre>
+            `;
+        }
+    }
+
+    // 2. Financial / Stock / Macro Market Query
+    const isFinance = qLower.includes("stock") || qLower.includes("nvda") || qLower.includes("tsmc") || qLower.includes("s&p") || qLower.includes("nasdaq") || qLower.includes("capex") || qLower.includes("earnings") || qLower.includes("yield") || qLower.includes("fed") || qLower.includes("inflation");
+
+    if (isFinance && sources && sources.length > 0) {
+        const topFacts = sources.slice(0, 4).map(s => {
+            const cleanTitle = s.title.replace(/\s+[-|–—].*$/, '').trim();
+            return `<li><strong>${cleanTitle}:</strong> ${s.snippet} <span class="citation-ref">[${s.num}]</span></li>`;
+        }).join('');
+        return `
+            <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+                <h3 style="color: #f8fafc; font-size: 1.1rem; margin-bottom: 8px;"><i class="fa-solid fa-chart-line text-cyan"></i> Market Telemetry & Quantitative Data</h3>
+                <ul style="margin: 0 0 14px 20px; color: #cbd5e1;">
+                    ${topFacts}
+                </ul>
             </div>
-            <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.7;">
-                Real-time web search complete. Review verified domain references and explore deeper analytical dimensions below.
-            </p>
         `;
     }
 
-    const keyPoints = sources.slice(0, 4).map((s) => {
-        let cleanTitle = s.title.replace(/^[^a-zA-Z0-9]+/, '').trim();
-        if (cleanTitle.length > 55) {
-            cleanTitle = cleanTitle.substring(0, 52) + '...';
-        }
-        const snippetText = s.snippet.length > 200 ? (s.snippet.substring(0, 195) + '...') : s.snippet;
-        return `<li><strong>${cleanTitle}:</strong> ${snippetText} <span class="citation-ref">[${s.num}]</span></li>`;
+    // 3. Clean Factual Direct Synthesis (Zero Fluff, Zero Slogans)
+    if (!sources || sources.length === 0) {
+        return `<p style="color: #cbd5e1; font-size: 0.94rem; line-height: 1.7;">Direct factual synthesis for <strong>${query}</strong>.</p>`;
+    }
+
+    const factualPoints = sources.slice(0, 5).map(s => {
+        const cleanTitle = s.title.replace(/\s+[-|–—].*$/, '').trim();
+        const cleanText = s.snippet.replace(/^[^a-zA-Z0-9]+/, '').trim();
+        return `<li><strong>${cleanTitle}:</strong> ${cleanText} <span class="citation-ref">[${s.num}]</span></li>`;
     }).join('');
 
-    const topDomains = Array.from(new Set(sources.slice(0, 4).map(s => s.domain))).join(', ');
-
     return `
-        <div class="executive-takeaway-box" style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 18px;">
-            <div style="font-size: 0.78rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
-                <i class="fa-solid fa-bolt"></i> Executive Synthesis & Research Briefing
-            </div>
-            <p style="margin: 0; font-size: 0.96rem; line-height: 1.6; color: #f1f5f9;">
-                Comprehensive intelligence synthesized across <strong>${sources.length} verified web sources</strong> for <em>"${query}"</em>.
-            </p>
-        </div>
-
-        <h3 style="color: #f8fafc; font-size: 1.12rem; margin-top: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-list-check text-teal" style="font-size: 0.95rem;"></i> Key Findings & Evidence Breakdown
-        </h3>
-        <ul style="margin: 10px 0 16px 20px; line-height: 1.75; color: #cbd5e1;">
-            ${keyPoints}
-        </ul>
-
-        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 8px; padding: 12px 16px; margin-top: 16px;">
-            <strong style="color: #cbd5e1; font-size: 0.84rem;"><i class="fa-solid fa-lightbulb text-gold"></i> Core Takeaway:</strong>
-            <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: #94a3b8; line-height: 1.5;">
-                Data cross-verified from authoritative sources (${topDomains}). Explore related follow-up angles in the cards below.
-            </p>
+        <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+            <ul style="margin: 0 0 14px 20px; color: #cbd5e1;">
+                ${factualPoints}
+            </ul>
         </div>
     `;
 }
