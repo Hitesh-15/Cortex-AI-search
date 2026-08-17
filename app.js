@@ -405,31 +405,8 @@ function setupNavigationListeners() {
         });
     }
 
-    // Sidebar Footer Buttons
-    const btnOpenSettings = document.getElementById("btnOpenSettings");
-    if (btnOpenSettings) {
-        btnOpenSettings.addEventListener("click", (e) => {
-            e.preventDefault();
-            openSettingsModal();
-        });
-    }
-
-    const btnOpenLock = document.getElementById("btnOpenLockModal");
-    if (btnOpenLock) {
-        btnOpenLock.addEventListener("click", (e) => {
-            e.preventDefault();
-            openLockModal();
-        });
-    }
-
-    // Clear History Button
-    const btnClearHistory = document.getElementById("btnClearHistory");
-    if (btnClearHistory) {
-        btnClearHistory.addEventListener("click", (e) => {
-            e.preventDefault();
-            clearWorkspaceHistory();
-        });
-    }
+    // Initialize Gateway Connection Status Badge
+    updateGatewayStatusBadge();
 
     // Suggested Cards Click Event Listener
     document.querySelectorAll(".suggested-card").forEach(card => {
@@ -2884,6 +2861,34 @@ function deleteThread(threadId) {
     renderViewport();
 }
 
+function updateGatewayStatusBadge() {
+    const badge = document.getElementById("gatewayStatusBadge");
+    if (!badge) return;
+
+    const orKey = (appState.settings?.apiKeys?.openrouter || localStorage.getItem("ambu_key_openrouter") || localStorage.getItem("openrouter_api_key") || "").trim();
+    const openaiKey = (appState.settings?.apiKeys?.openai || localStorage.getItem("ambu_key_openai") || "").trim();
+    const geminiKey = (appState.settings?.apiKeys?.gemini || localStorage.getItem("ambu_key_gemini") || "").trim();
+    const claudeKey = (appState.settings?.apiKeys?.claude || localStorage.getItem("ambu_key_claude") || "").trim();
+
+    if (orKey) {
+        badge.style.background = "rgba(16, 185, 129, 0.08)";
+        badge.style.borderColor = "rgba(16, 185, 129, 0.25)";
+        badge.innerHTML = `<span class="status-dot-pulse"></span> <span id="gatewayStatusText">OpenRouter Connected</span>`;
+        badge.title = "OpenRouter Multi-Model Frontier Gateway Active";
+    } else if (openaiKey || geminiKey || claudeKey) {
+        const providerName = openaiKey ? "OpenAI" : (geminiKey ? "Gemini" : "Claude");
+        badge.style.background = "rgba(16, 185, 129, 0.08)";
+        badge.style.borderColor = "rgba(16, 185, 129, 0.25)";
+        badge.innerHTML = `<span class="status-dot-pulse"></span> <span id="gatewayStatusText">${providerName} API Active</span>`;
+        badge.title = `Direct ${providerName} API Connection Active`;
+    } else {
+        badge.style.background = "rgba(255, 255, 255, 0.04)";
+        badge.style.borderColor = "rgba(255, 255, 255, 0.1)";
+        badge.innerHTML = `<span style="width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; display: inline-block;"></span> <span id="gatewayStatusText" style="color: #94a3b8;">Local Engine (No API Key)</span>`;
+        badge.title = "Operating on Built-in Local Engine. Add API Key in Settings to connect Frontier Models.";
+    }
+}
+
 function clearWorkspaceHistory() {
     if (confirm("Are you sure you want to clear your research workspace history?")) {
         appState.threads = [];
@@ -2984,6 +2989,7 @@ function openSettingsModal() {
 function closeSettingsModal() {
     const modal = document.getElementById("settingsModal");
     if (modal) modal.classList.remove("active");
+    updateGatewayStatusBadge();
 }
 
 function toggleApiKeyVisibility() {
@@ -3041,6 +3047,7 @@ async function testOpenRouterApiKeyNow() {
             // Store key immediately
             appState.settings.apiKeys.openrouter = key;
             localStorage.setItem("ambu_key_openrouter", key);
+            updateGatewayStatusBadge();
 
             // Dynamically refresh models using this key
             await fetchLatestModelsAuto(false);
@@ -3058,6 +3065,7 @@ async function testOpenRouterApiKeyNow() {
                 }
                 appState.settings.apiKeys.openrouter = key;
                 localStorage.setItem("ambu_key_openrouter", key);
+                updateGatewayStatusBadge();
                 await fetchLatestModelsAuto(false);
             } else {
                 const err = await res.json().catch(() => ({}));
@@ -3918,5 +3926,6 @@ window.renderLibraryMemos = renderLibraryMemos;
 window.filterLibraryMemos = filterLibraryMemos;
 window.deleteSavedMemo = deleteSavedMemo;
 window.clearAllSavedLibraryMemos = clearAllSavedLibraryMemos;
+window.updateGatewayStatusBadge = updateGatewayStatusBadge;
 window.appState = appState;
 
