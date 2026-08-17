@@ -20,7 +20,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=2026.08.16.24">
+    <link rel="stylesheet" href="styles.css?v=2026.08.17.01">
 </head>
 
 <body>
@@ -84,6 +84,9 @@
                     <i class="fa-solid fa-sun text-gold"></i> <span>Executive Daily Digest</span>
                 </button>
                 <div class="sidebar-icon-bar">
+                    <button id="btnOpenLibrary" class="btn-icon-footer" onclick="openLibraryModal()" title="Research Library & Saved Memos">
+                        <i class="fa-solid fa-bookmark text-teal"></i>
+                    </button>
                     <button id="btnOpenSettings" class="btn-icon-footer" onclick="openSettingsModal()" title="Cortex Settings & AI Gateway">
                         <i class="fa-solid fa-gear"></i>
                     </button>
@@ -110,15 +113,19 @@
             <div class="view-scroll-area" id="viewScrollArea">
                 <!-- Empty State Hero (Default View) -->
                 <div class="empty-hero" id="emptyHeroView">
+                    <div class="hero-brand-badge" style="margin-bottom: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; color: #38bdf8; font-weight: 600;">
+                        <i class="fa-solid fa-bolt text-cyan"></i>
+                        <span>Cortex 2026 Institutional Workstation</span>
+                    </div>
                     <h2 class="hero-title">Market Intelligence & <span style="background: linear-gradient(135deg, #38bdf8, #2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Executive Research.</span></h2>
-                    <p class="hero-subtitle">Real-time web research and Cortex frontier model routing.</p>
+                    <p class="hero-subtitle">Synthesize real-time facts across verified institutional sources, execute multi-model reasoning, and generate structured executive research memos with interactive charts & audio briefings.</p>
 
                     <div class="privacy-badge-banner" style="margin: 10px auto 22px auto; max-width: 580px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); color: #a7f3d0; padding: 8px 18px; border-radius: 20px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 8px;">
                         <i class="fa-solid fa-shield-halved" style="color: #10b981;"></i>
                         <span><strong>100% Local Privacy:</strong> API keys stay encrypted directly in your browser. Zero server tracking.</span>
                     </div>
 
-                    <div class="suggested-cards-grid">
+                    <div class="suggested-cards-grid" id="suggestedPromptsGrid">
                         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
                             data-query="What are the top 2026 AI breakthroughs and quantum computing updates?">
                             <i class="fa-solid fa-atom suggested-card-icon"></i>
@@ -146,7 +153,7 @@
                     </div>
                 </div>
 
-                <!-- Active Thread Container (Populated dynamically) -->
+                <!-- ACTIVE RESEARCH THREAD (Populated after user searches) -->
                 <div id="activeThreadContainer" style="display: none; flex-direction: column; gap: 30px; width: 100%;">
                     <!-- Populated by JS -->
                 </div>
@@ -159,10 +166,17 @@
                     <!-- Dynamically populated by app.js -->
                 </div>
 
-                <form id="searchForm" class="search-box-container">
+                <form id="searchForm" class="search-box-container" ondragover="handleSearchDragOver(event)" ondragleave="handleSearchDragLeave(event)" ondrop="handleSearchDrop(event)">
+                    <!-- ATTACHED DOCUMENTS PILL BAR -->
+                    <div id="attachedFilesBar" class="attached-files-bar" style="display: none;"></div>
+
                     <div class="search-input-row" id="standardInputRow">
+                        <input type="file" id="docFileInput" multiple accept=".pdf,.txt,.md,.json,.csv,.doc,.docx" style="display: none;" onchange="handleDocFileUpload(event)">
+                        <button type="button" class="btn-attach-doc" onclick="document.getElementById('docFileInput').click()" title="Attach Document, PDF, or SEC 10-K for Live Cross-Examination">
+                            <i class="fa-solid fa-paperclip"></i>
+                        </button>
                         <input type="text" id="searchInput" class="search-input"
-                            placeholder="Ask anything... (Type @ to select models, @compare for head-to-head, or @parallel)"
+                            placeholder="Ask anything or drop files... (Type @ for models, @compare for head-to-head)"
                             autocomplete="off">
                         <div class="submit-btn-group">
                             <button type="submit" class="btn-submit-search" id="btnSubmitSearch" title="Execute Research">
@@ -170,7 +184,7 @@
                             </button>
                         </div>
                     </div>
-
+                    
                     <!-- HEAD-TO-HEAD COMPARISON DUAL INPUT ROW -->
                     <div class="compare-input-row" id="compareInputRow" style="display: none;">
                         <div class="compare-field-wrapper">
@@ -317,6 +331,34 @@
         </div>
     </div>
 
+    <!-- MODAL: RESEARCH LIBRARY & SAVED WORKSPACES -->
+    <div id="libraryModal" class="modal-backdrop" onclick="if(event.target===this) closeLibraryModal()">
+        <div class="modal-box" style="max-width: 720px; max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-bookmark text-teal"></i> Research Library & Saved Workspaces</h3>
+                <button class="modal-close" id="btnCloseLibraryModal" onclick="closeLibraryModal()">&times;</button>
+            </div>
+            <div style="padding-top: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="libraryFilterChips">
+                        <button type="button" class="btn-lib-action active" onclick="filterLibraryMemos('all', this)" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 700;">All Memos (<span id="libTotalCount">0</span>)</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('semiconductors', this)">Semiconductors</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('ai', this)">Frontier AI</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('macro', this)">Macro & Deals</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('cloud', this)">Cloud Infra</button>
+                    </div>
+                    <button type="button" class="btn-lib-action delete" onclick="clearAllSavedLibraryMemos()" style="font-size: 0.72rem;">
+                        <i class="fa-solid fa-trash-can"></i> Clear Saved
+                    </button>
+                </div>
+
+                <div class="library-grid" id="libraryCardsGrid">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- RELEASE NOTES MODAL -->
     <div id="releaseNotesModal" class="modal-backdrop" onclick="if(event.target===this) closeReleaseNotesModal()">
         <div class="modal-box" style="max-width: 660px; max-height: 85vh; overflow-y: auto;">
@@ -326,25 +368,28 @@
             </div>
             <div style="padding-top: 4px; font-size: 0.88rem; line-height: 1.6; color: #cbd5e1;">
                 <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
-                    <strong style="color: #38bdf8; font-size: 0.95rem;">🌟 Version 3.8.1 (Active Live Release)</strong>
-                    <p style="margin-top: 4px; font-size: 0.82rem; color: #94a3b8;">Visual metric sparklines, inline accordion drawers, executive 2x2 Bento Dashboard, and 1-click drill-down discovery chips.</p>
+                    <strong style="color: #38bdf8; font-size: 0.95rem;">🌟 Version 4.0.0 (Active Live Release)</strong>
+                    <p style="margin-top: 4px; font-size: 0.82rem; color: #94a3b8;">Interactive HTML5 canvas charts, 60s executive audio briefings, drag-and-drop document ingestion, and private research library workspaces.</p>
                 </div>
 
-                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-chart-line text-cyan"></i> Visual Metric Sparklines & Accordion Drawers</h4>
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-chart-line text-cyan"></i> Interactive Data & Benchmark Charting</h4>
                 <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
-                    <li><strong>Embedded Trendline SVGs:</strong> Real-time asset badges with SVG trendlines (S&P, Nasdaq, 10Y Yields, Crude Oil).</li>
-                    <li><strong>Progressive Disclosure Drawers:</strong> Expand and collapse granular metrics on demand without leaving the screen.</li>
+                    <li><strong>Dynamic Financial & LLM Charts:</strong> Automated neon line/area charts for CapEx & market trends and multi-metric bar charts for SWE-bench & AIME proofs.</li>
                 </ul>
 
-                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-table-cells-large text-purple"></i> Executive 2x2 Bento Dashboard</h4>
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-headphones text-purple"></i> 60-Second Audio Executive Briefings</h4>
                 <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
-                    <li><strong>Scannable Institutional Intelligence:</strong> Instant multi-domain dashboard spanning Global Markets, Frontier AI, Distributed Cloud, and Enterprise Deals & M&A.</li>
+                    <li><strong>Listen On the Go:</strong> Built-in zero-latency neural TTS audio player with animated waveform bars and 1.0x/1.25x/1.5x speed toggles.</li>
                 </ul>
 
-                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-file-export text-teal"></i> Executive Export Suite & Multi-Page Print</h4>
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-paperclip text-teal"></i> Drag & Drop Document / SEC Ingestion</h4>
                 <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
-                    <li><strong>Export Markdown (.md) & PDF Print:</strong> Unbounded multi-page PDF generation and one-click formatted markdown export.</li>
-                    <li><strong>Dynamic Smart Follow-Ups:</strong> Clickable sub-inquiry chips to drill into specific facets with zero manual typing.</li>
+                    <li><strong>Live Cross-Examination:</strong> Drag and drop PDFs or financial filings into the search box to cross-examine local documents against live web facts.</li>
+                </ul>
+
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-bookmark text-gold"></i> Saved Research Workspaces & Library</h4>
+                <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
+                    <li><strong>Organized Intelligence:</strong> Bookmark memos into categorized private collections (Semiconductors, Frontier AI, Macro Deals, Cloud Infra) with one-click re-runs.</li>
                 </ul>
 
                 <div class="modal-footer" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
@@ -358,7 +403,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.16.24"></script>
+    <script src="app.js?v=2026.08.17.01"></script>
 </body>
 
 </html>
