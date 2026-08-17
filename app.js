@@ -3290,6 +3290,15 @@ async function executeComparisonSearch() {
 
 function generateExecutiveMorningDigest() {
     const digestQuery = `Executive Daily Intelligence Briefing: AI Frontier, Cloud Scale & Capital Markets`;
+    // Guarantee opening in a fresh dedicated thread/window
+    appState.activeThreadId = null;
+    const heroView = document.getElementById("emptyHeroView");
+    const container = document.getElementById("activeThreadContainer");
+    if (heroView) heroView.style.display = "none";
+    if (container) {
+        container.style.display = "flex";
+        container.innerHTML = "";
+    }
     executeSearch(digestQuery);
 }
 
