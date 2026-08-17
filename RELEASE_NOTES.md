@@ -5,16 +5,15 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v4.1.0] — 2026-08-17
-### **Live Desktop Market Ticker, 1-Click Accent Theme Switcher, Zero-Fluff Precision Synthesis & Code Generator**
+### **Live Desktop Market Ticker, Ultra-Clean Mobile Isolation, Zero-Fluff Precision Synthesis & Code Generator**
 
 ```mermaid
 graph TD
-    User([Institutional User / Developer]) -->|Query / @ Tag / Code Search| Header[Desktop Live Ticker & Theme Gateway]
+    User([Institutional User / Developer]) -->|Query / @ Tag / Code Search| Header[Desktop Live Ticker & Institutional Gateway]
 
-    subgraph UI_Header [Desktop Header & Customization]
+    subgraph UI_Header [Desktop Header & Institutional Telemetry]
         Ticker[📊 Real-Time Market Ticker: S&P 500, NASDAQ, 10Y, Brent]
         GatewayStatus[🟢 413 Models Online Status Badge]
-        ThemePicker[🎨 1-Click Theme Switcher: Cyan, Emerald, Purple, Gold]
         MobileIsolation[📱 Clean Mobile Viewport: 0% Clutter]
     end
 
@@ -44,20 +43,13 @@ graph TD
 - **Real-Time Financial Badges**: Replaced empty top header with live scannable asset pills: `S&P 500 ▲ +0.62%`, `NASDAQ ▲ +0.94%`, `US 10Y 4.26%`, and `BRENT $76.80`.
 - **Gateway Telemetry**: Real-time neural gateway connectivity badge (`🟢 413 Models Online`).
 
-#### 🎨 1-Click Accent Theme Switcher & OLED Obsidian Palette
-- **Multi-Theme Engine**: Instantly customize the workspace across 4 curated workstation palettes:
-  - **Obsidian Ice-Cyan** (Linear & Apple Silicon aesthetic)
-  - **Cyber Aurora & Mint** (High-energy emerald green)
-  - **Frontier Neural Violet** (Deep purple reasoning theme)
-  - **Institutional Gold & Titanium** (Classic wealth advisory palette)
-- **Deep OLED Obsidian Base**: Upgraded root background to pure `#030712` for infinite contrast on OLED displays.
-
 #### 📱 Ultra-Clean Mobile Viewport Isolation
 - **Zero Clutter on Mobile**: Ticker strip is strictly desktop-only (`display: none !important;` on screens `< 900px`).
 - **Streamlined Mobile Top Bar**: Minimalist 48px header with touch-friendly navigation drawer toggle.
 
 #### ⚡ Zero-Fluff Precision Synthesis Engine
 - **Eliminated Marketing Fluff & Filler Templates**: Removed generic boilerplate headings (*"Executive Synthesis & Research Briefing"*, *"Comprehensive intelligence synthesized across 20 verified sources..."*, *"Key Findings & Evidence Breakdown"*, *"Core Takeaway"*).
+- **Direct, Concise Factual Output**: Delivers pure, actionable intelligence with zero preamble.
 - **Direct, Concise Factual Output**: Delivers pure, actionable intelligence with zero preamble.
 
 #### 💻 Intent-Aware Technical Architecture & Code Generator
