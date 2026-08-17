@@ -44,11 +44,12 @@ def test_static_bindings():
     html_ids = set(re.findall(r'id=["\']([^"\']+)["\']', html_content))
     critical_elements = [
         "btnMobileToggle", "btnMobileCloseSidebar", "sidebarOverlay", "appSidebar",
-        "btnOpenSettings", "btnOpenReleaseNotes", "btnGenerateMorningDigest",
+        "btnOpenLibrary", "btnOpenSettings", "btnOpenReleaseNotes", "btnGenerateMorningDigest",
         "btnClearHistory", "searchForm", "searchInput", "btnSubmitSearch",
+        "docFileInput", "attachedFilesBar",
         "standardInputRow", "compareInputRow", "compareInputA", "compareInputB",
         "btnSubmitCompare", "btnCancelCompare",
-        "chatEffortSelect", "btnToggleWatchdog", "settingsModal", "releaseNotesModal",
+        "chatEffortSelect", "btnToggleWatchdog", "libraryModal", "settingsModal", "releaseNotesModal",
         "threadHistoryList", "viewScrollArea", "emptyHeroView", "activeThreadContainer"
     ]
     
@@ -179,8 +180,18 @@ def test_full_cortex_suite():
             time.sleep(0.1)
         print(f"PASS: All {len(desks)} research desks switched cleanly.")
         
-        # 1.7 Modals Validation (Settings & Release Notes)
-        print("--> Testing Modals (Settings & Release Notes)...")
+        # 1.7 Modals Validation (Library, Settings & Release Notes)
+        print("--> Testing Modals (Library, Settings & Release Notes)...")
+        # Library Modal
+        driver.execute_script("window.openLibraryModal();")
+        time.sleep(0.3)
+        lib_modal = driver.find_element(By.ID, "libraryModal")
+        assert "active" in lib_modal.get_attribute("class"), "Library modal failed to open!"
+        driver.execute_script("window.closeLibraryModal();")
+        time.sleep(0.3)
+        assert "active" not in lib_modal.get_attribute("class"), "Library modal failed to close!"
+        print("PASS: Research Library modal opened & closed cleanly.")
+
         # Settings Modal
         driver.execute_script("window.openSettingsModal();")
         time.sleep(0.3)
@@ -196,11 +207,11 @@ def test_full_cortex_suite():
         time.sleep(0.3)
         rn_modal = driver.find_element(By.ID, "releaseNotesModal")
         assert "active" in rn_modal.get_attribute("class"), "Release Notes modal failed to open!"
-        assert "3.8.1" in rn_modal.text, "v3.8.1 not found in release notes modal!"
+        assert "4.0.0" in rn_modal.text, "v4.0.0 not found in release notes modal!"
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)
         assert "active" not in rn_modal.get_attribute("class"), "Release Notes modal failed to close!"
-        print("PASS: Release Notes modal v3.8.1 opened & verified.")
+        print("PASS: Release Notes modal v4.0.0 opened & verified.")
         
         # 1.8 Executive Daily Digest Trigger & Accordion Audit
         print("--> Testing Executive Daily Digest Synthesis & Accordion Drawer...")

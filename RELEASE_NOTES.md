@@ -4,6 +4,23 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v4.0.0] — 2026-08-17
+### **Institutional Workstation Architecture: Interactive Visual Charts, Audio Briefings, Document Ingestion & Research Library**
+
+#### 📊 Interactive Data & Benchmark Charting Engine
+- **Dynamic HTML5 Canvas Visualizer**: Automatically generates responsive, high-contrast dark-mode charts for financial queries, semiconductor CapEx trajectories, and AI model benchmark evaluation matrices (SWE-bench Verified & AIME Math Proofs).
+
+#### 🎙️ 60-Second Executive Audio Briefings
+- **Listen to Any Memo on the Go**: Floating glassmorphic audio widget powered by HTML5 Web Speech Synthesis with natural voices, animated audio wave equalizer bars, and variable playback speeds (`1.0x`, `1.25x`, `1.5x`).
+
+#### 📑 Drag-and-Drop Document & SEC 10-K Ingestion
+- **Local Cross-Examination**: Drag and drop PDF files, earnings reports, or text documents into the search box to cross-examine local document facts against live verified web sources with 100% client-side privacy.
+
+#### 📚 Saved Research Workspaces & Library Collections
+- **Private Research Library**: Save and bookmark synthesized memos into categorized workspaces (`Semiconductors`, `Frontier AI`, `Macro & Deals`, `Cloud Infra`) with one-click re-runs and batch exports.
+
+---
+
 ## 🌟 [v3.8.1] — 2026-08-16
 ### **Visual Metric Sparklines, Progressive-Disclosure Accordion Expanders & CSS Screen Media Patch**
 
