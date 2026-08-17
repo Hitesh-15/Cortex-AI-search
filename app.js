@@ -3841,6 +3841,31 @@ function clearAllSavedLibraryMemos() {
     }
 }
 
+function setThemeAccent(themeName, btn) {
+    document.documentElement.setAttribute("data-theme", themeName);
+    localStorage.setItem("cortex_theme_accent", themeName);
+
+    document.querySelectorAll(".btn-theme-dot").forEach(b => b.classList.remove("active"));
+    if (btn) {
+        btn.classList.add("active");
+    } else {
+        const targetBtn = document.querySelector(`.btn-theme-dot.${themeName}`);
+        if (targetBtn) targetBtn.classList.add("active");
+    }
+}
+
+// Auto-initialize theme on boot
+(function initThemeAccent() {
+    const savedTheme = localStorage.getItem("cortex_theme_accent") || "cyan";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    setTimeout(() => {
+        document.querySelectorAll(".btn-theme-dot").forEach(b => {
+            if (b.classList.contains(savedTheme)) b.classList.add("active");
+            else b.classList.remove("active");
+        });
+    }, 100);
+})();
+
 // Explicit window bindings to guarantee 100% button functionality across Edge, Brave, Chrome, Safari
 window.openSettingsModal = openSettingsModal;
 window.closeSettingsModal = closeSettingsModal;
@@ -3886,5 +3911,6 @@ window.renderLibraryMemos = renderLibraryMemos;
 window.filterLibraryMemos = filterLibraryMemos;
 window.deleteSavedMemo = deleteSavedMemo;
 window.clearAllSavedLibraryMemos = clearAllSavedLibraryMemos;
+window.setThemeAccent = setThemeAccent;
 window.appState = appState;
 
