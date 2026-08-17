@@ -20,7 +20,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=2026.08.17.01">
+    <link rel="stylesheet" href="styles.css?v=2026.08.17.03">
 </head>
 
 <body>
@@ -107,6 +107,33 @@
                 <button id="btnMobileToggle" class="btn-mobile-toggle" aria-label="Toggle Mobile Navigation Menu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
+                <div class="mobile-brand-title">
+                    <i class="fa-solid fa-bolt text-cyan"></i> CORTEX AI
+                </div>
+
+                <!-- DESKTOP-ONLY INSTITUTIONAL LIVE TICKER & THEME BAR (Hidden on Mobile) -->
+                <div class="desktop-header-content">
+                    <div class="header-ticker-group">
+                        <span class="ticker-pill"><span class="ticker-symbol">S&P 500</span> <span class="ticker-val up">5,892.4 <i class="fa-solid fa-arrow-trend-up"></i> +0.62%</span></span>
+                        <span class="ticker-pill"><span class="ticker-symbol">NASDAQ</span> <span class="ticker-val up">18,945.2 <i class="fa-solid fa-arrow-trend-up"></i> +0.94%</span></span>
+                        <span class="ticker-pill"><span class="ticker-symbol">US 10Y</span> <span class="ticker-val neutral">4.26%</span></span>
+                        <span class="ticker-pill"><span class="ticker-symbol">BRENT</span> <span class="ticker-val down">$76.80 <i class="fa-solid fa-arrow-trend-down"></i> -0.3%</span></span>
+                    </div>
+
+                    <div class="header-right-controls">
+                        <div class="gateway-status-badge" title="OpenRouter & Cortex Multi-Model Neural Gateway Online">
+                            <span class="status-dot-pulse"></span>
+                            <span>413 Models Online</span>
+                        </div>
+
+                        <div class="theme-accent-picker" title="Switch Theme Accent">
+                            <button type="button" class="btn-theme-dot cyan active" onclick="setThemeAccent('cyan', this)" title="Obsidian Ice-Cyan"></button>
+                            <button type="button" class="btn-theme-dot emerald" onclick="setThemeAccent('emerald', this)" title="Cyber Aurora & Mint"></button>
+                            <button type="button" class="btn-theme-dot purple" onclick="setThemeAccent('purple', this)" title="Frontier Neural Violet"></button>
+                            <button type="button" class="btn-theme-dot gold" onclick="setThemeAccent('gold', this)" title="Institutional Gold & Titanium"></button>
+                        </div>
+                    </div>
+                </div>
             </header>
 
             <!-- ANSWERS & THREAD VIEWPORT -->
@@ -403,7 +430,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.17.02"></script>
+    <script src="app.js?v=2026.08.17.03"></script>
 </body>
 
 </html>
