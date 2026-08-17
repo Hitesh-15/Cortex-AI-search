@@ -7,17 +7,59 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ## 🌟 [v4.0.0] — 2026-08-17
 ### **Institutional Workstation Architecture: Interactive Visual Charts, Audio Briefings, Document Ingestion & Research Library**
 
+```mermaid
+graph TD
+    User([Institutional User / Analyst]) -->|Search Query / @ Tag / Drop PDF| Gateway[Cortex Unified Ingestion Gateway]
+    
+    subgraph UI_UX [UI / UX & Workstation Layer]
+        Typography[Plus Jakarta Sans & JetBrains Mono]
+        Glassmorphism[Obsidian Dark Glassmorphic Design System]
+        LibraryModal[📚 Private Research Library & Collections]
+        AudioWidget[🎙️ 60s Executive Audio Player & Waveform]
+    end
+
+    subgraph Data_Engine [Multi-Source Ingestion & Analysis]
+        LiveWeb[Verified Web APIs: Reuters, Bloomberg, ArXiv, SEC EDGAR]
+        DocParser[Client-Side File Extractor: PDF, SEC 10-K, TXT, CSV]
+        ChartEngine[📊 Dynamic HTML5 Canvas Chart Visualizer]
+    end
+
+    subgraph AI_Gateway [Frontier Intelligence & Routing]
+        ORRouter[OpenRouter Frontier Gateway: Claude 3.7, DeepSeek-R1, GPT-4o, Gemini 3.7]
+        LocalEngine[Cortex Fallback Neural Engine]
+        TTS[HTML5 Speech Synthesis TTS Engine]
+    end
+
+    Gateway --> LiveWeb
+    Gateway --> DocParser
+    LiveWeb & DocParser --> ORRouter
+    ORRouter -.->|Fallback Safety| LocalEngine
+    ORRouter --> ChartEngine
+    ORRouter --> AudioWidget
+    AudioWidget --> TTS
+    ChartEngine --> UI_UX
+    UI_UX --> LibraryModal
+```
+
 #### 📊 Interactive Data & Benchmark Charting Engine
 - **Dynamic HTML5 Canvas Visualizer**: Automatically generates responsive, high-contrast dark-mode charts for financial queries, semiconductor CapEx trajectories, and AI model benchmark evaluation matrices (SWE-bench Verified & AIME Math Proofs).
+- **Zero Heavy Dependencies**: Built with lightweight zero-dependency HTML5 Canvas with native High-DPI device pixel ratio scaling.
 
 #### 🎙️ 60-Second Executive Audio Briefings
 - **Listen to Any Memo on the Go**: Floating glassmorphic audio widget powered by HTML5 Web Speech Synthesis with natural voices, animated audio wave equalizer bars, and variable playback speeds (`1.0x`, `1.25x`, `1.5x`).
+- **Zero Audio Latency**: Runs 100% locally in the browser with zero cloud voice API fees or data transmission delays.
 
 #### 📑 Drag-and-Drop Document & SEC 10-K Ingestion
 - **Local Cross-Examination**: Drag and drop PDF files, earnings reports, or text documents into the search box to cross-examine local document facts against live verified web sources with 100% client-side privacy.
+- **Visual File Attachment Pills**: Dynamic file management tags above the search bar with instant removal controls.
 
 #### 📚 Saved Research Workspaces & Library Collections
 - **Private Research Library**: Save and bookmark synthesized memos into categorized workspaces (`Semiconductors`, `Frontier AI`, `Macro & Deals`, `Cloud Infra`) with one-click re-runs and batch exports.
+- **Client-Side Encrypted Storage**: Persistent local browser storage keeps all saved intellectual property and memos secure.
+
+#### 🎨 Modern Typography & Institutional Styling Overhaul
+- **Standardized Type Hierarchy**: Integrated Google Fonts **Plus Jakarta Sans** (headings), **Inter** (body), and **JetBrains Mono** (precision metrics).
+- **Obsidian Dark Glassmorphism**: High-contrast dark backgrounds (`#0b0f19` / `#0f172a`), refined subtle borders (`rgba(255,255,255,0.08)`), and micro-animations.
 
 ---
 
