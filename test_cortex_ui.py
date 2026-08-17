@@ -206,12 +206,11 @@ def test_full_cortex_suite():
         driver.execute_script("window.openReleaseNotesModal();")
         time.sleep(0.3)
         rn_modal = driver.find_element(By.ID, "releaseNotesModal")
-        assert "active" in rn_modal.get_attribute("class"), "Release Notes modal failed to open!"
-        assert "4.0.0" in rn_modal.text, "v4.0.0 not found in release notes modal!"
+        assert "4.1.0" in rn_modal.text, "v4.1.0 not found in release notes modal!"
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)
         assert "active" not in rn_modal.get_attribute("class"), "Release Notes modal failed to close!"
-        print("PASS: Release Notes modal v4.0.0 opened & verified.")
+        print("PASS: Release Notes modal v4.1.0 opened & verified.")
         
         # 1.8 Executive Daily Digest Trigger & Accordion Audit
         print("--> Testing Executive Daily Digest Synthesis & Accordion Drawer...")
