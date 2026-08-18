@@ -1631,30 +1631,20 @@ function formatSingleModelName(rawId) {
     if (!rawId) return "Gemini 3.7 Flash";
     let id = rawId.trim();
 
-    // 1. Check if model was dynamically registered in live catalog
-    if (DYNAMIC_MODEL_CATALOG && DYNAMIC_MODEL_CATALOG[id]) {
-        let catalogName = DYNAMIC_MODEL_CATALOG[id];
-        // Clean company prefixes (e.g. "Google: ", "Anthropic: ", "OpenAI: ", "Meta: ")
-        catalogName = catalogName.replace(/^(Google|Anthropic|OpenAI|Meta|xAI|Mistral|DeepSeek|Qwen|NVIDIA|Cohere|Microsoft):\s*/i, '');
-        // Remove noise tags like "(self-moderated)" or "(free)"
-        catalogName = catalogName.replace(/\s*\((self-moderated|free|beta|nitro|online|base)\)/gi, '').trim();
-        if (catalogName.length > 2) return catalogName;
-    }
-
-    // 2. Special aliases for Cortex internal modes
-    if (id === "openrouter/auto" || id === "openrouter:auto" || id.includes("Auto Smart Route")) {
-        return "Gemini 3.7 Flash (Smart Routed)";
+    // 1. Special aliases for Cortex internal modes & auto-routing
+    if (id === "openrouter/auto" || id === "openrouter:auto" || id.toLowerCase() === "auto" || id.includes("Auto Smart Route") || id.includes("Auto Router")) {
+        return "Gemini 3.7 Flash";
     }
     if (id === "opus") return "Claude Opus 5";
-    if (id === "fast") return "Gemini 3.7 Flash";
-    if (id === "deep") return "Claude Sonnet 5";
+    if (id === "fast" || id === "gemini") return "Gemini 3.7 Flash";
+    if (id === "deep" || id === "sonnet" || id === "claude") return "Claude Sonnet 5";
     if (id === "grok") return "Grok 4.6";
     if (id === "openai" || id === "gpt4" || id === "o3") return "OpenAI o3-mini";
     if (id === "deepseek") return "DeepSeek R1";
     if (id === "free") return "Nemotron 3.5 Lightning";
     if (id === "ambulkar-cortex-engine" || id === "local") return "Cortex Neural Engine";
 
-    // 3. Exact mappings for standard frontier models
+    // 2. Exact mappings for standard frontier models
     const MAPPINGS = {
         "anthropic/claude-opus-5": "Claude Opus 5",
         "anthropic/claude-sonnet-5": "Claude Sonnet 5",
@@ -1685,6 +1675,18 @@ function formatSingleModelName(rawId) {
     };
 
     if (MAPPINGS[id]) return MAPPINGS[id];
+
+    // 3. Check if model was dynamically registered in live catalog (ignoring generic gateway names)
+    if (DYNAMIC_MODEL_CATALOG && DYNAMIC_MODEL_CATALOG[id]) {
+        let catalogName = DYNAMIC_MODEL_CATALOG[id];
+        if (!catalogName.toLowerCase().includes("auto router") && !catalogName.toLowerCase().includes("auto-select")) {
+            // Clean company prefixes (e.g. "Google: ", "Anthropic: ", "OpenAI: ", "Meta: ")
+            catalogName = catalogName.replace(/^(Google|Anthropic|OpenAI|Meta|xAI|Mistral|DeepSeek|Qwen|NVIDIA|Cohere|Microsoft):\s*/i, '');
+            // Remove noise tags like "(self-moderated)" or "(free)"
+            catalogName = catalogName.replace(/\s*\((self-moderated|free|beta|nitro|online|base)\)/gi, '').trim();
+            if (catalogName.length > 2) return catalogName;
+        }
+    }
 
     // 4. Dynamic Heuristic Parser for ANY newly released model ID (e.g. "google/gemini-4.0-pro", "mistralai/mistral-large-3", "x-ai/grok-5")
     let clean = id;
