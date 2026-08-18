@@ -391,9 +391,11 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                     <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="libraryFilterChips">
                         <button type="button" class="btn-lib-action active" onclick="filterLibraryMemos('all', this)" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 700;">All Memos (<span id="libTotalCount">0</span>)</button>
-                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('semiconductors', this)">Semiconductors</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('finance', this)">Finance & Markets</button>
                         <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('ai', this)">Frontier AI</button>
-                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('macro', this)">Macro & Deals</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('semiconductors', this)">Semiconductors</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('science', this)">Science & Energy</button>
+                        <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('deals', this)">M&A & Deals</button>
                         <button type="button" class="btn-lib-action" onclick="filterLibraryMemos('cloud', this)">Cloud Infra</button>
                     </div>
                     <button type="button" class="btn-lib-action delete" onclick="clearAllSavedLibraryMemos()" style="font-size: 0.72rem;">
@@ -447,7 +449,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.17.12"></script>
+    <script src="app.js?v=2026.08.17.13"></script>
 </body>
 
 </html>
