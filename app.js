@@ -487,85 +487,15 @@ function renderSuggestedCards(mode) {
     `).join('');
 }
 
-// Dynamic Trending Engine: Fetches real-time trending topics from Google News, HackerNews, Wikipedia & Financial RSS
+// Dynamic Research Desks Prompt Suite (Curated, high-signal, zero artificial boilerplate)
 async function fetchDynamicTrendingPrompts(forceRefresh = false) {
-    const lastFetch = parseInt(localStorage.getItem("cortex_dynamic_prompts_ts") || "0", 10);
-    const now = Date.now();
-    const THREE_HOURS = 3 * 60 * 60 * 1000;
-
-    // Use cached prompts if younger than 3 hours unless force refreshed
-    if (!forceRefresh && (now - lastFetch < THREE_HOURS) && appState.dynamicSuggestions) {
-        return;
-    }
-
-    function cleanHeadline(t) {
-        if (!t) return "";
-        return t.replace(/\s+[-|–—]\s+[A-Za-z0-9\s.]+$/, "").trim();
-    }
-
+    appState.dynamicSuggestions = FALLBACK_DESK_SUGGESTIONS;
     try {
-        const newSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
+        localStorage.removeItem("cortex_dynamic_prompts_v2");
+        localStorage.removeItem("cortex_dynamic_prompts_ts");
+    } catch (e) {}
 
-        const [gNewsRes, hnRes, gBizRes, wikiRes] = await Promise.allSettled([
-            fetch("https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fheadlines%2Fsection%2Ftopic%2FTECHNOLOGY"),
-            fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=6"),
-            fetch("https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%2Fheadlines%2Fsection%2Ftopic%2FBUSINESS"),
-            fetch("https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=frontier+artificial+intelligence+OR+quantum+computing&format=json&origin=*")
-        ]);
-
-        // Process Google Tech News
-        if (gNewsRes.status === "fulfilled" && gNewsRes.value.ok) {
-            const gData = await gNewsRes.value.json().catch(() => null);
-            if (gData && Array.isArray(gData.items) && gData.items.length >= 2) {
-                const t0 = cleanHeadline(gData.items[0].title);
-                const t1 = cleanHeadline(gData.items[1].title);
-                if (t0) newSuggestions.web[0] = { icon: "fa-globe", title: t0.length > 50 ? t0.substring(0, 47) + "..." : t0, sub: "Live Trending • Google News", query: `Provide a comprehensive research briefing and verified facts on: ${t0}` };
-                if (t1) newSuggestions.web[1] = { icon: "fa-atom", title: t1.length > 50 ? t1.substring(0, 47) + "..." : t1, sub: "Live Trending • Google News", query: `Detailed technical analysis and market implications of: ${t1}` };
-            }
-        }
-
-        // Process HackerNews Front Page
-        if (hnRes.status === "fulfilled" && hnRes.value.ok) {
-            const hnData = await hnRes.value.json().catch(() => null);
-            if (hnData && Array.isArray(hnData.hits) && hnData.hits.length >= 2) {
-                const h0 = cleanHeadline(hnData.hits[0].title);
-                const h1 = cleanHeadline(hnData.hits[1].title);
-                if (h0) newSuggestions.web[2] = { icon: "fa-bolt", title: h0.length > 50 ? h0.substring(0, 47) + "..." : h0, sub: "Trending Discussion • HackerNews", query: `Analyze developer consensus and technical breakthroughs for: ${h0}` };
-                if (h1) newSuggestions.code[0] = { icon: "fa-code", title: h1.length > 50 ? h1.substring(0, 47) + "..." : h1, sub: "Live Dev Trending • HackerNews", query: `Technical architecture breakdown and code implementation for: ${h1}` };
-            }
-        }
-
-        // Process Google Business & Finance News
-        if (gBizRes.status === "fulfilled" && gBizRes.value.ok) {
-            const bData = await gBizRes.value.json().catch(() => null);
-            if (bData && Array.isArray(bData.items) && bData.items.length >= 2) {
-                const b0 = cleanHeadline(bData.items[0].title);
-                const b1 = cleanHeadline(bData.items[1].title);
-                if (b0) newSuggestions.finance[0] = { icon: "fa-chart-line", title: b0.length > 50 ? b0.substring(0, 47) + "..." : b0, sub: "Live Market Catalyst • Google Finance", query: `Financial analysis, corporate disclosures, and earnings impact of: ${b0}` };
-                if (b1) newSuggestions.writing[0] = { icon: "fa-pen-nib", title: b1.length > 50 ? b1.substring(0, 47) + "..." : b1, sub: "Macro Strategy Memo • Global Business", query: `Draft an executive strategic memo evaluating the market impact of: ${b1}` };
-            }
-        }
-
-        // Process Wikipedia Frontier Science & Academic Research
-        if (wikiRes.status === "fulfilled" && wikiRes.value.ok) {
-            const wData = await wikiRes.value.json().catch(() => null);
-            if (wData && wData.query && Array.isArray(wData.query.search) && wData.query.search.length >= 2) {
-                const w0 = wData.query.search[0].title;
-                const w1 = wData.query.search[1].title;
-                if (w0) newSuggestions.academic[0] = { icon: "fa-graduation-cap", title: `${w0} Frontier Research`, sub: "Peer-Reviewed & Academic Papers", query: `Search latest IEEE and arXiv peer-reviewed research papers on: ${w0}` };
-                if (w1) newSuggestions.academic[1] = { icon: "fa-microchip", title: `${w1} Architecture`, sub: "Scientific Papers & Benchmarks", query: `Find experimental proofs and published literature regarding: ${w1}` };
-            }
-        }
-
-        appState.dynamicSuggestions = newSuggestions;
-        localStorage.setItem("cortex_dynamic_prompts_v2", JSON.stringify(newSuggestions));
-        localStorage.setItem("cortex_dynamic_prompts_ts", Date.now().toString());
-
-        // Re-render hero cards with live trending topics
-        renderSuggestedCards(appState.activeFocusMode || "web");
-    } catch (err) {
-        console.warn("Dynamic trending feed sync error (using baseline fallback):", err);
-    }
+    renderSuggestedCards(appState.activeFocusMode || "web");
 }
 
 function setEffortLevel(effort) {
