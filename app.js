@@ -519,19 +519,7 @@ function renderSuggestedCards(mode) {
     const currentMode = mode || appState.activeFocusMode || "web";
     const suggestions = (appState.dynamicSuggestions && appState.dynamicSuggestions[currentMode] && appState.dynamicSuggestions[currentMode].length > 0) 
         ? appState.dynamicSuggestions[currentMode] 
-        : null;
-
-    if (!suggestions) {
-        // Sleek live placeholder cards while initial live fetch resolves (eliminating old static text flashing)
-        grid.innerHTML = [1, 2, 3, 4].map(() => `
-            <div class="suggested-card" style="opacity: 0.75; cursor: default;">
-                <i class="fa-solid fa-bolt suggested-card-icon text-cyan" style="animation: pulseGlow 1.5s infinite;"></i>
-                <div class="suggested-card-text" style="color: #94a3b8; font-size: 0.88rem;">Syncing live breakthroughs...</div>
-                <div class="suggested-card-sub" style="color: #64748b;">Real-time web telemetry</div>
-            </div>
-        `).join('');
-        return;
-    }
+        : (FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web);
 
     grid.innerHTML = suggestions.map(c => `
         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
@@ -542,13 +530,16 @@ function renderSuggestedCards(mode) {
     `).join('');
 }
 
-// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Zero Manual Clicks Required)
+// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Instant Display + Background Revalidation)
 async function fetchDynamicTrendingPrompts(targetMode = null) {
     const activeMode = targetMode || appState.activeFocusMode || "web";
 
     if (!appState.dynamicSuggestions) {
-        appState.dynamicSuggestions = JSON.parse(localStorage.getItem("cortex_live_trends_v4") || "{}");
+        appState.dynamicSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
     }
+
+    // Always render immediate cards instantly with zero delay
+    renderSuggestedCards(activeMode);
 
     // Dynamic high-signal endpoints mapped by research desk category
     const categoryEndpoints = {
@@ -562,7 +553,12 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
     const targetUrl = categoryEndpoints[activeMode] || categoryEndpoints.web;
 
     try {
-        const res = await fetch(targetUrl);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5s network timeout to guarantee zero hang
+
+        const res = await fetch(targetUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (res.ok) {
             const data = await res.json();
             if (data.hits && Array.isArray(data.hits)) {
@@ -615,7 +611,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
             }
         }
     } catch (e) {
-        console.warn("Autonomous live trends background fetch notice:", e);
+        // Graceful fallback to rich baseline cards with zero disruption
     }
 }
 
