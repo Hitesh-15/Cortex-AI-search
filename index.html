@@ -114,10 +114,48 @@
                 <!-- DESKTOP-ONLY INSTITUTIONAL LIVE TICKER & THEME BAR (Hidden on Mobile) -->
                 <div class="desktop-header-content">
                     <div class="header-ticker-group">
-                        <span class="ticker-pill"><span class="ticker-symbol">S&P 500</span> <span class="ticker-val up">5,892.4 <i class="fa-solid fa-arrow-trend-up"></i> +0.62%</span></span>
-                        <span class="ticker-pill"><span class="ticker-symbol">NASDAQ</span> <span class="ticker-val up">18,945.2 <i class="fa-solid fa-arrow-trend-up"></i> +0.94%</span></span>
-                        <span class="ticker-pill"><span class="ticker-symbol">US 10Y</span> <span class="ticker-val neutral">4.26%</span></span>
-                        <span class="ticker-pill"><span class="ticker-symbol">BRENT</span> <span class="ticker-val down">$76.80 <i class="fa-solid fa-arrow-trend-down"></i> -0.3%</span></span>
+                        <!-- COMMODITIES -->
+                        <div class="ticker-cluster" title="Global Commodities Spot & Futures">
+                            <span class="ticker-cat-tag"><i class="fa-solid fa-gem text-amber"></i> Commodities</span>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('Gold spot price, inflation hedge, and macroeconomic demand analysis')" title="Gold Spot Price (USD per Troy Ounce)">
+                                <span class="ticker-symbol">GOLD</span> <span class="ticker-val up">$2,485.60/oz <i class="fa-solid fa-arrow-trend-up"></i> +0.45%</span>
+                            </button>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('Silver spot price, industrial demand, and solar manufacturing consumption')" title="Silver Spot Price (USD per Troy Ounce)">
+                                <span class="ticker-symbol">SILVER</span> <span class="ticker-val up">$29.42/oz <i class="fa-solid fa-arrow-trend-up"></i> +0.82%</span>
+                            </button>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('Copper Comex futures and global electrification grid demand')" title="Copper High Grade Futures (USD per Pound)">
+                                <span class="ticker-symbol">COPPER</span> <span class="ticker-val down">$4.18/lb <i class="fa-solid fa-arrow-trend-down"></i> -0.25%</span>
+                            </button>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('Crude Oil Brent benchmark price and OPEC+ supply quotas')" title="Brent Crude Oil Benchmark (USD per Barrel)">
+                                <span class="ticker-symbol">CRUDE OIL</span> <span class="ticker-val down">$76.80/bbl <i class="fa-solid fa-arrow-trend-down"></i> -0.30%</span>
+                            </button>
+                        </div>
+
+                        <div class="ticker-divider"></div>
+
+                        <!-- EQUITIES -->
+                        <div class="ticker-cluster" title="Global Equity Benchmarks">
+                            <span class="ticker-cat-tag"><i class="fa-solid fa-chart-line text-cyan"></i> Equities</span>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('S&P 500 benchmark performance and valuation analysis')" title="S&P 500 Equity Index">
+                                <span class="ticker-symbol">S&P 500</span> <span class="ticker-val up">5,892.4 <i class="fa-solid fa-arrow-trend-up"></i> +0.62%</span>
+                            </button>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('NASDAQ Composite technology sector rally and earnings analysis')" title="NASDAQ Composite Tech Index">
+                                <span class="ticker-symbol">NASDAQ</span> <span class="ticker-val up">18,945.2 <i class="fa-solid fa-arrow-trend-up"></i> +0.94%</span>
+                            </button>
+                        </div>
+
+                        <div class="ticker-divider"></div>
+
+                        <!-- MACRO & SENTIMENT -->
+                        <div class="ticker-cluster" title="Macro Rates & Risk Sentiment">
+                            <span class="ticker-cat-tag"><i class="fa-solid fa-gauge-high text-purple"></i> Macro</span>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('US 10-Year Treasury Yield and FOMC monetary policy trajectory')" title="US 10-Year Benchmark Treasury Yield">
+                                <span class="ticker-symbol">US 10Y</span> <span class="ticker-val neutral">4.26%</span>
+                            </button>
+                            <button type="button" class="ticker-pill" onclick="executeSearch('CBOE VIX volatility index and market risk sentiment')" title="CBOE Volatility Index (Risk / Fear Gauge)">
+                                <span class="ticker-symbol">VIX</span> <span class="ticker-val down">14.80 <i class="fa-solid fa-arrow-trend-down"></i> -2.1%</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="header-right-controls">
@@ -418,7 +456,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.17.07"></script>
+    <script src="app.js?v=2026.08.17.08"></script>
 </body>
 
 </html>
