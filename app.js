@@ -93,10 +93,32 @@ function executeSearch(userQuery) {
 
 // Auto-Sanitize & Clear Stale Legacy Cache
 (function sanitizeLegacyBrowserCache() {
-    const CURRENT_VERSION = "8.1";
+    const CURRENT_VERSION = "9.0";
     const lastVersion = localStorage.getItem("ambu_build_v");
     if (lastVersion !== CURRENT_VERSION) {
         localStorage.setItem("ambu_build_v", CURRENT_VERSION);
+        // Purge old dynamic prompt caches
+        localStorage.removeItem("cortex_dynamic_prompts_v2");
+        localStorage.removeItem("cortex_dynamic_prompts_ts");
+
+        // Clean out old chart cards from saved thread history
+        try {
+            const rawThreads = localStorage.getItem("ambu_threads");
+            if (rawThreads) {
+                const parsed = JSON.parse(rawThreads);
+                parsed.forEach(t => {
+                    if (Array.isArray(t.steps)) {
+                        t.steps.forEach(s => {
+                            if (s.answer && typeof s.answer === "string") {
+                                s.answer = s.answer.replace(/<div class="cortex-chart-card"[\s\S]*?<\/div>\s*<\/div>/gi, '');
+                            }
+                        });
+                    }
+                });
+                localStorage.setItem("ambu_threads", JSON.stringify(parsed));
+            }
+        } catch (e) {}
+
         if (!localStorage.getItem("ambu_provider")) {
             localStorage.setItem("ambu_provider", "openrouter");
             localStorage.setItem("ambu_model", "openrouter/auto");
