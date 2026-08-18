@@ -1692,8 +1692,6 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         activeModelDisplay = formatSingleModelName(activeModel);
     }
 
-    const chartHTML = generateInteractiveChartHTML(query);
-
     const telemetryFooter = `
         <div class="unified-telemetry-bar">
             <div class="unified-telemetry-left">
@@ -1723,7 +1721,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     `;
 
     return {
-        answerHTML: chartHTML + contentHTML + telemetryFooter,
+        answerHTML: contentHTML + telemetryFooter,
         costUSD: spendMetrics.costUSD,
         telemetry: spendMetrics
     };
@@ -3474,38 +3472,7 @@ function toggleDigestAccordion(accId, btn) {
    INTERACTIVE DATA & BENCHMARK CHARTING ENGINE
    ========================================================================== */
 function generateInteractiveChartHTML(query) {
-    const qLower = query.toLowerCase();
-    const isMarket = qLower.includes("stock") || qLower.includes("market") || qLower.includes("s&p") || qLower.includes("nasdaq") || qLower.includes("nvda") || qLower.includes("tsmc") || qLower.includes("capex") || qLower.includes("digest") || qLower.includes("briefing") || qLower.includes("deals") || qLower.includes("m&a");
-    const isAI = qLower.includes("benchmark") || qLower.includes("claude") || qLower.includes("reasoning") || qLower.includes("deepseek") || qLower.includes("swe-bench") || qLower.includes("llama") || qLower.includes("o3") || qLower.includes("model");
-
-    if (!isMarket && !isAI) return "";
-
-    const chartId = "chart_" + Math.random().toString(36).substring(2, 9);
-    let title = "Global Macro & Semiconductor CapEx Trajectory (2024–2026)";
-    let legendHTML = `<span class="chart-legend-badge cyan">■ Hyperscaler CapEx ($B)</span><span class="chart-legend-badge emerald">■ CoWoS Wafer Run-Rate (k/mo)</span>`;
-    let chartType = "market";
-
-    if (isAI && !isMarket) {
-        title = "Frontier Reasoning & Coding Benchmark Index";
-        legendHTML = `<span class="chart-legend-badge purple">■ SWE-bench Verified (%)</span><span class="chart-legend-badge cyan">■ AIME Math Proofs (%)</span>`;
-        chartType = "ai";
-    }
-
-    setTimeout(() => {
-        renderCanvasChart(chartId, chartType);
-    }, 120);
-
-    return `
-        <div class="cortex-chart-card">
-            <div class="cortex-chart-header">
-                <div class="cortex-chart-title"><i class="fa-solid fa-chart-simple text-cyan"></i> ${title}</div>
-                <div class="cortex-chart-legend">${legendHTML}</div>
-            </div>
-            <div class="cortex-chart-canvas-wrap">
-                <canvas id="${chartId}" class="cortex-chart-canvas"></canvas>
-            </div>
-        </div>
-    `;
+    return "";
 }
 
 function renderCanvasChart(canvasId, type) {
