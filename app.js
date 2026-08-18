@@ -1571,15 +1571,39 @@ function renderSourcesGrid(stepId, sources) {
 
     if (drawerCount) drawerCount.textContent = sources.length;
 
-    // Show top 3 chips in the compact bar
+    // Enforce Domain Diversity: Pick up to 3 distinct publishing domains for the primary preview strip
     if (chipsContainer) {
-        const top3 = sources.slice(0, 3);
-        chipsContainer.innerHTML = top3.map(s => `
-            <a href="${s.url}" target="_blank" rel="noopener" class="source-chip" title="${s.title}">
-                <span class="source-chip-num">${s.num}</span>
-                <span>${s.domain}</span>
-            </a>
-        `).join('');
+        const previewSources = [];
+        const seenDomains = new Set();
+
+        for (const s of sources) {
+            const dKey = (s.domain || "").toLowerCase().replace(/^www\./i, '').trim();
+            if (!seenDomains.has(dKey)) {
+                seenDomains.add(dKey);
+                previewSources.push(s);
+                if (previewSources.length >= 3) break;
+            }
+        }
+
+        // Fill remaining preview slots if fewer than 3 unique domains exist
+        if (previewSources.length < 3) {
+            for (const s of sources) {
+                if (!previewSources.includes(s)) {
+                    previewSources.push(s);
+                    if (previewSources.length >= 3) break;
+                }
+            }
+        }
+
+        chipsContainer.innerHTML = previewSources.map(s => {
+            const cleanDom = (s.domain || "verified-source").replace(/^www\./i, '');
+            return `
+                <a href="${s.url}" target="_blank" rel="noopener" class="source-chip" title="${s.title}">
+                    <span class="source-chip-num">${s.num}</span>
+                    <span>${cleanDom}</span>
+                </a>
+            `;
+        }).join('');
     }
 
     if (btnAll && sources.length > 3) {
@@ -1587,18 +1611,21 @@ function renderSourcesGrid(stepId, sources) {
         if (moreCountEl) moreCountEl.textContent = `${sources.length - 3}`;
     }
 
-    // Populate full drawer with all 20+ sources
+    // Populate full drawer with all verified sources
     if (drawerGrid) {
-        drawerGrid.innerHTML = sources.map(s => `
-            <a href="${s.url}" target="_blank" rel="noopener" class="source-drawer-item">
-                <div class="source-drawer-item-top">
-                    <span class="source-chip-num">${s.num}</span>
-                    <strong style="color: #38bdf8;">${s.domain}</strong>
-                </div>
-                <div class="source-drawer-item-title">${s.title}</div>
-                <div class="source-drawer-item-desc">${s.snippet}</div>
-            </a>
-        `).join('');
+        drawerGrid.innerHTML = sources.map(s => {
+            const cleanDom = (s.domain || "verified-source").replace(/^www\./i, '');
+            return `
+                <a href="${s.url}" target="_blank" rel="noopener" class="source-drawer-item" data-source-num="${s.num}">
+                    <div class="source-drawer-item-top">
+                        <span class="source-chip-num">${s.num}</span>
+                        <strong style="color: #38bdf8;">${cleanDom}</strong>
+                    </div>
+                    <div class="source-drawer-item-title">${s.title}</div>
+                    <div class="source-drawer-item-desc">${s.snippet}</div>
+                </a>
+            `;
+        }).join('');
     }
 }
 
