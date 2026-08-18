@@ -517,11 +517,22 @@ function renderSuggestedCards(mode) {
     if (!grid) return;
 
     const currentMode = mode || appState.activeFocusMode || "web";
-    const suggestions = (appState.dynamicSuggestions && appState.dynamicSuggestions[currentMode] && appState.dynamicSuggestions[currentMode].length > 0) 
-        ? appState.dynamicSuggestions[currentMode] 
-        : (FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web);
+    let list = (appState.dynamicSuggestions && appState.dynamicSuggestions[currentMode] && appState.dynamicSuggestions[currentMode].length > 0) 
+        ? [...appState.dynamicSuggestions[currentMode]] 
+        : [];
 
-    grid.innerHTML = suggestions.map(c => `
+    // Guarantee the 2x2 grid always has exactly 4 rich cards
+    if (list.length < 4) {
+        const fallbacks = FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web;
+        for (const fb of fallbacks) {
+            if (list.length >= 4) break;
+            if (!list.some(c => c.title.toLowerCase() === fb.title.toLowerCase())) {
+                list.push(fb);
+            }
+        }
+    }
+
+    grid.innerHTML = list.slice(0, 4).map(c => `
         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
             <i class="fa-solid ${c.icon} suggested-card-icon"></i>
             <div class="suggested-card-text">${c.title}</div>
@@ -530,7 +541,7 @@ function renderSuggestedCards(mode) {
     `).join('');
 }
 
-// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Instant Display + Background Revalidation)
+// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Always 4 Guaranteed Cards)
 async function fetchDynamicTrendingPrompts(targetMode = null) {
     const activeMode = targetMode || appState.activeFocusMode || "web";
 
@@ -543,11 +554,11 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
 
     // Dynamic high-signal endpoints mapped by research desk category
     const categoryEndpoints = {
-        web: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=15",
-        academic: "https://hn.algolia.com/api/v1/search?query=arxiv+paper+research+physics+model&tags=story&hitsPerPage=15",
-        code: "https://hn.algolia.com/api/v1/search?query=github+rust+database+compiler+release&tags=story&hitsPerPage=15",
-        finance: "https://hn.algolia.com/api/v1/search?query=market+earnings+acquisition+inflation+sec&tags=story&hitsPerPage=15",
-        writing: "https://hn.algolia.com/api/v1/search?query=strategy+analysis+enterprise+startup+antitrust&tags=story&hitsPerPage=15"
+        web: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=20",
+        academic: "https://hn.algolia.com/api/v1/search?tags=story&query=arxiv+OR+paper+OR+physics+OR+research&hitsPerPage=25",
+        code: "https://hn.algolia.com/api/v1/search?tags=story&query=github+OR+release+OR+rust+OR+database+OR+compiler&hitsPerPage=25",
+        finance: "https://hn.algolia.com/api/v1/search?tags=story&query=market+OR+stock+OR+startup+OR+revenue+OR+economy&hitsPerPage=25",
+        writing: "https://hn.algolia.com/api/v1/search?tags=story&query=strategy+OR+enterprise+OR+policy+OR+management&hitsPerPage=25"
     };
 
     const targetUrl = categoryEndpoints[activeMode] || categoryEndpoints.web;
@@ -568,7 +579,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                     const rawTitle = hit.title.trim();
                     // Filter out forum meta, job posts, and incidents
                     if (/^(ask hn|tell hn|hiring|incident|outage|down|show hn:\s*my)/i.test(rawTitle)) continue;
-                    if (rawTitle.length < 12 || rawTitle.length > 90) continue;
+                    if (rawTitle.length < 10 || rawTitle.length > 90) continue;
 
                     // Clean title for display
                     let cleanTitle = rawTitle.replace(/^show hn:\s*/i, '').replace(/\s+[-|–—].*$/, '').trim();
@@ -603,11 +614,20 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                     if (liveCards.length >= 4) break;
                 }
 
-                if (liveCards.length > 0) {
-                    appState.dynamicSuggestions[activeMode] = liveCards;
-                    localStorage.setItem("cortex_live_trends_v4", JSON.stringify(appState.dynamicSuggestions));
-                    renderSuggestedCards(activeMode);
+                // Backfill from curated categories if live results < 4 to guarantee exact 4 cards always
+                const baseCategoryCards = FALLBACK_DESK_SUGGESTIONS[activeMode] || FALLBACK_DESK_SUGGESTIONS.web;
+                const fullSet = [...liveCards];
+
+                for (const card of baseCategoryCards) {
+                    if (fullSet.length >= 4) break;
+                    if (!fullSet.some(c => c.title.toLowerCase() === card.title.toLowerCase())) {
+                        fullSet.push(card);
+                    }
                 }
+
+                appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 4);
+                localStorage.setItem("cortex_live_trends_v4", JSON.stringify(appState.dynamicSuggestions));
+                renderSuggestedCards(activeMode);
             }
         }
     } catch (e) {

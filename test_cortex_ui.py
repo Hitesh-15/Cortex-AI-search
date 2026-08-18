@@ -72,15 +72,18 @@ def get_driver():
         opts.add_argument('--disable-dev-shm-usage')
         return webdriver.Edge(options=opts)
 
+def get_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        return s.getsockname()[1]
+
 def test_full_cortex_suite():
     print("\n--> 2. Launching Full End-to-End Real-Browser Automated Test Suite...")
     
-    server_proc = None
-    port = 5173
-    if not is_port_open(port):
-        print(f"Starting local test HTTP server on port {port}...")
-        server_proc = subprocess.Popen(["python", "-m", "http.server", str(port), "--directory", str(CORTEX_DIR)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(1.0)
+    port = get_free_port()
+    print(f"Starting isolated test HTTP server on port {port}...")
+    server_proc = subprocess.Popen(["python", "-m", "http.server", str(port), "--directory", str(CORTEX_DIR)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(1.2)
     
     driver = get_driver()
     try:
