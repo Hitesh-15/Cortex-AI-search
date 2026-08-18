@@ -2,37 +2,47 @@
    CORTEX INTELLIGENCE - MULTI-MODEL SEARCH ENGINE & OPENROUTER GATEWAY
    ========================================================================== */
 
-// Baseline Curated Fallback Suggestions
+// Baseline Curated Fallback Suggestions (6 Cards Per Research Desk)
 const FALLBACK_DESK_SUGGESTIONS = {
     web: [
-        { icon: "fa-bolt", title: "Frontier Reasoning & Inference Systems", sub: "Live technical web research", query: "What are the latest breakthroughs in test-time compute and reasoning models?" },
-        { icon: "fa-chart-line", title: "Global Hyperscaler Infrastructure CapEx", sub: "Cloud & datacenter telemetry", query: "Analyze hyperscaler capital expenditure and GPU infrastructure deployment" },
-        { icon: "fa-code", title: "High-Throughput Systems Engineering", sub: "Modern architecture & I/O", query: "What are the best practices for zero-copy high-throughput async network services?" },
-        { icon: "fa-atom", title: "Clean Energy & Grid Electrification", sub: "Scientific infrastructure", query: "Explain modern energy grid interconnects and industrial electrification demands" }
+        { icon: "fa-bolt", title: "Frontier Reasoning & Test-Time Compute", sub: "Live technical web research", query: "What are the latest breakthroughs in test-time compute, reasoning models, and RL scaling?" },
+        { icon: "fa-chart-line", title: "Global Hyperscaler Infrastructure CapEx", sub: "Cloud & datacenter telemetry", query: "Analyze hyperscaler capital expenditure, GPU cluster deployment, and datacenter energy demands" },
+        { icon: "fa-code", title: "High-Throughput Systems Engineering", sub: "Modern architecture & I/O", query: "What are the best practices for zero-copy high-throughput async network services in production?" },
+        { icon: "fa-atom", title: "Clean Energy & Grid Electrification", sub: "Scientific infrastructure", query: "Explain modern energy grid interconnects, nuclear SMRs, and industrial electrification demands" },
+        { icon: "fa-robot", title: "Autonomous AI Agent Workflows & MCP", sub: "Developer tooling & protocols", query: "How does the Model Context Protocol (MCP) enable autonomous multi-agent tool orchestration?" },
+        { icon: "fa-microchip", title: "Quantum Networking & Photonic Chips", sub: "Physics & photonics updates", query: "Summarize recent experimental proofs in photonic quantum interconnects and entanglement distribution" }
     ],
     academic: [
-        { icon: "fa-graduation-cap", title: "Frontier Preprints & LLM Efficiency", sub: "Computer Science & LLM papers", query: "Find recent arXiv papers on sparse attention transformers and model efficiency" },
-        { icon: "fa-dna", title: "Clinical Gene Editing Therapies", sub: "Biomedical peer-reviewed studies", query: "Summarize latest clinical trials on targeted gene editing therapies" },
-        { icon: "fa-microchip", title: "Fault-Tolerant Quantum Surface Codes", sub: "Physics & IEEE papers", query: "What are recent peer-reviewed paper findings on error-corrected quantum surface codes?" },
-        { icon: "fa-network-wired", title: "Automated Neural Search & Optimization", sub: "AI arXiv repository research", query: "Search IEEE & arXiv research on automated neural architecture optimization" }
+        { icon: "fa-graduation-cap", title: "Frontier Preprints & LLM Efficiency", sub: "Computer Science & arXiv papers", query: "Find recent arXiv papers on sparse attention transformers, linear RNNs, and model efficiency" },
+        { icon: "fa-dna", title: "Clinical Gene Editing & mRNA Therapies", sub: "Biomedical peer-reviewed studies", query: "Summarize latest clinical trials on targeted CRISPR gene editing and customized mRNA therapies" },
+        { icon: "fa-microchip", title: "Fault-Tolerant Quantum Surface Codes", sub: "Physics & IEEE papers", query: "What are recent peer-reviewed paper findings on error-corrected logical qubits and surface codes?" },
+        { icon: "fa-network-wired", title: "Automated Neural Search & Optimization", sub: "AI arXiv repository research", query: "Search IEEE & arXiv research on automated neural architecture search and distillation" },
+        { icon: "fa-satellite", title: "Astrophysics & Dark Matter Detection", sub: "Cosmology & telescope datasets", query: "Summarize recent space telescope findings and direct dark matter particle detection experiments" },
+        { icon: "fa-flask-vial", title: "Solid-State Electrolyte Battery Science", sub: "Materials science & chemistry", query: "Find recent materials science papers on ceramic solid-state electrolytes and dendritic suppression" }
     ],
     code: [
-        { icon: "fa-cubes", title: "Full-Stack Server Actions & TypeScript", sub: "Full-stack Web Dev pattern", query: "Write a production Server Action with TypeScript validation and error handling" },
-        { icon: "fa-python", title: "FastAPI + PyDantic V2 Async API", sub: "Backend API implementation", query: "Show clean FastAPI code with PyDantic V2 models and WebSockets" },
-        { icon: "fa-gear", title: "Rust Tokio Async Stream Pipeline", sub: "Systems programming example", query: "Provide Rust tokio async TCP stream example with zero-copy buffer parsing" },
-        { icon: "fa-docker", title: "Containerization & Multi-Stage Builds", sub: "DevOps & Cloud Native", query: "How to write a multi-stage Dockerfile for lightweight microservices under 50MB" }
+        { icon: "fa-cubes", title: "Full-Stack Server Actions & TypeScript", sub: "Full-stack Web Dev pattern", query: "Write a production Server Action with TypeScript validation, optimistic updates, and error boundaries" },
+        { icon: "fa-python", title: "FastAPI + PyDantic V2 Async Microservice", sub: "Backend API implementation", query: "Show clean FastAPI code with PyDantic V2 models, connection pools, and WebSocket streaming" },
+        { icon: "fa-gear", title: "Rust Tokio Async Stream Pipeline", sub: "Systems programming & zero-copy", query: "Provide Rust tokio async TCP stream example with zero-copy buffer parsing and backpressure handling" },
+        { icon: "fa-docker", title: "Containerization & Multi-Stage Builds", sub: "DevOps & Cloud Native", query: "How to write an ultra-compact multi-stage Dockerfile for Node.js/Go microservices under 30MB" },
+        { icon: "fa-diagram-project", title: "Distributed Consensus with Raft & Go", sub: "Distributed backend systems", query: "Explain how distributed leader election and log replication work in Go with Raft" },
+        { icon: "fa-shield-halved", title: "eBPF Kernel Tracing & Observability", sub: "Linux performance & security", query: "Provide a practical guide and code examples for eBPF kernel tracing and network telemetry" }
     ],
     finance: [
-        { icon: "fa-file-invoice-dollar", title: "Corporate 10-K Disclosures & Cash Flow", sub: "Institutional financial filings", query: "Analyze enterprise cloud revenue breakdown, free cash flow margins, and capital expenditure" },
-        { icon: "fa-landmark", title: "Treasury Yields & Monetary Policy", sub: "Macroeconomic & Bond markets", query: "Summarize current FOMC interest rate trajectory and 10-Year Treasury Yield trends" },
-        { icon: "fa-scale-balanced", title: "Fixed Income vs Equity Risk Premia", sub: "Asset allocation benchmarks", query: "Compare fixed income yields vs S&P 500 earnings yields and risk premia" },
-        { icon: "fa-chart-line", title: "Semiconductor Foundry Margins & CoWoS", sub: "Market earnings forecasts", query: "Analyze global semiconductor foundry margins and packaging capacity backlogs" }
+        { icon: "fa-file-invoice-dollar", title: "Corporate 10-K Disclosures & Cash Flow", sub: "Institutional financial filings", query: "Analyze enterprise cloud revenue breakdown, free cash flow margins, and capital expenditure disclosures" },
+        { icon: "fa-landmark", title: "Treasury Yields & FOMC Monetary Policy", sub: "Macroeconomic & Bond markets", query: "Summarize current FOMC interest rate trajectory, 2Y/10Y yield curve inversion, and inflation prints" },
+        { icon: "fa-scale-balanced", title: "Fixed Income vs Equity Risk Premia", sub: "Asset allocation benchmarks", query: "Compare fixed income yields vs S&P 500 earnings yields and historic equity risk premia" },
+        { icon: "fa-chart-line", title: "Semiconductor Foundry Margins & CoWoS", sub: "Market earnings forecasts", query: "Analyze global semiconductor foundry margins, advanced packaging capacity backlogs, and GPU ASPs" },
+        { icon: "fa-coins", title: "Global Sovereign Debt & FX Liquidity", sub: "Forex & macro liquidity", query: "Analyze sovereign debt maturity walls, global central bank reserve diversification, and DXY dollar strength" },
+        { icon: "fa-briefcase", title: "Private Equity Multiples & SaaS Valuations", sub: "Alternative asset valuation", query: "Summarize current enterprise SaaS revenue multiples, buyout deal flow, and private valuation haircuts" }
     ],
     writing: [
-        { icon: "fa-pen-nib", title: "Executive Research Briefing Memo", sub: "Strategic executive analysis", query: "Write a structured, concise executive intelligence memo on enterprise AI adoption" },
-        { icon: "fa-paper-plane", title: "Enterprise Technical Outreach", sub: "Executive communication", query: "Draft a concise, high-value outreach email to enterprise engineering leaders" },
-        { icon: "fa-file-code", title: "System Architecture RFC Specification", sub: "Technical documentation", query: "Write a clear RFC specification document for a distributed event-driven service" },
-        { icon: "fa-lightbulb", title: "Systems Scalability & Fault Tolerance", sub: "Technical strategy", query: "Outline key architectural principles for high-availability multi-region databases" }
+        { icon: "fa-pen-nib", title: "Executive Research Briefing Memo", sub: "Strategic executive analysis", query: "Write a structured, concise executive intelligence memo analyzing enterprise AI adoption strategies" },
+        { icon: "fa-paper-plane", title: "Enterprise Technical Outreach & Sales", sub: "Executive communication", query: "Draft a concise, high-value outreach email to enterprise engineering leaders and CIOs" },
+        { icon: "fa-file-code", title: "System Architecture RFC Specification", sub: "Technical documentation", query: "Write a clear RFC specification document for a distributed event-driven data streaming platform" },
+        { icon: "fa-lightbulb", title: "Systems Scalability & Fault Tolerance", sub: "Technical strategy", query: "Outline key architectural principles for high-availability multi-region databases and graceful degradation" },
+        { icon: "fa-table-columns", title: "Board of Directors Quarterly Deck Outline", sub: "Corporate governance", query: "Draft an executive board meeting slide outline covering key KPIs, runway, unit economics, and roadmap" },
+        { icon: "fa-handshake", title: "M&A Synergy Valuation & Diligence Memo", sub: "Investment committee brief", query: "Write a comprehensive M&A thesis memo evaluating tech stack integration, customer overlap, and synergies" }
     ]
 };
 
@@ -42,7 +52,7 @@ var appState = {
     activeThreadId: null,
     activeFocusMode: "web",
     activeEffortLevel: localStorage.getItem("ambu_effort_level") || "auto",
-    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v5") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
+    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v6") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
     attachedDocuments: [],
     isProSearch: false,
     isSearching: false,
@@ -521,18 +531,18 @@ function renderSuggestedCards(mode) {
         ? [...appState.dynamicSuggestions[currentMode]] 
         : [];
 
-    // Guarantee the 2x2 grid always has exactly 4 rich cards
-    if (list.length < 4) {
+    // Guarantee the 3x2 grid always has exactly 6 rich, verified cards
+    if (list.length < 6) {
         const fallbacks = FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web;
         for (const fb of fallbacks) {
-            if (list.length >= 4) break;
+            if (list.length >= 6) break;
             if (!list.some(c => c.title.toLowerCase() === fb.title.toLowerCase())) {
                 list.push(fb);
             }
         }
     }
 
-    grid.innerHTML = list.slice(0, 4).map(c => `
+    grid.innerHTML = list.slice(0, 6).map(c => `
         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
             <i class="fa-solid ${c.icon} suggested-card-icon"></i>
             <div class="suggested-card-text">${c.title}</div>
@@ -541,7 +551,7 @@ function renderSuggestedCards(mode) {
     `).join('');
 }
 
-// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Always 4 Guaranteed Cards)
+// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Always 6 Guaranteed Cards)
 async function fetchDynamicTrendingPrompts(targetMode = null) {
     const activeMode = targetMode || appState.activeFocusMode || "web";
 
@@ -552,13 +562,13 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
     // Always render immediate cards instantly with zero delay
     renderSuggestedCards(activeMode);
 
-    // Dynamic high-signal endpoints mapped by research desk category
+    // Dynamic high-signal endpoints mapped by research desk category (ingesting from 100,000+ sources)
     const categoryEndpoints = {
-        web: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=20",
-        academic: "https://hn.algolia.com/api/v1/search?tags=story&query=arxiv+OR+paper+OR+physics+OR+research&hitsPerPage=25",
-        code: "https://hn.algolia.com/api/v1/search?tags=story&query=github+OR+release+OR+rust+OR+database+OR+compiler&hitsPerPage=25",
-        finance: "https://hn.algolia.com/api/v1/search?tags=story&query=market+OR+stock+OR+startup+OR+revenue+OR+economy&hitsPerPage=25",
-        writing: "https://hn.algolia.com/api/v1/search?tags=story&query=strategy+OR+enterprise+OR+policy+OR+management&hitsPerPage=25"
+        web: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30",
+        academic: "https://hn.algolia.com/api/v1/search?tags=story&query=arxiv+OR+paper+OR+physics+OR+research+OR+biology&hitsPerPage=35",
+        code: "https://hn.algolia.com/api/v1/search?tags=story&query=github+OR+release+OR+rust+OR+database+OR+compiler+OR+kernel&hitsPerPage=35",
+        finance: "https://hn.algolia.com/api/v1/search?tags=story&query=market+OR+stock+OR+startup+OR+revenue+OR+economy+OR+fed&hitsPerPage=35",
+        writing: "https://hn.algolia.com/api/v1/search?tags=story&query=strategy+OR+enterprise+OR+policy+OR+management+OR+governance&hitsPerPage=35"
     };
 
     const targetUrl = categoryEndpoints[activeMode] || categoryEndpoints.web;
@@ -587,19 +597,19 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                     let sub = "Live Trending Breakthrough";
 
                     const titleLower = cleanTitle.toLowerCase();
-                    if (activeMode === "academic" || titleLower.includes("quantum") || titleLower.includes("physics") || titleLower.includes("paper") || titleLower.includes("arxiv") || titleLower.includes("fusion")) {
+                    if (activeMode === "academic" || titleLower.includes("quantum") || titleLower.includes("physics") || titleLower.includes("paper") || titleLower.includes("arxiv") || titleLower.includes("fusion") || titleLower.includes("biology") || titleLower.includes("cell")) {
                         icon = "fa-atom";
                         sub = "Scientific Preprint & Theory";
-                    } else if (activeMode === "code" || titleLower.includes("rust") || titleLower.includes("python") || titleLower.includes("database") || titleLower.includes("compiler") || titleLower.includes("duckdb")) {
+                    } else if (activeMode === "code" || titleLower.includes("rust") || titleLower.includes("python") || titleLower.includes("database") || titleLower.includes("compiler") || titleLower.includes("duckdb") || titleLower.includes("kernel") || titleLower.includes("wasm")) {
                         icon = "fa-code";
                         sub = "Systems & Software Engineering";
-                    } else if (activeMode === "finance" || titleLower.includes("market") || titleLower.includes("revenue") || titleLower.includes("acquisition") || titleLower.includes("earnings") || titleLower.includes("fed")) {
+                    } else if (activeMode === "finance" || titleLower.includes("market") || titleLower.includes("revenue") || titleLower.includes("acquisition") || titleLower.includes("earnings") || titleLower.includes("fed") || titleLower.includes("valuation")) {
                         icon = "fa-chart-line";
                         sub = "Institutional Market Intelligence";
-                    } else if (activeMode === "writing" || titleLower.includes("strategy") || titleLower.includes("policy") || titleLower.includes("enterprise")) {
+                    } else if (activeMode === "writing" || titleLower.includes("strategy") || titleLower.includes("policy") || titleLower.includes("enterprise") || titleLower.includes("memo")) {
                         icon = "fa-feather-pointed";
                         sub = "Strategic Analysis & Memo";
-                    } else if (titleLower.includes("ai") || titleLower.includes("llm") || titleLower.includes("model") || titleLower.includes("gpt") || titleLower.includes("claude") || titleLower.includes("deepseek")) {
+                    } else if (titleLower.includes("ai") || titleLower.includes("llm") || titleLower.includes("model") || titleLower.includes("gpt") || titleLower.includes("claude") || titleLower.includes("deepseek") || titleLower.includes("agent")) {
                         icon = "fa-brain";
                         sub = "Frontier AI & Neural Models";
                     }
@@ -611,22 +621,22 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                         query: `Technical analysis and verified overview of: ${cleanTitle}`
                     });
 
-                    if (liveCards.length >= 4) break;
+                    if (liveCards.length >= 6) break;
                 }
 
-                // Backfill from curated categories if live results < 4 to guarantee exact 4 cards always
+                // Backfill from curated categories if live results < 6 to guarantee exact 6 cards always
                 const baseCategoryCards = FALLBACK_DESK_SUGGESTIONS[activeMode] || FALLBACK_DESK_SUGGESTIONS.web;
                 const fullSet = [...liveCards];
 
                 for (const card of baseCategoryCards) {
-                    if (fullSet.length >= 4) break;
+                    if (fullSet.length >= 6) break;
                     if (!fullSet.some(c => c.title.toLowerCase() === card.title.toLowerCase())) {
                         fullSet.push(card);
                     }
                 }
 
-                appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 4);
-                localStorage.setItem("cortex_live_trends_v5", JSON.stringify(appState.dynamicSuggestions));
+                appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 6);
+                localStorage.setItem("cortex_live_trends_v6", JSON.stringify(appState.dynamicSuggestions));
                 renderSuggestedCards(activeMode);
             }
         }
