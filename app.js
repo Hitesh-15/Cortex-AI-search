@@ -5,34 +5,34 @@
 // Baseline Curated Fallback Suggestions
 const FALLBACK_DESK_SUGGESTIONS = {
     web: [
-        { icon: "fa-atom", title: "2026 AI & Quantum Breakthroughs", sub: "Real-time tech web research", query: "What are the top 2026 AI breakthroughs and quantum computing updates?" },
-        { icon: "fa-chart-pie", title: "S&P 500 vs. Inflation Benchmark", sub: "Financial market analysis", query: "Compare S&P 500 YTD return vs. Federal Reserve inflation targets" },
-        { icon: "fa-code", title: "Python Async Scraper Pipeline", sub: "Clean code & data pipeline", query: "Write a clean Python async pipeline to scrape and process API data" },
-        { icon: "fa-bolt", title: "Fusion Energy Reactor Milestones", sub: "Scientific web updates", query: "Explain how fusion energy net-gain milestones work in modern reactors" }
+        { icon: "fa-bolt", title: "Frontier Reasoning & Inference Systems", sub: "Live technical web research", query: "What are the latest breakthroughs in test-time compute and reasoning models?" },
+        { icon: "fa-chart-line", title: "Global Hyperscaler Infrastructure CapEx", sub: "Cloud & datacenter telemetry", query: "Analyze hyperscaler capital expenditure and GPU infrastructure deployment" },
+        { icon: "fa-code", title: "High-Throughput Systems Engineering", sub: "Modern architecture & I/O", query: "What are the best practices for zero-copy high-throughput async network services?" },
+        { icon: "fa-atom", title: "Clean Energy & Grid Electrification", sub: "Scientific infrastructure", query: "Explain modern energy grid interconnects and industrial electrification demands" }
     ],
     academic: [
-        { icon: "fa-graduation-cap", title: "arXiv Transformer Research Papers", sub: "Computer Science & LLM papers", query: "Find recent arXiv papers on sparse attention transformers and LLM efficiency" },
-        { icon: "fa-dna", title: "PubMed Clinical CRISPR Trials", sub: "Biomedical peer-reviewed studies", query: "Summarize latest PubMed clinical trials on CRISPR gene editing therapies" },
-        { icon: "fa-microchip", title: "Quantum Supremacy Proofs", sub: "Physics & IEEE papers", query: "What are recent peer-reviewed paper findings on error-corrected quantum supremacy?" },
-        { icon: "fa-network-wired", title: "Neural Architecture Search (NAS)", sub: "AI arXiv repository research", query: "Search IEEE & arXiv research on automated neural architecture search (NAS)" }
+        { icon: "fa-graduation-cap", title: "Frontier Preprints & LLM Efficiency", sub: "Computer Science & LLM papers", query: "Find recent arXiv papers on sparse attention transformers and model efficiency" },
+        { icon: "fa-dna", title: "Clinical Gene Editing Therapies", sub: "Biomedical peer-reviewed studies", query: "Summarize latest clinical trials on targeted gene editing therapies" },
+        { icon: "fa-microchip", title: "Fault-Tolerant Quantum Surface Codes", sub: "Physics & IEEE papers", query: "What are recent peer-reviewed paper findings on error-corrected quantum surface codes?" },
+        { icon: "fa-network-wired", title: "Automated Neural Search & Optimization", sub: "AI arXiv repository research", query: "Search IEEE & arXiv research on automated neural architecture optimization" }
     ],
     code: [
-        { icon: "fa-cubes", title: "Next.js 15 Server Actions & TS", sub: "Full-stack Web Dev pattern", query: "Write a production Next.js 15 Server Action with TypeScript validation" },
+        { icon: "fa-cubes", title: "Full-Stack Server Actions & TypeScript", sub: "Full-stack Web Dev pattern", query: "Write a production Server Action with TypeScript validation and error handling" },
         { icon: "fa-python", title: "FastAPI + PyDantic V2 Async API", sub: "Backend API implementation", query: "Show clean FastAPI code with PyDantic V2 models and WebSockets" },
-        { icon: "fa-gear", title: "Rust Tokio High-Throughput Server", sub: "Systems programming example", query: "Provide Rust tokio async TCP server example with zero-copy parsing" },
-        { icon: "fa-docker", title: "Docker Multi-Stage Optimization", sub: "DevOps & Containerization", query: "How to write a multi-stage Dockerfile for Node.js microservices under 50MB" }
+        { icon: "fa-gear", title: "Rust Tokio Async Stream Pipeline", sub: "Systems programming example", query: "Provide Rust tokio async TCP stream example with zero-copy buffer parsing" },
+        { icon: "fa-docker", title: "Containerization & Multi-Stage Builds", sub: "DevOps & Cloud Native", query: "How to write a multi-stage Dockerfile for lightweight microservices under 50MB" }
     ],
     finance: [
-        { icon: "fa-file-invoice-dollar", title: "SEC 10-K & EDGAR Filings Analysis", sub: "Corporate financial disclosures", query: "Search SEC 10-K filings for Big Tech revenue breakdown and capital expenditure" },
-        { icon: "fa-landmark", title: "Fed Interest Rates & Treasury Yields", sub: "Macroeconomic & Bond markets", query: "Summarize current FOMC interest rate forecasts and 10-Year Treasury Yield trends" },
-        { icon: "fa-scale-balanced", title: "High Yield Savings vs S&P 500", sub: "Asset allocation benchmarks", query: "Compare high yield savings rates vs S&P 500 real inflation-adjusted returns" },
-        { icon: "fa-chart-line", title: "AI Semiconductor Earnings Metrics", sub: "Market earnings forecasts", query: "Analyze NVIDIA & TSMC quarterly earnings margins and GPU demand forecasts" }
+        { icon: "fa-file-invoice-dollar", title: "Corporate 10-K Disclosures & Cash Flow", sub: "Institutional financial filings", query: "Analyze enterprise cloud revenue breakdown, free cash flow margins, and capital expenditure" },
+        { icon: "fa-landmark", title: "Treasury Yields & Monetary Policy", sub: "Macroeconomic & Bond markets", query: "Summarize current FOMC interest rate trajectory and 10-Year Treasury Yield trends" },
+        { icon: "fa-scale-balanced", title: "Fixed Income vs Equity Risk Premia", sub: "Asset allocation benchmarks", query: "Compare fixed income yields vs S&P 500 earnings yields and risk premia" },
+        { icon: "fa-chart-line", title: "Semiconductor Foundry Margins & CoWoS", sub: "Market earnings forecasts", query: "Analyze global semiconductor foundry margins and packaging capacity backlogs" }
     ],
     writing: [
-        { icon: "fa-pen-nib", title: "Executive Summary & Pitch Deck", sub: "Business & Startup writing", query: "Write a compelling 1-page executive summary for an AI startup seed round" },
-        { icon: "fa-paper-plane", title: "Enterprise Outreach Email", sub: "B2B Sales & Communication", query: "Draft a professional high-converting outreach email to enterprise CTOs" },
-        { icon: "fa-file-code", title: "Microservice RFC Architecture Doc", sub: "Technical documentation", query: "Write a clear RFC specification document for a distributed microservice system" },
-        { icon: "fa-lightbulb", title: "Sci-Fi Quantum Memory Concept", sub: "Creative & Worldbuilding", query: "Brainstorm a sci-fi world concept where memory can be backed up to quantum storage" }
+        { icon: "fa-pen-nib", title: "Executive Research Briefing Memo", sub: "Strategic executive analysis", query: "Write a structured, concise executive intelligence memo on enterprise AI adoption" },
+        { icon: "fa-paper-plane", title: "Enterprise Technical Outreach", sub: "Executive communication", query: "Draft a concise, high-value outreach email to enterprise engineering leaders" },
+        { icon: "fa-file-code", title: "System Architecture RFC Specification", sub: "Technical documentation", query: "Write a clear RFC specification document for a distributed event-driven service" },
+        { icon: "fa-lightbulb", title: "Systems Scalability & Fault Tolerance", sub: "Technical strategy", query: "Outline key architectural principles for high-availability multi-region databases" }
     ]
 };
 
@@ -42,7 +42,7 @@ var appState = {
     activeThreadId: null,
     activeFocusMode: "web",
     activeEffortLevel: localStorage.getItem("ambu_effort_level") || "auto",
-    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_dynamic_prompts_v2") || "null") || FALLBACK_DESK_SUGGESTIONS,
+    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v4") || "{}"),
     attachedDocuments: [],
     isProSearch: false,
     isSearching: false,
@@ -517,9 +517,21 @@ function renderSuggestedCards(mode) {
     if (!grid) return;
 
     const currentMode = mode || appState.activeFocusMode || "web";
-    const suggestions = (appState.dynamicSuggestions && appState.dynamicSuggestions[currentMode]) 
+    const suggestions = (appState.dynamicSuggestions && appState.dynamicSuggestions[currentMode] && appState.dynamicSuggestions[currentMode].length > 0) 
         ? appState.dynamicSuggestions[currentMode] 
-        : (FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web);
+        : null;
+
+    if (!suggestions) {
+        // Sleek live placeholder cards while initial live fetch resolves (eliminating old static text flashing)
+        grid.innerHTML = [1, 2, 3, 4].map(() => `
+            <div class="suggested-card" style="opacity: 0.75; cursor: default;">
+                <i class="fa-solid fa-bolt suggested-card-icon text-cyan" style="animation: pulseGlow 1.5s infinite;"></i>
+                <div class="suggested-card-text" style="color: #94a3b8; font-size: 0.88rem;">Syncing live breakthroughs...</div>
+                <div class="suggested-card-sub" style="color: #64748b;">Real-time web telemetry</div>
+            </div>
+        `).join('');
+        return;
+    }
 
     grid.innerHTML = suggestions.map(c => `
         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
@@ -535,11 +547,8 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
     const activeMode = targetMode || appState.activeFocusMode || "web";
 
     if (!appState.dynamicSuggestions) {
-        appState.dynamicSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
+        appState.dynamicSuggestions = JSON.parse(localStorage.getItem("cortex_live_trends_v4") || "{}");
     }
-
-    // Render immediately to prevent any layout jumping
-    renderSuggestedCards(activeMode);
 
     // Dynamic high-signal endpoints mapped by research desk category
     const categoryEndpoints = {
@@ -600,6 +609,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
 
                 if (liveCards.length > 0) {
                     appState.dynamicSuggestions[activeMode] = liveCards;
+                    localStorage.setItem("cortex_live_trends_v4", JSON.stringify(appState.dynamicSuggestions));
                     renderSuggestedCards(activeMode);
                 }
             }
