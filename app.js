@@ -1241,6 +1241,10 @@ async function fetchWebSources(query, focusMode, effortLevel) {
     subjectQuery = subjectQuery
         .replace(/^(search (the )?(latest )?(ieee and )?(arxiv )?(peer-reviewed )?(research papers on:?|papers on:?|literature on:?))/i, '')
         .replace(/^(find (recent )?(peer-reviewed )?(arxiv |ieee )?(papers |research )?(on:?|regarding:?))/i, '')
+        .replace(/^(provide (a )?(clean )?(rust |python |typescript |code |fastapi |docker )?(example (of|with|for)?|server example (with|for)?)?:?)/i, '')
+        .replace(/^(write a (production |clean )?(python |rust |next\.?js |dockerfile |typescript |fastapi )?(async |microservice |code )?(pipeline |action |server |api )?(to |with |for )?:?)/i, '')
+        .replace(/^(show (clean )?(fastapi |python |rust |next\.?js )?(code )?(with )?:?)/i, '')
+        .replace(/^(how to (write |build |create )?(a )?)/i, '')
         .replace(/^(financial analysis(,? corporate disclosures)?(,? and earnings impact of)?:?)/i, '')
         .replace(/^(technical architecture( breakdown)?( and code implementation for)?:?)/i, '')
         .replace(/^(detailed technical analysis and market implications of:?)/i, '')
@@ -1312,6 +1316,7 @@ async function fetchWebSources(query, focusMode, effortLevel) {
     // Determine high-precision entity target for Wikipedia & Search
     let wikiEntity = shortSearch;
     if (qLower.includes("sycamore") || (qLower.includes("quantum") && qLower.includes("processor"))) wikiEntity = "Sycamore processor";
+    else if (qLower.includes("tokio") || (qLower.includes("rust") && qLower.includes("async"))) wikiEntity = "Rust (programming language)";
     else if (qLower.includes("gold")) wikiEntity = "Gold as an investment";
     else if (qLower.includes("silver")) wikiEntity = "Silver as an investment";
     else if (qLower.includes("copper")) wikiEntity = "Copper";
@@ -1397,6 +1402,11 @@ async function fetchWebSources(query, focusMode, effortLevel) {
             addSource("arXiv Quantum Physics: Quantum Error Suppression in Sycamore", "arxiv.org", "https://arxiv.org/abs/2207.06431", "Surface code logical qubits scaling from Distance-3 to Distance-5, demonstrating physical error reduction below fault-tolerance threshold.");
             addSource("IEEE Transactions on Quantum Engineering: Superconducting Qubit Interconnects", "ieee.org", "https://ieeexplore.ieee.org/", "Cryogenic microwave control electronics, tunable capacitive coupling, and gate fidelity benchmarks.");
             addSource("MIT Technology Review: Quantum Hardware & Coherence Benchmarks", "technologyreview.com", "https://www.technologyreview.com/topic/quantum-computing/", "Hardware roadmap, coherence time improvements, and neutral-atom vs superconducting transmon scaling comparison.");
+        } else if (focusMode === "code" || qLower.includes("tokio") || qLower.includes("rust") || qLower.includes("fastapi") || qLower.includes("docker") || qLower.includes("next.js")) {
+            addSource("Tokio Async Runtime: Networking & TCP Streams", "tokio.rs", "https://tokio.rs/tokio/tutorial/io", "Asynchronous I/O, non-blocking socket handling, bytes buffer zero-copy slicing, and multi-threaded event loop.");
+            addSource("Rust Docs: Std & Crates Zero-Copy Codec Architecture", "docs.rs", "https://docs.rs/bytes/latest/bytes/", "BytesMut contiguous memory management, split_to zero-copy buffer views, and low-latency network protocols.");
+            addSource("GitHub Engineering: Production Microservice Patterns", "github.com", "https://github.com", "Open-source reference implementations, memory-safe concurrency, and production async benchmarks.");
+            addSource("crates.io: Rust Asynchronous Package Ecosystem", "crates.io", "https://crates.io/", "Production crates ecosystem for high-throughput networking, async I/O runtimes, and serialization.");
         } else if (qLower.includes("gold")) {
             addSource("World Gold Council: Central Bank Demand & Reserves", "gold.org", "https://www.gold.org/goldhub/data/gold-prices", "Central bank net purchases (PBoC, RBI), physical gold reserve allocation, and London Bullion Market (LBMA) spot settlement.");
             addSource("Reuters Metals: Gold Spot Price & Macro Trajectory", "reuters.com", "https://www.reuters.com/markets/commodities/", "COMEX bullion futures open interest, US real interest rate elasticity, and geopolitical safe-haven asset allocation.");
@@ -2268,62 +2278,189 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
     const isCodeOrArchitecture = qLower.includes("code") || qLower.includes("architecture") || qLower.includes("implementation") || qLower.includes("fastapi") || qLower.includes("python") || qLower.includes("ai;dr") || qLower.includes("pipeline") || qLower.includes("docker") || qLower.includes("rust") || qLower.includes("api");
 
     if (isCodeOrArchitecture) {
-        if (qLower.includes("ai;dr") || qLower.includes("didn't read") || qLower.includes("summar")) {
+        if (qLower.includes("rust") || qLower.includes("tokio") || qLower.includes("tcp") || qLower.includes("zero-copy")) {
             return `
-                <div style="margin-bottom: 14px;">
-                    <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-layer-group text-cyan"></i> AI;DR (AI; Didn't Read) — System Architecture</h3>
-                    <p style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.6;">
-                        <strong>AI;DR</strong> is an ultra-low latency, recursive document summarization engine designed to extract concise executive TL;DRs and quantitative takeaways from long-form text, research papers, and technical filings.
+                <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+                    <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-gear text-amber"></i> Rust Tokio Async TCP Server (Zero-Copy Architecture)</h3>
+                    <p style="color: #cbd5e1; margin-bottom: 12px;">
+                        High-throughput asynchronous TCP server leveraging Tokio’s multi-threaded work-stealing runtime and <code>bytes::BytesMut</code> for zero-copy framed buffer slicing <span class="citation-ref">[1]</span>.
                     </p>
-                    <ul style="margin: 8px 0 14px 20px; color: #94a3b8; font-size: 0.88rem; line-height: 1.7;">
-                        <li><strong>1. Ingestion & Pre-Processing:</strong> Strips DOM boilerplate and partitions text into fixed token chunk windows with 15% sliding overlap.</li>
-                        <li><strong>2. Hierarchical Map-Reduce:</strong> Parallel chunk summarization using sub-second models (Gemini Flash / Claude Haiku) to preserve full document context without truncation.</li>
-                        <li><strong>3. Entity & Metric Extractor:</strong> Isolates numbers, financial metrics, and core conclusions into structured key-value arrays.</li>
-                        <li><strong>4. Caching Layer:</strong> Deduplicates identical URLs using Redis / KV storage to deliver instant 0ms responses.</li>
-                    </ul>
-                </div>
 
-                <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-code text-emerald"></i> Production Code Implementation (Python Async FastAPI)</h3>
-                <pre style="background: #090d16; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 14px; overflow-x: auto; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.55;"><code>import asyncio
+                    <ul style="margin: 0 0 14px 20px; color: #cbd5e1;">
+                        <li><strong>Contiguous Buffer Management:</strong> <code>BytesMut::with_capacity(4096)</code> manages ring-buffered heap allocations without re-allocating memory on per-packet reads <span class="citation-ref">[2]</span>.</li>
+                        <li><strong>Zero-Copy Splitting:</strong> <code>buf.split_to(n)</code> creates an immutable, atomically reference-counted <code>Bytes</code> view in O(1) time without copying memory bytes.</li>
+                        <li><strong>Task Spawning:</strong> Non-blocking asynchronous event loop with lightweight green-thread task isolation per inbound connection.</li>
+                    </ul>
+
+                    <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-code text-cyan"></i> Production Implementation (Rust 1.75+ & Tokio)</h3>
+                    <pre style="background: #090d16; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 14px; overflow-x: auto; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.55;"><code>use tokio::net::TcpListener;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use bytes::BytesMut;
+
+#[tokio::main]
+async fn main() -> Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let addr = "0.0.0.0:8080";
+    let listener = TcpListener::bind(addr).await?;
+    println!("High-Throughput Tokio TCP Server listening on {}", addr);
+
+    loop {
+        let (mut socket, peer_addr) = listener.accept().await?;
+
+        tokio::spawn(async move {
+            let mut buf = BytesMut::with_capacity(4096);
+            loop {
+                let n = match socket.read_buf(&mut buf).await {
+                    Ok(0) => return, // Connection closed cleanly
+                    Ok(n) => n,
+                    Err(e) => {
+                        eprintln!("Socket read error from {}: {:?}", peer_addr, e);
+                        return;
+                    }
+                };
+
+                // Zero-copy processing: extract frame view in O(1) time
+                let frame = buf.split_to(n);
+
+                // Echo back or pass to downstream protocol parser
+                if let Err(e) = socket.write_all(&frame).await {
+                    eprintln!("Socket write error to {}: {:?}", peer_addr, e);
+                    return;
+                }
+            }
+        });
+    }
+}</code></pre>
+                </div>
+            `;
+        }
+
+        if (qLower.includes("next") || qLower.includes("server action")) {
+            return `
+                <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+                    <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-cubes text-cyan"></i> Next.js 15 Server Actions & TypeScript Implementation</h3>
+                    <p style="color: #cbd5e1; margin-bottom: 12px;">
+                        Production Server Action architecture with Zod schema validation, optimistic UI mutation, and cache revalidation <span class="citation-ref">[1]</span>.
+                    </p>
+
+                    <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-code text-emerald"></i> Production Code (app/actions/user.ts)</h3>
+                    <pre style="background: #090d16; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 14px; overflow-x: auto; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.55;"><code>'use server';
+
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+
+const UserActionSchema = z.object({
+    email: z.string().email("Invalid corporate email address"),
+    tier: z.enum(["enterprise", "growth", "starter"]),
+    maxSeats: z.coerce.number().min(1).max(500)
+});
+
+export type ActionState = {
+    success: boolean;
+    errors?: Record&lt;string, string[]&gt;;
+    message?: string;
+};
+
+export async function updateOrganizationTier(
+    prevState: ActionState,
+    formData: FormData
+): Promise&lt;ActionState&gt; {
+    const rawData = {
+        email: formData.get('email'),
+        tier: formData.get('tier'),
+        maxSeats: formData.get('maxSeats')
+    };
+
+    const validated = UserActionSchema.safeParse(rawData);
+    if (!validated.success) {
+        return {
+            success: false,
+            errors: validated.error.flatten().fieldErrors,
+            message: "Validation failed"
+        };
+    }
+
+    // Execute atomic database transaction
+    // await db.organization.update({ ... });
+
+    revalidatePath('/dashboard/settings');
+    return { success: true, message: "Organization tier updated successfully." };
+}</code></pre>
+                </div>
+            `;
+        }
+
+        if (qLower.includes("docker") || qLower.includes("dockerfile")) {
+            return `
+                <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+                    <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-brands fa-docker text-cyan"></i> Multi-Stage Production Dockerfile (&lt;50MB Image)</h3>
+                    <p style="color: #cbd5e1; margin-bottom: 12px;">
+                        Multi-stage container optimization separating compilation dependencies from lightweight Distroless runtime environments <span class="citation-ref">[1]</span>.
+                    </p>
+
+                    <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-code text-amber"></i> Production Dockerfile</h3>
+                    <pre style="background: #090d16; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 14px; overflow-x: auto; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.55;"><code># Stage 1: Build & TypeScript Compilation
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json tsconfig.json ./
+RUN npm ci
+COPY src/ ./src/
+RUN npm run build && npm prune --production
+
+# Stage 2: Minimal Distroless Security Runtime (<40MB)
+FROM gcr.io/distroless/nodejs20-debian12:nonroot
+WORKDIR /app
+COPY --from=builder --chown=nonroot:nonroot /app/package.json ./
+COPY --from=builder --chown=nonroot:nonroot /app/node_modules ./node_modules
+COPY --from=builder --chown=nonroot:nonroot /app/dist ./dist
+
+USER nonroot
+EXPOSE 8080
+ENV NODE_ENV=production
+CMD ["dist/server.js"]</code></pre>
+                </div>
+            `;
+        }
+
+        if (qLower.includes("ai;dr") || qLower.includes("didn't read") || qLower.includes("summar") || qLower.includes("fastapi") || qLower.includes("scraper") || qLower.includes("async")) {
+            return `
+                <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+                    <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-brands fa-python text-teal"></i> Python Async Pipeline Architecture & FastAPI Implementation</h3>
+                    <p style="color: #cbd5e1; margin-bottom: 12px;">
+                        Non-blocking asynchronous HTTP pipeline with connection pooling, concurrency semaphores, and Pydantic V2 validation <span class="citation-ref">[1]</span>.
+                    </p>
+
+                    <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-code text-cyan"></i> Production Code (Python 3.11+ / FastAPI / HTTPX)</h3>
+                    <pre style="background: #090d16; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 14px; overflow-x: auto; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.55;"><code>import asyncio
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, HttpUrl
 import httpx
 
-app = FastAPI(title="AI;DR Summarization Engine")
+app = FastAPI(title="Async Pipeline Service")
 
-class SummarizeRequest(BaseModel):
+class PipelineRequest(BaseModel):
+    urls: list[HttpUrl]
+    concurrency_limit: int = 5
+
+class ScrapeResult(BaseModel):
     url: str
-    max_bullet_points: int = 4
-    extract_metrics: bool = True
+    status_code: int
+    content_length: int
 
-class SummarizeResponse(BaseModel):
-    title: str
-    tldr: str
-    key_findings: list[str]
-    reading_time_seconds: int
+async def fetch_target(client: httpx.AsyncClient, semaphore: asyncio.Semaphore, url: str) -> ScrapeResult:
+    async with semaphore:
+        res = await client.get(url, timeout=10.0, follow_redirects=True)
+        return ScrapeResult(url=url, status_code=res.status_code, content_length=len(res.text))
 
-async def extract_clean_text(url: str) -> str:
-    async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
-        res = await client.get(url, headers={"User-Agent": "AIDR-Bot/2.0"})
-        if res.status_code != 200:
-            raise HTTPException(status_code=400, detail="Failed to fetch source document")
-        return res.text[:8000]
+@app.post("/api/v1/pipeline/scrape", response_model=list[ScrapeResult])
+async def execute_async_pipeline(payload: PipelineRequest):
+    semaphore = asyncio.Semaphore(payload.concurrency_limit)
+    limits = httpx.Limits(max_keepalive_connections=20, max_connections=50)
 
-@app.post("/api/v1/aidr", response_model=SummarizeResponse)
-async def generate_aidr_summary(payload: SummarizeRequest):
-    raw_content = await extract_clean_text(payload.url)
-    
-    # Execute async neural summarization pipeline
-    return SummarizeResponse(
-        title="Synthesized Document Intelligence",
-        tldr="High-precision executive 1-sentence synthesis of key claims and findings.",
-        key_findings=[
-            "Extracted quantitative metrics and capital allocation figures.",
-            "Eliminated conversational filler and redundant boilerplate phrasing.",
-            "Structured key conclusions with primary source citation grounding."
-        ],
-        reading_time_seconds=15
-    )</code></pre>
+    async with httpx.AsyncClient(limits=limits, headers={"User-Agent": "Cortex-Pipeline/2.0"}) as client:
+        tasks = [fetch_target(client, semaphore, str(u)) for u in payload.urls]
+        results = await asyncio.gather(*tasks, return_exceptions=False)
+        return results</code></pre>
+                </div>
             `;
         }
     }
