@@ -515,15 +515,69 @@ function renderSuggestedCards(mode) {
     `).join('');
 }
 
-// Dynamic Research Desks Prompt Suite (Curated, high-signal, zero artificial boilerplate)
+// Dynamic Research Desks Prompt Suite (Live & Verified Real-Time Topics)
 async function fetchDynamicTrendingPrompts(forceRefresh = false) {
-    appState.dynamicSuggestions = FALLBACK_DESK_SUGGESTIONS;
-    try {
-        localStorage.removeItem("cortex_dynamic_prompts_v2");
-        localStorage.removeItem("cortex_dynamic_prompts_ts");
-    } catch (e) {}
-
+    // 1. Immediate instant render of prompt cards
+    if (!appState.dynamicSuggestions) {
+        appState.dynamicSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
+    }
     renderSuggestedCards(appState.activeFocusMode || "web");
+
+    // 2. Fetch live trending developer and scientific breakthroughs in background
+    try {
+        const res = await fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=8");
+        if (res.ok) {
+            const data = await res.json();
+            if (data.hits && Array.isArray(data.hits)) {
+                const liveCards = [];
+                for (const hit of data.hits) {
+                    if (!hit.title) continue;
+                    const rawTitle = hit.title.trim();
+                    // Filter out forum meta, job posts, and incidents
+                    if (/^(ask hn|tell hn|hiring|incident|outage|down|show hn:\s*my)/i.test(rawTitle)) continue;
+                    if (rawTitle.length < 10 || rawTitle.length > 90) continue;
+
+                    // Clean title for display
+                    let cleanTitle = rawTitle.replace(/^show hn:\s*/i, '').replace(/\s+[-|–—].*$/, '').trim();
+                    let icon = "fa-bolt";
+                    let sub = "Live Trending Tech Development";
+
+                    const titleLower = cleanTitle.toLowerCase();
+                    if (titleLower.includes("ai") || titleLower.includes("llm") || titleLower.includes("model") || titleLower.includes("gpt") || titleLower.includes("claude") || titleLower.includes("deepseek")) {
+                        icon = "fa-brain";
+                        sub = "Frontier AI & Neural Models";
+                    } else if (titleLower.includes("rust") || titleLower.includes("python") || titleLower.includes("database") || titleLower.includes("linux") || titleLower.includes("sql") || titleLower.includes("compiler")) {
+                        icon = "fa-code";
+                        sub = "Systems & Software Engineering";
+                    } else if (titleLower.includes("quantum") || titleLower.includes("physics") || titleLower.includes("space") || titleLower.includes("energy") || titleLower.includes("battery")) {
+                        icon = "fa-atom";
+                        sub = "Science & Applied Physics";
+                    } else if (titleLower.includes("market") || titleLower.includes("revenue") || titleLower.includes("price") || titleLower.includes("economy")) {
+                        icon = "fa-chart-line";
+                        sub = "Market & Macro Analysis";
+                    }
+
+                    liveCards.push({
+                        icon: icon,
+                        title: cleanTitle.length > 42 ? (cleanTitle.substring(0, 40) + "...") : cleanTitle,
+                        sub: sub,
+                        query: `Technical analysis and overview of: ${cleanTitle}`
+                    });
+
+                    if (liveCards.length >= 2) break;
+                }
+
+                if (liveCards.length > 0) {
+                    // Prepend live cards to the web suite while keeping curated anchor cards
+                    const baseWeb = FALLBACK_DESK_SUGGESTIONS.web.slice(0, 4 - liveCards.length);
+                    appState.dynamicSuggestions.web = [...liveCards, ...baseWeb];
+                    renderSuggestedCards(appState.activeFocusMode || "web");
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("Live trending prompts background fetch notice:", e);
+    }
 }
 
 function setEffortLevel(effort) {
