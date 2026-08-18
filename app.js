@@ -2753,13 +2753,6 @@ function renderViewport() {
     const threadContainer = document.getElementById("activeThreadContainer");
     const thread = appState.threads.find(t => t.id === appState.activeThreadId);
 
-    // Never collapse to hero view if a search pipeline is currently executing
-    if (appState.isSearching) {
-        if (heroView) heroView.style.display = "none";
-        if (threadContainer) threadContainer.style.display = "flex";
-        return;
-    }
-
     // Fallback to hero view if there is no active thread OR if active thread has no search steps
     if (!thread || !thread.steps || thread.steps.length === 0) {
         if (heroView) heroView.style.display = "flex";
@@ -2777,25 +2770,48 @@ function renderViewport() {
         if (heroView) heroView.style.display = "none";
         if (threadContainer) {
             threadContainer.style.display = "flex";
-            threadContainer.innerHTML = thread.steps.map((step, idx) => `
-                <div class="query-thread-block">
-                    <div class="user-query-heading">
-                        ${step.query}
+            threadContainer.innerHTML = thread.steps.map((step, idx) => {
+                const sourcesMarkup = (step.sources && step.sources.length > 0) ? `
+                    <div class="research-compact-header-bar" style="margin-bottom: 12px;">
+                        <div class="sources-pill-strip">
+                            <span class="sources-label"><i class="fa-solid fa-link text-cyan"></i> Sources (${step.sources.length})</span>
+                            <div class="source-chips-row">
+                                ${step.sources.slice(0, 4).map(s => `
+                                    <a href="${s.url}" target="_blank" rel="noopener" class="source-chip" title="${s.title}">
+                                        <span class="source-chip-num">${s.num}</span>
+                                        <span>${s.domain}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
                     </div>
-                    <div class="sources-container">
-                        <div class="sources-header"><i class="fa-solid fa-globe text-cyan"></i> Verified Web Sources (${step.sources.length})</div>
-                        <div class="sources-grid">
-                            ${step.sources.map(s => `
-                                <a href="${s.url}" target="_blank" rel="noopener" class="source-card">
-                                    <span class="source-card-top"><span class="source-card-num">${s.num}</span> ${s.domain}</span>
-                                    <span class="source-card-title">${s.title}</span>
-                                </a>
+                ` : '';
+
+                const followUpsMarkup = (step.related && step.related.length > 0) ? `
+                    <div class="related-questions-wrapper" style="margin-top: 14px;">
+                        <span class="related-label"><i class="fa-solid fa-lightbulb text-cyan"></i> Suggested Follow-up Searches:</span>
+                        <div class="related-chips">
+                            ${step.related.map(q => `
+                                <button type="button" class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}')">
+                                    <span>${q}</span>
+                                    <i class="fa-solid fa-arrow-right text-muted"></i>
+                                </button>
                             `).join('')}
                         </div>
                     </div>
-                    <div class="ai-answer-box">${step.answer}</div>
-                </div>
-            `).join('');
+                ` : '';
+
+                return `
+                    <div class="query-thread-block" style="margin-bottom: 24px;">
+                        <div class="user-query-heading">
+                            ${step.query}
+                        </div>
+                        ${sourcesMarkup}
+                        <div class="ai-answer-box">${step.answer}</div>
+                        ${followUpsMarkup}
+                    </div>
+                `;
+            }).join('');
         }
     }
 }
@@ -2846,9 +2862,12 @@ function stopThreadWatchdog(threadId) {
 }
 
 function switchThread(threadId) {
+    if (!threadId) return;
+    appState.isSearching = false;
     appState.activeThreadId = threadId;
     renderThreadHistory();
     renderViewport();
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function deleteThread(threadId) {
@@ -3926,6 +3945,9 @@ window.renderLibraryMemos = renderLibraryMemos;
 window.filterLibraryMemos = filterLibraryMemos;
 window.deleteSavedMemo = deleteSavedMemo;
 window.clearAllSavedLibraryMemos = clearAllSavedLibraryMemos;
+window.switchThread = switchThread;
+window.deleteThread = deleteThread;
+window.renderViewport = renderViewport;
 window.updateGatewayStatusBadge = updateGatewayStatusBadge;
 window.appState = appState;
 
