@@ -2817,8 +2817,9 @@ function formatAIResponseHTML(text) {
     // Strip redundant trailing bibliography lists
     clean = clean.replace(/(?:<h[1-4][^>]*>|<p[^>]*>|<strong>|<div[^>]*>)?\s*(?:References referenced|References\b|Sources cited|Citations\b|Sources list)(?:<\/h[1-4]>|<\/p>|<\/strong>|<\/div>)?:?\s*(?:<ul[^>]*>[\s\S]*?<\/ul>|<ol[^>]*>[\s\S]*?<\/ol>|(?:<p[^>]*>)?\s*\[[0-9]+\][\s\S]*)/gi, '');
 
-    // Convert raw citations [1], [2], [11] into styled citation pills
-    clean = clean.replace(/(?<!class="citation-ref">)\[([0-9]{1,2})\]/g, '<span class="citation-ref">[$1]</span>');
+    // Convert both legacy <span class="citation-ref"> and raw [1] into sleek, clickable Perplexity-style badge buttons
+    clean = clean.replace(/<span class="citation-ref">\[?([0-9]{1,2})\]?<\/span>/gi, '<button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Open verified source [$1]"><span class="citation-badge-num">$1</span></button>');
+    clean = clean.replace(/(?<!data-src-num=")\b\[([0-9]{1,2})\]/g, '<button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Open verified source [$1]"><span class="citation-badge-num">$1</span></button>');
 
     // Wrap floating <li> elements into <ul class="memo-bullet-list">
     if (clean.includes("<li>") && !clean.includes("<ul")) {
@@ -2838,6 +2839,46 @@ function formatAIResponseHTML(text) {
     clean = clean.replace(/(?:<br\s*\/?>){2,}/g, '<br>');
 
     return clean;
+}
+
+// Interactive Citation Jump & Source Link Opener
+function jumpToSource(num, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    const n = Number(num);
+    const activeThread = appState.threads.find(t => t.id === appState.activeThreadId);
+    let targetSource = null;
+
+    if (activeThread && activeThread.steps && activeThread.steps.length > 0) {
+        for (let i = activeThread.steps.length - 1; i >= 0; i--) {
+            const sList = activeThread.steps[i].sources || [];
+            targetSource = sList.find(s => s.num === n || s.id === n);
+            if (targetSource) break;
+        }
+    }
+
+    if (targetSource && targetSource.url && targetSource.url.startsWith("http")) {
+        window.open(targetSource.url, "_blank", "noopener,noreferrer");
+        showToast(`Opening source [${n}]: ${targetSource.domain}`, "info");
+        return;
+    }
+
+    // Secondary fallback: search DOM for source links
+    const card = document.querySelector(`[data-source-num="${n}"]`) || 
+                 document.getElementById(`source_card_${n}`);
+    if (card) {
+        const link = card.getAttribute("href") || card.querySelector("a")?.getAttribute("href");
+        if (link && link.startsWith("http")) {
+            window.open(link, "_blank", "noopener,noreferrer");
+            showToast(`Opening source [${n}]`, "info");
+            return;
+        }
+    }
+
+    showToast(`Source [${n}] referenced in research synthesis`, "info");
 }
 
 async function callGeminiProvider(query, sources, model, apiKey) {
