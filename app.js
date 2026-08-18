@@ -63,9 +63,8 @@ var appState = {
     }
 };
 
-function executeSearch(userQuery) {
+function executeSearch(userQuery, isFollowUp = false) {
     if (!userQuery || !userQuery.trim()) return;
-    if (appState.isSearching) return; // Prevent duplicate concurrent loops
 
     const cleanQuery = userQuery.trim();
 
@@ -79,14 +78,21 @@ function executeSearch(userQuery) {
     const heroView = document.getElementById("emptyHeroView");
     const container = document.getElementById("activeThreadContainer");
 
-    // Automatically create a fresh, clean thread if coming from Hero state or no active thread
-    let thread = appState.threads.find(t => t.id === appState.activeThreadId);
-    if (!thread || (heroView && (heroView.style.display !== "none" && getComputedStyle(heroView).display !== "none"))) {
-        thread = createNewThread(cleanQuery);
-    }
-
     if (heroView) heroView.style.display = "none";
     if (container) container.style.display = "flex";
+
+    // Primary Searches (Tickers, Suggested Cards, Top Bar, Hero) start a Fresh Clean Dedicated Thread
+    if (!isFollowUp) {
+        appState.isSearching = false; // Cancel any stuck search lock
+        if (container) container.innerHTML = ""; // Clean viewport for new thread
+        createNewThread(cleanQuery);
+    } else {
+        // Follow-up inquiry within the current thread
+        let thread = appState.threads.find(t => t.id === appState.activeThreadId);
+        if (!thread) {
+            createNewThread(cleanQuery);
+        }
+    }
 
     runAsyncSearchPipeline(cleanQuery);
 }
@@ -906,15 +912,6 @@ function switchCompareTab(stepId, tabName) {
         }
         if (paneBoth) paneBoth.style.display = "grid";
     }
-}
-
-function executeSearch(query) {
-    if (!query) return;
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) {
-        searchInput.value = "";
-    }
-    runAsyncSearchPipeline(query);
 }
 
 async function runAsyncSearchPipeline(userQuery) {
@@ -3057,7 +3054,7 @@ function renderRelatedQuestions(parentContainer, questions) {
         <span class="related-label"><i class="fa-solid fa-lightbulb text-cyan"></i> Cortex Suggested Follow-up Searches:</span>
         <div class="related-chips">
             ${questions.map(q => `
-                <button class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}')">
+                <button class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}', true)">
                     <span>${q}</span>
                     <i class="fa-solid fa-arrow-right text-muted"></i>
                 </button>
@@ -3619,7 +3616,7 @@ function generateDynamicFollowUpHTML(query, sources) {
     ];
 
     const chipsHTML = followups.map(f => {
-        return `<button type="button" class="dynamic-followup-chip" onclick="executeSearch('${f.replace(/'/g, "\\'")}')" title="Explore deeper research dimension"><i class="fa-solid fa-arrow-right"></i> ${f}</button>`;
+        return `<button type="button" class="dynamic-followup-chip" onclick="executeSearch('${f.replace(/'/g, "\\'")}', true)" title="Explore deeper research dimension"><i class="fa-solid fa-arrow-right"></i> ${f}</button>`;
     }).join("");
 
     return `
@@ -4268,6 +4265,7 @@ window.clearAllSavedLibraryMemos = clearAllSavedLibraryMemos;
 window.switchThread = switchThread;
 window.deleteThread = deleteThread;
 window.renderViewport = renderViewport;
-window.updateGatewayStatusBadge = updateGatewayStatusBadge;
+window.executeSearch = executeSearch;
 window.appState = appState;
+
 
