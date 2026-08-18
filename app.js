@@ -1823,7 +1823,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                         body: JSON.stringify({
                             model: candModel,
                             messages: [
-                                { role: "system", content: "You are an elite reasoning engine. Synthesize an exhaustive, logically rigorous research briefing using clean HTML (h3, h4, p, ul, strong, code). Embed inline citations like <span class=\"citation-ref\">[1]</span>. Do NOT output a trailing references bibliography list at the end." },
+                                { role: "system", content: "You are an elite reasoning and intelligence engine. Synthesize verified data into a direct, high-density factual report using clean HTML (h3, h4, p, ul, strong, code). Zero fluff, zero conversational filler. Embed inline citations like <span class=\"citation-ref\">[1]</span>. Do NOT output a trailing bibliography list." },
                                 { role: "user", content: `Query: "${query}"\n\nVerified Sources:\n${sourceContext}` }
                             ]
                         })
@@ -1907,7 +1907,7 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
                     models: ["anthropic/claude-sonnet-5", "anthropic/claude-opus-5", "anthropic/claude-3.7-sonnet", "deepseek/deepseek-r1"],
                     messages: [{
                         role: "user",
-                        content: `SYSTEM ROLE: You are an expert financial market analyst and technical researcher. Synthesize the findings for: "${query}".\n\nVerified Fast Extraction Data:\n${extractedFacts}\n\nPerform deep reasoning, calculations, and structured HTML formatting (h3, h4, p, ul, strong, code). Include citations like <span class="citation-ref">[1]</span>.`
+                        content: `SYSTEM ROLE: You are an authoritative senior intelligence analyst. Synthesize verified data for: "${query}". Zero fluff, zero preamble. Jump directly into structured facts with exact metrics and semantic HTML (h3, h4, p, ul, strong, code). Include citations like <span class="citation-ref">[1]</span>.\n\nVerified Fast Extraction Data:\n${extractedFacts}`
                     }]
                 })
             });
@@ -1926,18 +1926,18 @@ async function callOpenRouterProvider(query, sources, model, apiKey) {
     }
 
     // STANDARD SINGLE ROUTE (with High-Availability Fallback Chain)
-    const prompt = `SYSTEM ROLE: You are an expert financial market analyst and technical researcher for Cortex Desk (cortex.ambulkar.com). Provide an objective, highly detailed executive research memo for: "${query}".
+    const prompt = `SYSTEM ROLE: You are an authoritative, senior technical and market intelligence analyst. Provide an objective, direct, high-density factual research synthesis for: "${query}".
 
 Verified Web Sources:
 ${sourceContext}
 
-Instructions:
-1. Synthesize current facts based on the web references provided.
-2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
-3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
-4. If this query is an Executive Daily Briefing / Digest, structure the memo into: 1. Lead Intelligence Flash & Quantitative Market Telemetry, 2. Frontier AI Architectures & Reasoning, 3. Distributed Cloud Infrastructure, 4. Strategic Partnerships, Enterprise Deals & M&A Landscape (who is making deals with who), and 5. Strategic Outlook.
-5. Output clean HTML directly without raw JSON or markdown wrappers.
-6. Do NOT append a duplicate "References" or "Sources" list at the bottom, as verified sources are automatically presented in the dedicated top sources panel.`;
+Strict Requirements:
+1. FOCUS STRICTLY ON ACCURATE, PRECISE, VERIFIED DATA. Maximum signal-to-noise ratio.
+2. ZERO conversational fluff, zero introductory filler, zero marketing buzzwords, and zero boilerplate. Jump straight into the factual analysis.
+3. Quantify everything where data exists (exact metrics, percentages, dollar values, dates, and architectural components).
+4. Format using clean, semantic HTML (<h3>, <h4>, <p>, <ul>, <li>, <strong>, <code>).
+5. Ground every factual claim with inline citations matching the source numbers provided (e.g. <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span>).
+6. Do NOT append a duplicate "References" or bibliography list at the end (sources are rendered in the dedicated UI panel).`;
 
     try {
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
