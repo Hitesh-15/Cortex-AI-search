@@ -175,7 +175,7 @@ let PROVIDER_MODELS = {
         { id: "deep", name: "🧠 Claude Sonnet 5 / Claude 3.7 Sonnet" },
         { id: "fast", name: "⚡ Gemini 3.7 Flash / Gemini 2.5 Flash" },
         { id: "grok", name: "🎯 Grok 4.6 / Grok 3 / Grok 2" },
-        { id: "chatgpt", name: "🔮 ChatGPT (OpenAI o3-mini)" },
+        { id: "openai", name: "🔮 OpenAI o3-mini (High-Precision Reasoning)" },
         { id: "deepseek", name: "🧪 DeepSeek R1 / V3" },
         { id: "parallel", name: "🚀 Parallel: Gemini Flash ➔ Claude Sonnet" },
         { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
@@ -305,7 +305,7 @@ async function fetchLatestModelsAuto(isManual = false) {
                     { id: "deep", name: "🧠 Claude Sonnet 5 / Claude 3.7 Sonnet" },
                     { id: "fast", name: "⚡ Gemini 3.7 Flash / Gemini 2.5 Flash" },
                     { id: "grok", name: "🎯 Grok 4.6 / Grok 3 / Grok 2" },
-                    { id: "chatgpt", name: "🔮 ChatGPT (OpenAI o3-mini)" },
+                    { id: "openai", name: "🔮 OpenAI o3-mini (High-Precision Reasoning)" },
                     { id: "deepseek", name: "🧪 DeepSeek R1 / V3" },
                     { id: "parallel", name: "🚀 Parallel: Gemini Flash ➔ Claude Sonnet" },
                     { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
@@ -630,7 +630,7 @@ const AT_MENTION_MODELS = [
     { tag: "@batch", name: "📉 Gemini 3.7 Flash (Batch)", desc: "50% Discounted Topic Tracking" },
     { tag: "@thinking", name: "🏆 Ensemble Thinking (Best-of-N Frontier Tournament)", desc: "Evaluates Opus 5, Sonnet 5, Gemini Thinking & DeepSeek R1" },
     { tag: "@grok", name: "🎯 Grok 4.6", desc: "Real-time Indexing & Sentiment" },
-    { tag: "@chatgpt", name: "🔮 ChatGPT (OpenAI o3-mini)", desc: "Frontier Algorithmic Coding & High-Precision Logic" },
+    { tag: "@openai", name: "🔮 OpenAI o3-mini", desc: "Frontier Algorithmic Coding & High-Precision Logic" },
     { tag: "@deepseek", name: "🧪 DeepSeek R1", desc: "671B MoE Open Reasoning" },
     { tag: "@free", name: "🎁 100% Free Neural Tier", desc: "Zero Token Spend" }
 ];
@@ -1006,7 +1006,7 @@ async function runAsyncSearchPipeline(userQuery) {
             targetModelOverride = "google/gemini-3.7-flash";
         } else if (rawTag === "grok" || rawTag === "xai" || rawTag === "grok4" || rawTag === "grok3" || rawTag === "grok2") {
             targetModelOverride = "x-ai/grok-4.6";
-        } else if (rawTag === "chatgpt" || rawTag === "chat" || rawTag === "openai" || rawTag === "o3" || rawTag === "o3mini" || rawTag === "gpt4" || rawTag === "gpt4o" || rawTag === "gpt5") {
+        } else if (rawTag === "openai" || rawTag === "o3" || rawTag === "o3mini" || rawTag === "gpt4" || rawTag === "gpt4o" || rawTag === "gpt5") {
             targetModelOverride = "openai/o3-mini";
         } else if (rawTag === "deepseek" || rawTag === "r1" || rawTag === "reasoner") {
             targetModelOverride = "deepseek/deepseek-r1";
@@ -1649,7 +1649,7 @@ function formatSingleModelName(rawId) {
     if (id === "fast") return "Gemini 3.7 Flash";
     if (id === "deep") return "Claude Sonnet 5";
     if (id === "grok") return "Grok 4.6";
-    if (id === "chatgpt" || id === "gpt4" || id === "openai") return "ChatGPT (o3-mini)";
+    if (id === "openai" || id === "gpt4" || id === "o3") return "OpenAI o3-mini";
     if (id === "deepseek") return "DeepSeek R1";
     if (id === "free") return "Nemotron 3.5 Lightning";
     if (id === "ambulkar-cortex-engine" || id === "local") return "Cortex Neural Engine";
@@ -1670,10 +1670,10 @@ function formatSingleModelName(rawId) {
         "google/gemini-2.5-flash": "Gemini 2.5 Flash",
         "google/gemini-2.0-flash": "Gemini 2.0 Flash",
         "google/gemini-2.0-flash-001": "Gemini 2.0 Flash",
-        "openai/o3-mini": "ChatGPT (o3-mini)",
-        "openai/gpt-4o": "ChatGPT (GPT-4o)",
-        "openai/gpt-4o-mini": "ChatGPT (GPT-4o Mini)",
-        "openai/o1": "ChatGPT (o1 Reasoning)",
+        "openai/o3-mini": "OpenAI o3-mini",
+        "openai/gpt-4o": "OpenAI GPT-4o",
+        "openai/gpt-4o-mini": "OpenAI GPT-4o Mini",
+        "openai/o1": "OpenAI o1",
         "x-ai/grok-2": "Grok 2",
         "x-ai/grok-3": "Grok 3",
         "x-ai/grok-4.6": "Grok 4.6",
@@ -1744,7 +1744,7 @@ function calculateTokenSpend(modelId, promptTokens, completionTokens) {
             pricing = { input: 3.00, output: 15.00 };
         } else if (idLower.includes("grok")) {
             pricing = { input: 3.00, output: 15.00 };
-        } else if (idLower.includes("gpt-4o") || idLower.includes("openai") || idLower.includes("chatgpt") || idLower.includes("o3")) {
+        } else if (idLower.includes("gpt-4o") || idLower.includes("openai") || idLower.includes("o3")) {
             pricing = { input: 1.10, output: 4.40 };
         } else if (idLower.includes("deepseek")) {
             pricing = { input: 0.55, output: 2.19 };
@@ -1898,7 +1898,7 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
     } else if (tier === "grok") {
         primaryModel = "x-ai/grok-2";
         fallbackChain = ["x-ai/grok-2", "x-ai/grok-3", "x-ai/grok-beta"];
-    } else if (tier === "chatgpt" || tier === "gpt4" || tier === "openai") {
+    } else if (tier === "openai" || tier === "gpt4" || tier === "o3") {
         primaryModel = "openai/gpt-4o-mini";
         fallbackChain = ["openai/gpt-4o-mini", "openai/gpt-4o", "openai/o3-mini"];
     } else if (tier === "deepseek") {
@@ -2817,7 +2817,7 @@ function formatAIResponseHTML(text) {
     // Strip redundant trailing bibliography lists
     clean = clean.replace(/(?:<h[1-4][^>]*>|<p[^>]*>|<strong>|<div[^>]*>)?\s*(?:References referenced|References\b|Sources cited|Citations\b|Sources list)(?:<\/h[1-4]>|<\/p>|<\/strong>|<\/div>)?:?\s*(?:<ul[^>]*>[\s\S]*?<\/ul>|<ol[^>]*>[\s\S]*?<\/ol>|(?:<p[^>]*>)?\s*\[[0-9]+\][\s\S]*)/gi, '');
 
-    // Convert both legacy <span class="citation-ref"> and raw [1] into sleek, clickable Perplexity-style badge buttons
+    // Convert both legacy <span class="citation-ref"> and raw [1] into sleek, clickable badge buttons
     clean = clean.replace(/<span class="citation-ref">\[?([0-9]{1,2})\]?<\/span>/gi, '<button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Open verified source [$1]"><span class="citation-badge-num">$1</span></button>');
     clean = clean.replace(/(?<!data-src-num=")\b\[([0-9]{1,2})\]/g, '<button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Open verified source [$1]"><span class="citation-badge-num">$1</span></button>');
 
