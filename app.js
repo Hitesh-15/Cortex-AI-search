@@ -3442,6 +3442,7 @@ function toggleApiKeyVisibility() {
 }
 
 // Interactive OpenRouter API Key Tester
+// Interactive OpenRouter API Key Tester (Strict Live Auth Verification)
 async function testOpenRouterApiKeyNow() {
     const input = document.getElementById("apiKeyInput");
     const statusMsg = document.getElementById("apiKeyStatusMessage");
@@ -3452,16 +3453,24 @@ async function testOpenRouterApiKeyNow() {
 
     if (!key) {
         if (statusMsg) {
-            statusMsg.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-circle-xmark"></i> Please enter an API key starting with <code>sk-or-v1-</code></span>`;
+            statusMsg.innerHTML = `<span style="color: #ef4444; font-weight: 500;"><i class="fa-solid fa-circle-xmark"></i> Please enter an API key starting with <code>sk-or-v1-</code></span>`;
         }
         return;
     }
 
-    if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-cyan"></i> Testing...`;
-    if (statusMsg) statusMsg.innerHTML = `<span style="color: #38bdf8;"><i class="fa-solid fa-circle-notch fa-spin"></i> Contacting OpenRouter API...</span>`;
+    // 1. Strict Format & Minimum Length Check
+    if (key.length < 20 || (!key.startsWith("sk-or-") && !key.startsWith("sk-"))) {
+        if (statusMsg) {
+            statusMsg.innerHTML = `<span style="color: #ef4444; font-weight: 600;"><i class="fa-solid fa-circle-xmark"></i> Invalid Key Format: OpenRouter API keys must start with <code>sk-or-v1-</code> (minimum 25 characters).</span>`;
+        }
+        return;
+    }
+
+    if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-cyan"></i> Authenticating...`;
+    if (statusMsg) statusMsg.innerHTML = `<span style="color: #38bdf8;"><i class="fa-solid fa-circle-notch fa-spin"></i> Verifying with OpenRouter Auth API...</span>`;
 
     try {
-        // Test key authorization with OpenRouter
+        // 2. Strict Live Authorization Check at /api/v1/auth/key
         const res = await fetch("https://openrouter.ai/api/v1/auth/key", {
             headers: {
                 "Authorization": `Bearer ${key}`
@@ -3476,42 +3485,26 @@ async function testOpenRouterApiKeyNow() {
             const usage = info.usage != null ? `$${Number(info.usage).toFixed(3)}` : '$0';
 
             if (statusMsg) {
-                statusMsg.innerHTML = `<span style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Key is Valid${label}! Usage: ${usage} / Limit: ${limit}</span>`;
+                statusMsg.innerHTML = `<span style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Key is Valid & Active${label}! Usage: ${usage} / Limit: ${limit}</span>`;
             }
 
-            // Store key immediately
+            // Store verified key
             appState.settings.apiKeys.openrouter = key;
             localStorage.setItem("ambu_key_openrouter", key);
             updateGatewayStatusBadge();
 
-            // Dynamically refresh models using this key
+            // Refresh model catalog using the verified key
             await fetchLatestModelsAuto(false);
         } else {
-            // Fallback check via /models
-            const modelsRes = await fetch("https://openrouter.ai/api/v1/models", {
-                headers: { "Authorization": `Bearer ${key}` }
-            });
-
-            if (modelsRes.ok) {
-                const mData = await modelsRes.json();
-                const count = mData.data?.length || 0;
-                if (statusMsg) {
-                    statusMsg.innerHTML = `<span style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Key is Active! (${count} models unlocked)</span>`;
-                }
-                appState.settings.apiKeys.openrouter = key;
-                localStorage.setItem("ambu_key_openrouter", key);
-                updateGatewayStatusBadge();
-                await fetchLatestModelsAuto(false);
-            } else {
-                const err = await res.json().catch(() => ({}));
-                if (statusMsg) {
-                    statusMsg.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-circle-exmark"></i> Invalid Key (${res.status}): ${err.error?.message || 'Unauthorized'}</span>`;
-                }
+            const errData = await res.json().catch(() => ({}));
+            const errMsg = errData.error?.message || (res.status === 401 ? 'Unauthorized: Invalid or revoked API key' : `HTTP Error ${res.status}`);
+            if (statusMsg) {
+                statusMsg.innerHTML = `<span style="color: #ef4444; font-weight: 600;"><i class="fa-solid fa-circle-xmark"></i> Authentication Failed (${res.status}): ${errMsg}</span>`;
             }
         }
     } catch (err) {
         if (statusMsg) {
-            statusMsg.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Network error: ${err.message}</span>`;
+            statusMsg.innerHTML = `<span style="color: #ef4444; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Network connection error: ${err.message}</span>`;
         }
     } finally {
         if (btn) btn.innerHTML = `<i class="fa-solid fa-bolt text-cyan"></i> Test Key & Load Models`;
@@ -3555,14 +3548,24 @@ function saveSettingsForm(e) {
 
     if (apiKeyInput) {
         const key = apiKeyInput.value.trim();
-        appState.settings.apiKeys.openrouter = key;
-        localStorage.setItem("ambu_key_openrouter", key);
+        if (key && key.length > 0) {
+            if (key.length < 20 || (!key.startsWith("sk-or-") && !key.startsWith("sk-"))) {
+                alert("⚠️ Invalid API Key format. OpenRouter keys start with sk-or-v1- and are 25+ characters.");
+                return;
+            }
+            appState.settings.apiKeys.openrouter = key;
+            localStorage.setItem("ambu_key_openrouter", key);
+        } else {
+            appState.settings.apiKeys.openrouter = "";
+            localStorage.removeItem("ambu_key_openrouter");
+        }
     }
     if (discordInput) {
         localStorage.setItem("ambu_discord_webhook", discordInput.value.trim());
     }
 
     closeSettingsModal();
+    updateGatewayStatusBadge();
     alert("⚙️ Settings saved successfully!");
 }
 
