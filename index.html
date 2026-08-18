@@ -147,33 +147,15 @@
                 <!-- Empty State Hero (Default View) -->
                 <div class="empty-hero" id="emptyHeroView">
                     <h2 class="hero-title">What do you want to research?</h2>
-                    <p class="hero-subtitle">Search live verified web sources and synthesize instant answers.</p>
+                    <p class="hero-subtitle" style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                        <span>Search live verified web sources and synthesize instant answers.</span>
+                        <button class="btn-ghost-sm" id="btnRefreshPrompts" onclick="fetchDynamicTrendingPrompts(true)" style="font-size: 0.75rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); padding: 3px 9px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" title="Fetch latest live trending research topics">
+                            <i class="fa-solid fa-arrows-rotate"></i> Live Trends
+                        </button>
+                    </p>
 
                     <div class="suggested-cards-grid" id="suggestedPromptsGrid">
-                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
-                            data-query="What are the top 2026 AI breakthroughs and quantum computing updates?">
-                            <i class="fa-solid fa-atom suggested-card-icon"></i>
-                            <div class="suggested-card-text">2026 Tech & Quantum Breakthroughs</div>
-                            <div class="suggested-card-sub">Real-time market research memo</div>
-                        </div>
-                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
-                            data-query="Compare S&P 500 YTD return vs. Federal Reserve inflation targets">
-                            <i class="fa-solid fa-chart-pie suggested-card-icon"></i>
-                            <div class="suggested-card-text">S&P 500 vs. Inflation Benchmark</div>
-                            <div class="suggested-card-sub">Financial market analysis</div>
-                        </div>
-                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
-                            data-query="Write a clean Python async pipeline to scrape and process API data">
-                            <i class="fa-solid fa-code suggested-card-icon"></i>
-                            <div class="suggested-card-text">Python Async Data Pipeline</div>
-                            <div class="suggested-card-sub">Engineering architecture memo</div>
-                        </div>
-                        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))"
-                            data-query="Explain how fusion energy reactors work and current commercial timelines">
-                            <i class="fa-solid fa-bolt suggested-card-icon"></i>
-                            <div class="suggested-card-text">Commercial Fusion Timelines</div>
-                            <div class="suggested-card-sub">Scientific research synthesis</div>
-                        </div>
+                        <!-- Dynamically populated from live research feeds -->
                     </div>
                 </div>
 
@@ -424,7 +406,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.17.28"></script>
+    <script src="app.js?v=2026.08.17.29"></script>
 </body>
 
 </html>
