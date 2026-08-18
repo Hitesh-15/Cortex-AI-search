@@ -20,7 +20,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=2026.08.17.09">
+    <link rel="stylesheet" href="styles.css?v=2026.08.18.01">
 </head>
 
 <body>
@@ -149,9 +149,7 @@
                     <h2 class="hero-title">What do you want to research?</h2>
                     <p class="hero-subtitle" style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
                         <span>Search live verified web sources and synthesize instant answers.</span>
-                        <button class="btn-ghost-sm" id="btnRefreshPrompts" onclick="fetchDynamicTrendingPrompts(true)" style="font-size: 0.75rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); padding: 3px 9px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" title="Fetch latest live trending research topics">
-                            <i class="fa-solid fa-arrows-rotate"></i> Live Trends
-                        </button>
+                        <span class="live-status-pill" id="liveTrendsIndicator" title="Live trending developer, scientific and market breakthroughs updating automatically"><span class="pulse-indicator-dot"></span> Live Real-Time Trends</span>
                     </p>
 
                     <div class="suggested-cards-grid" id="suggestedPromptsGrid">
@@ -406,7 +404,7 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.17.36"></script>
+    <script src="app.js?v=2026.08.18.01"></script>
 </body>
 
 </html>

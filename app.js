@@ -383,6 +383,19 @@ function setupNavigationListeners() {
         });
     }
 
+    // Brand Logo & Mobile Brand Title Clicks Reset to Home Dashboard & Refresh Live Trends
+    document.querySelectorAll(".brand, .mobile-brand-title").forEach(brandEl => {
+        brandEl.style.cursor = "pointer";
+        brandEl.addEventListener("click", (e) => {
+            e.preventDefault();
+            appState.activeThreadId = null;
+            renderThreadHistory();
+            renderViewport();
+            fetchDynamicTrendingPrompts(appState.activeFocusMode || "web");
+            closeMobileSidebar();
+        });
+    });
+
     // New Thread Button (+ New / New Thread)
     const btnNewThread = document.getElementById("btnNewThread");
     if (btnNewThread) {
@@ -484,8 +497,9 @@ function setFocusMode(mode) {
         searchInput.placeholder = placeholders[mode] || "Ask Ambulkar Cortex anything...";
     }
 
-    // Render Dynamic Hero Suggested Query Cards for Selected Focus Mode
+    // Render immediately from cache and auto-fetch fresh live breakthroughs for this category
     renderSuggestedCards(mode);
+    fetchDynamicTrendingPrompts(mode);
 
     // If not actively searching, switch to clean Hero view so user sees new category prompt cards
     if (!appState.isSearching) {
@@ -502,9 +516,10 @@ function renderSuggestedCards(mode) {
     const grid = document.querySelector(".suggested-cards-grid");
     if (!grid) return;
 
-    const suggestions = (appState.dynamicSuggestions && appState.dynamicSuggestions[mode]) 
-        ? appState.dynamicSuggestions[mode] 
-        : (FALLBACK_DESK_SUGGESTIONS[mode] || FALLBACK_DESK_SUGGESTIONS.web);
+    const currentMode = mode || appState.activeFocusMode || "web";
+    const suggestions = (appState.dynamicSuggestions && appState.dynamicSuggestions[currentMode]) 
+        ? appState.dynamicSuggestions[currentMode] 
+        : (FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web);
 
     grid.innerHTML = suggestions.map(c => `
         <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
@@ -515,21 +530,30 @@ function renderSuggestedCards(mode) {
     `).join('');
 }
 
-// Dynamic Research Desks Prompt Suite (Live & Verified Real-Time Topics)
-async function fetchDynamicTrendingPrompts(forceRefresh = false) {
-    const btn = document.getElementById("btnRefreshPrompts");
-    if (btn) {
-        btn.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin text-cyan"></i> Refreshing...`;
-    }
+// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Zero Manual Clicks Required)
+async function fetchDynamicTrendingPrompts(targetMode = null) {
+    const activeMode = targetMode || appState.activeFocusMode || "web";
 
     if (!appState.dynamicSuggestions) {
         appState.dynamicSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
     }
-    renderSuggestedCards(appState.activeFocusMode || "web");
 
-    // Fetch live trending developer and scientific breakthroughs in background
+    // Render immediately to prevent any layout jumping
+    renderSuggestedCards(activeMode);
+
+    // Dynamic high-signal endpoints mapped by research desk category
+    const categoryEndpoints = {
+        web: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=15",
+        academic: "https://hn.algolia.com/api/v1/search?query=arxiv+paper+research+physics+model&tags=story&hitsPerPage=15",
+        code: "https://hn.algolia.com/api/v1/search?query=github+rust+database+compiler+release&tags=story&hitsPerPage=15",
+        finance: "https://hn.algolia.com/api/v1/search?query=market+earnings+acquisition+inflation+sec&tags=story&hitsPerPage=15",
+        writing: "https://hn.algolia.com/api/v1/search?query=strategy+analysis+enterprise+startup+antitrust&tags=story&hitsPerPage=15"
+    };
+
+    const targetUrl = categoryEndpoints[activeMode] || categoryEndpoints.web;
+
     try {
-        const res = await fetch("https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=15");
+        const res = await fetch(targetUrl);
         if (res.ok) {
             const data = await res.json();
             if (data.hits && Array.isArray(data.hits)) {
@@ -544,45 +568,44 @@ async function fetchDynamicTrendingPrompts(forceRefresh = false) {
                     // Clean title for display
                     let cleanTitle = rawTitle.replace(/^show hn:\s*/i, '').replace(/\s+[-|–—].*$/, '').trim();
                     let icon = "fa-bolt";
-                    let sub = "Live Trending Discovery";
+                    let sub = "Live Trending Breakthrough";
 
                     const titleLower = cleanTitle.toLowerCase();
-                    if (titleLower.includes("ai") || titleLower.includes("llm") || titleLower.includes("model") || titleLower.includes("gpt") || titleLower.includes("claude") || titleLower.includes("deepseek")) {
-                        icon = "fa-brain";
-                        sub = "Frontier AI & Neural Models";
-                    } else if (titleLower.includes("rust") || titleLower.includes("python") || titleLower.includes("database") || titleLower.includes("linux") || titleLower.includes("sql") || titleLower.includes("compiler") || titleLower.includes("duckdb")) {
+                    if (activeMode === "academic" || titleLower.includes("quantum") || titleLower.includes("physics") || titleLower.includes("paper") || titleLower.includes("arxiv") || titleLower.includes("fusion")) {
+                        icon = "fa-atom";
+                        sub = "Scientific Preprint & Theory";
+                    } else if (activeMode === "code" || titleLower.includes("rust") || titleLower.includes("python") || titleLower.includes("database") || titleLower.includes("compiler") || titleLower.includes("duckdb")) {
                         icon = "fa-code";
                         sub = "Systems & Software Engineering";
-                    } else if (titleLower.includes("quantum") || titleLower.includes("physics") || titleLower.includes("space") || titleLower.includes("energy") || titleLower.includes("battery") || titleLower.includes("fusion")) {
-                        icon = "fa-atom";
-                        sub = "Science & Applied Physics";
-                    } else if (titleLower.includes("market") || titleLower.includes("revenue") || titleLower.includes("price") || titleLower.includes("economy") || titleLower.includes("fed") || titleLower.includes("yield")) {
+                    } else if (activeMode === "finance" || titleLower.includes("market") || titleLower.includes("revenue") || titleLower.includes("acquisition") || titleLower.includes("earnings") || titleLower.includes("fed")) {
                         icon = "fa-chart-line";
-                        sub = "Market & Macro Analysis";
+                        sub = "Institutional Market Intelligence";
+                    } else if (activeMode === "writing" || titleLower.includes("strategy") || titleLower.includes("policy") || titleLower.includes("enterprise")) {
+                        icon = "fa-feather-pointed";
+                        sub = "Strategic Analysis & Memo";
+                    } else if (titleLower.includes("ai") || titleLower.includes("llm") || titleLower.includes("model") || titleLower.includes("gpt") || titleLower.includes("claude") || titleLower.includes("deepseek")) {
+                        icon = "fa-brain";
+                        sub = "Frontier AI & Neural Models";
                     }
 
                     liveCards.push({
                         icon: icon,
                         title: cleanTitle.length > 40 ? (cleanTitle.substring(0, 38) + "...") : cleanTitle,
                         sub: sub,
-                        query: `Technical analysis and overview of: ${cleanTitle}`
+                        query: `Technical analysis and verified overview of: ${cleanTitle}`
                     });
 
                     if (liveCards.length >= 4) break;
                 }
 
                 if (liveCards.length > 0) {
-                    appState.dynamicSuggestions.web = liveCards;
-                    renderSuggestedCards(appState.activeFocusMode || "web");
+                    appState.dynamicSuggestions[activeMode] = liveCards;
+                    renderSuggestedCards(activeMode);
                 }
             }
         }
     } catch (e) {
-        console.warn("Live trending prompts background fetch notice:", e);
-    } finally {
-        if (btn) {
-            btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Live Trends`;
-        }
+        console.warn("Autonomous live trends background fetch notice:", e);
     }
 }
 
@@ -4404,5 +4427,18 @@ window.deleteThread = deleteThread;
 window.renderViewport = renderViewport;
 window.executeSearch = executeSearch;
 window.appState = appState;
+
+// Autonomous Continuous Ingestion Listeners: Tab Focus & 3-Minute Interval
+window.addEventListener("focus", () => {
+    if (!appState.isSearching) {
+        fetchDynamicTrendingPrompts(appState.activeFocusMode || "web");
+    }
+});
+
+setInterval(() => {
+    if (!appState.isSearching) {
+        fetchDynamicTrendingPrompts(appState.activeFocusMode || "web");
+    }
+}, 180000); // Auto-refresh every 3 minutes
 
 
