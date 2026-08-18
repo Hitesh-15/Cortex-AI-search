@@ -42,7 +42,7 @@ var appState = {
     activeThreadId: null,
     activeFocusMode: "web",
     activeEffortLevel: localStorage.getItem("ambu_effort_level") || "auto",
-    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v4") || "{}"),
+    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v5") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
     attachedDocuments: [],
     isProSearch: false,
     isSearching: false,
@@ -626,7 +626,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                 }
 
                 appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 4);
-                localStorage.setItem("cortex_live_trends_v4", JSON.stringify(appState.dynamicSuggestions));
+                localStorage.setItem("cortex_live_trends_v5", JSON.stringify(appState.dynamicSuggestions));
                 renderSuggestedCards(activeMode);
             }
         }
