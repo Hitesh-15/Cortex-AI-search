@@ -1210,17 +1210,6 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 24px;
-    margin-bottom: 6px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.bento-section-header + * {
-.bento-section-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     margin-top: 24px !important;
     margin-bottom: 12px !important;
     padding-bottom: 6px;
