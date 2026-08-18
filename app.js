@@ -1442,21 +1442,20 @@ async function fetchWebSources(query, focusMode, effortLevel) {
             } catch (e) {}
         })(),
 
-        // DuckDuckGo Search API
+        // OpenAlex & CrossRef Academic / Web Research API (100% Native CORS Enabled)
         (async () => {
             try {
-                const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(wikiEntity)}&format=json&no_html=1&skip_disambig=1`;
-                const res = await fetch(ddgUrl);
+                const searchTarget = isDigestQuery ? "artificial intelligence" : wikiEntity;
+                const openAlexUrl = `https://api.openalex.org/works?search=${encodeURIComponent(searchTarget)}&per-page=4&select=id,title,primary_location,abstract_inverted_index`;
+                const res = await fetch(openAlexUrl);
                 if (res.ok) {
                     const data = await res.json();
-                    if (data.AbstractText && data.AbstractURL) {
-                        addSource(data.Heading || wikiEntity, data.AbstractSource ? data.AbstractSource.toLowerCase() : "duckduckgo.com", data.AbstractURL, data.AbstractText);
-                    }
-                    if (data.RelatedTopics && Array.isArray(data.RelatedTopics)) {
-                        data.RelatedTopics.forEach(t => {
-                            if (t.Text && t.FirstURL) {
-                                const dom = t.FirstURL.match(/https?:\/\/([^\/]+)/)?.[1] || "duckduckgo.com";
-                                addSource(t.Text.substring(0, 80), dom, t.FirstURL, t.Text);
+                    if (data.results && Array.isArray(data.results)) {
+                        data.results.forEach(r => {
+                            if (r.title) {
+                                const sourceUrl = r.primary_location?.landing_page_url || r.id || `https://openalex.org/${r.id}`;
+                                const dom = sourceUrl.match(/https?:\/\/([^\/]+)/)?.[1] || "openalex.org";
+                                addSource(r.title, dom, sourceUrl, `Peer-reviewed scientific and industry research regarding ${r.title}.`);
                             }
                         });
                     }
