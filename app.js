@@ -3787,6 +3787,42 @@ function closeLibraryModal() {
     if (modal) modal.classList.remove("active");
 }
 
+function detectMemoCategory(title) {
+    const clean = (title || "").toLowerCase();
+
+    // 1. Finance, Markets, Equities, Rates, Disclosures & Corporate Earnings
+    if (/\b(fomc|fed|treasury|yield|yields|interest rate|rates|inflation|cpi|s&p|nasdaq|dow|stock|stocks|earnings|ebitda|valuation|equities|bonds|capex|revenue|margin|margins|financial|banking|sainsbury|retail)\b/i.test(clean)) {
+        return { tag: "finance", label: "Finance & Markets" };
+    }
+
+    // 2. Semiconductors, Foundries & Hardware
+    if (/\b(semiconductor|semiconductors|tsmc|asml|nvidia|gpu|gpus|wafer|foundry|cowos|chips|intel|amd|qualcomm)\b/i.test(clean)) {
+        return { tag: "semiconductors", label: "Semiconductors" };
+    }
+
+    // 3. Science, Physics, Energy & Biotech
+    if (/\b(fusion|reactor|reactors|quantum|crispr|physics|biology|nuclear|plasma|tokamak|superconducting)\b/i.test(clean)) {
+        return { tag: "science", label: "Science & Energy" };
+    }
+
+    // 4. M&A, Strategic Alliances & Corporate Deals
+    if (/\b(m&a|merger|acquisition|partnership|partnerships|deal|deals|alliances|venture capital|private equity|takeover)\b/i.test(clean)) {
+        return { tag: "deals", label: "M&A & Deals" };
+    }
+
+    // 5. Frontier AI, LLMs & Machine Learning (Strict word boundaries so "explain" does NOT match "ai")
+    if (/\b(ai|llm|llms|claude|deepseek|gpt|gemini|openai|anthropic|neural|transformer|transformers|reasoning model|machine learning|nlp)\b/i.test(clean)) {
+        return { tag: "ai", label: "Frontier AI" };
+    }
+
+    // 6. Cloud Infrastructure, Datacenters & Power
+    if (/\b(cloud|datacenter|datacenters|cooling|liquid cooling|rack|server|hyperscaler|aws|azure|gcp|infra|infrastructure)\b/i.test(clean)) {
+        return { tag: "cloud", label: "Cloud Infra" };
+    }
+
+    return { tag: "finance", label: "Finance & Markets" };
+}
+
 function saveCurrentMemoToLibrary(btn) {
     if (!btn) return;
     const parentBox = btn.closest(".ai-answer-box");
@@ -3796,28 +3832,16 @@ function saveCurrentMemoToLibrary(btn) {
     const cleanTitle = titleEl.innerText.replace(/^[^\w]+/, '').trim();
     const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-    // Determine category tag
-    const titleLower = cleanTitle.toLowerCase();
-    let tag = "macro";
-    let tagLabel = "Macro & Deals";
-    if (titleLower.includes("semiconductor") || titleLower.includes("tsmc") || titleLower.includes("asml") || titleLower.includes("nvidia")) {
-        tag = "semiconductors";
-        tagLabel = "Semiconductors";
-    } else if (titleLower.includes("ai") || titleLower.includes("claude") || titleLower.includes("deepseek") || titleLower.includes("reasoning") || titleLower.includes("llama")) {
-        tag = "ai";
-        tagLabel = "Frontier AI";
-    } else if (titleLower.includes("cloud") || titleLower.includes("cooling") || titleLower.includes("power") || titleLower.includes("datacenter")) {
-        tag = "cloud";
-        tagLabel = "Cloud Infra";
-    }
+    // Precise semantic category classification
+    const cat = detectMemoCategory(cleanTitle);
 
     const savedList = JSON.parse(localStorage.getItem("cortex_library_memos") || "[]");
     const memoItem = {
         id: "memo_" + Date.now(),
         title: cleanTitle,
         date: dateStr,
-        tag: tag,
-        tagLabel: tagLabel,
+        tag: cat.tag,
+        tagLabel: cat.label,
         html: parentBox.innerHTML
     };
 
@@ -3837,13 +3861,20 @@ function renderLibraryMemos(filterTag = "all") {
     const savedList = JSON.parse(localStorage.getItem("cortex_library_memos") || "[]");
     if (totalCountEl) totalCountEl.textContent = savedList.length;
 
+    // Dynamically re-tag and migrate any previously saved items to guarantee accurate categories
+    savedList.forEach(m => {
+        const cat = detectMemoCategory(m.title);
+        m.tag = cat.tag;
+        m.tagLabel = cat.label;
+    });
+
     const filtered = filterTag === "all" ? savedList : savedList.filter(m => m.tag === filterTag);
 
     if (filtered.length === 0) {
         grid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 36px 20px; color: #94a3b8;">
                 <i class="fa-solid fa-bookmark" style="font-size: 2.2rem; color: #38bdf8; opacity: 0.4; margin-bottom: 12px;"></i>
-                <h4 style="color: #f1f5f9; margin-bottom: 6px;">No Saved Research Memos Yet</h4>
+                <h4 style="color: #f1f5f9; margin-bottom: 6px;">No Saved Research Memos in this Category</h4>
                 <p style="font-size: 0.84rem; max-width: 380px; margin: 0 auto;">Click the <strong>[🔖 Save]</strong> button at the bottom of any research memo to bookmark it into your private local workspace.</p>
             </div>
         `;
