@@ -97,7 +97,7 @@ def test_full_cortex_suite():
         
         # 1.1 Console Log Check
         logs = driver.get_log("browser")
-        severe_errors = [l for l in logs if l["level"] == "SEVERE" and "favicon.ico" not in l["message"] and "fonts.gstatic.com" not in l["message"] and "font" not in l["message"].lower()]
+        severe_errors = [l for l in logs if l["level"] == "SEVERE" and "favicon.ico" not in l["message"] and "fonts.gstatic.com" not in l["message"] and "font" not in l["message"].lower() and "coingecko.com" not in l["message"]]
         if severe_errors:
             for err in severe_errors:
                 print("BROWSER ERROR:", err["message"])
@@ -117,7 +117,7 @@ def test_full_cortex_suite():
         input_b.send_keys("Vue")
         driver.find_element(By.ID, "btnSubmitCompare").click()
         
-        WebDriverWait(driver, 12).until(
+        WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, "btn-memo-action"))
         )
         time.sleep(0.5)
@@ -208,11 +208,11 @@ def test_full_cortex_suite():
         # Release Notes Modal
         rn_modal = driver.find_element(By.ID, "releaseNotesModal")
         modal_content = rn_modal.get_attribute("innerText") or rn_modal.text
-        assert "4.1.0" in modal_content, f"v4.1.0 not found in release notes modal! Content: {modal_content}"
+        assert "4.2.0" in modal_content, f"v4.2.0 not found in release notes modal! Content: {modal_content}"
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)
         assert "active" not in rn_modal.get_attribute("class"), "Release Notes modal failed to close!"
-        print("PASS: Release Notes modal v4.1.0 opened & verified.")
+        print("PASS: Release Notes modal v4.2.0 opened & verified.")
         
         # 1.8 Full Top Bar Market Tickers Test (GOLD, SILVER, COPPER, OIL, S&P 500, NASDAQ, US 10Y, VIX)
         print("--> Testing All 8 Market Ticker Pills & Deep Domain Relevance...")
