@@ -214,6 +214,62 @@ function initAmbuApp() {
     renderSuggestedCards(appState.activeFocusMode || "web");
     fetchLatestModelsAuto(false);
     fetchDynamicTrendingPrompts(false);
+    fetchLiveMarketTickers();
+}
+
+// Live Financial Market Ticker Engine
+async function fetchLiveMarketTickers() {
+    try {
+        const cached = JSON.parse(localStorage.getItem("cortex_live_tickers") || "null");
+        if (cached) {
+            applyMarketTickerValues(cached);
+        }
+    } catch(e) {}
+
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 4000);
+        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=pax-gold,tether-gold&vs_currencies=usd&include_24hr_change=true", {
+            signal: controller.signal
+        });
+        clearTimeout(timeout);
+
+        if (res.ok) {
+            const data = await res.json();
+            const goldObj = data["pax-gold"] || data["tether-gold"] || {};
+            const goldPrice = goldObj.usd;
+            const goldChange = goldObj.usd_24h_change;
+
+            if (goldPrice && goldPrice > 1500) {
+                const tickerData = {
+                    gold: {
+                        val: `$${goldPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/oz`,
+                        change: (goldChange >= 0 ? `+${goldChange.toFixed(2)}%` : `${goldChange.toFixed(2)}%`),
+                        isUp: goldChange >= 0
+                    }
+                };
+                applyMarketTickerValues(tickerData);
+                localStorage.setItem("cortex_live_tickers", JSON.stringify(tickerData));
+            }
+        }
+    } catch(err) {
+        console.warn("Live market ticker telemetry background notice:", err);
+    }
+}
+
+function applyMarketTickerValues(data) {
+    if (!data) return;
+    if (data.gold) {
+        const goldBtn = document.querySelector('.ticker-pill[data-ticker="gold"]');
+        if (goldBtn) {
+            const valSpan = goldBtn.querySelector('.ticker-val');
+            if (valSpan) {
+                const arrowIcon = data.gold.isUp ? '<i class="fa-solid fa-arrow-trend-up"></i>' : '<i class="fa-solid fa-arrow-trend-down"></i>';
+                valSpan.className = `ticker-val ${data.gold.isUp ? 'up' : 'down'}`;
+                valSpan.innerHTML = `${data.gold.val} ${arrowIcon} ${data.gold.change}`;
+            }
+        }
+    }
 }
 
 // Populate Chat Bar Inline Model Dropdown
