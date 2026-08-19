@@ -1961,22 +1961,27 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     } else {
         const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
         contentHTML = (neuralResponse && neuralResponse.html && neuralResponse.html !== "undefined") ? neuralResponse.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
-        activeModelDisplay = (neuralResponse && neuralResponse.modelName && neuralResponse.modelName !== "undefined") ? formatModelDisplayName(neuralResponse.modelName) : "Cortex Free Neural Engine";
+        activeModelDisplay = "Ambulkar Local Engine";
+        spendMetrics.costUSD = 0;
+        spendMetrics.costFormatted = "$0.00000";
+        spendMetrics.totalTokens = 0;
     }
 
     if (!contentHTML || contentHTML.trim() === "" || contentHTML === "undefined") {
         contentHTML = generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
     }
     if (!activeModelDisplay || activeModelDisplay === "undefined") {
-        activeModelDisplay = formatSingleModelName(activeModel);
+        activeModelDisplay = "Ambulkar Local Engine";
     }
+
+    const tokenDisplay = (spendMetrics.costUSD === 0 || !orKey) ? "0 tokens (Free Tier)" : `${spendMetrics.totalTokens} tokens`;
 
     const telemetryFooter = `
         <div class="unified-telemetry-bar">
             <div class="unified-telemetry-left">
                 <span class="unified-pill model" title="Executed Model Architecture"><i class="fa-solid fa-brain text-cyan"></i> ${activeModelDisplay}</span>
                 <span class="unified-pill spend" title="Exact Query Cost"><i class="fa-solid fa-coins"></i> ${spendMetrics.costFormatted}</span>
-                <span class="unified-pill" title="Prompt & Output Tokens"><i class="fa-solid fa-microchip"></i> ${spendMetrics.totalTokens} tokens</span>
+                <span class="unified-pill" title="Prompt & Output Tokens"><i class="fa-solid fa-microchip"></i> ${tokenDisplay}</span>
                 <span class="unified-pill effort" title="${effortClass.reason}"><i class="fa-solid fa-gauge-high"></i> ${effortClass.label}</span>
             </div>
             <div class="unified-telemetry-actions">
