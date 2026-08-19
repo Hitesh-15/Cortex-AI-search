@@ -1103,6 +1103,9 @@ async function runAsyncSearchPipeline(userQuery) {
     let targetModelOverride = null;
     let isComparisonMode = false;
     let actualQuery = userQuery.trim();
+    if (userQuery.toLowerCase().startsWith("head-to-head comparison:") || userQuery.toLowerCase().startsWith("comparison:")) {
+        isComparisonMode = true;
+    }
 
     const tagMatch = userQuery.match(/^@([a-zA-Z0-9\.\-\_\:\/]+)\s+(.+)$/is);
     if (tagMatch) {
@@ -1543,7 +1546,7 @@ async function fetchWebSources(query, focusMode, effortLevel) {
             try {
                 const wikiTarget = isDigestQuery ? "Artificial_intelligence" : wikiEntity;
                 const wikiUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(wikiTarget)}&limit=6&namespace=0&format=json&origin=*`;
-                const res = await fetch(wikiUrl);
+                const res = await fetch(wikiUrl, { signal: AbortSignal.timeout(1500) });
                 if (res.ok) {
                     const [queryStr, titles, descriptions, urls] = await res.json();
                     if (titles && urls) {
@@ -1565,7 +1568,7 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                 }
                 const searchTarget = isDigestQuery ? "artificial intelligence" : wikiEntity;
                 const openAlexUrl = `https://api.openalex.org/works?search=${encodeURIComponent(searchTarget)}&per-page=4&select=id,title,primary_location,abstract_inverted_index`;
-                const res = await fetch(openAlexUrl);
+                const res = await fetch(openAlexUrl, { signal: AbortSignal.timeout(1500) });
                 if (res.ok) {
                     const data = await res.json();
                     if (data.results && Array.isArray(data.results)) {
@@ -1585,7 +1588,7 @@ async function fetchWebSources(query, focusMode, effortLevel) {
         (async () => {
             try {
                 const hnUrl = `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(shortSearch)}&tags=(story,show_hn,ask_hn)&hitsPerPage=6`;
-                const res = await fetch(hnUrl);
+                const res = await fetch(hnUrl, { signal: AbortSignal.timeout(1500) });
                 if (res.ok) {
                     const data = await res.json();
                     if (data.hits && Array.isArray(data.hits)) {
@@ -1941,9 +1944,8 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     const spendMetrics = calculateTokenSpend(activeModel, promptTokens, completionTokens);
 
     let contentHTML = "";
-    let activeModelDisplay = "Gemini 2.5 Flash";
-
     const orKey = appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
+    const hasCustomKey = Boolean(apiKey || orKey);
 
     if (provider === "gemini" && apiKey) {
         contentHTML = await callGeminiProvider(query, sources, activeModel, apiKey);
@@ -1961,7 +1963,10 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     } else {
         const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
         contentHTML = (neuralResponse && neuralResponse.html && neuralResponse.html !== "undefined") ? neuralResponse.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
-        activeModelDisplay = "Ambulkar Local Engine";
+        activeModelDisplay = (neuralResponse && neuralResponse.modelName) ? neuralResponse.modelName : "Ambulkar Local Engine";
+    }
+
+    if (!hasCustomKey) {
         spendMetrics.costUSD = 0;
         spendMetrics.costFormatted = "$0.00000";
         spendMetrics.totalTokens = 0;
@@ -1974,7 +1979,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
         activeModelDisplay = "Ambulkar Local Engine";
     }
 
-    const tokenDisplay = (spendMetrics.costUSD === 0 || !orKey) ? "0 tokens (Free Tier)" : `${spendMetrics.totalTokens} tokens`;
+    const tokenDisplay = hasCustomKey ? `${spendMetrics.totalTokens} tokens` : "0 tokens (Free Tier)";
 
     const telemetryFooter = `
         <div class="unified-telemetry-bar">
@@ -2164,68 +2169,9 @@ Strict Requirements:
 }
 
 async function callEmbeddedFreeNeuralEngine(query, sources) {
-    const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive, accurate response to: "${query}".
-
-Verified Web Sources:
-${sourceContext}
-
-Instructions:
-1. Synthesize current facts based on the web references provided.
-2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
-3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
-4. Output clean HTML directly without raw JSON or markdown wrappers.`;
-
-    // 1. Attempt Free Neural Engine
-    try {
-        const freeKey = atob("QVEuQWI4Uk42STg5U00yYWh6cmFvMVBiTHB0X2V3eXRYZlZLNVFhU2tUWEhsbWxuU2pLZ2c=");
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${freeKey}`;
-        const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
-        });
-
-        if (res.ok) {
-            const data = await res.json();
-            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                const text = data.candidates[0].content.parts[0].text;
-                if (text && text.length > 20) {
-                    return {
-                        html: formatAIResponseHTML(text),
-                        modelName: "Gemini Free Neural"
-                    };
-                }
-            }
-        } else if (res.status === 429) {
-            const rateLimitBanner = `
-                <div class="api-key-error-card" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); padding: 16px 18px; border-radius: var(--radius-md); margin-bottom: 16px;">
-                    <h4 style="color: #fde047; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; font-size: 0.92rem;">
-                        <i class="fa-solid fa-gauge-high" style="color: #f59e0b;"></i> Global Free Tier Quota Busy (15 Requests/Min)
-                    </h4>
-                    <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 12px;">
-                        The shared free neural quota is currently busy. Add your personal free API key in Settings to run unlimited instant search!
-                    </p>
-                    <button type="button" class="btn-primary" onclick="openSettingsModal()" style="font-size: 0.78rem; padding: 6px 13px;">
-                        <i class="fa-solid fa-key"></i> Add Personal Free API Key
-                    </button>
-                </div>
-            `;
-            return {
-                html: rateLimitBanner + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-                modelName: "Free Quota Busy (Local Fallback)"
-            };
-        }
-    } catch (err) {
-        console.log("Free neural route attempt:", err);
-    }
-
-    // 2. Resilient Fallback to Local Citation Synthesizer
     return {
         html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-        modelName: "Ambulkar Engine (Local Synthesis)"
+        modelName: "Ambulkar Local Engine"
     };
 }
 
@@ -2997,6 +2943,7 @@ function formatAIResponseHTML(text) {
         .replace(/^# (.*$)/gim, '<div class="bento-section-header"><i class="fa-solid fa-chart-pie text-cyan"></i> <span class="bento-section-title">$1</span></div>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([0-9]{4})`/g, '$1')
         .replace(/`([^`]+)`/g, '<code class="memo-inline-code">$1</code>')
         .replace(/^\s*[\-\*]\s+(.*$)/gim, '<li>$1</li>');
 
