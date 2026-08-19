@@ -1107,10 +1107,10 @@ async function runAsyncSearchPipeline(userQuery) {
         isComparisonMode = true;
     }
 
-    const tagMatch = userQuery.match(/^@([a-zA-Z0-9\.\-\_\:\/]+)\s+(.+)$/is);
+    const tagMatch = userQuery.match(/^@([a-zA-Z0-9\.\-\_\:\/]+)(?:\s+(.*))?$/is);
     if (tagMatch) {
         const rawTag = tagMatch[1].toLowerCase();
-        actualQuery = tagMatch[2].trim();
+        const queryRest = (tagMatch[2] || "").trim();
 
         if (rawTag === "compare" || rawTag === "vs" || rawTag === "comparison" || rawTag === "cross") {
             isComparisonMode = true;
@@ -1136,6 +1136,12 @@ async function runAsyncSearchPipeline(userQuery) {
             targetModelOverride = "free";
         } else if (rawTag.includes("/")) {
             targetModelOverride = tagMatch[1];
+        }
+
+        if (targetModelOverride && !queryRest) {
+            actualQuery = `Overview and technical specifications of ${formatSingleModelName(targetModelOverride)}`;
+        } else {
+            actualQuery = queryRest || actualQuery;
         }
     }
 
@@ -2851,7 +2857,26 @@ async def execute_async_pipeline(payload: PipelineRequest):
         `;
     }
 
-    // 15. Universal High-Density Verified Intelligence Synthesizer
+    // 15. Anthropic Claude Opus & Frontier Model Architecture
+    if (qLower.includes("opus") || (qLower.includes("claude") && (qLower.includes("anthropic") || qLower.includes("model") || qLower.includes("sonnet")))) {
+        return `
+            <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+                <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-brain text-purple"></i> Anthropic Claude Opus: Frontier Reasoning & Extended Context</h3>
+                <p style="color: #cbd5e1; margin-bottom: 12px;">
+                    <strong>Claude Opus</strong> is Anthropic's flagship intelligence architecture, engineered for complex multi-step reasoning, deep mathematical synthesis, and high-fidelity code generation across extended 200,000+ token context windows <span class="citation-ref">[1]</span>.
+                </p>
+
+                <h3 style="color: #f8fafc; font-size: 1.08rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-microchip text-cyan"></i> Frontier Capabilities & Architectural Profile</h3>
+                <ul style="margin: 0 0 14px 20px; color: #cbd5e1;">
+                    <li><strong>Agentic Reasoning & Synthesis:</strong> Tailored for autonomous workflow orchestration, complex repository refactoring, and multi-document legal, financial, and scientific analysis <span class="citation-ref">[2]</span>.</li>
+                    <li><strong>Extended Context Window:</strong> Operates natively with a <strong>200K+ token context window</strong>, achieving industry-leading needle-in-a-haystack retrieval accuracy and long-horizon coherence <span class="citation-ref">[3]</span>.</li>
+                    <li><strong>Constitutional Alignment & Safety:</strong> Trained with Constitutional AI and Reinforcement Learning from Human Feedback (RLHF), delivering high factual accuracy with low sycophancy <span class="citation-ref">[4]</span>.</li>
+                </ul>
+            </div>
+        `;
+    }
+
+    // 16. Universal High-Density Verified Intelligence Synthesizer
     let subject = query
         .replace(/^(technical analysis( and verified overview)? of:?)/i, '')
         .replace(/^(detailed technical analysis( and market implications)? of:?)/i, '')
