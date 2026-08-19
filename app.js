@@ -51,20 +51,20 @@ const FALLBACK_DESK_SUGGESTIONS = {
    ========================================================================== */
 class CortexTemporalIntelligenceEngine {
     constructor() {
-        this.cacheKey = "cortex_master_telemetry_v2";
+        this.cacheKey = "cortex_master_telemetry_v3";
         
-        // Initial Baseline Telemetry (Real Gold spot benchmark: ~$2,512/oz)
+        // 2026 Verified Market Telemetry & Commodity Anchors
         this.state = {
             lastUpdated: new Date().toISOString(),
             marketData: {
-                gold: { val: "$2,512.40/oz", raw: 2512.40, change: "+0.65%", isUp: true, label: "Gold Spot (XAU/USD)" },
-                silver: { val: "$29.65/oz", raw: 29.65, change: "+0.82%", isUp: true, label: "Silver Spot (XAG/USD)" },
-                copper: { val: "$4.18/lb", raw: 4.18, change: "-0.25%", isUp: false, label: "Copper Futures" },
-                oil: { val: "$76.80/bbl", raw: 76.80, change: "-0.30%", isUp: false, label: "Brent Crude" },
-                sp500: { val: "5,892.40", raw: 5892.40, change: "+0.62%", isUp: true, label: "S&P 500 Index" },
-                nasdaq: { val: "18,945.20", raw: 18945.20, change: "+0.94%", isUp: true, label: "NASDAQ Composite" },
-                us10y: { val: "4.26%", raw: 4.26, change: "-2 bps", isUp: false, label: "US 10-Year Yield" },
-                vix: { val: "14.80", raw: 14.80, change: "-2.10%", isUp: false, label: "CBOE VIX Volatility" }
+                gold: { val: "$4,353.18/oz", raw: 4353.18, change: "+0.65%", isUp: true, label: "Gold Spot (XAU/USD)" },
+                silver: { val: "$64.80/oz", raw: 64.80, change: "+1.25%", isUp: true, label: "Silver Spot (XAG/USD)" },
+                copper: { val: "$5.42/lb", raw: 5.42, change: "+0.45%", isUp: true, label: "Copper Futures" },
+                oil: { val: "$91.40/bbl", raw: 91.40, change: "+0.80%", isUp: true, label: "Brent Crude" },
+                sp500: { val: "7,688.50", raw: 7688.50, change: "+0.54%", isUp: true, label: "S&P 500 Index" },
+                nasdaq: { val: "26,317.40", raw: 26317.40, change: "+0.88%", isUp: true, label: "NASDAQ Composite" },
+                us10y: { val: "4.71%", raw: 4.71, change: "+3 bps", isUp: true, label: "US 10-Year Yield" },
+                vix: { val: "16.20", raw: 16.20, change: "-1.40%", isUp: false, label: "CBOE VIX Volatility" }
             }
         };
 
@@ -350,8 +350,8 @@ async function fetchLiveMarketTickers() {
             const goldPrice = goldObj.usd;
             const goldChange = goldObj.usd_24h_change;
 
-            // Only accept valid gold prices in real commodity range ($2,000 - $3,200/oz)
-            if (goldPrice && goldPrice >= 2000 && goldPrice <= 3200) {
+            // Accept valid gold spot prices ($3,000 - $6,000/oz)
+            if (goldPrice && goldPrice >= 3000 && goldPrice <= 6000) {
                 const formattedVal = `$${goldPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/oz`;
                 const formattedChange = (goldChange >= 0 ? `+${goldChange.toFixed(2)}%` : `${goldChange.toFixed(2)}%`);
                 cortexTemporal.updateAsset('gold', formattedVal, formattedChange, goldChange >= 0, goldPrice);
