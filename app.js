@@ -152,10 +152,10 @@ class CortexTemporalIntelligenceEngine {
 - Current Local Time: ${currentTime} [${timePeriod}]
 - Active Calendar Year: ${this.getCurrentYear()}
 - Real-Time Live Browsing: ACTIVE
-- STRICT TIME & NO-GREETING DIRECTIVE:
-  * DO NOT use conversational greetings (e.g. NEVER say "Good morning", "Good afternoon", "Good evening", or "Hello").
-  * Start IMMEDIATELY with the executive briefing headline and high-density factual synthesis.
-  * Local time tracking is active at ${currentTime} (${timePeriod}); never output mismatched time-of-day references.
+- STRICT SIGNAL & DIRECT ANSWER RULES:
+  * DO NOT start answers with conversational greetings (e.g. NEVER say "Good morning", "Hello", etc.).
+  * DO NOT prepend redundant date headers (e.g. NEVER start with "Today is Tuesday, August 18, 2026", "Global Markets Briefing — August 18", or "Date Confirmed:") UNLESS the user explicitly asked for today's date or a morning/daily briefing.
+  * Start IMMEDIATELY with the substantive, technical, or financial answer answering the user's specific prompt.
 - Verified Market Anchors (Cross-Component Synchronized):
   * Gold Spot (XAU/USD): ${gold.val} (${gold.change})
   * Silver Spot (XAG/USD): ${silver.val} (${silver.change})
@@ -2202,15 +2202,14 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
     const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a frontier AI search and market intelligence engine.
 ${cortexTemporal.getSystemPromptContext()}
 
-You are answering a live search inquiry as of ${todayFull}.
-If the user asks what today's date is or asks for today's news/events, state today is ${todayFull} and provide the latest news and factual analysis synthesized from the verified web sources below.
+User Search Query: "${cleanQuery}"
 
 Verified Web Sources (Crawled on ${todayFull}):
 ${sourceContext}
 
 Strict Requirements:
 1. FOCUS STRICTLY ON ACCURATE, CURRENT ${currentYear} DATA. Maximum signal-to-noise ratio.
-2. If asked about today's date or current news, confirm today is ${todayFull} and summarize current global developments.
+2. Answer the user's specific query DIRECTLY. DO NOT prepend dates or conversational greetings unless explicitly asked for the date or a daily briefing.
 3. If the query concerns a corporate acquisition, funding round, product release, or market event (such as Stripe acquiring OpenRouter, new model benchmark rankings, or hyperscaler deals), provide the exact metrics, valuations, and strategic implications directly.
 4. ZERO refusal disclaimers (e.g. NEVER say "I have no clock" or "I cannot tell today's date"). You are operating inside Cortex live search with the active timestamp above.
 5. Format using clean, semantic HTML (<h3>, <h4>, <p>, <ul>, <li>, <strong>, <code>).
@@ -3112,6 +3111,8 @@ function formatAIResponseHTML(text) {
     // 1. Purge conversational pleasantries, robotic meta-filler, and disclaimers
     clean = clean
         .replace(/^(?:<p[^>]*>)?\s*(?:Good morning|Good afternoon|Good evening|Good day|Hello|Greetings|Welcome)[.,!:]?\s*(?:<\/p>)?/gi, '')
+        .replace(/^(?:<h[1-4][^>]*>|<p[^>]*>|<strong>|<div[^>]*>)?\s*(?:Date Confirmed|Confirmed Date|Live Market Briefing|Global Markets Briefing|Market Briefing)[^:\n<]*:?\s*(?:—|-)?\s*(?:[A-Za-z]+,\s+[A-Za-z]+\s+\d{1,2},\s+\d{4})?[.,!:]?\s*(?:<\/h[1-4]>|<\/p>|<\/strong>|<\/div>)?/gim, '')
+        .replace(/^(?:<p[^>]*>)?\s*Today is\s+[A-Za-z]+,\s+[A-Za-z]+\s+\d{1,2},\s+\d{4}\b[.,!]?\s*/gim, '')
         .replace(/^[0-9]+\s*[\w\s—\-]+(?:data availability in the provided corpus|from the provided sources)[^\n]*/gim, '')
         .replace(/Zero\s+[\w-]+\s*data exists in the provided source set\.?/gi, '')
         .replace(/There is no mention of\s+[^.\n]+\.?/gi, '')
