@@ -3150,8 +3150,8 @@ function formatAIResponseHTML(text) {
         </div>`;
     });
 
-    // Transform Numbered Sections into elegant executive section headers
-    clean = clean.replace(/(?:<p[^>]*>|<h[34][^>]*>)?\s*([0-9]+)\.\s+([^\n<:]+)(?::|\(([^)]+)\))?(?:<\/p>|<\/h[34]>)?/gi, (match, num, title, subtitle) => {
+    // Transform Numbered Sections into elegant executive section headers (strictly 1-12 at line starts with capitalized titles)
+    clean = clean.replace(/(?:^|<p[^>]*>|<h[34][^>]*>)\s*([1-9]|1[0-2])\.\s+([A-Z][\w\s&–—\-/]{2,50})(?::|\(([^)]+)\))(?:\s*<\/p>|\s*<\/h[34]>|\s*\n|$)/gim, (match, num, title, subtitle) => {
         const subHtml = subtitle ? `<span class="section-subtitle">(${subtitle.trim()})</span>` : '';
         return `<div class="bento-section-header">
             <span class="bento-section-num">${num.padStart(2, '0')}</span>
