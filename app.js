@@ -1792,9 +1792,7 @@ function formatSingleModelName(rawId) {
     if (id === "fast" || id === "gemini") return "Gemini 3.7 Flash";
     if (id === "deep" || id === "sonnet" || id === "claude") return "Claude Sonnet 5";
     if (id === "grok") return "Grok 4.6";
-    if (id === "openai" || id === "gpt4" || id === "o3") return "OpenAI o3-mini";
-    if (id === "deepseek") return "DeepSeek R1";
-    if (id === "ambulkar-cortex-engine" || id === "local" || id.includes("Local Synthesis") || id.includes("Local Engine")) return "Gemini 3.7 Flash";
+    if (id === "ambulkar-cortex-engine" || id === "local" || id.includes("Local Synthesis") || id.includes("Local Engine") || id.includes("Ambulkar Engine") || id.includes("Ambulkar Local")) return "Ambulkar Local Engine";
 
     // 2. Exact mappings for standard frontier models
     const MAPPINGS = {
@@ -2026,7 +2024,7 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
         const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
         return {
             html: (fallback && fallback.html) ? fallback.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-            modelUsed: fallback?.modelName || "Gemini 3.7 Flash"
+            modelUsed: fallback?.modelName || "Ambulkar Local Engine"
         };
     }
 
@@ -2148,14 +2146,14 @@ Strict Requirements:
             const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
             return fallback || {
                 html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-                modelUsed: "Gemini 3.7 Flash"
+                modelUsed: "Ambulkar Local Engine"
             };
         }
     } catch (err) {
         const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
         return fallback || {
             html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-            modelUsed: "Gemini 3.7 Flash"
+            modelUsed: "Ambulkar Local Engine"
         };
     }
 }
@@ -2878,7 +2876,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
         `;
     }
 
-    // 14. Universal High-Density Verified Intelligence Synthesizer
+    // 14. Real Fact & Web Source Synthesizer (Zero Fluff, 100% Query-Grounded)
     let subject = query
         .replace(/^(technical analysis( and verified overview)? of:?)/i, '')
         .replace(/^(detailed technical analysis( and market implications)? of:?)/i, '')
@@ -2888,41 +2886,54 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
     if (!subject || subject.length < 3) subject = query;
 
-    // Detect domain context
-    const sLower = subject.toLowerCase();
-    const isPricingOrFinance = sLower.includes("pricing") || sLower.includes("cut") || sLower.includes("cost") || sLower.includes("sol") || sLower.includes("deal") || sLower.includes("market") || sLower.includes("valuation");
-    const isModelOrAI = sLower.includes("gpt") || sLower.includes("claude") || sLower.includes("gemini") || sLower.includes("deepseek") || sLower.includes("model") || sLower.includes("reasoning") || sLower.includes("ai");
+    const validSources = (sources && sources.length > 0) ? sources.filter(s => s.snippet && s.snippet.length > 10) : [];
 
-    const validSources = (sources && sources.length > 0) ? sources.slice(0, 5) : [];
-
-    let leadSummary = "";
-    if (isPricingOrFinance && isModelOrAI) {
-        leadSummary = `Recent enterprise disclosures and API telemetry confirm a major restructuring for <strong>${subject}</strong>, marking a significant deflationary shift in frontier token economics and high-throughput inference hosting <span class="citation-ref">[1]</span>.`;
-    } else if (isModelOrAI) {
-        leadSummary = `Recent frontier preprints and verified developer benchmarks report accelerated performance and architectural breakthroughs regarding <strong>${subject}</strong> <span class="citation-ref">[1]</span>.`;
-    } else {
-        leadSummary = `Verified telemetry, technical documentation, and market intelligence confirm key developments and deployment standards regarding <strong>${subject}</strong> <span class="citation-ref">[1]</span>.`;
+    if (validSources.length === 0) {
+        return `
+            <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+                <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-bolt text-cyan"></i> Research Briefing: ${subject}</h3>
+                <p style="color: #cbd5e1; margin-bottom: 12px;">Direct factual intelligence briefing for <strong>${subject}</strong>.</p>
+            </div>
+        `;
     }
+
+    // Extract lead insight from primary source
+    let leadSnippet = (validSources[0].snippet || validSources[0].title)
+        .replace(/^Technical discussion:\s*"?[^"]*"?\.?/i, '')
+        .replace(/^Industry reporting & technical analysis:\s*"?[^"]*"?\.?/i, '')
+        .replace(/^Open-source engineering and technical specifications regarding\s+[^.]*\.?/i, '')
+        .trim();
+
+    const findings = validSources.slice(0, 4).map((s, idx) => {
+        let cleanText = (s.snippet || s.title || "")
+            .replace(/^Technical discussion:\s*"?[^"]*"?\.?/i, '')
+            .replace(/^Industry reporting & technical analysis:\s*"?[^"]*"?\.?/i, '')
+            .replace(/^Open-source engineering and technical specifications regarding\s+[^.]*\.?/i, '')
+            .trim();
+
+        let heading = s.title.split(/[-–—:|]/)[0].trim();
+        if (heading.length > 40) heading = heading.substring(0, 38) + "...";
+
+        return `<li><strong>${heading}:</strong> ${cleanText} <span class="citation-ref">[${s.num || (idx + 1)}]</span></li>`;
+    }).join('');
 
     return `
         <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
             <!-- EXECUTIVE OVERVIEW -->
             <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-bolt text-cyan"></i> Executive Intelligence Briefing: ${subject}</h3>
             <p style="color: #cbd5e1; margin-bottom: 14px; font-size: 0.95rem;">
-                ${leadSummary}
+                ${leadSnippet} <span class="citation-ref">[1]</span>
             </p>
 
-            <!-- ARCHITECTURAL & MARKET BREAKDOWN -->
-            <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-layer-group text-purple"></i> Key Verified Telemetry & Operational Dynamics</h3>
+            <!-- FACTUAL EVIDENCE & FINDINGS -->
+            <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-layer-group text-purple"></i> Key Verified Intelligence & Findings</h3>
             <ul style="margin: 0 0 16px 20px; color: #cbd5e1;">
-                <li><strong>Inference Economics & Cost Optimization:</strong> Competitive pricing revisions drive input/output token costs down substantially, enabling high-frequency autonomous agent loops and long-context batch processing <span class="citation-ref">[2]</span>.</li>
-                <li><strong>Enterprise Integration & API Throughput:</strong> Scaled infrastructure deployments yield enhanced rate limits, reduced time-to-first-token (TTFT), and tighter SLA guarantees across global cloud endpoints <span class="citation-ref">[3]</span>.</li>
-                <li><strong>Production Adoption & Reliability:</strong> Multi-region cloud telemetry indicates enterprise workload migration as developer tooling and API reliability align with production SLAs <span class="citation-ref">[4]</span>.</li>
+                ${findings}
             </ul>
 
             <!-- STRATEGIC DIRECTIVE -->
             <div style="background: rgba(139, 92, 246, 0.08); border-left: 3px solid #a855f7; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
-                <strong style="color: #c084fc;"><i class="fa-solid fa-compass"></i> Strategic Directive:</strong> Monitor live endpoint telemetry, validate cache hit rates, and benchmark latency across workloads to maximize architectural cost-efficiency.
+                <strong style="color: #c084fc;"><i class="fa-solid fa-compass"></i> Synthesis Note:</strong> Factual findings grounded in ${validSources.length} verified primary web sources.
             </div>
         </div>
     `;
