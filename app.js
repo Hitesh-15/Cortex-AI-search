@@ -90,17 +90,33 @@ class CortexTemporalIntelligenceEngine {
         } catch (e) {}
     }
 
-    // Dynamic Temporal Methods (Calculate Live Date Every Day)
+    // Dynamic Temporal & Time Methods
     getTodayFull() {
         return new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
 
     getTodayIso() {
-        return new Date().toISOString().split('T')[0];
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     getCurrentYear() {
         return new Date().getFullYear();
+    }
+
+    getCurrentTime() {
+        return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    getTimePeriod() {
+        const h = new Date().getHours();
+        if (h >= 5 && h < 12) return "Morning (AM)";
+        if (h >= 12 && h < 17) return "Afternoon (PM)";
+        if (h >= 17 && h < 21) return "Evening (PM)";
+        return "Night / Late Evening (PM)";
     }
 
     getAsset(key) {
@@ -128,11 +144,18 @@ class CortexTemporalIntelligenceEngine {
         const sp500 = this.getAsset('sp500');
         const nasdaq = this.getAsset('nasdaq');
         const us10y = this.getAsset('us10y');
+        const currentTime = this.getCurrentTime();
+        const timePeriod = this.getTimePeriod();
 
         return `CRITICAL SYSTEM TIMESTAMP & UNIFIED TEMPORAL TELEMETRY:
 - Today's Live Date: ${this.getTodayFull()} (${this.getTodayIso()})
+- Current Local Time: ${currentTime} [${timePeriod}]
 - Active Calendar Year: ${this.getCurrentYear()}
 - Real-Time Live Browsing: ACTIVE
+- STRICT TIME & NO-GREETING DIRECTIVE:
+  * DO NOT use conversational greetings (e.g. NEVER say "Good morning", "Good afternoon", "Good evening", or "Hello").
+  * Start IMMEDIATELY with the executive briefing headline and high-density factual synthesis.
+  * Local time tracking is active at ${currentTime} (${timePeriod}); never output mismatched time-of-day references.
 - Verified Market Anchors (Cross-Component Synchronized):
   * Gold Spot (XAU/USD): ${gold.val} (${gold.change})
   * Silver Spot (XAG/USD): ${silver.val} (${silver.change})
@@ -3086,8 +3109,9 @@ function formatAIResponseHTML(text) {
     // Strip codeblock wrappers if returned by AI model
     clean = clean.replace(/^```(html|markdown|json)?/gi, '').replace(/```$/gi, '').trim();
 
-    // 1. Purge robotic meta-filler, disclaimers, and refusal statements
+    // 1. Purge conversational pleasantries, robotic meta-filler, and disclaimers
     clean = clean
+        .replace(/^(?:<p[^>]*>)?\s*(?:Good morning|Good afternoon|Good evening|Good day|Hello|Greetings|Welcome)[.,!:]?\s*(?:<\/p>)?/gi, '')
         .replace(/^[0-9]+\s*[\w\s—\-]+(?:data availability in the provided corpus|from the provided sources)[^\n]*/gim, '')
         .replace(/Zero\s+[\w-]+\s*data exists in the provided source set\.?/gi, '')
         .replace(/There is no mention of\s+[^.\n]+\.?/gi, '')
@@ -3227,16 +3251,20 @@ function jumpToSource(num, event) {
 
 async function callGeminiProvider(query, sources, model, apiKey) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    const prompt = `You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine. Provide a comprehensive, accurate, up-to-date response to: "${query}".
+    const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a state-of-the-art AI search engine.
+${cortexTemporal.getSystemPromptContext()}
 
-Verified Web Sources:
+User Search Query: "${query}"
+
+Verified Web Sources (Crawled ${cortexTemporal.getTodayFull()}):
 ${sourceContext}
 
 Instructions:
 1. Synthesize current facts and evidence based on the web references provided.
-2. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
-3. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
-4. Do NOT output raw JSON or code block wrappers. Output clean HTML directly.`;
+2. DO NOT use conversational greetings (e.g. "Good morning", "Hello") — start directly with the executive briefing and facts.
+3. Format your response cleanly using HTML (h3, h4, p, ul, li, strong, code).
+4. Include inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span> where relevant.
+5. All output must be strictly in clear, professional English.`;
 
     const modelOptions = [model.trim(), "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
 
@@ -3277,8 +3305,6 @@ Instructions:
 
 async function callOpenAIProvider(query, sources, model, apiKey) {
     try {
-        const todayIso = new Date().toISOString().split('T')[0];
-        const todayFull = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
         const res = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
@@ -3286,8 +3312,8 @@ async function callOpenAIProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 messages: [
-                    { role: "system", content: `You are Ambulkar Cortex AI search engine. Today is ${todayFull} (${todayIso}, 2026). Real-time web browsing is active. If asked about today's date or current news, confirm today is ${todayFull} and synthesize from sources. Format using clean HTML (h3, h4, p, ul, li, strong). Embed citations like <span class="citation-ref">[1]</span>. Always output in English.` },
-                    { role: "user", content: `Query: ${query}\n\nWeb Sources (Crawled ${todayFull}):\n${sourceContext}` }
+                    { role: "system", content: `You are Ambulkar Cortex AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nDO NOT output conversational greetings. Format using clean HTML (h3, h4, p, ul, li, strong). Embed citations like <span class="citation-ref">[1]</span>. Always output in English.` },
+                    { role: "user", content: `Query: ${query}\n\nWeb Sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }
                 ]
             })
         });
@@ -3305,8 +3331,6 @@ async function callOpenAIProvider(query, sources, model, apiKey) {
 
 async function callClaudeProvider(query, sources, model, apiKey) {
     try {
-        const todayIso = new Date().toISOString().split('T')[0];
-        const todayFull = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
         const res = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
@@ -3314,8 +3338,8 @@ async function callClaudeProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 max_tokens: 1500,
-                system: `You are Ambulkar Cortex AI search engine. Today is ${todayFull} (${todayIso}, 2026). Real-time web search is active. If asked about today's date or news, state today is ${todayFull} and synthesize from sources. Output clean HTML. All output in English.`,
-                messages: [{ role: "user", content: `Synthesize clean HTML answer for query: "${query}" using sources (Crawled ${todayFull}):\n${sourceContext}` }]
+                system: `You are Ambulkar Cortex AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nDO NOT output conversational greetings (start directly with facts). Output clean HTML. All output in English.`,
+                messages: [{ role: "user", content: `Synthesize clean HTML answer for query: "${query}" using sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }]
             })
         });
         if (!res.ok) {
