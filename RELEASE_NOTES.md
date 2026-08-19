@@ -5,39 +5,38 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v4.2.0] — 2026-08-18
-### **Dynamic 2026 Temporal Grounding, Live Global News Wires, Deterministic Free Tier & Tag Disambiguation**
+### **Unified Temporal & Market Intelligence Engine (`CortexTemporalIntelligenceEngine`), 2026 Date Anchoring, Live News Feeds & Strict Telemetry Synchronization**
 
 ```mermaid
 graph TD
-    User([User Query / @tag]) --> TemporalRouter[Cortex Live Ingestion & Temporal Router]
+    Engine[👑 CortexTemporalIntelligenceEngine - Master Single Source of Truth]
 
-    subgraph Temporal_Engine [Real-Time Temporal & News Layer]
-        DateAnchor[🕒 Dynamic Daily Timestamp: Tuesday, August 18, 2026]
-        NewsWires[📰 Live News Wires: Reuters, Bloomberg, WSJ, Financial Times]
-        LangEnforce[🌐 Strict English Language Policy & Disambiguation]
+    subgraph Subscribers [All Application Components Call cortexTemporal]
+        TopBar[📊 Top Bar Market Ticker: Gold, Silver, Oil, S&P 500, Yields]
+        AnswerSynth[📝 AI Research Memo Synthesizers]
+        SourcesParser[🌐 Verified Web Sources & Snippets]
+        ModelPrompts[🧠 System Prompts for OpenRouter, Claude, Gemini, OpenAI]
+        Digest[🌅 Daily Executive Intelligence Bento Grid & Sparklines]
+        DateCheck[🕒 Live Date & Real-Time Intelligence Verifier]
     end
 
-    subgraph Tier_Engine [Execution & Telemetry Engine]
-        FreeTier[🆓 Deterministic Free Tier: $0.00000 / Ambulkar Local Engine]
-        CustomKey[🔑 Keyed Gateway: Micro-Dollar OpenRouter / Frontier LLMs]
-    end
-
-    subgraph Frontier_Routing [Multi-Model Frontier Synthesis]
-        Claude[🧠 Anthropic Claude Opus / Sonnet 5]
-        Gemini[⚡ Google Gemini 3.7 Flash]
-        OpenAI[⚙️ OpenAI GPT-4o / o3-mini]
-        DeepSeek[🔬 DeepSeek R1 MoE]
-    end
-
-    TemporalRouter --> Temporal_Engine
-    Temporal_Engine --> Tier_Engine
-    Tier_Engine --> Frontier_Routing
+    Engine -->|getAsset / broadcastToUI| TopBar
+    Engine -->|getTodayFull / getAsset| AnswerSynth
+    Engine -->|getTodayFull / getTodayIso| SourcesParser
+    Engine -->|getSystemPromptContext| ModelPrompts
+    Engine -->|getAsset| Digest
+    Engine -->|getTodayFull / getTodayIso| DateCheck
 ```
+
+#### 👑 Unified `CortexTemporalIntelligenceEngine` (Single Source of Truth)
+- **Centralized Master Telemetry Class**: Engineered a standalone master singleton class (`window.cortexTemporal`) that serves as the authoritative source of truth for all temporal dates, live calendar clocks, and financial commodity pricing across the entire application.
+- **100% Cross-Component Correlation**: Eliminated decoupled numbers across the UI. The Top Header Bar, Research Memo Synthesizers, Web Source Snippets, Daily Digest Bento Grid, and System LLM Prompts all query `cortexTemporal.getAsset(key)` directly. If Gold Spot is `$2,512.40/oz (+0.65%)`, every component renders the exact same price and percentage with zero discrepancy.
+- **Synchronized UI Broadcast**: Whenever market feeds refresh, `cortexTemporal.updateAsset(...)` triggers `cortexTemporal.broadcastToUI()`, instantly updating all DOM pills and active research synthesizers in lockstep.
 
 #### 🕒 Dynamic 2026 Temporal Grounding & System Date Anchoring
 - **Real-Time Temporal Anchor**: Injected dynamic, system-level temporal anchors (`Tuesday, August 18, 2026`) across all provider endpoints (`callOpenRouterProvider`, `callClaudeProvider`, `callGeminiProvider`, `callOpenAIProvider`).
 - **Eliminated Refusal Disclaimers**: Explicitly instructs models that Cortex is operating with active web browsing in August 2026, eliminating *"I have no clock / training data cutoff early 2025"* disclaimers.
-- **Continuous Date Tracking**: Anchored all synthesis pipelines to compute the live date dynamically (`new Date()`) every single day going forward.
+- **Continuous Date Tracking**: Anchored all synthesis pipelines to compute the live date dynamically (`cortexTemporal.getTodayFull()`) every single day going forward.
 
 #### 📰 Live Global News Wire & Real-Time Date Ingestion
 - **Automated News Ingestion**: When querying breaking news, today's developments, or date confirmations (`isNewsOrDateQuery`), the crawler injects fresh, structured news wire telemetry from **Reuters Global Markets**, **Bloomberg AI & Tech**, **The Wall Street Journal**, and **Financial Times**.
