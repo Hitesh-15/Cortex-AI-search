@@ -2203,7 +2203,7 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
 ${cortexTemporal.getSystemPromptContext()}
 
 You are answering a live search inquiry as of ${todayFull}.
-If the user asks what today's date is or asks for today's news/events, explicitly state that today is ${todayFull} (${todayIso}, ${currentYear}) and provide the latest news and factual analysis synthesized from the verified web sources below.
+If the user asks what today's date is or asks for today's news/events, state today is ${todayFull} and provide the latest news and factual analysis synthesized from the verified web sources below.
 
 Verified Web Sources (Crawled on ${todayFull}):
 ${sourceContext}
@@ -2522,13 +2522,13 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
     // Direct Date & Today's News Verification Handler
     const isDateOrNewsInquiry = qLower.includes("date") || qLower.includes("today") || (qLower.includes("latest") && qLower.includes("news")) || qLower.includes("what day is it");
     if (isDateOrNewsInquiry) {
-        const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        const todayIso = new Date().toISOString().split('T')[0];
+        const todayStr = cortexTemporal.getTodayFull();
+        const currentTime = cortexTemporal.getCurrentTime();
         return `
             <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
                 <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-calendar-check text-cyan"></i> Real-Time Date & Live Intelligence Confirmation</h3>
                 <p style="color: #cbd5e1; margin-bottom: 14px;">
-                    Today is <strong>${todayStr}</strong> (<code>${todayIso}</code>). Cortex is actively tracking live global telemetry, macroeconomic indicators, and frontier AI developments for the 2026 calendar year <span class="citation-ref">[1]</span>.
+                    Today is <strong>${todayStr}</strong> (${currentTime}). Cortex is actively tracking live global telemetry, macroeconomic indicators, and frontier AI developments for the 2026 calendar year <span class="citation-ref">[1]</span>.
                 </p>
 
                 <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 16px; margin-bottom: 8px;"><i class="fa-solid fa-newspaper text-teal"></i> Today's Verified Global Intelligence Highlights</h3>
@@ -4030,7 +4030,7 @@ function exportMemoMarkdown(btn) {
 
     const titleEl = document.querySelector(".user-query-heading") || { innerText: "Cortex Executive Memo" };
     const cleanTitle = titleEl.innerText.replace(/^[^\w]+/, '').trim();
-    const dateStr = new Date().toISOString().split('T')[0];
+    const dateStr = cortexTemporal.getTodayIso();
 
     const contentText = clone.innerText.trim();
     const markdownDoc = `# Executive Research Memo: ${cleanTitle}\n*Date: ${dateStr} | Synthesized by Cortex AI Search (cortex.ambulkar.com)*\n\n---\n\n${contentText}\n\n---\n*Verified web intelligence synthesized via Cortex multi-index research engine.*`;
