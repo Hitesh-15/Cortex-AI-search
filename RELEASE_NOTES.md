@@ -4,6 +4,58 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v4.2.0] — 2026-08-18
+### **Dynamic 2026 Temporal Grounding, Live Global News Wires, Deterministic Free Tier & Tag Disambiguation**
+
+```mermaid
+graph TD
+    User([User Query / @tag]) --> TemporalRouter[Cortex Live Ingestion & Temporal Router]
+
+    subgraph Temporal_Engine [Real-Time Temporal & News Layer]
+        DateAnchor[🕒 Dynamic Daily Timestamp: Tuesday, August 18, 2026]
+        NewsWires[📰 Live News Wires: Reuters, Bloomberg, WSJ, Financial Times]
+        LangEnforce[🌐 Strict English Language Policy & Disambiguation]
+    end
+
+    subgraph Tier_Engine [Execution & Telemetry Engine]
+        FreeTier[🆓 Deterministic Free Tier: $0.00000 / Ambulkar Local Engine]
+        CustomKey[🔑 Keyed Gateway: Micro-Dollar OpenRouter / Frontier LLMs]
+    end
+
+    subgraph Frontier_Routing [Multi-Model Frontier Synthesis]
+        Claude[🧠 Anthropic Claude Opus / Sonnet 5]
+        Gemini[⚡ Google Gemini 3.7 Flash]
+        OpenAI[⚙️ OpenAI GPT-4o / o3-mini]
+        DeepSeek[🔬 DeepSeek R1 MoE]
+    end
+
+    TemporalRouter --> Temporal_Engine
+    Temporal_Engine --> Tier_Engine
+    Tier_Engine --> Frontier_Routing
+```
+
+#### 🕒 Dynamic 2026 Temporal Grounding & System Date Anchoring
+- **Real-Time Temporal Anchor**: Injected dynamic, system-level temporal anchors (`Tuesday, August 18, 2026`) across all provider endpoints (`callOpenRouterProvider`, `callClaudeProvider`, `callGeminiProvider`, `callOpenAIProvider`).
+- **Eliminated Refusal Disclaimers**: Explicitly instructs models that Cortex is operating with active web browsing in August 2026, eliminating *"I have no clock / training data cutoff early 2025"* disclaimers.
+- **Continuous Date Tracking**: Anchored all synthesis pipelines to compute the live date dynamically (`new Date()`) every single day going forward.
+
+#### 📰 Live Global News Wire & Real-Time Date Ingestion
+- **Automated News Ingestion**: When querying breaking news, today's developments, or date confirmations (`isNewsOrDateQuery`), the crawler injects fresh, structured news wire telemetry from **Reuters Global Markets**, **Bloomberg AI & Tech**, **The Wall Street Journal**, and **Financial Times**.
+- **Interactive Date Confirmation**: Instant, zero-latency verification of today's date (`Tuesday, August 18, 2026`) with verified daily highlights across frontier AI, semiconductor foundry capacity, and capital markets.
+
+#### 🆓 Deterministic Free Tier & Zero-Spend Display
+- **Strict Free Tier Telemetry**: For un-keyed searches, cost is explicitly locked to **`$0.00000`** with token metrics displaying **`0 tokens (Free Tier)`** and provider badge showing **`Ambulkar Local Engine`**.
+- **Transparent Keyed Routing**: Real micro-spend calculations and external model badges activate only when a personal API key is provided in Settings.
+
+#### 🎯 Multi-Model Tag Disambiguation & Language Enforcement
+- **Intelligent `@tag` Resolution**: Typing `@opus`, `@sonnet`, or `@gemini` alone automatically routes to an architectural overview (`Overview and technical specifications of Claude Opus 5`) instead of triggering accidental multilingual dictionary lookups.
+- **Strict English Language Directive**: Added strict system-level prompt enforcement ensuring all syntheses are formatted in clean, professional English, eliminating foreign language hallucinations.
+
+#### 🧼 Year Badge & Typography Sanitization
+- **Clean Year Typography**: Stripped inline code wrappers from 4-digit years (e.g. `2026`, `2023`) so dates render as clean body text rather than colored code pills.
+
+---
+
 ## 🌟 [v4.1.0] — 2026-08-17
 ### **Live Desktop Market Ticker, Ultra-Clean Mobile Isolation, Zero-Fluff Precision Synthesis & Code Generator**
 
