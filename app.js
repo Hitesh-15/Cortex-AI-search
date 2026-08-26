@@ -4157,7 +4157,6 @@ var CortexAuthVault = {
         
         // 1. Header Badge & Button
         const headerBadge = document.getElementById("headerAuthBadge");
-        const headerBtnLabel = document.getElementById("headerAuthBtnLabel");
         const headerBtn = document.getElementById("btnHeaderAuth");
 
         if (headerBadge) {
@@ -4166,17 +4165,13 @@ var CortexAuthVault = {
                 : `<span class="auth-tier-free"><i class="fa-solid fa-gift text-cyan"></i> Free Tier</span>`;
         }
 
-        if (headerBtnLabel && headerBtn) {
+        if (headerBtn) {
             if (loggedIn) {
-                headerBtnLabel.textContent = "Pro Access";
-                headerBtn.innerHTML = `<i class="fa-solid fa-lock-open text-emerald"></i> <span id="headerAuthBtnLabel">Pro Access</span>`;
                 headerBtn.classList.add("logged-in");
-                headerBtn.title = "Frontier AI Pro Unlocked • Click to manage vault or lock";
+                headerBtn.title = "Frontier AI Pro Unlocked • Click to manage key vault, QR sync, or lock";
             } else {
-                headerBtnLabel.textContent = "Login";
-                headerBtn.innerHTML = `<i class="fa-solid fa-key text-gold"></i> <span id="headerAuthBtnLabel">Login</span>`;
                 headerBtn.classList.remove("logged-in");
-                headerBtn.title = "Unlock Pro Frontier AI with Master Password / Passcode";
+                headerBtn.title = "Free Tier Active • Click to unlock Pro Frontier AI with Master Password";
             }
         }
 

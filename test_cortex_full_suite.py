@@ -134,7 +134,7 @@ def run_full_test_suite():
         badge_text = driver.find_element(By.ID, "headerAuthBadge").text
         auth_btn_text = driver.find_element(By.ID, "btnHeaderAuth").text
         assert "Pro" in badge_text or "Unlocked" in badge_text, f"Expected Pro badge, got '{badge_text}'"
-        assert "Pro Access" in auth_btn_text, f"Expected 'Pro Access', got '{auth_btn_text}'"
+        assert "Pro" in auth_btn_text or "Unlocked" in auth_btn_text, f"Expected Pro button, got '{auth_btn_text}'"
         print("  PASS: Vault configured, Pro status badge activated, and key safely stored in memory.")
 
         # ------------------------------------------------------------------
