@@ -872,20 +872,13 @@ html, body {
 .search-actions-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 8px;
     padding-top: 6px;
     border-top: 1px solid var(--border-glass-subtle);
     font-size: 0.78rem;
     flex-wrap: nowrap;
     width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.search-actions-row::-webkit-scrollbar {
-    display: none;
 }
 
 .effort-picker-container {
@@ -960,17 +953,9 @@ option:active {
 .search-hints-strip {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    flex-shrink: 1;
-    min-width: 0;
-}
-
-.search-hints-strip::-webkit-scrollbar {
-    display: none;
+    flex-shrink: 0;
 }
 
 .hint-prefix {

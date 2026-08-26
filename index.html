@@ -225,23 +225,20 @@
                             </button>
                         </div>
                     </div>
-
                     <div class="search-actions-row">
                         <!-- AGENT EFFORT SELECTOR -->
-                        <div class="effort-picker-container" title="Agent Effort Level">
-                            <span class="effort-picker-label"><i class="fa-solid fa-gauge-high text-cyan"
-                                    style="font-size: 0.8rem;"></i> Effort:</span>
+                        <div class="effort-picker-container" title="Agent Reasoning Effort">
+                            <span class="effort-picker-label"><i class="fa-solid fa-gauge-high text-cyan"></i> Effort:</span>
                             <select id="chatEffortSelect" class="chat-effort-select">
-                                <option value="auto">Auto (Smart Speed & Synthesis)</option>
-                                <option value="low">Low (Fast ~1s Response)</option>
-                                <option value="medium">Medium (Balanced Search & Code)</option>
-                                <option value="high">High (Deep Canvas & Reasoning)</option>
+                                <option value="auto">Auto</option>
+                                <option value="low">Low (~1s)</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High (Deep)</option>
                             </select>
                         </div>
 
-                        <!-- MODEL & WORKFLOW ROUTING HINTS -->
+                        <!-- MODEL & WORKFLOW ROUTING CHIPS -->
                         <div class="search-hints-strip" id="searchHintsStrip">
-                            <span class="hint-prefix"><i class="fa-solid fa-sparkles text-gold"></i> Fast Actions:</span>
                             <button type="button" class="hint-tag-btn" onclick="toggleComparisonMode(true)" title="Launch Side-by-Side Comparison Matrix"><i class="fa-solid fa-scale-balanced text-cyan"></i> Compare</button>
                             <button type="button" class="hint-tag-btn" onclick="insertAtTag('@opus ')" title="Claude Opus 5 (Maximum Frontier Intelligence)">@opus</button>
                             <button type="button" class="hint-tag-btn" onclick="insertAtTag('@sonnet ')" title="Claude Sonnet 5 (Hybrid Reasoning)">@sonnet</button>
@@ -251,9 +248,9 @@
 
                         <!-- 24/7 BACKGROUND TOPIC TRACKER TOGGLE -->
                         <div class="watchdog-toggle-container">
-                            <button type="button" id="btnToggleWatchdog" class="btn-watchdog-toggle" onclick="toggleWatchdogState()" title="Track this topic: Receive Discord alerts whenever major news or breakthroughs break">
-                                <i class="fa-solid fa-bell-slash" id="watchdogIcon"></i>
-                                <span id="watchdogLabel">Track Topic: Off</span>
+                            <button type="button" id="btnToggleWatchdog" class="btn-watchdog-toggle" onclick="toggleWatchdogState()" title="Track this topic: Receive alerts whenever major news or breakthroughs break">
+                                <i class="fa-solid fa-bell" id="watchdogIcon"></i>
+                                <span id="watchdogLabel">Track</span>
                             </button>
                         </div>
                     </div>
