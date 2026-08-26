@@ -1515,11 +1515,14 @@ option:active {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding-top: 16px;
-    margin-top: 20px;
-    border-top: 1px solid var(--border-glass-subtle);
+    padding: 12px 14px;
+    margin-top: 24px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
     font-size: 0.76rem;
     flex-wrap: wrap;
+    clear: both;
 }
 
 .unified-telemetry-left {
