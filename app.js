@@ -1359,7 +1359,10 @@ async function runAsyncSearchPipeline(userQuery) {
     `;
 
     container.appendChild(stepElement);
-    stepElement.scrollIntoView({ behavior: "smooth" });
+    const scrollArea = document.getElementById("viewScrollArea");
+    if (scrollArea) {
+        scrollArea.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     try {
         // Step 2: Fetch Web Sources
@@ -3549,7 +3552,8 @@ function renderViewport() {
             searchInput.value = "";
             searchInput.focus();
         }
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        const scrollArea = document.getElementById("viewScrollArea");
+        if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
     } else {
         if (heroView) heroView.style.display = "none";
         if (threadContainer) {
@@ -3651,7 +3655,8 @@ function switchThread(threadId) {
     appState.activeThreadId = threadId;
     renderThreadHistory();
     renderViewport();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const scrollArea = document.getElementById("viewScrollArea");
+    if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function deleteThread(threadId) {
