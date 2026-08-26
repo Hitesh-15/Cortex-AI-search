@@ -545,6 +545,50 @@ html, body {
     color: inherit;
 }
 
+.header-auth-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* LIVE HEADER CLOCK COUNTER */
+.header-live-clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--border-glass);
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    user-select: none;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.header-live-clock:hover {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #ffffff;
+}
+
+.live-clock-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-cyan);
+    animation: pulseDot 2s infinite ease-in-out;
+}
+
+.clock-time-mono {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: #38bdf8;
+    letter-spacing: 0.2px;
+}
+
 .btn-header-auth {
     background: rgba(56, 189, 248, 0.08);
     border: 1px solid rgba(56, 189, 248, 0.28);

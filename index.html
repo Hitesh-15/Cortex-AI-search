@@ -147,6 +147,13 @@
 
                 <!-- UNIVERSAL AUTH / TIER STATUS CONTROLS -->
                 <div class="header-auth-container" id="headerAuthContainer">
+                    <!-- Real-Time Date & Clock Counter Anchor (Live Synchronized) -->
+                    <div id="cortexLiveClockPill" class="header-live-clock" title="Current Real-Time Clock Anchor (Synchronized with AI Search Pipeline)">
+                        <span class="live-clock-dot"></span>
+                        <span id="cortexLiveClockDate"></span>
+                        <span id="cortexLiveClockTime" class="clock-time-mono"></span>
+                    </div>
+
                     <button type="button" id="btnHeaderAuth" class="btn-header-auth" onclick="openAuthModal()" title="AI Reasoning Tier • Click to Manage">
                         <span id="headerAuthBadge"><span class="auth-tier-free"><i class="fa-solid fa-gift text-cyan"></i> Free Tier</span></span>
                     </button>
