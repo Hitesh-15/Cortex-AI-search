@@ -3252,12 +3252,17 @@ function formatAIResponseHTML(text) {
         </div>`;
     });
 
+    // Standardize HTML h2/h3/h4 headers into bento headers
+    clean = clean.replace(/<h[234][^>]*>(.*?)<\/h[234]>/gi, '<div class="bento-section-header"><i class="fa-solid fa-layer-group text-cyan"></i> <span class="bento-section-title">$1</span></div>');
+
     // Strip redundant trailing bibliography lists
     clean = clean.replace(/(?:<h[1-4][^>]*>|<p[^>]*>|<strong>|<div[^>]*>)?\s*(?:References referenced|References\b|Sources cited|Citations\b|Sources list)(?:<\/h[1-4]>|<\/p>|<\/strong>|<\/div>)?:?\s*(?:<ul[^>]*>[\s\S]*?<\/ul>|<ol[^>]*>[\s\S]*?<\/ol>|(?:<p[^>]*>)?\s*\[[0-9]+\][\s\S]*)/gi, '');
 
-    // Convert both legacy <span class="citation-ref"> and raw [1] into sleek, clickable badge buttons
-    clean = clean.replace(/<span class="citation-ref">\[?([0-9]{1,2})\]?<\/span>/gi, '<button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Open verified source [$1]"><span class="citation-badge-num">$1</span></button>');
-    clean = clean.replace(/(?<!data-src-num=["'])\s*\[([0-9]{1,2})\]/g, ' <button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Open verified source [$1]"><span class="citation-badge-num">$1</span></button>');
+    // Normalize all citation spans into [N]
+    clean = clean.replace(/<span class="citation-ref">\[?([0-9]{1,2})\]?<\/span>/gi, '[$1]');
+
+    // Convert all [N] to clickable button with clean title attribute (no brackets in title)
+    clean = clean.replace(/\[([0-9]{1,2})\]/g, '<button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Source $1"><span class="citation-badge-num">$1</span></button>');
 
     // Clean any whitespace between citation badges and punctuation marks
     clean = clean.replace(/(<\/button>)\s+([.,;:!])/g, '$1$2');
