@@ -892,21 +892,59 @@ html, body {
     font-weight: 600;
 }
 
-.chat-effort-select {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border-glass);
-    color: var(--text-secondary);
-    font-size: 0.76rem;
-    padding: 3px 8px;
-    border-radius: var(--radius-sm);
+/* SELECT & DROPDOWN HIGH-CONTRAST STYLING */
+select,
+.chat-effort-select,
+.select-input,
+#chatModelSelect,
+#settingsProviderSelect,
+#settingsModelSelect {
+    background-color: #090e18 !important;
+    color: #f8fafc !important;
+    border: 1px solid var(--border-glass) !important;
     outline: none;
     cursor: pointer;
+}
+
+.chat-effort-select {
+    font-size: 0.76rem;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
     transition: var(--transition);
 }
 
-.chat-effort-select:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-primary);
+.chat-effort-select:hover,
+select:hover {
+    background-color: #0f172a !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+/* Explicit option styling to completely eliminate browser whiteout */
+select option,
+.chat-effort-select option,
+.select-input option,
+optgroup,
+option {
+    background-color: #060a12 !important;
+    color: #f8fafc !important;
+    padding: 10px 14px !important;
+    font-size: 0.86rem !important;
+}
+
+select option:hover,
+select option:focus,
+select option:checked,
+select option:active,
+.chat-effort-select option:hover,
+.chat-effort-select option:focus,
+.chat-effort-select option:checked,
+.chat-effort-select option:active,
+option:hover,
+option:focus,
+option:checked,
+option:active {
+    background-color: #1e293b !important;
+    color: #38bdf8 !important;
 }
 
 .search-hints-strip {
@@ -969,34 +1007,57 @@ html, body {
 
 /* @ MENTION AUTOCOMPLETE MENU */
 .at-mention-menu {
-    background: var(--bg-surface-elevated);
-    border: 1px solid rgba(56, 189, 248, 0.3);
+    background: #090e18;
+    border: 1px solid rgba(56, 189, 248, 0.35);
     border-radius: var(--radius-md);
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(56, 189, 248, 0.15);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(56, 189, 248, 0.18);
     padding: 6px;
     margin-bottom: 8px;
-    max-height: 220px;
+    max-height: 240px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 3px;
+    z-index: 100;
 }
 
-.at-mention-item {
+.at-item, .at-mention-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
     padding: 8px 12px;
     border-radius: var(--radius-sm);
-    color: var(--text-secondary);
+    color: #cbd5e1;
     font-size: 0.82rem;
     cursor: pointer;
     transition: var(--transition);
+    background: transparent;
 }
 
-.at-mention-item:hover, .at-mention-item.selected {
-    background: rgba(56, 189, 248, 0.15);
-    color: #fff;
+.at-item:hover, .at-item.active, .at-item.selected,
+.at-mention-item:hover, .at-mention-item.active, .at-mention-item.selected {
+    background: rgba(56, 189, 248, 0.16) !important;
+    color: #ffffff !important;
+}
+
+.at-item .at-tag {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent-cyan);
+    background: rgba(56, 189, 248, 0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.at-item .at-name {
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.at-item .at-desc {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    margin-left: auto;
 }
 
 /* ==========================================================================
