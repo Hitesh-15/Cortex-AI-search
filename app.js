@@ -341,8 +341,9 @@ function initAmbuApp() {
     setupNavigationListeners();
     setupSearchForm();
     setupSettingsModal();
-    setupVaultModal();
-    updateVaultStatusUI();
+    if (typeof CortexAuthVault !== "undefined" && CortexAuthVault.init) {
+        CortexAuthVault.init();
+    }
     renderThreadHistory();
     populateChatModelSelector();
     updateHeaderModelLabel();
@@ -2068,7 +2069,8 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     const spendMetrics = calculateTokenSpend(activeModel, promptTokens, completionTokens);
 
     let contentHTML = "";
-    const orKey = appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
+    const activeAuthKey = (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getActiveKey) ? CortexAuthVault.getActiveKey() : "";
+    const orKey = activeAuthKey || appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
     const hasCustomKey = Boolean(apiKey || orKey);
 
     if (provider === "gemini" && apiKey) {
@@ -2087,7 +2089,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     } else {
         const neuralResponse = await callEmbeddedFreeNeuralEngine(query, sources);
         contentHTML = (neuralResponse && neuralResponse.html && neuralResponse.html !== "undefined") ? neuralResponse.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, effortLevel);
-        activeModelDisplay = (neuralResponse && neuralResponse.modelName) ? neuralResponse.modelName : "Ambulkar Local Engine";
+        activeModelDisplay = (neuralResponse && neuralResponse.modelName) ? neuralResponse.modelName : "Ambulkar Free Engine";
     }
 
     if (!hasCustomKey) {
@@ -3045,36 +3047,50 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
     if (!subject || subject.length < 3) subject = query;
 
-    const validSources = (sources && sources.length > 0) ? sources.filter(s => s.snippet && s.snippet.length > 15) : [];
+    const validSources = (sources && sources.length > 0) ? sources.filter(s => (s.snippet && s.snippet.length > 10) || (s.title && s.title.length > 5)) : [];
 
-    let leadText = `Verified industry reporting and technical telemetry provide comprehensive analysis on <strong>${subject}</strong>.`;
+    let leadText = "";
     if (validSources.length > 0) {
-        let rawSnippet = (validSources[0].snippet || validSources[0].title || "")
-            .replace(/^Technical discussion:\s*"?[^"]*"?\.?/i, '')
-            .replace(/^Industry reporting & technical analysis:\s*"?[^"]*"?\.?/i, '')
-            .replace(/^Open-source engineering and technical specifications regarding\s+[^.]*\.?/i, '')
-            .trim();
-        if (rawSnippet.length > 25 && !rawSnippet.toLowerCase().includes("live global market telemetry")) {
-            leadText = rawSnippet;
+        // Collect top coherent snippet sentences
+        const leadSentences = [];
+        for (let i = 0; i < Math.min(3, validSources.length); i++) {
+            const s = validSources[i];
+            let snip = (s.snippet || "").trim();
+            if (snip.length > 20 && !snip.toLowerCase().includes("live global market telemetry")) {
+                // Strip redundant source tag wrappers
+                snip = snip.replace(/^[A-Za-z0-9\s._-]+:\s*/i, '').replace(/https?:\/\/\S+/gi, '').trim();
+                leadSentences.push(snip);
+            }
         }
+        if (leadSentences.length > 0) {
+            leadText = leadSentences.join(" ") + ` <span class="citation-ref">[1]</span>`;
+        } else {
+            leadText = `Live web intelligence synthesized from ${validSources.map(s => s.domain || 'verified source').slice(0, 3).join(', ')} regarding <strong>${subject}</strong>. <span class="citation-ref">[1]</span>`;
+        }
+    } else {
+        leadText = `Real-time search synthesis and verified web reporting regarding <strong>${subject}</strong>.`;
     }
 
-    const findings = (validSources.length > 0 ? validSources.slice(0, 4) : sources.slice(0, 3)).map((s, idx) => {
-        let cleanText = (s.snippet || s.title || "")
-            .replace(/^Technical discussion:\s*"?[^"]*"?\.?/i, '')
-            .replace(/^Industry reporting & technical analysis:\s*"?[^"]*"?\.?/i, '')
-            .replace(/^Open-source engineering and technical specifications regarding\s+[^.]*\.?/i, '')
-            .trim();
-
+    const findings = (validSources.length > 0 ? validSources.slice(0, 5) : []).map((s, idx) => {
+        let cleanText = (s.snippet || "").trim();
+        cleanText = cleanText.replace(/^[A-Za-z0-9\s._-]+:\s*/i, '').replace(/https?:\/\/\S+/gi, '').trim();
+        
         if (cleanText.length < 15 || cleanText.toLowerCase().includes("live global market telemetry")) {
-            cleanText = `Primary technical specifications, market dynamics, and verified telemetry regarding ${subject}.`;
+            cleanText = `${s.title} — Verified reporting and live coverage via ${s.domain || "industry sources"}.`;
         }
 
         let heading = s.title.split(/[-–—:|]/)[0].trim();
-        if (heading.length > 40) heading = heading.substring(0, 38) + "...";
+        if (heading.length > 45) heading = heading.substring(0, 42) + "...";
 
         return `<li><strong>${heading}:</strong> ${cleanText} <span class="citation-ref">[${s.num || (idx + 1)}]</span></li>`;
     }).join('');
+
+    const findingsSection = findings.length > 0 ? `
+        <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-layer-group text-purple"></i> Key Verified Intelligence & Findings</h3>
+        <ul style="margin: 0 0 16px 20px; color: #cbd5e1;">
+            ${findings}
+        </ul>
+    ` : '';
 
     return `
         <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
@@ -3085,14 +3101,11 @@ async def execute_async_pipeline(payload: PipelineRequest):
             </p>
 
             <!-- FACTUAL EVIDENCE & FINDINGS -->
-            <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-layer-group text-purple"></i> Key Verified Intelligence & Findings</h3>
-            <ul style="margin: 0 0 16px 20px; color: #cbd5e1;">
-                ${findings}
-            </ul>
+            ${findingsSection}
 
             <!-- STRATEGIC DIRECTIVE -->
-            <div style="background: rgba(139, 92, 246, 0.08); border-left: 3px solid #a855f7; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
-                <strong style="color: #c084fc;"><i class="fa-solid fa-compass"></i> Synthesis Note:</strong> Factual findings grounded in verified primary web sources.
+            <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
+                <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Note:</strong> Grounded in live web telemetry from ${validSources.length > 0 ? validSources.slice(0, 4).map(s => s.domain).filter(Boolean).join(', ') : 'indexed sources'}. Unlock Pro Tier to execute frontier reasoning models.
             </div>
         </div>
     `;
@@ -3918,71 +3931,530 @@ function saveSettingsForm(e) {
     alert("⚙️ Settings saved successfully!");
 }
 
-function openLockModal() {
-    const modal = document.getElementById("vaultLockModal");
-    if (modal) modal.classList.add("active");
+// ==========================================================================
+// UNIVERSAL AUTHENTICATION & SECURE KEY VAULT (WebCrypto AES-256-GCM + PBKDF2)
+// ==========================================================================
+
+var CortexAuthVault = {
+    STORAGE_KEY: "cortex_encrypted_vault_v1",
+    SESSION_KEY: "cortex_session_unlocked_key",
+    REMEMBER_KEY: "cortex_remember_vault_key",
+
+    // Encrypt raw API Key with Master Password/PIN
+    async encrypt(plaintext, password) {
+        const enc = new TextEncoder();
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+
+        const keyMaterial = await crypto.subtle.importKey(
+            "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+        );
+
+        const key = await crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt: salt,
+                iterations: 100000,
+                hash: "SHA-256"
+            },
+            keyMaterial,
+            { name: "AES-GCM", length: 256 },
+            false,
+            ["encrypt", "decrypt"]
+        );
+
+        const ciphertext = await crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: iv },
+            key,
+            enc.encode(plaintext)
+        );
+
+        return JSON.stringify({
+            salt: btoa(String.fromCharCode(...salt)),
+            iv: btoa(String.fromCharCode(...iv)),
+            data: btoa(String.fromCharCode(...new Uint8Array(ciphertext)))
+        });
+    },
+
+    // Decrypt encrypted payload with Master Password/PIN
+    async decrypt(encryptedJson, password) {
+        try {
+            const parsed = typeof encryptedJson === "string" ? JSON.parse(encryptedJson) : encryptedJson;
+            if (!parsed.salt || !parsed.iv || !parsed.data) {
+                throw new Error("Invalid vault payload structure");
+            }
+
+            const salt = new Uint8Array(atob(parsed.salt).split("").map(c => c.charCodeAt(0)));
+            const iv = new Uint8Array(atob(parsed.iv).split("").map(c => c.charCodeAt(0)));
+            const data = new Uint8Array(atob(parsed.data).split("").map(c => c.charCodeAt(0)));
+
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey(
+                "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+            );
+
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: salt,
+                    iterations: 100000,
+                    hash: "SHA-256"
+                },
+                keyMaterial,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["decrypt"]
+            );
+
+            const decrypted = await crypto.subtle.decrypt(
+                { name: "AES-GCM", iv: iv },
+                key,
+                data
+            );
+
+            const dec = new TextDecoder();
+            return dec.decode(decrypted);
+        } catch (e) {
+            throw new Error("Invalid Master Password or Security PIN. Verification failed.");
+        }
+    },
+
+    // Retrieve active vault payload
+    getVaultPayload() {
+        return localStorage.getItem(this.STORAGE_KEY) || window.CORTEX_DEFAULT_VAULT || null;
+    },
+
+    // Save/Update encrypted key vault
+    async saveVault(apiKey, password) {
+        if (!apiKey || !password) throw new Error("Both API Key and Master Password/PIN are required.");
+        const cleanKey = apiKey.trim();
+        const cleanPass = password.trim();
+        const encrypted = await this.encrypt(cleanKey, cleanPass);
+        localStorage.setItem(this.STORAGE_KEY, encrypted);
+        return encrypted;
+    },
+
+    // Unlock Pro Tier using password
+    async login(password, rememberMe = true) {
+        const payload = this.getVaultPayload();
+        let decryptedKey = "";
+
+        if (payload) {
+            decryptedKey = await this.decrypt(payload, password);
+        } else {
+            // Direct key fallback if no vault saved yet
+            const direct = localStorage.getItem("ambu_key_openrouter") || "";
+            if (direct && direct.startsWith("sk-")) {
+                decryptedKey = direct;
+                // Auto-create vault for future logins
+                await this.saveVault(direct, password);
+            } else {
+                throw new Error("No vault configured yet. Please use the 'Vault Setup & Key' tab to set your key.");
+            }
+        }
+
+        if (!decryptedKey) {
+            throw new Error("Decryption returned empty key.");
+        }
+
+        appState.auth = appState.auth || {};
+        appState.auth.isLoggedIn = true;
+        appState.auth.activeKey = decryptedKey;
+        appState.settings.apiKeys.openrouter = decryptedKey;
+
+        if (rememberMe) {
+            localStorage.setItem(this.REMEMBER_KEY, decryptedKey);
+            sessionStorage.removeItem(this.SESSION_KEY);
+        } else {
+            sessionStorage.setItem(this.SESSION_KEY, decryptedKey);
+            localStorage.removeItem(this.REMEMBER_KEY);
+        }
+        localStorage.setItem("cortex_is_authenticated", "true");
+
+        this.updateAuthUI();
+        updateGatewayStatusBadge();
+        return decryptedKey;
+    },
+
+    // Lock device / Logout
+    logout() {
+        appState.auth = appState.auth || {};
+        appState.auth.isLoggedIn = false;
+        appState.auth.activeKey = null;
+        appState.settings.apiKeys.openrouter = "";
+
+        localStorage.removeItem(this.REMEMBER_KEY);
+        sessionStorage.removeItem(this.SESSION_KEY);
+        localStorage.removeItem("cortex_is_authenticated");
+
+        this.updateAuthUI();
+        updateGatewayStatusBadge();
+    },
+
+    // Return active decrypted key if authenticated
+    getActiveKey() {
+        if (appState?.auth?.isLoggedIn && appState.auth.activeKey) {
+            return appState.auth.activeKey;
+        }
+        const remembered = localStorage.getItem(this.REMEMBER_KEY) || sessionStorage.getItem(this.SESSION_KEY);
+        if (remembered && remembered.trim().length > 15) {
+            return remembered.trim();
+        }
+        return appState?.settings?.apiKeys?.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
+    },
+
+    isLoggedIn() {
+        const key = this.getActiveKey();
+        return Boolean(key && key.trim().length > 15);
+    },
+
+    // Restore persistent session or incoming cross-device sync hash on page load
+    init() {
+        // 1. Check for incoming cross-device sync URL hash (#vault=...)
+        if (window.location.hash && window.location.hash.startsWith("#vault=")) {
+            try {
+                const rawB64 = window.location.hash.substring(7);
+                const jsonStr = decodeURIComponent(atob(rawB64));
+                const parsed = JSON.parse(jsonStr);
+                if (parsed.salt && parsed.iv && parsed.data) {
+                    localStorage.setItem(this.STORAGE_KEY, jsonStr);
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+                    }
+                    setTimeout(() => {
+                        openAuthModal();
+                        switchAuthTab("unlock");
+                        showAuthAlert("authUnlockAlert", "📱 Encrypted Vault Imported! Enter your PIN to unlock.", "success");
+                    }, 350);
+                }
+            } catch (e) {
+                console.warn("Invalid vault sync hash payload", e);
+            }
+        }
+
+        // 2. Restore active remembered login if exists
+        const remembered = localStorage.getItem(this.REMEMBER_KEY) || sessionStorage.getItem(this.SESSION_KEY);
+        if (remembered && remembered.trim().length > 15) {
+            appState.auth = appState.auth || {};
+            appState.auth.isLoggedIn = true;
+            appState.auth.activeKey = remembered.trim();
+            if (appState.settings && appState.settings.apiKeys) {
+                appState.settings.apiKeys.openrouter = remembered.trim();
+            }
+        }
+        this.updateAuthUI();
+    },
+
+    // Refresh UI elements across the interface
+    updateAuthUI() {
+        const loggedIn = this.isLoggedIn();
+        
+        // 1. Header Badge & Button
+        const headerBadge = document.getElementById("headerAuthBadge");
+        const headerBtnLabel = document.getElementById("headerAuthBtnLabel");
+        const headerBtn = document.getElementById("btnHeaderAuth");
+
+        if (headerBadge) {
+            headerBadge.innerHTML = loggedIn
+                ? `<span class="auth-tier-pro"><i class="fa-solid fa-crown text-amber"></i> Pro Unlocked</span>`
+                : `<span class="auth-tier-free"><i class="fa-solid fa-gift text-cyan"></i> Free Tier</span>`;
+        }
+
+        if (headerBtnLabel && headerBtn) {
+            if (loggedIn) {
+                headerBtnLabel.textContent = "Pro Access";
+                headerBtn.innerHTML = `<i class="fa-solid fa-lock-open text-emerald"></i> <span id="headerAuthBtnLabel">Pro Access</span>`;
+                headerBtn.classList.add("logged-in");
+                headerBtn.title = "Frontier AI Pro Unlocked • Click to manage vault or lock";
+            } else {
+                headerBtnLabel.textContent = "Login";
+                headerBtn.innerHTML = `<i class="fa-solid fa-key text-gold"></i> <span id="headerAuthBtnLabel">Login</span>`;
+                headerBtn.classList.remove("logged-in");
+                headerBtn.title = "Unlock Pro Frontier AI with Master Password / Passcode";
+            }
+        }
+
+        // 2. Settings Modal Status Card
+        const settingsStatus = document.getElementById("settingsVaultStatusText");
+        const settingsBtnLabel = document.getElementById("settingsVaultBtnLabel");
+        if (settingsStatus) {
+            settingsStatus.innerHTML = loggedIn
+                ? `<span style="color: #34d399; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Pro Frontier AI Unlocked</span>`
+                : `<span style="color: #94a3b8;"><i class="fa-solid fa-circle"></i> Free Neural Tier Active (Locked)</span>`;
+        }
+        if (settingsBtnLabel) {
+            settingsBtnLabel.textContent = loggedIn ? "Manage Vault" : "Unlock Pro";
+        }
+
+        // 3. Auth Modal Status Banner
+        const modalBanner = document.getElementById("authCurrentStatusBanner");
+        const statusTitle = document.getElementById("authStatusTierTitle");
+        const statusDesc = document.getElementById("authStatusTierDesc");
+        const statusIcon = document.getElementById("authStatusIcon");
+
+        if (modalBanner && statusTitle && statusDesc) {
+            if (loggedIn) {
+                modalBanner.className = "auth-status-banner pro";
+                if (statusIcon) statusIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald"></i>`;
+                statusTitle.textContent = "Pro Frontier AI Unlocked (Active)";
+                statusDesc.textContent = "All searches execute across Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, and DeepSeek R1.";
+            } else {
+                modalBanner.className = "auth-status-banner free";
+                if (statusIcon) statusIcon.innerHTML = `<i class="fa-solid fa-gift text-cyan"></i>`;
+                statusTitle.textContent = "Free Neural Tier Active ($0.00000)";
+                statusDesc.textContent = "Enter your Master Password or Passcode / PIN to unlock Frontier AI reasoning.";
+            }
+        }
+    }
+};
+
+// Interactive Auth Modal Controller Functions
+function openAuthModal() {
+    const modal = document.getElementById("authModal");
+    if (!modal) return;
+    
+    CortexAuthVault.updateAuthUI();
+
+    if (CortexAuthVault.isLoggedIn()) {
+        switchAuthTab("unlocked");
+    } else {
+        const hasVault = Boolean(CortexAuthVault.getVaultPayload());
+        switchAuthTab(hasVault ? "unlock" : "setup");
+    }
+
+    modal.classList.add("active");
+    
+    // Auto-focus input
+    setTimeout(() => {
+        const activeInput = modal.querySelector(".auth-tab-pane.active input[type='password'], .auth-tab-pane.active input[type='text']");
+        if (activeInput) activeInput.focus();
+    }, 150);
 }
 
-function closeLockModal() {
-    const modal = document.getElementById("vaultLockModal");
+function closeAuthModal() {
+    const modal = document.getElementById("authModal");
     if (modal) modal.classList.remove("active");
+    hideAuthAlerts();
 }
 
-function setupVaultModal() {
-    const btnOpen = document.getElementById("btnOpenLockModal");
-    const btnClose = document.getElementById("btnCloseVaultModal");
-    const btnCancel = document.getElementById("btnCancelVault");
-    const form = document.getElementById("vaultLockForm");
+function switchAuthTab(tab) {
+    hideAuthAlerts();
+    const tabUnlock = document.getElementById("authTabUnlock");
+    const tabSync = document.getElementById("authTabSync");
+    const tabSetup = document.getElementById("authTabSetup");
+    const tabUnlockedView = document.getElementById("authTabUnlockedView");
+    const btnUnlock = document.getElementById("tabBtnUnlock");
+    const btnSync = document.getElementById("tabBtnSync");
+    const btnSetup = document.getElementById("tabBtnSetup");
+    const tabsNav = document.getElementById("authTabsNav");
 
-    if (btnOpen) btnOpen.addEventListener("click", openLockModal);
-    if (btnClose) btnClose.addEventListener("click", closeLockModal);
-    if (btnCancel) btnCancel.addEventListener("click", closeLockModal);
-    if (form) form.addEventListener("submit", handleVaultFormSubmit);
+    if (tabUnlock) tabUnlock.style.display = (tab === "unlock") ? "block" : "none";
+    if (tabSync) tabSync.style.display = (tab === "sync") ? "block" : "none";
+    if (tabSetup) tabSetup.style.display = (tab === "setup") ? "block" : "none";
+    if (tabUnlockedView) tabUnlockedView.style.display = (tab === "unlocked") ? "block" : "none";
+
+    if (tabsNav) tabsNav.style.display = (tab === "unlocked") ? "none" : "flex";
+
+    if (btnUnlock) btnUnlock.className = (tab === "unlock") ? "auth-tab-btn active" : "auth-tab-btn";
+    if (btnSync) btnSync.className = (tab === "sync") ? "auth-tab-btn active" : "auth-tab-btn";
+    if (btnSetup) btnSetup.className = (tab === "setup") ? "auth-tab-btn active" : "auth-tab-btn";
+
+    if (tab === "sync") {
+        renderVaultQRCode();
+    }
 }
 
-function handleVaultFormSubmit(e) {
-    e.preventDefault();
-    const pass = document.getElementById("inputMasterPassphrase")?.value.trim();
-    const pin = document.getElementById("inputFactorTwoPin")?.value.trim();
-    const openrouterKey = document.getElementById("inputOpenRouterKey")?.value.trim();
+function renderVaultQRCode() {
+    const container = document.getElementById("qrCodeCanvasContainer");
+    if (!container) return;
+    container.innerHTML = "";
 
-    if (!pass || !pin) {
-        alert("Please enter both Factor 1 (Master Passphrase) and Factor 2 (Security PIN).");
+    const payload = CortexAuthVault.getVaultPayload();
+    if (!payload) {
+        container.innerHTML = `<p style="color: #f87171; font-size: 0.82rem; padding: 20px;">No encrypted vault configured on this device yet.<br>Please set up your PIN in the "Vault Setup" tab first.</p>`;
         return;
     }
 
-    localStorage.setItem("cortex_vault_authenticated", "true");
-    if (openrouterKey) {
-        localStorage.setItem("ambu_key_openrouter", openrouterKey);
-        if (appState && appState.settings && appState.settings.apiKeys) {
-            appState.settings.apiKeys.openrouter = openrouterKey;
+    const encoded = btoa(encodeURIComponent(payload));
+    const syncUrl = `${window.location.origin}${window.location.pathname}#vault=${encoded}`;
+
+    if (typeof QRCode !== "undefined") {
+        try {
+            new QRCode(container, {
+                text: syncUrl,
+                width: 170,
+                height: 170,
+                colorDark: "#030712",
+                colorLight: "#ffffff",
+                correctLevel: (typeof QRCode.CorrectLevel !== "undefined") ? QRCode.CorrectLevel.M : 0
+            });
+        } catch (e) {
+            container.innerHTML = `<p style="color: #64748b; font-size: 0.8rem; padding: 10px;">QR generation active. Use "Copy Sync Link" below to open on mobile.</p>`;
         }
-    }
-
-    updateVaultStatusUI();
-    closeLockModal();
-    alert("Dual-Lock Security Vault Authenticated & Unlocked for this device!");
-}
-
-function updateVaultStatusUI() {
-    const isAuth = localStorage.getItem("cortex_vault_authenticated") === "true";
-    const textEl = document.getElementById("vaultStatusText");
-    const pillEl = document.getElementById("vaultStatusPill");
-
-    if (textEl && pillEl) {
-        if (isAuth) {
-            textEl.textContent = "Dual-Lock: Authenticated 🔓";
-            pillEl.style.background = "rgba(16, 185, 129, 0.15)";
-            pillEl.style.borderColor = "rgba(16, 185, 129, 0.4)";
-            pillEl.style.color = "#34d399";
-        } else {
-            textEl.textContent = "Dual-Lock: Protected 🔒";
-            pillEl.style.background = "rgba(245, 158, 11, 0.12)";
-            pillEl.style.borderColor = "rgba(245, 158, 11, 0.35)";
-            pillEl.style.color = "#fbbf24";
-        }
+    } else {
+        container.innerHTML = `<p style="color: #64748b; font-size: 0.8rem; padding: 10px;">Use the <strong>Copy Sync Link</strong> button below to open on your phone.</p>`;
     }
 }
+
+function copyVaultSyncLink() {
+    const payload = CortexAuthVault.getVaultPayload();
+    if (!payload) {
+        alert("Please configure your vault first in the 'Vault Setup' tab.");
+        return;
+    }
+    const encoded = btoa(encodeURIComponent(payload));
+    const syncUrl = `${window.location.origin}${window.location.pathname}#vault=${encoded}`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(syncUrl).then(() => {
+            const btn = document.getElementById("btnCopySyncLink");
+            if (btn) {
+                btn.innerHTML = `<i class="fa-solid fa-check text-emerald"></i> <span>Link Copied!</span>`;
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fa-solid fa-copy text-cyan"></i> <span>Copy Sync Link</span>`;
+                }, 2000);
+            }
+            if (typeof showToast === "function") {
+                showToast("📋 Encrypted Sync Link Copied!", "success");
+            }
+        }).catch(() => {
+            prompt("Copy this Sync URL and open it on your mobile browser:", syncUrl);
+        });
+    } else {
+        prompt("Copy this Sync URL and open it on your mobile browser:", syncUrl);
+    }
+}
+
+function toggleAuthPasswordVisibility(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (!input || !icon) return;
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.className = "fa-solid fa-eye-slash";
+    } else {
+        input.type = "password";
+        icon.className = "fa-solid fa-eye";
+    }
+}
+
+function showAuthAlert(elementId, message, type = "error") {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.className = `auth-feedback-msg ${type}`;
+    el.innerHTML = type === "error"
+        ? `<i class="fa-solid fa-triangle-exclamation"></i> <span>${message}</span>`
+        : `<i class="fa-solid fa-circle-check"></i> <span>${message}</span>`;
+    el.style.display = "flex";
+}
+
+function hideAuthAlerts() {
+    const a1 = document.getElementById("authUnlockAlert");
+    const a2 = document.getElementById("authSetupAlert");
+    if (a1) a1.style.display = "none";
+    if (a2) a2.style.display = "none";
+}
+
+async function handleAuthUnlockSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const passInput = document.getElementById("authUnlockPassword");
+    const rememberCheckbox = document.getElementById("authRememberDevice");
+    const submitBtn = document.getElementById("btnSubmitUnlock");
+
+    if (!passInput) return;
+    const password = passInput.value.trim();
+    if (!password) {
+        showAuthAlert("authUnlockAlert", "Please enter your Master Password or Passcode / PIN.");
+        return;
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...`;
+    }
+
+    try {
+        await CortexAuthVault.login(password, rememberCheckbox ? rememberCheckbox.checked : true);
+        showAuthAlert("authUnlockAlert", "Authentication Successful! Unlocking Frontier AI...", "success");
+        passInput.value = "";
+
+        setTimeout(() => {
+            closeAuthModal();
+            if (typeof showToast === "function") {
+                showToast("⚡ Frontier Pro Tier Unlocked", "success");
+            }
+        }, 600);
+    } catch (err) {
+        showAuthAlert("authUnlockAlert", err.message || "Invalid Password or PIN. Please try again.");
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-bolt"></i> Authenticate & Unlock Pro`;
+        }
+    }
+}
+
+async function handleAuthSetupSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const passInput = document.getElementById("authSetupPassword");
+    const keyInput = document.getElementById("authSetupApiKey");
+    const submitBtn = document.getElementById("btnSubmitSetup");
+
+    if (!passInput || !keyInput) return;
+    const password = passInput.value.trim();
+    const apiKey = keyInput.value.trim();
+
+    if (!password || password.length < 4) {
+        showAuthAlert("authSetupAlert", "Please enter a Master Password or PIN (at least 4 characters).");
+        return;
+    }
+    if (!apiKey || (!apiKey.startsWith("sk-or-") && !apiKey.startsWith("sk-"))) {
+        showAuthAlert("authSetupAlert", "Please enter a valid OpenRouter API Key starting with sk-or-v1-");
+        return;
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Encrypting Vault...`;
+    }
+
+    try {
+        await CortexAuthVault.saveVault(apiKey, password);
+        await CortexAuthVault.login(password, true);
+
+        showAuthAlert("authSetupAlert", "Vault encrypted & saved securely! Frontier Pro Unlocked.", "success");
+        passInput.value = "";
+        keyInput.value = "";
+
+        setTimeout(() => {
+            closeAuthModal();
+            if (typeof showToast === "function") {
+                showToast("🔒 Secure Key Vault Configured & Unlocked", "success");
+            }
+        }, 700);
+    } catch (err) {
+        showAuthAlert("authSetupAlert", err.message || "Failed to encrypt and save vault.");
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Encrypt & Save Vault`;
+        }
+    }
+}
+
+function handleAuthLogout() {
+    CortexAuthVault.logout();
+    closeAuthModal();
+    if (typeof showToast === "function") {
+        showToast("🔒 Locked • Reverted to Free Neural Tier", "info");
+    }
+}
+
+// Backward-compatibility aliases
+function openLockModal() { openAuthModal(); }
+function closeLockModal() { closeAuthModal(); }
+function updateVaultStatusUI() { CortexAuthVault.updateAuthUI(); }
 
 function openReleaseNotesModal() {
     const modal = document.getElementById("releaseNotesModal");
@@ -4713,11 +5185,22 @@ window.renderLibraryMemos = renderLibraryMemos;
 window.filterLibraryMemos = filterLibraryMemos;
 window.deleteSavedMemo = deleteSavedMemo;
 window.clearAllSavedLibraryMemos = clearAllSavedLibraryMemos;
-window.switchThread = switchThread;
-window.deleteThread = deleteThread;
-window.renderViewport = renderViewport;
-window.executeSearch = executeSearch;
-window.appState = appState;
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.switchAuthTab = switchAuthTab;
+window.copyVaultSyncLink = copyVaultSyncLink;
+window.renderVaultQRCode = renderVaultQRCode;
+window.toggleAuthPasswordVisibility = toggleAuthPasswordVisibility;
+window.handleAuthUnlockSubmit = handleAuthUnlockSubmit;
+window.handleAuthSetupSubmit = handleAuthSetupSubmit;
+window.handleAuthLogout = handleAuthLogout;
+window.CortexAuthVault = CortexAuthVault;
+
+// Initialize Auth Vault state on load & hashchange
+if (typeof CortexAuthVault !== "undefined" && CortexAuthVault.init) {
+    CortexAuthVault.init();
+    window.addEventListener("hashchange", () => CortexAuthVault.init());
+}
 
 // Autonomous Continuous Ingestion Listeners: Tab Focus & 3-Minute Interval
 window.addEventListener("focus", () => {

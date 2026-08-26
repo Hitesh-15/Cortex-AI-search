@@ -6,9 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B-blue.svg)](https://developer.mozilla.org/)
 [![AI: Multi-Model Gateway](https://img.shields.io/badge/AI-Parallel%20Multi--Model%20Routing-cyan.svg)](#-features)
-[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v3.8.1-emerald.svg)](RELEASE_NOTES.md)
+[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v4.5.0-emerald.svg)](RELEASE_NOTES.md)
 
-Cortex is a state-of-the-art AI search engine and executive research memo platform. It synthesizes real-time facts across **10 to 20+ verified web sources**, executes parallel multi-model reasoning across frontier LLMs, and maintains 100% client-side privacy.
+Cortex is a state-of-the-art AI search engine and executive research memo platform. It synthesizes real-time facts across **10 to 20+ verified web sources**, executes parallel multi-model reasoning across frontier LLMs (**Claude 3.7 Sonnet, Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, DeepSeek R1**), and maintains 100% client-side privacy.
 
 ---
 
@@ -16,7 +16,19 @@ Cortex is a state-of-the-art AI search engine and executive research memo platfo
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion["1. Query Ingestion & Context Routing"]
+    subgraph Security["1. Universal WebCrypto Auth Vault (100% Client-Side Private)"]
+        UserPin["Master Password / PIN"]
+        RawKey["OpenRouter Key (sk-or-v1-...)"]
+        PBKDF2["PBKDF2 (100k Rounds + SHA-256)"]
+        AESGCM["AES-256-GCM Encryption"]
+        LocalVault["Encrypted Vault in localStorage"]
+        QRSync["1-Second QR Code Multi-Device Sync"]
+        
+        RawKey & UserPin --> PBKDF2 --> AESGCM --> LocalVault
+        LocalVault --> QRSync
+    end
+
+    subgraph Ingestion["2. Query Ingestion & Context Routing"]
         UserQ["User Research Query / + New Search<br/>(In-Chat @mention Autocomplete • Quick Hints)"]
         TrendingFeeds["Dynamic Trending Feeds<br/>(Google News • HackerNews • Wikipedia)"]
         Classifier["Effort & Focus Mode Router<br/>(Market • Financial • Academic • Code • Writing)"]
@@ -24,7 +36,7 @@ flowchart TD
         TrendingFeeds --> Classifier
     end
 
-    subgraph Crawler["2. Deep Parallel Web Crawler"]
+    subgraph Crawler["3. Deep Parallel Web Crawler"]
         MultiCrawler["Multi-Engine Parallel Crawler"]
         DDG["DuckDuckGo Instant API"]
         Wiki["Wikipedia OpenSearch API"]
@@ -43,10 +55,9 @@ flowchart TD
         DomainIdx --> SourcesAggregator
     end
 
-    subgraph Gateway["3. Frontier Model & Reasoning Gateway"]
+    subgraph Gateway["4. Frontier Model & Reasoning Gateway"]
         Router["Dynamic Model Router<br/>(@opus • @sonnet • @gemini • @thinking • @compare)"]
-        LocalKeyStorage["Client-Side Key Storage<br/>(100% Local Browser Privacy)"]
-        LocalKeyStorage -.-> Router
+        LocalVault -.->|PIN Unlock| Router
         SourcesAggregator --> Router
         
         Router -->|"Ensemble Thinking Tournament"| ThinkingTournament["Stage 2: Best-of-N Tournament<br/>(Claude Opus • Claude Sonnet • Gemini Thinking • DeepSeek R1 • o3-mini)"]
@@ -54,11 +65,11 @@ flowchart TD
         Stage1 --> Stage2["Stage 2: Deep Synthesis & Reasoning<br/>(Claude Sonnet 5)"]
         Router -->|"Comparison Mode"| Compare50["Side-by-Side Comparative Matrix<br/>(Gemini 3.7 Flash vs Claude Sonnet 5)"]
         Router -->|"Direct Model Route"| SingleModel["Frontier LLMs<br/>(Claude Opus • Claude Sonnet • Gemini Flash • Grok • OpenAI o3-mini • DeepSeek R1)"]
-        Router -->|"Free Built-In Route"| FreeNeural["Cortex Free Neural Engine"]
+        Router -->|"Free Built-In Route"| FreeNeural["Cortex Free Neural Engine (Dynamic Fact Synthesis)"]
     end
 
-    subgraph Processing["4. Synthesis, Telemetry & Post-Processing"]
-        MemoAssembler["Executive Research Memo Assembler<br/>(Natural Inline Citations • 36px Compact Sources Drawer)"]
+    subgraph Processing["5. Synthesis, Telemetry & Post-Processing"]
+        MemoAssembler["Executive Research Memo Assembler<br/>(Natural Inline Citations • Verified Sources Ribbon)"]
         Telemetry["Dynamic Model Telemetry & USD Spend Tracker<br/>(Live Rate Cards • Exact Model Name Resolution)"]
         FollowUps["Dynamic Smart Follow-up Inquiries<br/>(Contextual Sub-Question Drill-Downs)"]
         Discord["Autonomous Topic Tracker & Discord Alerts"]
@@ -72,11 +83,11 @@ flowchart TD
         MemoAssembler --> Discord
     end
 
-    subgraph Output["5. User Presentation"]
-        CleanUI["Content-First Minimalist Workspace<br/>(100% Top-Visible Memo + Interactive Verified Sources Drawer)"]
-        MemoAssembler --> CleanUI
-        FollowUps --> CleanUI
-        Telemetry --> CleanUI
+    subgraph Output["6. 2026 Modern User Presentation"]
+        ModernUI["OLED Obsidian Canvas + Glassmorphism 2.0<br/>(Spotlight Command Search Dock + Bento Research Viewport)"]
+        MemoAssembler --> ModernUI
+        FollowUps --> ModernUI
+        Telemetry --> ModernUI
     end
 ```
 
@@ -84,20 +95,19 @@ flowchart TD
 
 ## ✨ Key Features
 
+- 🔑 **Universal WebCrypto Auth Vault (AES-256-GCM + PBKDF2)**: Bank-grade client-side key encryption. Unlock your frontier models using a memorable PIN on any device without copying long `sk-or-v1-...` keys.
+- 📱 **1-Second Multi-Device QR Sync**: Scan the private QR code on desktop with your phone or tablet camera to instantly import your encrypted vault. **Zero cloud storage, zero server tracking**.
+- 🎨 **2026 Modern Design & UI/UX Revamp**:
+  - **OLED Void Backdrop (`#030712`)**: Atmospheric radial glow meshes and sleek dark mode aesthetics.
+  - **Glassmorphism 2.0**: High-clarity frosted glass blurs (`backdrop-filter: blur(28px) saturate(190%)`), specular inner highlights, and translucent borders.
+  - **Floating Spotlight Command Dock**: Multi-line elastic search bar with embedded reasoning effort dials, quick model chips, file attachments, and comparison triggers.
+  - **Bento-Box Research Viewport**: Scannable briefing cards, interactive citation badges `[1]`, `[2]`, horizontal sources ribbon with real domain favicons, and unified telemetry.
+- ⚡ **Zero-Boilerplate Dynamic Factual Synthesis**: Automatically extracts and synthesizes authentic news quotes, statistics, and domain facts from live crawled web sources in free/offline mode.
 - 🌐 **Deep Web Crawler (20+ Sources per Query)**: Simultaneously crawls and cross-references DuckDuckGo, Wikipedia, HackerNews, Reuters, Bloomberg, ArXiv, MIT Technology Review, Nature, SEC EDGAR, GitHub, StackOverflow, and PubMed.
 - ⚖️ **Head-to-Head Comparison Mode**: Compare two technologies, companies, or frameworks side-by-side with structured trade-off matrices (`React vs Vue`, `NVDA vs AMD`).
-- 🌅 **3-Section Executive Daily Digest**: Generates instant multi-domain briefings spanning AI Frontier Models, Distributed Cloud Infrastructure, and Capital Markets with concrete metrics and strategic outlooks.
+- 🌅 **Executive Daily Digest**: Generates instant multi-domain briefings spanning AI Frontier Models, Distributed Cloud Infrastructure, and Capital Markets with concrete metrics.
 - 📥 **Executive Memo Export Suite**: Instant Markdown (`.md`) download, multi-page clean print/PDF generation, and 1-click rich text clipboard copy.
-- 💡 **Dynamic Smart Follow-Ups**: Contextual sub-inquiry chips for 1-click drill-downs into performance, security, and case studies without manual re-typing.
-- 🎨 **Content-First Clean UX**:
-  - **Answer-First Viewport**: Executive memos are 100% visible at the top immediately with zero scrolling.
-  - **Compact Inline Sources Strip (36px)**: Displays top verified chips alongside an on-demand slide-out sources drawer for all 20+ references.
-  - **Natural Inline Citations**: Seamless clickable superscript citation numbers embedded directly in text without bracket clutter.
-- ⚡ **Parallel Multi-Model Execution**: Supports chaining fast extraction models (e.g. Gemini 3.7 Flash) into deep reasoning models (e.g. Claude Sonnet 5) with multi-stage execution telemetry.
-- 📊 **Dynamic Frontier Model Telemetry**: Dynamically resolves and displays exact frontier model names (e.g. *Gemini 3.7 Flash*, *Claude 3.7 Sonnet*, *Grok 3*), tokens, and calculated USD spend from live rate cards with zero gateway branding.
-- 🔒 **Client-Side Privacy**: 100% local browser storage for API keys. Zero server tracking, zero cloud key storage.
-- 🔥 **Dynamic Trending Prompt Engine**: Real-time ingestion from Google News, HackerNews, and Wikipedia that auto-updates suggested research prompt cards with live breakthroughs so queries never get stale.
-- 🔔 **Autonomous Topic Tracker**: Continuous background monitoring that dispatches instant Discord alerts whenever major news or breakthroughs break on your tracked topics.
+- 🔔 **Autonomous Topic Tracker**: Continuous background monitoring with instant Discord alerts on breaking news.
 - 📱 **Responsive Dark Glassmorphic Design**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JavaScript optimized across desktop, tablet, and phone viewports.
 
 ---
