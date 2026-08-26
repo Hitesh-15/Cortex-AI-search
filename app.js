@@ -2210,7 +2210,7 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
     const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a frontier AI search and market intelligence engine.
 ${cortexTemporal.getSystemPromptContext()}
 
-User Search Query: "${cleanQuery}"
+User Search Query: "${query}"
 
 Verified Web Sources (Crawled on ${todayFull}):
 ${sourceContext}
