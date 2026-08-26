@@ -69,6 +69,31 @@ class CortexTemporalIntelligenceEngine {
         };
 
         this.loadPersistedState();
+        this.startRealtimeClock();
+    }
+
+    startRealtimeClock() {
+        this.tickClock();
+        setInterval(() => this.tickClock(), 1000);
+    }
+
+    tickClock() {
+        const now = new Date();
+        const dateEl = document.getElementById("cortexLiveClockDate");
+        const timeEl = document.getElementById("cortexLiveClockTime");
+
+        if (dateEl) {
+            dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        if (timeEl) {
+            const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true });
+            let tzName = "";
+            try {
+                tzName = Intl.DateTimeFormat('en-US', { timeZoneName: 'short' }).formatToParts(now).find(p => p.type === 'timeZoneName')?.value || "";
+            } catch (e) {}
+            timeEl.textContent = tzName ? `${timeStr} ${tzName}` : timeStr;
+        }
     }
 
     loadPersistedState() {
@@ -108,7 +133,11 @@ class CortexTemporalIntelligenceEngine {
     }
 
     getCurrentTime() {
-        return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true });
+    }
+
+    getExactUtcIso() {
+        return new Date().toISOString();
     }
 
     getTimePeriod() {
@@ -138,6 +167,7 @@ class CortexTemporalIntelligenceEngine {
     }
 
     getSystemPromptContext() {
+        const now = new Date();
         const gold = this.getAsset('gold');
         const silver = this.getAsset('silver');
         const oil = this.getAsset('oil');
@@ -146,16 +176,23 @@ class CortexTemporalIntelligenceEngine {
         const us10y = this.getAsset('us10y');
         const currentTime = this.getCurrentTime();
         const timePeriod = this.getTimePeriod();
+        const utcIso = this.getExactUtcIso();
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+        const epochMs = now.getTime();
 
-        return `CRITICAL SYSTEM TIMESTAMP & UNIFIED TEMPORAL TELEMETRY:
+        return `CRITICAL SYSTEM TIMESTAMP & REAL-TIME TEMPORAL ANCHOR:
+- Real-Time UTC Timestamp: ${utcIso} (Epoch: ${epochMs}ms)
 - Today's Live Date: ${this.getTodayFull()} (${this.getTodayIso()})
-- Current Local Time: ${currentTime} [${timePeriod}]
+- Live Local Time: ${currentTime} [${timePeriod}] (Timezone: ${tz})
 - Active Calendar Year: ${this.getCurrentYear()}
 - Real-Time Live Browsing: ACTIVE
-- STRICT SIGNAL & DIRECT ANSWER RULES:
+- STRICT RECENCY & SIGNAL DIRECTIVES:
+  * You are running inside the active live ${this.getCurrentYear()} search engine with live internet grounding.
+  * All relative queries ("latest", "today", "current", "recent", "now", "this week", "this quarter") MUST be evaluated relative to ${this.getTodayFull()} (${utcIso}).
+  * Prioritize the most recent ${this.getCurrentYear()} announcements, benchmarks, product iterations, and official data.
   * DO NOT start answers with conversational greetings (e.g. NEVER say "Good morning", "Hello", etc.).
-  * DO NOT prepend redundant date headers (e.g. NEVER start with "Today is Tuesday, August 18, 2026", "Global Markets Briefing — August 18", or "Date Confirmed:") UNLESS the user explicitly asked for today's date or a morning/daily briefing.
-  * Start IMMEDIATELY with the substantive, technical, or financial answer answering the user's specific prompt.
+  * DO NOT prepend redundant date headers UNLESS the user explicitly asked for today's date or a daily briefing.
+  * Start IMMEDIATELY with the substantive, direct answer answering the user's specific prompt.
 - Verified Market Anchors (Cross-Component Synchronized):
   * Gold Spot (XAU/USD): ${gold.val} (${gold.change})
   * Silver Spot (XAG/USD): ${silver.val} (${silver.change})
@@ -166,6 +203,7 @@ class CortexTemporalIntelligenceEngine {
     }
 
     broadcastToUI() {
+        this.tickClock();
         Object.entries(this.state.marketData).forEach(([k, data]) => {
             const pill = document.querySelector(`.ticker-pill[data-ticker="${k}"]`);
             if (pill) {
