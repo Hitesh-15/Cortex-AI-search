@@ -1052,13 +1052,19 @@ function toggleWatchdogState() {
     const label = document.getElementById("watchdogLabel");
 
     if (isWatchdogActive) {
-        if (btn) btn.classList.add("active");
+        if (btn) {
+            btn.classList.add("active");
+            btn.title = "Topic Tracking Active (Discord alerts enabled)";
+        }
         if (icon) icon.className = "fa-solid fa-bell text-teal";
-        if (label) label.textContent = "Track Topic: Active (Discord)";
+        if (label) label.textContent = "Tracking";
     } else {
-        if (btn) btn.classList.remove("active");
+        if (btn) {
+            btn.classList.remove("active");
+            btn.title = "Track this topic: Receive Discord alerts whenever major news or breakthroughs break";
+        }
         if (icon) icon.className = "fa-solid fa-bell-slash";
-        if (label) label.textContent = "Track Topic: Off";
+        if (label) label.textContent = "Track";
     }
 }
 
