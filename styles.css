@@ -525,34 +525,24 @@ html, body {
     white-space: nowrap;
 }
 
-.auth-tier-free {
-    background: rgba(56, 189, 248, 0.08);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    color: var(--accent-cyan);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px;
-    border-radius: var(--radius-full);
-}
-
+.auth-tier-free,
 .auth-tier-pro {
-    background: rgba(245, 158, 11, 0.12);
-    border: 1px solid rgba(245, 158, 11, 0.35);
-    color: #fbbf24;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 10px;
-    border-radius: var(--radius-full);
-    box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
+    font-size: inherit;
+    color: inherit;
 }
 
 .btn-header-auth {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    padding: 5px 14px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    color: var(--accent-cyan);
+    padding: 6px 14px;
     border-radius: var(--radius-full);
     font-size: 0.8rem;
     font-weight: 600;
@@ -566,15 +556,21 @@ html, body {
 
 .btn-header-auth:hover {
     background: rgba(56, 189, 248, 0.15);
-    border-color: rgba(56, 189, 248, 0.4);
+    border-color: rgba(56, 189, 248, 0.5);
     transform: translateY(-1px);
 }
 
 .btn-header-auth.logged-in {
     background: rgba(245, 158, 11, 0.12);
-    border-color: rgba(245, 158, 11, 0.4);
+    border: 1px solid rgba(245, 158, 11, 0.4);
     color: #fbbf24;
     box-shadow: 0 0 14px rgba(245, 158, 11, 0.18);
+}
+
+.btn-header-auth.logged-in:hover {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.6);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
 }
 
 /* ==========================================================================
