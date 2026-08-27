@@ -4213,23 +4213,35 @@ var CortexAuthVault = {
 
     // Restore persistent session or incoming cross-device sync hash on page load
     init() {
-        // 1. Check for incoming cross-device sync URL hash (#vault=...)
-        if (window.location.hash && window.location.hash.startsWith("#vault=")) {
+        // 1. Check for incoming cross-device sync URL hash (#sync=... or #vault=...)
+        if (window.location.hash && (window.location.hash.startsWith("#sync=") || window.location.hash.startsWith("#vault="))) {
             try {
-                const rawB64 = window.location.hash.substring(7);
+                const isBundle = window.location.hash.startsWith("#sync=");
+                const rawB64 = window.location.hash.substring(isBundle ? 6 : 7);
                 const jsonStr = decodeURIComponent(atob(rawB64));
                 const parsed = JSON.parse(jsonStr);
-                if (parsed.salt && parsed.iv && parsed.data) {
-                    localStorage.setItem(this.STORAGE_KEY, jsonStr);
-                    if (window.history && window.history.replaceState) {
-                        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+
+                if (isBundle && parsed.threads && Array.isArray(parsed.threads)) {
+                    const existingIds = new Set((appState.threads || []).map(t => t.id));
+                    const newThreads = parsed.threads.filter(t => !existingIds.has(t.id));
+                    appState.threads = [...newThreads, ...appState.threads];
+                    saveThreadsToLocalStorage();
+                    renderThreadHistory();
+                    if (parsed.vault) {
+                        localStorage.setItem(this.STORAGE_KEY, typeof parsed.vault === "string" ? parsed.vault : JSON.stringify(parsed.vault));
                     }
-                    setTimeout(() => {
-                        openAuthModal();
-                        switchAuthTab("unlock");
-                        showAuthAlert("authUnlockAlert", "📱 Encrypted Vault Imported! Enter your PIN to unlock.", "success");
-                    }, 350);
+                } else if (parsed.salt && parsed.iv && parsed.data) {
+                    localStorage.setItem(this.STORAGE_KEY, jsonStr);
                 }
+
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+                }
+                setTimeout(() => {
+                    openAuthModal();
+                    switchAuthTab("unlock");
+                    showAuthAlert("authUnlockAlert", "📱 All Search Threads & Vault Imported! Enter your PIN to unlock Pro.", "success");
+                }, 350);
             } catch (e) {
                 console.warn("Invalid vault sync hash payload", e);
             }
@@ -4529,19 +4541,29 @@ function switchAuthTab(tab) {
     }
 }
 
+function generateActiveSyncBundleUrl() {
+    const vaultPayload = CortexAuthVault.getVaultPayload();
+    const validThreads = (appState.threads || []).filter(t => t.steps && t.steps.length > 0);
+    const bundle = {
+        vault: vaultPayload,
+        threads: validThreads,
+        settings: {
+            provider: appState.settings?.provider || "openrouter",
+            model: appState.settings?.model || "openrouter/auto"
+        },
+        ts: Date.now()
+    };
+    const jsonStr = JSON.stringify(bundle);
+    const encoded = btoa(encodeURIComponent(jsonStr));
+    return `${window.location.origin}${window.location.pathname}#sync=${encoded}`;
+}
+
 function renderVaultQRCode() {
     const container = document.getElementById("qrCodeCanvasContainer");
     if (!container) return;
     container.innerHTML = "";
 
-    const payload = CortexAuthVault.getVaultPayload();
-    if (!payload) {
-        container.innerHTML = `<p style="color: #f87171; font-size: 0.82rem; padding: 20px;">No encrypted vault configured on this device yet.<br>Please set up your PIN in the "Vault Setup" tab first.</p>`;
-        return;
-    }
-
-    const encoded = btoa(encodeURIComponent(payload));
-    const syncUrl = `${window.location.origin}${window.location.pathname}#vault=${encoded}`;
+    const syncUrl = generateActiveSyncBundleUrl();
 
     if (typeof QRCode !== "undefined") {
         try {
@@ -4551,10 +4573,10 @@ function renderVaultQRCode() {
                 height: 170,
                 colorDark: "#030712",
                 colorLight: "#ffffff",
-                correctLevel: (typeof QRCode.CorrectLevel !== "undefined") ? QRCode.CorrectLevel.M : 0
+                correctLevel: (typeof QRCode.CorrectLevel !== "undefined") ? QRCode.CorrectLevel.L : 0
             });
         } catch (e) {
-            container.innerHTML = `<p style="color: #64748b; font-size: 0.8rem; padding: 10px;">QR generation active. Use "Copy Sync Link" below to open on mobile.</p>`;
+            container.innerHTML = `<p style="color: #64748b; font-size: 0.8rem; padding: 10px;">Use the <strong>Copy Sync Link</strong> button below to open on your phone.</p>`;
         }
     } else {
         container.innerHTML = `<p style="color: #64748b; font-size: 0.8rem; padding: 10px;">Use the <strong>Copy Sync Link</strong> button below to open on your phone.</p>`;
@@ -4562,13 +4584,7 @@ function renderVaultQRCode() {
 }
 
 function copyVaultSyncLink() {
-    const payload = CortexAuthVault.getVaultPayload();
-    if (!payload) {
-        alert("Please configure your vault first in the 'Vault Setup' tab.");
-        return;
-    }
-    const encoded = btoa(encodeURIComponent(payload));
-    const syncUrl = `${window.location.origin}${window.location.pathname}#vault=${encoded}`;
+    const syncUrl = generateActiveSyncBundleUrl();
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(syncUrl).then(() => {
@@ -4577,16 +4593,13 @@ function copyVaultSyncLink() {
                 btn.innerHTML = `<i class="fa-solid fa-check text-emerald"></i> <span>Link Copied!</span>`;
                 setTimeout(() => {
                     btn.innerHTML = `<i class="fa-solid fa-copy text-cyan"></i> <span>Copy Sync Link</span>`;
-                }, 2000);
-            }
-            if (typeof showToast === "function") {
-                showToast("📋 Encrypted Sync Link Copied!", "success");
+                }, 2500);
             }
         }).catch(() => {
-            prompt("Copy this Sync URL and open it on your mobile browser:", syncUrl);
+            prompt("Copy this 1-Click Sync Link and open it on your mobile browser:", syncUrl);
         });
     } else {
-        prompt("Copy this Sync URL and open it on your mobile browser:", syncUrl);
+        prompt("Copy this 1-Click Sync Link and open it on your mobile browser:", syncUrl);
     }
 }
 
