@@ -4708,6 +4708,70 @@ function toggleDigestAccordion(accId, btn) {
 }
 
 /* ==========================================================================
+   MULTI-DEVICE WORKSPACE & THREAD BACKUP / SYNC ENGINE
+   ========================================================================== */
+function exportWorkspaceJSON() {
+    const validThreads = (appState.threads || []).filter(t => t.steps && t.steps.length > 0);
+    const backupData = {
+        cortex_version: "4.6.0",
+        export_date: new Date().toISOString(),
+        threads: validThreads,
+        settings: {
+            provider: appState.settings?.provider || "openrouter",
+            model: appState.settings?.model || "openrouter/auto",
+            costRouting: appState.settings?.costRouting || "min_cost"
+        },
+        vault: (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getVaultPayload) ? CortexAuthVault.getVaultPayload() : null
+    };
+
+    const jsonStr = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cortex_workspace_sync_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importWorkspaceJSON(event) {
+    const file = event?.target?.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            let importedCount = 0;
+            if (data.threads && Array.isArray(data.threads)) {
+                const existingIds = new Set(appState.threads.map(t => t.id));
+                const newThreads = data.threads.filter(t => !existingIds.has(t.id) && t.steps && t.steps.length > 0);
+                appState.threads = [...newThreads, ...appState.threads];
+                saveThreadsToLocalStorage();
+                renderThreadHistory();
+                importedCount = newThreads.length;
+                if (newThreads.length > 0) {
+                    appState.activeThreadId = newThreads[0].id;
+                    renderViewport();
+                }
+            }
+            if (data.vault && typeof CortexAuthVault !== "undefined") {
+                localStorage.setItem(CortexAuthVault.STORAGE_KEY, typeof data.vault === "string" ? data.vault : JSON.stringify(data.vault));
+                CortexAuthVault.updateAuthUI();
+            }
+            if (event.target) event.target.value = "";
+            alert(`✅ Successfully imported ${importedCount} threads and synchronized workspace settings!`);
+        } catch (err) {
+            console.error("Workspace Import Error:", err);
+            alert("❌ Failed to parse workspace backup file. Please ensure it is a valid Cortex JSON backup.");
+        }
+    };
+    reader.readAsText(file);
+}
+
+/* ==========================================================================
    INTERACTIVE DATA & BENCHMARK CHARTING ENGINE
    ========================================================================== */
 function generateInteractiveChartHTML(query) {
