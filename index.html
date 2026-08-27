@@ -463,15 +463,20 @@
                     <p style="color: #94a3b8; font-size: 0.84rem; max-width: 380px; margin: 0 auto 16px auto; line-height: 1.5;">
                         Your device is authenticated. Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, and DeepSeek R1 are active.
                     </p>
-                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <button type="button" class="btn-secondary" onclick="switchAuthTab('sync')" style="font-size: 0.82rem; padding: 8px 14px;">
-                            <i class="fa-solid fa-mobile-screen-button text-cyan"></i> Sync to Mobile (QR)
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;">
+                        <button type="button" class="btn-primary" onclick="switchAuthTab('cloudSync')" style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; font-size: 0.86rem; padding: 10px 18px; font-weight: 600; border-radius: 8px; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Live Cloud Auto-Sync (6-Digit Code)
                         </button>
-                        <button type="button" class="btn-secondary" onclick="switchAuthTab('setup')" style="font-size: 0.82rem; padding: 8px 14px;">
-                            <i class="fa-solid fa-key"></i> Change Key / PIN
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <button type="button" class="btn-secondary" onclick="switchAuthTab('sync')" style="font-size: 0.8rem; padding: 8px 14px;">
+                            <i class="fa-solid fa-mobile-screen-button text-cyan"></i> Mobile QR
                         </button>
-                        <button type="button" onclick="handleAuthLogout()" style="font-size: 0.82rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
-                            <i class="fa-solid fa-lock"></i> Lock Device / Logout
+                        <button type="button" class="btn-secondary" onclick="switchAuthTab('setup')" style="font-size: 0.8rem; padding: 8px 14px;">
+                            <i class="fa-solid fa-key"></i> Key & PIN Setup
+                        </button>
+                        <button type="button" onclick="handleAuthLogout()" style="font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 8px 14px; border-radius: 6px; cursor: pointer;">
+                            <i class="fa-solid fa-lock"></i> Logout
                         </button>
                     </div>
                 </div>

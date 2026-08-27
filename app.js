@@ -4510,9 +4510,13 @@ function switchAuthTab(tab) {
     if (tabCloudSync) tabCloudSync.style.display = (tab === "cloudSync") ? "block" : "none";
     if (tabUnlockedView) tabUnlockedView.style.display = (tab === "unlocked") ? "block" : "none";
 
-    if (tabsNav) tabsNav.style.display = (tab === "unlocked") ? "none" : "flex";
+    if (tabsNav) tabsNav.style.display = "flex";
 
-    if (btnUnlock) btnUnlock.className = (tab === "unlock") ? "auth-tab-btn active" : "auth-tab-btn";
+    if (btnUnlock) {
+        btnUnlock.className = (tab === "unlock" || tab === "unlocked") ? "auth-tab-btn active" : "auth-tab-btn";
+        btnUnlock.innerHTML = CortexAuthVault.isLoggedIn() ? `<i class="fa-solid fa-circle-check text-emerald"></i> Pro Status` : `<i class="fa-solid fa-unlock-keyhole"></i> Unlock Pro`;
+        btnUnlock.onclick = () => switchAuthTab(CortexAuthVault.isLoggedIn() ? "unlocked" : "unlock");
+    }
     if (btnSync) btnSync.className = (tab === "sync") ? "auth-tab-btn active" : "auth-tab-btn";
     if (btnSetup) btnSetup.className = (tab === "setup") ? "auth-tab-btn active" : "auth-tab-btn";
     if (btnCloudSync) btnCloudSync.className = (tab === "cloudSync") ? "auth-tab-btn active" : "auth-tab-btn";
