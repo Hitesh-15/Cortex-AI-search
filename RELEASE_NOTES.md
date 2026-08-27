@@ -41,6 +41,12 @@ graph TD
     end
 ```
 
+#### ☁️ Zero-Config 6-Digit Live Multi-Device Auto-Sync (E2EE)
+- **Zero Server Hosting**: Works automatically out-of-the-box with zero configuration, server setup, or database hosting required.
+- **6-Digit Device Pairing Code**: Generates a memorable sync pairing code (e.g. `CTX-849204`) to link any laptop, desktop, or mobile phone in seconds.
+- **Continuous Background Auto-Sync**: Automatically synchronizes all search threads, research memos, and API keys across devices in real time with background polling and instant focus refresh.
+- **End-to-End Encryption**: All data is encrypted client-side using `AES-256-GCM` before leaving your browser, ensuring zero-knowledge cloud relaying.
+
 #### ⏱️ Real-Time 1-Second Precision Clock Counter & Prompt Anchoring
 - **Continuous 1000ms Interval Timer**: Added `startRealtimeClock()` to `CortexTemporalIntelligenceEngine` that updates second-by-second across UTC, local time, timezone, and calendar date.
 - **Frontier Prompt Grounding**: Automatically injects exact live UTC ISO-8601 timestamps, epoch milliseconds, and local timezone into every LLM request (`callOpenRouterProvider`, `callGeminiProvider`, `callOpenAIProvider`, `callClaudeProvider`), ensuring all relative queries (*"latest"*, *"today"*, *"current"*, *"this week"*) strictly prioritize 2026 data.
