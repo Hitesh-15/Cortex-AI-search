@@ -4,6 +4,63 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v4.6.0] — 2026-08-26
+### **Live 1-Second Clock Counter Telemetry, Thread History Restoration Engine, Clean Citation Parsing, and Viewport Dock Isolation**
+
+```mermaid
+graph TD
+    subgraph TemporalEngine ["⏱️ Real-Time 1-Second Clock Telemetry"]
+        Tick["1000ms Interval Clock Counter"]
+        UTC["UTC ISO-8601 + Epoch ms"]
+        Local["Local Time + Timezone (EDT)"]
+        PromptAnchor["System Prompt Recency Injector"]
+        HeaderBadge["Live Pulse Header Clock Badge"]
+        
+        Tick --> UTC & Local --> PromptAnchor & HeaderBadge
+    end
+
+    subgraph ThreadPipeline ["🧵 Robust Thread History & Navigation"]
+        SearchExec["executeSearch()"]
+        PruneDummy["Prune Empty Dummy Threads"]
+        ThreadStore["localStorage (ambu_threads)"]
+        SidebarClick["Click Sidebar Thread Item"]
+        RestoreView["Instant Viewport & Memo Restoration"]
+        
+        SearchExec --> PruneDummy --> ThreadStore
+        SidebarClick --> RestoreView
+    end
+
+    subgraph RenderPolish ["🎨 Citation & Dock Ergonomics"]
+        NormCitation["Single-Pass [N] Citation Normalizer"]
+        ZeroBleed["Clean HTML Output (Zero Attribute Corruption)"]
+        DockScrim["Frosted Bottom Gradient Scrim"]
+        PadClearance["280px Scroll Clearance (0% Overlap)"]
+        
+        NormCitation --> ZeroBleed
+        DockScrim --> PadClearance
+    end
+```
+
+#### ⏱️ Real-Time 1-Second Precision Clock Counter & Prompt Anchoring
+- **Continuous 1000ms Interval Timer**: Added `startRealtimeClock()` to `CortexTemporalIntelligenceEngine` that updates second-by-second across UTC, local time, timezone, and calendar date.
+- **Frontier Prompt Grounding**: Automatically injects exact live UTC ISO-8601 timestamps, epoch milliseconds, and local timezone into every LLM request (`callOpenRouterProvider`, `callGeminiProvider`, `callOpenAIProvider`, `callClaudeProvider`), ensuring all relative queries (*"latest"*, *"today"*, *"current"*, *"this week"*) strictly prioritize 2026 data.
+- **Top Header Status Badge**: Added a live ticking status badge with a pulsing cyan indicator dot in the top navigation bar.
+
+#### 🧵 Thread History Navigation & Bidirectional Viewport Sync
+- **Resolved Sidebar Thread Switching**: Fixed an issue where clicking on a previous search thread in the left sidebar did not render the memo.
+- **Pruned Empty Dummy Threads**: Replaced the New Search handler with `resetToNewSearch()` to prevent blank dummy items from cluttering the sidebar.
+- **Instant Memo Restoration**: Clicking any sidebar thread restores the synthesized research memo, verified sources strip, and interactive follow-up chips with smooth container scrolling.
+
+#### 🎯 Clean Citation Engine & Section Standardizer
+- **Eliminated Attribute Collision (`">2.`, `">4.`)**: Refactored regex citation replacement into a single clean pass without bracketed attributes, preventing HTML corruption and removing whitespace before trailing punctuation marks (`[1][2].`).
+- **Standardized Section Headers**: Automatically converts `<h2>`, `<h3>`, `<h4>` headers and standalone title lines into styled `.bento-section-header` components with cyan accent icons and border dividers.
+
+#### 📐 Viewport Frame Lock & Command Dock Scrim
+- **Fixed Upward Viewport Displacement**: Locked `html, body` with fixed positioning and routed all scrolling strictly to the inner `#viewScrollArea` container.
+- **Frosted Gradient Dock Scrim**: Added a backdrop blur scrim to `.bottom-search-wrapper` with `pointer-events: none` on the container and `280px` scroll clearance so text and follow-up chips are never covered.
+
+---
+
 ## 🌟 [v4.5.0] — 2026-08-25
 ### **Universal WebCrypto Auth Vault, 1-Second Multi-Device QR Sync, 2026 Modern Design & UI/UX Revamp, and Zero-Boilerplate Factual Synthesis**
 
