@@ -624,8 +624,7 @@ function setupNavigationListeners() {
     if (btnNewThread) {
         btnNewThread.addEventListener("click", (e) => {
             e.preventDefault();
-            createNewThread();
-            closeMobileSidebar();
+            resetToNewSearch();
         });
     }
 
@@ -1583,21 +1582,46 @@ async function runAsyncSearchPipeline(userQuery) {
     }
 }
 
+function resetToNewSearch() {
+    appState.activeThreadId = null;
+    appState.isSearching = false;
+    // Prune any empty dummy threads from state and localStorage
+    appState.threads = appState.threads.filter(t => t.steps && t.steps.length > 0);
+    saveThreadsToLocalStorage();
+    renderThreadHistory();
+    renderViewport();
+    closeMobileSidebar();
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.value = "";
+        searchInput.focus();
+    }
+}
+
 function createNewThread(initialQuery = "") {
     const threadId = "thread_" + Date.now();
     const newThread = {
         id: threadId,
-        title: initialQuery ? (initialQuery.substring(0, 30) + "...") : "New Search Thread",
+        title: initialQuery ? (initialQuery.substring(0, 36) + (initialQuery.length > 36 ? "..." : "")) : "New Search Thread",
         focusMode: appState.activeFocusMode,
         date: new Date().toLocaleDateString(),
         steps: []
     };
 
+    // Prune any empty dummy threads before adding a new thread
+    appState.threads = appState.threads.filter(t => t.steps && t.steps.length > 0);
     appState.threads.unshift(newThread);
     appState.activeThreadId = threadId;
     saveThreadsToLocalStorage();
     renderThreadHistory();
-    renderViewport();
+
+    const heroView = document.getElementById("emptyHeroView");
+    const container = document.getElementById("activeThreadContainer");
+    if (heroView) heroView.style.display = "none";
+    if (container) {
+        container.style.display = "flex";
+        container.innerHTML = "";
+    }
 
     const searchInput = document.getElementById("searchInput");
     if (searchInput) searchInput.focus();
@@ -3632,10 +3656,10 @@ function renderViewport() {
 
                 const followUpsMarkup = (step.related && step.related.length > 0) ? `
                     <div class="related-questions-wrapper" style="margin-top: 14px;">
-                        <span class="related-label"><i class="fa-solid fa-lightbulb text-cyan"></i> Suggested Follow-up Searches:</span>
+                        <span class="related-label"><i class="fa-solid fa-lightbulb text-cyan"></i> Cortex Suggested Follow-up Searches:</span>
                         <div class="related-chips">
                             ${step.related.map(q => `
-                                <button type="button" class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}')">
+                                <button type="button" class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}', true)">
                                     <span>${q}</span>
                                     <i class="fa-solid fa-arrow-right text-muted"></i>
                                 </button>
@@ -3656,6 +3680,8 @@ function renderViewport() {
                 `;
             }).join('');
         }
+        const scrollArea = document.getElementById("viewScrollArea");
+        if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
     }
 }
 
@@ -3664,20 +3690,24 @@ function renderThreadHistory() {
     const countBadge = document.getElementById("threadCountBadge");
     if (!container) return;
 
+    // Prune & filter out threads with 0 steps (except if active thread is currently being searched)
+    const validThreads = appState.threads.filter(t => (t.steps && t.steps.length > 0) || (t.id === appState.activeThreadId && appState.isSearching));
+
     if (countBadge) {
-        countBadge.textContent = appState.threads.length;
+        countBadge.textContent = validThreads.length;
     }
 
-    if (appState.threads.length === 0) {
+    if (validThreads.length === 0) {
         container.innerHTML = `<span class="text-muted" style="font-size:0.75rem; padding:8px 6px;">No search history yet.</span>`;
         return;
     }
 
-    container.innerHTML = appState.threads.map(t => {
+    container.innerHTML = validThreads.map(t => {
         const costStr = t.cumulativeCostUSD ? `$${t.cumulativeCostUSD.toFixed(4)}` : "";
         const isWatchdog = t.isWatchdogActive;
+        const isActive = t.id === appState.activeThreadId;
         return `
-            <div class="thread-item ${t.id === appState.activeThreadId ? 'active' : ''}" onclick="switchThread('${t.id}')" title="${t.title}">
+            <div class="thread-item ${isActive ? 'active' : ''}" onclick="switchThread('${t.id}')" title="${t.title}">
                 <span class="thread-item-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
                     <i class="fa-regular fa-message text-muted" style="margin-right: 6px; font-size: 0.75rem;"></i> ${t.title}
                 </span>
@@ -3710,6 +3740,7 @@ function switchThread(threadId) {
     appState.activeThreadId = threadId;
     renderThreadHistory();
     renderViewport();
+    closeMobileSidebar();
     const scrollArea = document.getElementById("viewScrollArea");
     if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
 }
