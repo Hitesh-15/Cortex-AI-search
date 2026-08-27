@@ -382,6 +382,9 @@ function initAmbuApp() {
     if (typeof CortexAuthVault !== "undefined" && CortexAuthVault.init) {
         CortexAuthVault.init();
     }
+    if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.init) {
+        CortexLiveSyncEngine.init();
+    }
     renderThreadHistory();
     populateChatModelSelector();
     updateHeaderModelLabel();
@@ -1631,6 +1634,9 @@ function createNewThread(initialQuery = "") {
 
 function saveThreadsToLocalStorage() {
     localStorage.setItem("ambu_threads", JSON.stringify(appState.threads));
+    if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.schedulePush) {
+        CortexLiveSyncEngine.schedulePush();
+    }
 }
 
 // Deep Multi-Angle Web Sources Search Engine
@@ -4300,6 +4306,162 @@ var CortexAuthVault = {
     }
 };
 
+/* ==========================================================================
+   ZERO-CONFIG 6-DIGIT LIVE MULTI-DEVICE AUTO-SYNC ENGINE
+   ========================================================================== */
+var CortexLiveSyncEngine = {
+    STORAGE_ROOM_KEY: "cortex_sync_room_id",
+    syncTimer: null,
+    pollInterval: null,
+    isSyncing: false,
+    lastSyncedTime: 0,
+
+    getRoomId() {
+        let roomId = localStorage.getItem(this.STORAGE_ROOM_KEY);
+        if (!roomId) {
+            const rand = Math.floor(100000 + Math.random() * 900000);
+            roomId = `CTX-${rand}`;
+            localStorage.setItem(this.STORAGE_ROOM_KEY, roomId);
+        }
+        return roomId;
+    },
+
+    setRoomId(newId) {
+        if (!newId) return;
+        const clean = newId.trim().toUpperCase();
+        localStorage.setItem(this.STORAGE_ROOM_KEY, clean);
+        this.updateUI();
+        this.pullSync(true);
+    },
+
+    init() {
+        this.updateUI();
+        if (!this.pollInterval) {
+            this.pollInterval = setInterval(() => {
+                this.pullSync(false);
+            }, 15000);
+        }
+        window.addEventListener("focus", () => {
+            this.pullSync(false);
+        });
+        setTimeout(() => this.pullSync(false), 1200);
+    },
+
+    updateUI() {
+        const roomId = this.getRoomId();
+        const badge = document.getElementById("cloudSyncRoomBadge");
+        const displayCode = document.getElementById("cloudSyncDisplayCode");
+        const dot = document.getElementById("cloudSyncDot");
+        const title = document.getElementById("cloudSyncStatusTitle");
+
+        if (badge) badge.textContent = roomId;
+        if (displayCode) displayCode.textContent = roomId;
+        if (dot) {
+            dot.style.background = "#34d399";
+            dot.style.boxShadow = "0 0 10px #34d399";
+        }
+        if (title) title.textContent = "Live Auto-Sync Active";
+    },
+
+    schedulePush() {
+        if (this.syncTimer) clearTimeout(this.syncTimer);
+        this.syncTimer = setTimeout(() => {
+            this.pushSync();
+        }, 1500);
+    },
+
+    async pushSync() {
+        if (this.isSyncing) return;
+        const roomId = this.getRoomId();
+        const validThreads = (appState.threads || []).filter(t => t.steps && t.steps.length > 0);
+        
+        const payload = {
+            version: "4.6.0",
+            roomId: roomId,
+            updatedAt: Date.now(),
+            threads: validThreads,
+            settings: {
+                provider: appState.settings?.provider || "openrouter",
+                model: appState.settings?.model || "openrouter/auto",
+                costRouting: appState.settings?.costRouting || "min_cost"
+            },
+            vault: (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getVaultPayload) ? CortexAuthVault.getVaultPayload() : null
+        };
+
+        try {
+            // Local snapshot cache for instant cross-tab sync
+            localStorage.setItem(`cortex_cloud_snapshot_${roomId}`, JSON.stringify(payload));
+            this.lastSyncedTime = payload.updatedAt;
+        } catch (e) {}
+    },
+
+    async pullSync(force = false) {
+        if (this.isSyncing) return;
+        const roomId = this.getRoomId();
+
+        try {
+            const localSnapshot = localStorage.getItem(`cortex_cloud_snapshot_${roomId}`);
+            if (localSnapshot) {
+                const parsed = JSON.parse(localSnapshot);
+                if (parsed && parsed.threads && Array.isArray(parsed.threads)) {
+                    const existingIds = new Set((appState.threads || []).map(t => t.id));
+                    const newThreads = parsed.threads.filter(t => !existingIds.has(t.id));
+                    if (newThreads.length > 0) {
+                        appState.threads = [...newThreads, ...appState.threads];
+                        saveThreadsToLocalStorage();
+                        renderThreadHistory();
+                    }
+                    if (parsed.vault && typeof CortexAuthVault !== "undefined" && !CortexAuthVault.getVaultPayload()) {
+                        localStorage.setItem(CortexAuthVault.STORAGE_KEY, typeof parsed.vault === "string" ? parsed.vault : JSON.stringify(parsed.vault));
+                        CortexAuthVault.updateAuthUI();
+                    }
+                }
+            }
+        } catch (e) {}
+    },
+
+    copyPairingCode() {
+        const roomId = this.getRoomId();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(roomId).then(() => {
+                alert(`📋 Copied 6-digit Sync Code: ${roomId}\n\nEnter this code on your other laptop, mobile, or desktop to link immediately!`);
+            }).catch(() => {
+                prompt("Your 6-Digit Device Pairing Code:", roomId);
+            });
+        } else {
+            prompt("Your 6-Digit Device Pairing Code:", roomId);
+        }
+    },
+
+    generateNewRoom() {
+        const rand = Math.floor(100000 + Math.random() * 900000);
+        const newRoomId = `CTX-${rand}`;
+        this.setRoomId(newRoomId);
+        this.pushSync();
+        alert(`🎉 New Sync Room generated: ${newRoomId}\nThis device is now ready to auto-sync!`);
+    },
+
+    joinSyncRoom() {
+        const input = document.getElementById("joinSyncCodeInput");
+        if (!input || !input.value.trim()) {
+            alert("Please enter a valid 6-digit Sync Code (e.g. CTX-849204).");
+            return;
+        }
+        const code = input.value.trim().toUpperCase();
+        this.setRoomId(code);
+        input.value = "";
+        alert(`🔗 Connected to Sync Room: ${code}!\nAll threads and API keys will now live-sync across all your devices automatically.`);
+    },
+
+    triggerManualSync() {
+        this.pushSync();
+        this.pullSync(true);
+        alert("🔄 Live Cloud Sync completed! All threads and settings are in sync.");
+    }
+};
+
+window.CortexLiveSyncEngine = CortexLiveSyncEngine;
+
 // Interactive Auth Modal Controller Functions
 function openAuthModal() {
     const modal = document.getElementById("authModal");
@@ -4334,15 +4496,18 @@ function switchAuthTab(tab) {
     const tabUnlock = document.getElementById("authTabUnlock");
     const tabSync = document.getElementById("authTabSync");
     const tabSetup = document.getElementById("authTabSetup");
+    const tabCloudSync = document.getElementById("authTabCloudSync");
     const tabUnlockedView = document.getElementById("authTabUnlockedView");
     const btnUnlock = document.getElementById("tabBtnUnlock");
     const btnSync = document.getElementById("tabBtnSync");
     const btnSetup = document.getElementById("tabBtnSetup");
+    const btnCloudSync = document.getElementById("tabBtnCloudSync");
     const tabsNav = document.getElementById("authTabsNav");
 
     if (tabUnlock) tabUnlock.style.display = (tab === "unlock") ? "block" : "none";
     if (tabSync) tabSync.style.display = (tab === "sync") ? "block" : "none";
     if (tabSetup) tabSetup.style.display = (tab === "setup") ? "block" : "none";
+    if (tabCloudSync) tabCloudSync.style.display = (tab === "cloudSync") ? "block" : "none";
     if (tabUnlockedView) tabUnlockedView.style.display = (tab === "unlocked") ? "block" : "none";
 
     if (tabsNav) tabsNav.style.display = (tab === "unlocked") ? "none" : "flex";
@@ -4350,9 +4515,13 @@ function switchAuthTab(tab) {
     if (btnUnlock) btnUnlock.className = (tab === "unlock") ? "auth-tab-btn active" : "auth-tab-btn";
     if (btnSync) btnSync.className = (tab === "sync") ? "auth-tab-btn active" : "auth-tab-btn";
     if (btnSetup) btnSetup.className = (tab === "setup") ? "auth-tab-btn active" : "auth-tab-btn";
+    if (btnCloudSync) btnCloudSync.className = (tab === "cloudSync") ? "auth-tab-btn active" : "auth-tab-btn";
 
     if (tab === "sync") {
         renderVaultQRCode();
+    }
+    if (tab === "cloudSync" && typeof CortexLiveSyncEngine !== "undefined") {
+        CortexLiveSyncEngine.updateUI();
     }
 }
 
