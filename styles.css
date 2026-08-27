@@ -1992,17 +1992,22 @@ option:active {
 @media (max-width: 1024px) {
     .suggested-cards-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
     }
 }
 
 @media (max-width: 900px) {
+    /* Mobile Sidebar Drawer */
     .sidebar {
         position: fixed;
-        left: -280px;
+        left: -290px;
         top: 0;
         bottom: 0;
-        width: 270px;
-        box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        width: 280px;
+        z-index: 1000;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        border-right: 1px solid var(--border-glass-subtle);
+        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .sidebar.open, .sidebar.active {
         left: 0;
@@ -2010,33 +2015,178 @@ option:active {
     .sidebar-overlay.active {
         display: block;
     }
-    .btn-mobile-close, .btn-mobile-toggle, .mobile-brand-title {
+    .btn-mobile-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-mobile-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+    .mobile-brand-title {
         display: block;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #38bdf8, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     .desktop-header-content {
         display: none;
     }
-    .header-auth-badge {
-        display: none;
+
+    /* Top Header on Mobile */
+    .top-header {
+        height: 54px;
+        padding: 0 14px;
+        gap: 10px;
     }
+    .header-auth-container {
+        gap: 8px;
+    }
+    .header-live-clock {
+        padding: 3px 8px;
+        font-size: 0.72rem;
+    }
+    #cortexLiveClockDate {
+        display: none; /* Keep clean & uncluttered on mobile */
+    }
+    .btn-header-auth {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* Scroll Viewport on Mobile with Generous Border Spacing */
     .view-scroll-area {
-        padding: 20px 16px 130px 16px;
+        padding: 16px 14px 290px 14px;
+    }
+    .empty-hero {
+        padding: 24px 8px 30px 8px;
+        max-width: 100%;
     }
     .hero-title {
-        font-size: 1.85rem;
+        font-size: 1.65rem;
+        line-height: 1.25;
+        margin-bottom: 8px;
+    }
+    .hero-subtitle {
+        font-size: 0.84rem;
+        margin-bottom: 20px;
     }
     .suggested-cards-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 16px;
     }
+    .suggested-card {
+        padding: 14px 16px;
+        border-radius: 12px;
+    }
+
+    /* Decluttered Floating Search Dock on Mobile */
     .bottom-search-wrapper {
-        bottom: 16px;
-        padding: 0 12px;
+        bottom: 12px;
+        padding: 0 12px 12px 12px;
+    }
+    .search-box-container {
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .search-input-main {
+        font-size: 0.92rem;
+        padding: 12px 14px 8px 14px;
+        min-height: 48px;
+    }
+    .search-actions-bar {
+        padding: 6px 10px 10px 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+    .search-actions-bar::-webkit-scrollbar {
+        display: none;
+    }
+    .search-action-chip {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+        flex-shrink: 0;
     }
     .search-hints-strip {
         display: none;
     }
+
+    /* Bento Research Memo Layout on Mobile */
+    .query-thread-block {
+        margin-bottom: 24px;
+    }
+    .user-query-heading {
+        font-size: 1.22rem;
+        line-height: 1.35;
+        margin-bottom: 12px;
+    }
     .ai-answer-box {
-        padding: 18px 16px;
+        padding: 18px 14px;
+        border-radius: 14px;
+        font-size: 0.92rem;
+        line-height: 1.65;
+    }
+    .bento-section-header {
+        margin: 20px 0 10px 0;
+        gap: 8px;
+    }
+    .bento-section-title {
+        font-size: 1.02rem;
+    }
+    .source-chips-row {
+        gap: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    .source-chips-row::-webkit-scrollbar {
+        display: none;
+    }
+    .source-chip {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+        flex-shrink: 0;
+    }
+
+    /* Modal Layouts on Mobile */
+    .modal-box {
+        max-width: calc(100vw - 24px) !important;
+        margin: 12px auto;
+        padding: 18px 14px;
+        border-radius: 16px;
+        max-height: 88vh;
+    }
+    .auth-tabs-nav {
+        gap: 4px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    .auth-tabs-nav::-webkit-scrollbar {
+        display: none;
+    }
+    .auth-tab-btn {
+        padding: 6px 10px;
+        font-size: 0.76rem;
+        flex-shrink: 0;
     }
 }
 
