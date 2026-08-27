@@ -291,8 +291,11 @@
                 <button type="button" class="auth-tab-btn active" id="tabBtnUnlock" onclick="switchAuthTab('unlock')">
                     <i class="fa-solid fa-unlock-keyhole"></i> Unlock Pro
                 </button>
+                <button type="button" class="auth-tab-btn" id="tabBtnCloudSync" onclick="switchAuthTab('cloudSync')">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Live Cloud Auto-Sync
+                </button>
                 <button type="button" class="auth-tab-btn" id="tabBtnSync" onclick="switchAuthTab('sync')">
-                    <i class="fa-solid fa-mobile-screen-button"></i> Sync to Mobile
+                    <i class="fa-solid fa-mobile-screen-button"></i> Mobile QR
                 </button>
                 <button type="button" class="auth-tab-btn" id="tabBtnSetup" onclick="switchAuthTab('setup')">
                     <i class="fa-solid fa-sliders"></i> Vault Setup
@@ -393,6 +396,61 @@
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- TAB 4: LIVE CLOUD AUTO-SYNC (ZERO-CONFIG) -->
+            <div id="authTabCloudSync" class="auth-tab-pane" style="display: none;">
+                <div style="padding: 6px 0;">
+                    <!-- SYNC STATUS INDICATOR -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span id="cloudSyncDot" style="width: 10px; height: 10px; border-radius: 50%; background: #34d399; display: inline-block; box-shadow: 0 0 10px #34d399;"></span>
+                            <div>
+                                <div style="font-size: 0.86rem; font-weight: 600; color: #f8fafc;" id="cloudSyncStatusTitle">Live Auto-Sync Active</div>
+                                <div style="font-size: 0.74rem; color: #94a3b8;" id="cloudSyncStatusDesc">Sync Room: <strong style="color: #38bdf8; font-family: monospace;" id="cloudSyncRoomBadge">CTX-AUTO</strong></div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.triggerManualSync()" style="font-size: 0.75rem; padding: 5px 10px; border-radius: 6px;">
+                            <i class="fa-solid fa-arrows-rotate text-cyan"></i> Sync Now
+                        </button>
+                    </div>
+
+                    <!-- 6-DIGIT PAIRING CODE CARD -->
+                    <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 14px; text-align: center; margin-bottom: 14px;">
+                        <div style="font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 4px;">Your 6-Digit Device Pairing Code</div>
+                        <div id="cloudSyncDisplayCode" style="font-size: 1.65rem; font-weight: 800; letter-spacing: 0.12em; color: #38bdf8; font-family: 'JetBrains Mono', monospace; margin: 4px 0 10px 0;">CTX-849204</div>
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                            <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.copyPairingCode()" style="font-size: 0.78rem; padding: 6px 12px;">
+                                <i class="fa-solid fa-copy text-cyan"></i> Copy Pairing Code
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.generateNewRoom()" style="font-size: 0.78rem; padding: 6px 12px;" title="Generate a brand new sync room ID">
+                                <i class="fa-solid fa-plus"></i> New Room ID
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CONNECT / JOIN EXISTING ROOM -->
+                    <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #e2e8f0; display: block; margin-bottom: 6px;">
+                            <i class="fa-solid fa-link text-purple"></i> Pair with Another Laptop, Desktop or Phone
+                        </label>
+                        <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 8px 0;">Enter the 6-digit Sync Code from your other device to connect and synchronize all threads and API keys instantly:</p>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="joinSyncCodeInput" placeholder="e.g. CTX-849204" style="flex: 1; padding: 8px 12px; font-size: 0.86rem; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-transform: uppercase; font-family: monospace;">
+                            <button type="button" class="btn-primary" onclick="CortexLiveSyncEngine.joinSyncRoom()" style="font-size: 0.8rem; padding: 8px 14px; white-space: nowrap;">
+                                <i class="fa-solid fa-plug"></i> Connect Room
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 0.73rem; color: #94a3b8; line-height: 1.5; display: flex; align-items: flex-start; gap: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 6px; padding: 8px 10px;">
+                        <i class="fa-solid fa-shield-halved text-emerald" style="margin-top: 2px;"></i>
+                        <div>
+                            <strong style="color: #34d399;">100% Zero-Knowledge End-to-End Encryption</strong><br>
+                            All search threads and API keys are encrypted client-side with <strong>AES-256-GCM</strong> using your Master PIN before leaving your browser. The cloud relay stores only encrypted ciphertext.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- UNLOCKED SESSION VIEW (Shown when already authenticated) -->
