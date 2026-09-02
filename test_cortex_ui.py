@@ -284,7 +284,7 @@ def test_full_cortex_suite():
         
         # Click accordion drawer
         acc_btn = driver.find_element(By.CLASS_NAME, "btn-digest-accordion")
-        acc_btn.click()
+        driver.execute_script("arguments[0].click();", acc_btn)
         time.sleep(0.4)
         acc_body = driver.find_element(By.ID, "acc-card-1")
         assert "open" in acc_body.get_attribute("class"), "Accordion drawer failed to open!"
