@@ -16,19 +16,29 @@ Cortex is a state-of-the-art AI search engine and executive research memo platfo
 
 ```mermaid
 flowchart TD
-    subgraph Security["1. Universal WebCrypto Auth Vault (100% Client-Side Private)"]
+    subgraph Security["1. Universal WebCrypto Auth Vault & Zero-Config Multi-Device Sync"]
         UserPin["Master Password / PIN"]
         RawKey["OpenRouter Key (sk-or-v1-...)"]
         PBKDF2["PBKDF2 (100k Rounds + SHA-256)"]
         AESGCM["AES-256-GCM Encryption"]
         LocalVault["Encrypted Vault in localStorage"]
         QRSync["1-Second QR Code Multi-Device Sync"]
+        PairCode["6-Digit Device Auto-Sync (CTX-XXXXXX)"]
         
         RawKey & UserPin --> PBKDF2 --> AESGCM --> LocalVault
-        LocalVault --> QRSync
+        LocalVault --> QRSync & PairCode
     end
 
-    subgraph Ingestion["2. Query Ingestion & Context Routing"]
+    subgraph TemporalEngine["2. Real-Time Temporal Grounding Engine"]
+        ClockTick["1000ms Interval Clock Counter"]
+        TimestampFormat["Live UTC ISO-8601 & Local Timezone"]
+        HeaderPulse["Live Pulse Header Clock Badge"]
+        PromptAnchor["System Prompt Recency Injector (2026 Grounding)"]
+        
+        ClockTick --> TimestampFormat --> HeaderPulse & PromptAnchor
+    end
+
+    subgraph Ingestion["3. Query Ingestion & Context Routing"]
         UserQ["User Research Query / + New Search<br/>(In-Chat @mention Autocomplete • Quick Hints)"]
         TrendingFeeds["Dynamic Trending Feeds<br/>(Google News • HackerNews • Wikipedia)"]
         Classifier["Effort & Focus Mode Router<br/>(Market • Financial • Academic • Code • Writing)"]
@@ -36,7 +46,7 @@ flowchart TD
         TrendingFeeds --> Classifier
     end
 
-    subgraph Crawler["3. Deep Parallel Web Crawler"]
+    subgraph Crawler["4. Deep Parallel Web Crawler"]
         MultiCrawler["Multi-Engine Parallel Crawler"]
         DDG["DuckDuckGo Instant API"]
         Wiki["Wikipedia OpenSearch API"]
@@ -44,20 +54,14 @@ flowchart TD
         DomainIdx["Global Intelligence Index<br/>(Reuters, Bloomberg, ArXiv, SEC, Nature, PubMed, GitHub)"]
         
         Classifier --> MultiCrawler
-        MultiCrawler --> DDG
-        MultiCrawler --> Wiki
-        MultiCrawler --> HN
-        MultiCrawler --> DomainIdx
-        
-        DDG --> SourcesAggregator["20+ Verified Sources Aggregator & Deduplicator"]
-        Wiki --> SourcesAggregator
-        HN --> SourcesAggregator
-        DomainIdx --> SourcesAggregator
+        MultiCrawler --> DDG & Wiki & HN & DomainIdx
+        DDG & Wiki & HN & DomainIdx --> SourcesAggregator["20+ Verified Sources Aggregator & Deduplicator"]
     end
 
-    subgraph Gateway["4. Frontier Model & Reasoning Gateway"]
+    subgraph Gateway["5. Frontier Model & Reasoning Gateway"]
         Router["Dynamic Model Router<br/>(@opus • @sonnet • @gemini • @thinking • @compare)"]
         LocalVault -.->|PIN Unlock| Router
+        PromptAnchor --> Router
         SourcesAggregator --> Router
         
         Router -->|"Ensemble Thinking Tournament"| ThinkingTournament["Stage 2: Best-of-N Tournament<br/>(Claude Opus • Claude Sonnet • Gemini Thinking • DeepSeek R1 • o3-mini)"]
@@ -68,26 +72,27 @@ flowchart TD
         Router -->|"Free Built-In Route"| FreeNeural["Cortex Free Neural Engine (Dynamic Fact Synthesis)"]
     end
 
-    subgraph Processing["5. Synthesis, Telemetry & Post-Processing"]
-        MemoAssembler["Executive Research Memo Assembler<br/>(Natural Inline Citations • Verified Sources Ribbon)"]
+    subgraph Processing["6. Synthesis, Citation Engine & Post-Processing"]
+        MemoAssembler["Executive Research Memo Assembler<br/>(Single-Pass [N] Citation Normalizer • Section Standardizer)"]
         Telemetry["Dynamic Model Telemetry & USD Spend Tracker<br/>(Live Rate Cards • Exact Model Name Resolution)"]
         FollowUps["Dynamic Smart Follow-up Inquiries<br/>(Contextual Sub-Question Drill-Downs)"]
+        ThreadStore["Thread History Restoration Engine<br/>(Bidirectional Sidebar Switching & Viewport Lock)"]
         Discord["Autonomous Topic Tracker & Discord Alerts"]
         
         Stage2 --> MemoAssembler
         SingleModel --> MemoAssembler
         FreeNeural --> MemoAssembler
         
-        MemoAssembler --> Telemetry
-        MemoAssembler --> FollowUps
-        MemoAssembler --> Discord
+        MemoAssembler --> Telemetry & FollowUps & ThreadStore & Discord
     end
 
-    subgraph Output["6. 2026 Modern User Presentation"]
-        ModernUI["OLED Obsidian Canvas + Glassmorphism 2.0<br/>(Spotlight Command Search Dock + Bento Research Viewport)"]
+    subgraph Output["7. Multi-Device Adaptive Presentation Layer"]
+        LargeMonitor["Large Monitor & Ultrawide Alignment Engine<br/>(27', 33'/34' Ultrawide, 4K Grid Alignment • Proportional Sidebar)"]
+        MobilePWA["Standalone Homescreen PWA Architecture<br/>(iOS Dynamic Island / Notch & Android Safe Areas • 100dvh • 0% Overflow)"]
+        ModernUI["OLED Obsidian Canvas + Glassmorphism 2.0<br/>(Floating Spotlight Dock Scrim + Bento Viewport)"]
+        
         MemoAssembler --> ModernUI
-        FollowUps --> ModernUI
-        Telemetry --> ModernUI
+        ModernUI --> LargeMonitor & MobilePWA
     end
 ```
 
@@ -95,8 +100,11 @@ flowchart TD
 
 ## ✨ Key Features
 
-- 🔑 **Universal WebCrypto Auth Vault (AES-256-GCM + PBKDF2)**: Bank-grade client-side key encryption. Unlock your frontier models using a memorable PIN on any device without copying long `sk-or-v1-...` keys.
-- 📱 **1-Second Multi-Device QR Sync**: Scan the private QR code on desktop with your phone or tablet camera to instantly import your encrypted vault. **Zero cloud storage, zero server tracking**.
+- 🖥️ **Large Monitor & Ultrawide Alignment Engine**: Full layout alignment across 27-inch (`1240px`), 33"/34" ultrawide (`1420px`), and 4K displays with synchronized vertical bounding guidelines between header tickers, suggested prompts, memo answers, and search dock.
+- 📱 **Standalone Homescreen Bookmark & PWA Architecture**: Native web app experience with full `viewport-fit=cover`, dynamic iOS notch / Dynamic Island safe-area insets (`env(safe-area-inset-top)`), and bottom home swipe indicator / Android gesture nav clearance (`env(safe-area-inset-bottom)`).
+- ⏱️ **Live 1-Second Precision Clock & Recency Anchoring**: Continuous 1000ms temporal clock engine injecting live UTC ISO-8601 timestamps and local timezone into all LLM prompts to ground time-sensitive research queries.
+- 🔑 **Universal WebCrypto Auth Vault (AES-256-GCM + PBKDF2)**: Bank-grade client-side key encryption. Unlock your frontier models using a memorable PIN on any device without copying raw API keys.
+- ☁️ **Zero-Config 6-Digit Auto-Sync & QR Pairing**: Link laptops, desktops, and mobile devices in seconds via memorized 6-digit sync code or QR code scan with 100% client-side end-to-end encryption.
 - 🎨 **2026 Modern Design & UI/UX Revamp**:
   - **OLED Void Backdrop (`#030712`)**: Atmospheric radial glow meshes and sleek dark mode aesthetics.
   - **Glassmorphism 2.0**: High-clarity frosted glass blurs (`backdrop-filter: blur(28px) saturate(190%)`), specular inner highlights, and translucent borders.
@@ -108,7 +116,7 @@ flowchart TD
 - 🌅 **Executive Daily Digest**: Generates instant multi-domain briefings spanning AI Frontier Models, Distributed Cloud Infrastructure, and Capital Markets with concrete metrics.
 - 📥 **Executive Memo Export Suite**: Instant Markdown (`.md`) download, multi-page clean print/PDF generation, and 1-click rich text clipboard copy.
 - 🔔 **Autonomous Topic Tracker**: Continuous background monitoring with instant Discord alerts on breaking news.
-- 📱 **Responsive Dark Glassmorphic Design**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JavaScript optimized across desktop, tablet, and phone viewports.
+- 📱 **Responsive Dark Glassmorphic Design**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JavaScript optimized across desktop, ultrawide, tablet, and mobile viewports.
 
 ---
 
@@ -136,9 +144,13 @@ We maintain a comprehensive changelog documenting all daily, weekly, and monthly
 
 ## 🧪 Automated Testing
 
-Run the automated UI test suite to verify element bindings, DOM structure, and HTTP response:
+Run the automated test suites to verify element bindings, DOM structure, responsiveness, and standalone homescreen mode:
 ```bash
+# 1. Full E2E Multi-Device Desktop, Tablet & Phone Test Suite
 python test_cortex_ui.py
+
+# 2. Standalone Homescreen PWA Mobile Viewport Audit
+python test_mobile_homescreen.py
 ```
 
 ---
