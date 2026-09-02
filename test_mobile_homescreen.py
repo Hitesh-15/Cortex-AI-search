@@ -1,5 +1,5 @@
 """Comprehensive Mobile Homescreen Shortcut & Bookmark PWA Automated Test Suite
-Simulates iPhone 15/16 Pro, iPhone SE, and Google Pixel 8/9 standalone bookmark apps.
+Simulates modern iOS and Android smartphones in standalone bookmark / PWA mode.
 Validates:
 1. PWA manifest.json validity and standalone mode configuration.
 2. Viewport height/width bounds (100dvh, zero horizontal overflow).
@@ -150,28 +150,28 @@ def run_mobile_tests():
 
     devices = [
         {
-            "name": "iPhone 15 / 16 Pro (Homescreen App)",
+            "name": "iOS / Modern Standard & Pro (Homescreen App)",
             "width": 393,
             "height": 852,
             "pixelRatio": 3.0,
             "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
         },
         {
-            "name": "iPhone 15 Pro Max (Homescreen App)",
+            "name": "iOS / Modern Plus & Max (Homescreen App)",
             "width": 430,
             "height": 932,
             "pixelRatio": 3.0,
             "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
         },
         {
-            "name": "Google Pixel 8 / 9 Pro (Homescreen Shortcut)",
+            "name": "Android / Modern Flagship (Homescreen Shortcut)",
             "width": 412,
             "height": 915,
             "pixelRatio": 2.8,
             "userAgent": "Mozilla/5.0 (Linux; Android 15; Pixel 9 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36"
         },
         {
-            "name": "iPhone SE / Compact Mobile",
+            "name": "Mobile / Compact Viewport",
             "width": 375,
             "height": 667,
             "pixelRatio": 2.0,
