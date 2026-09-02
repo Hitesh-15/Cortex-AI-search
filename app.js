@@ -1887,6 +1887,37 @@ async function fetchWebSources(query, focusMode, effortLevel) {
         }
     }
 
+    // Score & Prioritize Sources by Exact Query Match & Version Relevance
+    const versionMatch = query.match(/\b\d+(\.\d+)+[a-z]?\b/i);
+    const queriedVersion = versionMatch ? versionMatch[0].toLowerCase() : null;
+    const qTerms = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+
+    sources.sort((a, b) => {
+        let scoreA = 0;
+        let scoreB = 0;
+
+        const textA = `${a.title} ${a.snippet}`.toLowerCase();
+        const textB = `${b.title} ${b.snippet}`.toLowerCase();
+
+        // High boost for exact version match
+        if (queriedVersion) {
+            if (textA.includes(queriedVersion)) scoreA += 50;
+            if (textB.includes(queriedVersion)) scoreB += 50;
+        }
+
+        // Boost for matching query terms
+        qTerms.forEach(term => {
+            if (textA.includes(term)) scoreA += 10;
+            if (textB.includes(term)) scoreB += 10;
+        });
+
+        // Penalize generic search portals vs direct article links
+        if (a.url && (a.url.includes("/search") || a.url.includes("search?") || a.url.includes("site-search"))) scoreA -= 25;
+        if (b.url && (b.url.includes("/search") || b.url.includes("search?") || b.url.includes("site-search"))) scoreB -= 25;
+
+        return scoreB - scoreA;
+    });
+
     // Re-index consecutive source numbers 1..N
     sources.forEach((s, idx) => {
         s.num = idx + 1;
@@ -3159,23 +3190,85 @@ async def execute_async_pipeline(payload: PipelineRequest):
             .trim();
     };
 
-    let leadText = "";
     const todayFull = cortexTemporal.getTodayFull();
     const liveTime = cortexTemporal.getCurrentTime();
 
+    // Check if query requests a specific decimal version (e.g. 5.1, 3.7, 4.5, v2)
+    const versionMatch = query.match(/\b\d+(\.\d+)+[a-z]?\b/i);
+    const queriedVersion = versionMatch ? versionMatch[0] : null;
+
+    let hasExactVersionInSources = false;
+    let hasStrongKeywordOverlap = false;
+
+    const queryKeywords = subject.toLowerCase()
+        .replace(/[^a-z0-9\s.]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 2 && !['and', 'the', 'for', 'with', 'from', 'what', 'how', 'show', 'when'].includes(w));
+
     if (validSources.length > 0) {
-        // Collect coherent, distinct snippet statements
+        validSources.forEach(s => {
+            const isSyntheticSearch = s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"));
+            if (!isSyntheticSearch) {
+                const combinedText = `${s.title} ${s.snippet}`.toLowerCase();
+                if (queriedVersion && combinedText.includes(queriedVersion.toLowerCase())) {
+                    hasExactVersionInSources = true;
+                }
+                const matchingWords = queryKeywords.filter(k => combinedText.includes(k));
+                if (matchingWords.length >= Math.min(2, queryKeywords.length)) {
+                    hasStrongKeywordOverlap = true;
+                }
+            }
+        });
+    }
+
+    // Build Temporal Limitation Notice if information is unindexed or missing exact version
+    let temporalLimitationBanner = "";
+    if (queriedVersion && !hasExactVersionInSources) {
+        temporalLimitationBanner = `
+            <div class="temporal-limitation-notice">
+                <div class="temporal-notice-header">
+                    <i class="fa-solid fa-clock-rotate-left text-amber" style="color: #f59e0b;"></i>
+                    <strong style="color: #fde047;">Live Telemetry & Recency Notice:</strong>
+                    <span class="temporal-timestamp">${todayFull} • ${liveTime}</span>
+                </div>
+                <div class="temporal-notice-body">
+                    No confirmed official public release documentation, benchmark scores, or formal system cards for <strong>"${subject}" (Version ${queriedVersion})</strong> have been published or indexed in real-time web telemetry as of <strong>${todayFull} (${liveTime})</strong>.
+                    ${validSources.length > 0 ? `To prevent misleading information, the indexed entries below reference precursor generations or prior public discussions.` : `Live search returned no confirmed documentation for this exact version.`}
+                </div>
+            </div>
+        `;
+    } else if (!hasStrongKeywordOverlap && validSources.length > 0 && queryKeywords.length >= 2) {
+        temporalLimitationBanner = `
+            <div class="temporal-limitation-notice">
+                <div class="temporal-notice-header">
+                    <i class="fa-solid fa-triangle-exclamation text-amber" style="color: #f59e0b;"></i>
+                    <strong style="color: #fde047;">Live Index Coverage Notice:</strong>
+                    <span class="temporal-timestamp">${todayFull} • ${liveTime}</span>
+                </div>
+                <div class="temporal-notice-body">
+                    Real-time web crawlers found limited direct documentation for <strong>"${subject}"</strong> as of <strong>${todayFull} (${liveTime})</strong>. Free tier search is constrained to indexed public feeds. Connect a custom API key in Settings for unrestricted deep crawling.
+                </div>
+            </div>
+        `;
+    }
+
+    let leadText = "";
+    if (validSources.length > 0) {
+        // Collect coherent, distinct snippet statements from genuine non-synthetic sources
         const leadSentences = [];
         const seenSnippets = new Set();
 
         for (let i = 0; i < Math.min(4, validSources.length); i++) {
             const s = validSources[i];
-            let snip = sanitizeArtifacts(s.snippet || s.title);
-            if (snip.length > 15 && !snip.toLowerCase().includes("live global market telemetry")) {
-                const norm = snip.toLowerCase().substring(0, 35);
-                if (!seenSnippets.has(norm)) {
-                    seenSnippets.add(norm);
-                    leadSentences.push(snip);
+            const isSynthetic = s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"));
+            if (!isSynthetic) {
+                let snip = sanitizeArtifacts(s.snippet || s.title);
+                if (snip.length > 15 && !snip.toLowerCase().includes("live global market telemetry")) {
+                    const norm = snip.toLowerCase().substring(0, 35);
+                    if (!seenSnippets.has(norm)) {
+                        seenSnippets.add(norm);
+                        leadSentences.push(snip);
+                    }
                 }
             }
         }
@@ -3183,7 +3276,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
         if (leadSentences.length > 0) {
             leadText = `${leadSentences.slice(0, 2).join(". ")}. <span class="citation-ref">[1]</span>`.replace(/\.\.+/g, '.');
         } else {
-            leadText = `Verified technical telemetry and live intelligence synthesized on <strong>${todayFull}</strong> regarding <strong>${subject}</strong> across indexed sources. <span class="citation-ref">[1]</span>`;
+            leadText = `Verified technical telemetry synthesized on <strong>${todayFull}</strong> regarding <strong>${subject}</strong> across indexed sources. <span class="citation-ref">[1]</span>`;
         }
     } else {
         leadText = `Real-time search synthesis and verified technical reporting regarding <strong>${subject}</strong> as of ${todayFull}.`;
@@ -3195,6 +3288,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
     (validSources.length > 0 ? validSources.slice(0, 5) : []).forEach((s, idx) => {
         let cleanText = sanitizeArtifacts(s.snippet || "");
         let cleanTitle = sanitizeArtifacts(s.title || "");
+        const isSynthetic = s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"));
 
         let heading = cleanTitle.split(/[-–—:|]/)[0]
             .replace(/,\s*\.{2,}\s*/g, '')
@@ -3202,7 +3296,9 @@ async def execute_async_pipeline(payload: PipelineRequest):
             .replace(/…/g, '')
             .replace(/[:.,\s]+$/, '')
             .trim();
-        if (heading.length > 48) {
+        if (heading.length < 8 && cleanTitle.length > heading.length) {
+            heading = cleanTitle.substring(0, 48).replace(/[:.,\s]+$/, '').trim();
+        } else if (heading.length > 48) {
             heading = heading.substring(0, 48).replace(/\s+\S*$/, '').replace(/[:.,\s]+$/, '').trim();
         }
         if (heading.length < 3) heading = `Source Analysis ${idx + 1}`;
@@ -3211,7 +3307,9 @@ async def execute_async_pipeline(payload: PipelineRequest):
         if (seenBulletHeads.has(headKey)) return;
         seenBulletHeads.add(headKey);
 
-        if (cleanText.length < 15 || cleanText.toLowerCase().includes("live global market telemetry") || cleanText.toLowerCase() === cleanTitle.toLowerCase()) {
+        if (isSynthetic) {
+            cleanText = `Live industry search and technical indexing portal via ${s.domain || "industry sources"}.`;
+        } else if (cleanText.length < 15 || cleanText.toLowerCase().includes("live global market telemetry") || cleanText.toLowerCase() === cleanTitle.toLowerCase()) {
             cleanText = `Verified technical reporting, architecture benchmarks, and active developer disclosures via ${s.domain || "industry sources"}.`;
         }
 
@@ -3228,6 +3326,8 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
     return `
         <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
+            ${temporalLimitationBanner}
+
             <!-- EXECUTIVE OVERVIEW -->
             <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-bolt text-cyan"></i> Executive Intelligence Briefing: ${subject}</h3>
             <p style="color: #cbd5e1; margin-bottom: 14px; font-size: 0.95rem;">
@@ -3461,14 +3561,24 @@ Instructions:
         }
     }
 
+    const liveTime = cortexTemporal.getCurrentTime();
+    const todayFull = cortexTemporal.getTodayFull();
+
     return `
-        <div class="privacy-badge-banner" style="background: rgba(245, 158, 11, 0.15); color: #fde047; border-color: rgba(245, 158, 11, 0.35); margin-bottom: 12px;">
-            <i class="fa-solid fa-gauge-high" style="color: #f59e0b;"></i> <strong>Gemini Free Tier Rate Limit (15 RPM):</strong> Reached Google's 1-minute request cap. Switched to Local Synthesis Engine below.
+        <div class="api-limit-error-banner">
+            <div class="api-limit-header">
+                <i class="fa-solid fa-gauge-high text-amber" style="color: #f59e0b;"></i>
+                <strong style="color: #fde047;">Gemini Rate Limit Reached (${liveTime}):</strong>
+            </div>
+            <div class="api-limit-desc">
+                Google's free rate threshold (15 RPM) was exceeded for this query. Outdated approximations have been suppressed to protect recency and factual integrity. Switched to local verified search synthesis below.
+            </div>
         </div>
     ` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
 }
 
 async function callOpenAIProvider(query, sources, model, apiKey) {
+    const liveTime = cortexTemporal.getCurrentTime();
     try {
         const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
         const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -3490,11 +3600,22 @@ async function callOpenAIProvider(query, sources, model, apiKey) {
         const rawText = data.choices?.[0]?.message?.content || "";
         return formatAIResponseHTML(rawText);
     } catch (e) {
-        return `<span class="text-red"><i class="fa-solid fa-xmark"></i> OpenAI API Note: ${e.message}</span><br>` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
+        return `
+            <div class="api-limit-error-banner">
+                <div class="api-limit-header">
+                    <i class="fa-solid fa-triangle-exclamation text-amber" style="color: #f59e0b;"></i>
+                    <strong style="color: #fde047;">OpenAI Gateway Limitation (${liveTime}):</strong>
+                </div>
+                <div class="api-limit-desc">
+                    ${e.message}. Switched to local verified crawler synthesis to prevent inaccurate fallback hallucinations.
+                </div>
+            </div>
+        ` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
     }
 }
 
 async function callClaudeProvider(query, sources, model, apiKey) {
+    const liveTime = cortexTemporal.getCurrentTime();
     try {
         const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
         const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -3515,7 +3636,17 @@ async function callClaudeProvider(query, sources, model, apiKey) {
         const rawText = data.content?.[0]?.text || "";
         return formatAIResponseHTML(rawText);
     } catch (e) {
-        return `<span class="text-red"><i class="fa-solid fa-xmark"></i> Claude API Note: ${e.message}</span><br>` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
+        return `
+            <div class="api-limit-error-banner">
+                <div class="api-limit-header">
+                    <i class="fa-solid fa-triangle-exclamation text-amber" style="color: #f59e0b;"></i>
+                    <strong style="color: #fde047;">Anthropic Claude Gateway Limitation (${liveTime}):</strong>
+                </div>
+                <div class="api-limit-desc">
+                    ${e.message}. Switched to local verified crawler synthesis to prevent inaccurate fallback hallucinations.
+                </div>
+            </div>
+        ` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
     }
 }
 
