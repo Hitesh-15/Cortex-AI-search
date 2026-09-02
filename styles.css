@@ -2504,3 +2504,74 @@ option:active {
         color: #0284c7 !important;
     }
 }
+
+/* ==========================================================================
+   TEMPORAL LIMITATION NOTICES & TOKEN CAPACITY BANNERS
+   ========================================================================== */
+.temporal-limitation-notice {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 0 0 16px 0;
+    backdrop-filter: blur(8px);
+}
+
+.temporal-notice-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.temporal-timestamp {
+    font-size: 0.76rem;
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.15);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    margin-left: auto;
+}
+
+.temporal-notice-body {
+    color: #f1f5f9;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.api-limit-error-banner {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-left: 4px solid #ef4444;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 0 0 18px 0;
+    backdrop-filter: blur(8px);
+}
+
+.api-limit-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fca5a5;
+    font-size: 0.96rem;
+    margin-bottom: 8px;
+}
+
+.api-limit-desc {
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.api-limit-action-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
