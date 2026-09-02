@@ -5,7 +5,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v4.7.0] — 2026-09-01
-### **Large Monitor Alignment Engine (27", 33"/34" Ultrawide, 4K), Standalone Homescreen PWA Architecture (iPhone & Pixel), and Safe-Area Geometry**
+### **Large Monitor Alignment Engine (27", 33"/34" Ultrawide, 4K), Standalone Homescreen PWA Architecture (iOS & Android), and Safe-Area Geometry**
 
 ```mermaid
 graph TD
@@ -34,7 +34,7 @@ graph TD
 - **Unified Header & Search Dock Bounding**: Synchronized top ticker pills, hero title, suggested prompt cards, query thread answers, and floating spotlight search dock to the exact same vertical bounding guidelines via `calc((100% - var(--content-max-width)) / 2)`.
 - **Proportional Left Sidebar Tabs**: Left research desk tabs ("Research Desks") scale proportionally (`280px` to `310px`) on ultra-wide screens with refined padding, typography, and clear visual hierarchy.
 
-#### 📱 Standalone Homescreen Bookmark & PWA Architecture (iPhone & Google Pixel)
+#### 📱 Standalone Homescreen Bookmark & PWA Architecture (iOS & Android Mobile)
 - **Full Notch & Dynamic Island Clearance**: Implemented `viewport-fit=cover` and dynamic safe-area insets (`env(safe-area-inset-top)`) across `.top-header`, ensuring header titles and controls are never clipped behind the status bar or Dynamic Island.
 - **iOS Home Indicator & Android Gesture Nav Safe Dock**: Padded `.bottom-search-wrapper` and `.view-scroll-area` with `env(safe-area-inset-bottom)`, guaranteeing safe clearance above the iOS home swipe bar and Android navigation gesture line.
 - **Dynamic Viewport Units (`100dvh`)**: Migrated `html, body`, `.app-container`, and `.sidebar` to `100dvh` for seamless transitions between browser mode and standalone bookmark apps.
