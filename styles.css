@@ -69,6 +69,11 @@
     --radius-full: 9999px;
     --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-slow: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Layout Geometry Tokens (Scales automatically on 27", 33" ultrawide, and 4K) */
+    --content-max-width: 860px;
+    --hero-max-width: 820px;
+    --sidebar-width: 270px;
 }
 
 /* Reset & Global Canvas */
@@ -94,8 +99,10 @@ html, body {
     bottom: 0;
     width: 100%;
     height: 100%;
+    height: 100dvh;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Modern Scrollbars */
@@ -120,7 +127,9 @@ html, body {
 .app-container {
     display: flex;
     width: 100vw;
+    width: 100%;
     height: 100vh;
+    height: 100dvh;
     background: var(--bg-void);
     background-image: var(--gradient-ambient-mesh);
     position: relative;
@@ -156,7 +165,7 @@ html, body {
    SIDEBAR COMPONENT
    ========================================================================== */
 .sidebar {
-    width: 270px;
+    width: var(--sidebar-width, 270px);
     background: var(--bg-glass-heavy);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -424,6 +433,7 @@ html, body {
     -webkit-backdrop-filter: blur(20px);
     z-index: 40;
     gap: 16px;
+    transition: padding 0.2s ease, height 0.2s ease;
 }
 
 .btn-mobile-toggle {
@@ -702,7 +712,7 @@ html, body {
 }
 
 .empty-hero {
-    max-width: 820px;
+    max-width: var(--hero-max-width, 820px);
     width: 100%;
     margin-top: 4vh;
     text-align: center;
@@ -863,7 +873,7 @@ html, body {
     flex-direction: column;
     gap: 8px;
     transition: var(--transition);
-    max-width: 860px;
+    max-width: var(--content-max-width, 860px);
     width: 100%;
     pointer-events: auto;
 }
@@ -1154,6 +1164,8 @@ option:active {
     flex-direction: column;
     gap: 3px;
     z-index: 100;
+    max-width: var(--content-max-width, 860px);
+    width: 100%;
 }
 
 .at-item, .at-mention-item {
@@ -1198,8 +1210,15 @@ option:active {
 /* ==========================================================================
    RESEARCH THREAD & BENTO SYNTHESIS VIEWPORT
    ========================================================================== */
+#activeThreadContainer {
+    max-width: var(--content-max-width, 860px);
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+}
+
 .query-thread-block {
-    max-width: 860px;
+    max-width: var(--content-max-width, 860px);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -1446,7 +1465,7 @@ option:active {
 }
 
 .thread-step-box {
-    max-width: 860px;
+    max-width: var(--content-max-width, 860px);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -1987,6 +2006,188 @@ option:active {
 }
 
 /* ==========================================================================
+   LARGE MONITORS & ULTRAWIDE RESPONSIVE BREAKPOINTS (27", 33", 34", 4K)
+   ========================================================================== */
+
+/* 1440px - Standard 2K / 1440p / Large Laptop screens */
+@media (min-width: 1440px) {
+    :root {
+        --content-max-width: 960px;
+        --hero-max-width: 900px;
+        --sidebar-width: 270px;
+    }
+}
+
+/* 1920px - Full HD Desktop & Dual-Pane setups */
+@media (min-width: 1920px) {
+    :root {
+        --content-max-width: 1100px;
+        --hero-max-width: 1040px;
+        --sidebar-width: 280px;
+    }
+    .top-header {
+        padding: 0 max(32px, calc((100% - var(--content-max-width)) / 2));
+    }
+    .hero-title {
+        font-size: 2.7rem;
+    }
+    .suggested-card {
+        padding: 18px 20px;
+        min-height: 120px;
+    }
+    .suggested-card-title, .suggested-card-text {
+        font-size: 0.92rem;
+    }
+}
+
+/* 2560px - 27-inch QHD / 4K Scaled Displays */
+@media (min-width: 2560px) {
+    :root {
+        --content-max-width: 1240px;
+        --hero-max-width: 1180px;
+        --sidebar-width: 290px;
+    }
+    .top-header {
+        height: 58px;
+        padding: 0 max(40px, calc((100% - var(--content-max-width)) / 2));
+    }
+    .hero-title {
+        font-size: 3.1rem;
+        letter-spacing: -1px;
+    }
+    .hero-subtitle {
+        font-size: 1.05rem;
+        max-width: 680px;
+    }
+    .suggested-cards-grid {
+        gap: 18px;
+    }
+    .suggested-card {
+        padding: 20px 22px;
+        min-height: 130px;
+        border-radius: 20px;
+    }
+    .suggested-card-icon {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+    }
+    .suggested-card-title, .suggested-card-text {
+        font-size: 0.96rem;
+    }
+    .suggested-card-sub {
+        font-size: 0.8rem;
+    }
+    .search-box-container {
+        padding: 14px 18px 12px 18px;
+        border-radius: 26px;
+    }
+    .search-input {
+        font-size: 1.04rem;
+    }
+    .ticker-pill {
+        padding: 5px 12px;
+        font-size: 0.78rem;
+    }
+    .header-live-clock {
+        padding: 6px 14px;
+        font-size: 0.78rem;
+    }
+    .btn-header-auth {
+        padding: 7px 16px;
+        font-size: 0.84rem;
+    }
+    .sidebar .brand {
+        padding: 20px 22px;
+    }
+    .sidebar .brand-text h1 {
+        font-size: 1.25rem;
+    }
+    .btn-new-thread {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+    .focus-nav-item {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+    .sidebar-section-title {
+        font-size: 0.76rem;
+        padding: 16px 22px 8px 22px;
+    }
+}
+
+/* 3200px+ - 33-inch, 34-inch, 38-inch, 49-inch Ultrawide & 4K Native */
+@media (min-width: 3200px) {
+    :root {
+        --content-max-width: 1420px;
+        --hero-max-width: 1340px;
+        --sidebar-width: 310px;
+    }
+    .top-header {
+        height: 62px;
+        padding: 0 max(48px, calc((100% - var(--content-max-width)) / 2));
+    }
+    .hero-title {
+        font-size: 3.4rem;
+    }
+    .hero-subtitle {
+        font-size: 1.12rem;
+        max-width: 780px;
+    }
+    .suggested-cards-grid {
+        gap: 22px;
+    }
+    .suggested-card {
+        padding: 24px 26px;
+        min-height: 140px;
+        border-radius: 22px;
+    }
+    .suggested-card-icon {
+        font-size: 1.45rem;
+        margin-bottom: 12px;
+    }
+    .suggested-card-title, .suggested-card-text {
+        font-size: 1.05rem;
+    }
+    .suggested-card-sub {
+        font-size: 0.86rem;
+    }
+    .search-box-container {
+        padding: 16px 20px 14px 20px;
+        border-radius: 28px;
+    }
+    .search-input {
+        font-size: 1.1rem;
+    }
+    .ticker-pill {
+        padding: 6px 14px;
+        font-size: 0.82rem;
+    }
+    .header-live-clock {
+        padding: 7px 16px;
+        font-size: 0.82rem;
+    }
+    .btn-header-auth {
+        padding: 8px 18px;
+        font-size: 0.88rem;
+    }
+    .sidebar .brand {
+        padding: 22px 24px;
+    }
+    .sidebar .brand-text h1 {
+        font-size: 1.35rem;
+    }
+    .btn-new-thread {
+        padding: 13px 18px;
+        font-size: 0.94rem;
+    }
+    .focus-nav-item {
+        padding: 11px 16px;
+        font-size: 0.94rem;
+    }
+}
+
+/* ==========================================================================
    RESPONSIVE BREAKPOINTS (Mobile, Tablet, Desktop)
    ========================================================================== */
 @media (max-width: 1024px) {
@@ -1997,17 +2198,35 @@ option:active {
 }
 
 @media (max-width: 900px) {
-    /* Mobile Sidebar Drawer */
+    /* Mobile Form Controls & Prevent iOS Auto-Zoom */
+    .search-input,
+    .compare-input,
+    input[type="text"],
+    input[type="password"],
+    input[type="file"],
+    select {
+        font-size: 16px !important; /* Prevents unwanted iOS Safari auto-zoom on focus */
+    }
+
+    /* Mobile Sidebar Drawer with Safe Area Insets (iPhone Notch & Home Indicator) */
     .sidebar {
         position: fixed;
-        left: -290px;
+        left: -320px;
         top: 0;
         bottom: 0;
-        width: 280px;
+        width: min(300px, 86vw);
+        height: 100%;
+        height: 100dvh;
         z-index: 1000;
         box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
         border-right: 1px solid var(--border-glass-subtle);
         transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+        padding-left: max(0px, env(safe-area-inset-left));
+        background: rgba(6, 10, 18, 0.96);
     }
     .sidebar.open, .sidebar.active {
         left: 0;
@@ -2035,7 +2254,7 @@ option:active {
         display: block;
         font-family: var(--font-heading);
         font-weight: 800;
-        font-size: 1rem;
+        font-size: 0.98rem;
         letter-spacing: -0.02em;
         background: linear-gradient(135deg, #38bdf8, #818cf8);
         -webkit-background-clip: text;
@@ -2045,11 +2264,16 @@ option:active {
         display: none;
     }
 
-    /* Top Header on Mobile */
+    /* Top Header on Mobile (Safe for Dynamic Island, Notch & Status Bar) */
     .top-header {
-        height: 54px;
-        padding: 0 14px;
+        height: auto;
+        min-height: 54px;
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-bottom: 8px;
+        padding-left: max(14px, env(safe-area-inset-left));
+        padding-right: max(14px, env(safe-area-inset-right));
         gap: 10px;
+        box-sizing: border-box;
     }
     .header-auth-container {
         gap: 8px;
@@ -2066,75 +2290,125 @@ option:active {
         font-size: 0.75rem;
     }
 
-    /* Scroll Viewport on Mobile with Generous Border Spacing */
+    /* Scroll Viewport on Mobile with Generous Border & Bottom Clearance */
     .view-scroll-area {
-        padding: 16px 14px 290px 14px;
+        padding-top: 14px;
+        padding-left: max(14px, env(safe-area-inset-left));
+        padding-right: max(14px, env(safe-area-inset-right));
+        padding-bottom: calc(240px + env(safe-area-inset-bottom));
+        -webkit-overflow-scrolling: touch;
     }
     .empty-hero {
-        padding: 24px 8px 30px 8px;
+        padding: 16px 6px 20px 6px;
         max-width: 100%;
+        margin-top: 2vh;
     }
     .hero-title {
-        font-size: 1.65rem;
+        font-size: 1.6rem;
         line-height: 1.25;
         margin-bottom: 8px;
     }
     .hero-subtitle {
         font-size: 0.84rem;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
     .suggested-cards-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
-        margin-top: 16px;
+        gap: 10px;
+        margin-top: 12px;
     }
     .suggested-card {
         padding: 14px 16px;
-        border-radius: 12px;
+        border-radius: 14px;
+        min-height: 95px;
     }
 
-    /* Decluttered Floating Search Dock on Mobile */
+    /* Floating Spotlight Command Search Dock on Mobile (Safe for Home Swipe Bar) */
     .bottom-search-wrapper {
-        bottom: 12px;
-        padding: 0 12px 12px 12px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        padding-top: 10px;
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+        padding-bottom: max(12px, calc(env(safe-area-inset-bottom) + 6px));
+        background: linear-gradient(to top, rgba(3, 7, 18, 0.98) 0%, rgba(3, 7, 18, 0.92) 65%, rgba(3, 7, 18, 0) 100%);
     }
     .search-box-container {
-        border-radius: 14px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 10px 12px 8px 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        max-width: 100%;
     }
-    .search-input-main {
-        font-size: 0.92rem;
-        padding: 12px 14px 8px 14px;
-        min-height: 48px;
+    .search-input-row {
+        gap: 8px;
     }
-    .search-actions-bar {
-        padding: 6px 10px 10px 10px;
+    .btn-attach-doc {
+        width: 34px;
+        height: 34px;
+        font-size: 0.86rem;
+    }
+    .btn-submit-search {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+    }
+    .search-input {
+        font-size: 16px !important;
+        padding: 3px 4px;
+    }
+    .search-actions-row {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         gap: 6px;
         flex-wrap: nowrap;
+        padding-top: 6px;
     }
-    .search-actions-bar::-webkit-scrollbar {
+    .search-actions-row::-webkit-scrollbar {
         display: none;
     }
-    .search-action-chip {
-        padding: 4px 8px;
+    .effort-picker-container {
         font-size: 0.72rem;
-        flex-shrink: 0;
+    }
+    .chat-effort-select {
+        font-size: 0.72rem;
+        padding: 2px 6px;
     }
     .search-hints-strip {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 4px;
+        flex-shrink: 0;
+    }
+    .search-hints-strip::-webkit-scrollbar {
         display: none;
+    }
+    .hint-tag-btn {
+        padding: 2px 6px;
+        font-size: 0.7rem;
+    }
+    .watchdog-toggle-container {
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+    .btn-watchdog-toggle {
+        font-size: 0.7rem;
+        padding: 2px 6px;
     }
 
     /* Bento Research Memo Layout on Mobile */
     .query-thread-block {
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
     .user-query-heading {
-        font-size: 1.22rem;
+        font-size: 1.18rem;
         line-height: 1.35;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
     .ai-answer-box {
         padding: 18px 14px;
@@ -2143,7 +2417,7 @@ option:active {
         line-height: 1.65;
     }
     .bento-section-header {
-        margin: 20px 0 10px 0;
+        margin: 18px 0 10px 0;
         gap: 8px;
     }
     .bento-section-title {
@@ -2165,13 +2439,21 @@ option:active {
         flex-shrink: 0;
     }
 
-    /* Modal Layouts on Mobile */
+    /* Modal Layouts on Mobile (Safe for Notches and Viewport Bounds) */
+    .modal-backdrop {
+        padding: 12px;
+        padding-top: max(14px, env(safe-area-inset-top));
+        padding-bottom: max(14px, env(safe-area-inset-bottom));
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+    }
     .modal-box {
         max-width: calc(100vw - 24px) !important;
-        margin: 12px auto;
+        margin: auto;
         padding: 18px 14px;
-        border-radius: 16px;
-        max-height: 88vh;
+        border-radius: 18px;
+        max-height: calc(88dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        overflow-y: auto;
     }
     .auth-tabs-nav {
         gap: 4px;

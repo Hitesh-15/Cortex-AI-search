@@ -1,0 +1,20 @@
+{
+  "name": "Ambulkar Cortex | Market Intelligence",
+  "short_name": "Cortex",
+  "description": "Executive Market Intelligence Workdesk with live web citations, Cortex frontier model gateway, and Dual-Lock 2FA security.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23060a12'/><rect x='2' y='2' width='96' height='96' rx='20' fill='none' stroke='%2338bdf8' stroke-width='3' stroke-opacity='0.4'/><circle cx='50' cy='50' r='26' fill='none' stroke='%2338bdf8' stroke-width='5'/><circle cx='50' cy='50' r='12' fill='%2338bdf8'/><path d='M50 16 L50 24 M50 76 L50 84 M16 50 L24 50 M76 50 L84 50' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
