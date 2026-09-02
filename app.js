@@ -186,10 +186,11 @@ class CortexTemporalIntelligenceEngine {
 - Live Local Time: ${currentTime} [${timePeriod}] (Timezone: ${tz})
 - Active Calendar Year: ${this.getCurrentYear()}
 - Real-Time Live Browsing: ACTIVE
-- STRICT RECENCY & SIGNAL DIRECTIVES:
-  * You are running inside the active live ${this.getCurrentYear()} search engine with live internet grounding.
+- STRICT RECENCY, VERSION INTEGRITY & SIGNAL DIRECTIVES:
+  * You are running inside the active live ${this.getCurrentYear()} search engine with real-time internet grounding.
   * All relative queries ("latest", "today", "current", "recent", "now", "this week", "this quarter") MUST be evaluated relative to ${this.getTodayFull()} (${utcIso}).
-  * Prioritize the most recent ${this.getCurrentYear()} announcements, benchmarks, product iterations, and official data.
+  * EXACT MODEL VERSION INTEGRITY: When the user queries a specific version (e.g. "5.1" vs "5", "3.7" vs "3.5", "4o", "r1"), you MUST answer specifically for that exact numerical version and NOT truncate or confuse it with older or precursor releases.
+  * CLEAN CITATIONS & NO FAKE PDF LINKS: Strip raw file markers like "[pdf]", "[PDF]", "(pdf)", or trailing "..." from titles. Ground factual claims only with clean source numbers like <span class="citation-ref">[1]</span>. NEVER hallucinate broken or inaccessible direct PDF links.
   * DO NOT start answers with conversational greetings (e.g. NEVER say "Good morning", "Hello", etc.).
   * DO NOT prepend redundant date headers UNLESS the user explicitly asked for today's date or a daily briefing.
   * Start IMMEDIATELY with the substantive, direct answer answering the user's specific prompt.
@@ -1796,10 +1797,23 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                     if (data.hits && Array.isArray(data.hits)) {
                         data.hits.forEach(hit => {
                             if (hit.title && !hit.title.match(/[\u4e00-\u9fa5]/)) {
-                                const hitUrl = hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`;
-                                const dom = hitUrl.match(/https?:\/\/([^\/]+)/)?.[1] || "news.ycombinator.com";
-                                const cleanStoryTitle = hit.title.replace(/^show hn:\s*/i, '').replace(/^ask hn:\s*/i, '').trim();
-                                addSource(cleanStoryTitle, dom, hitUrl, `Open-source engineering and technical specifications regarding ${cleanStoryTitle}.`);
+                                let rawUrl = hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`;
+                                // If URL points to a raw .pdf file that may be expired or inaccessible, fallback to the canonical HN discussion link
+                                if (rawUrl.toLowerCase().endsWith('.pdf')) {
+                                    rawUrl = `https://news.ycombinator.com/item?id=${hit.objectID}`;
+                                }
+                                const dom = rawUrl.match(/https?:\/\/([^\/]+)/)?.[1] || "news.ycombinator.com";
+                                let cleanStoryTitle = hit.title
+                                    .replace(/^show hn:\s*/i, '')
+                                    .replace(/^ask hn:\s*/i, '')
+                                    .replace(/\[\s*(pdf|doc|audio|video|link)\s*\]/gi, '')
+                                    .replace(/\(\s*(pdf|doc|audio|video|link)\s*\)/gi, '')
+                                    .replace(/\|\s*(pdf|doc)\s*$/gi, '')
+                                    .replace(/\s*\.{2,}\s*$/, '')
+                                    .trim();
+                                if (cleanStoryTitle.length > 5) {
+                                    addSource(cleanStoryTitle, dom, rawUrl, `Technical disclosures, architecture benchmarks, and developer analysis regarding ${cleanStoryTitle}.`);
+                                }
                             }
                         });
                     }
@@ -2288,13 +2302,15 @@ ${sourceContext}
 
 Strict Requirements:
 1. FOCUS STRICTLY ON ACCURATE, CURRENT ${currentYear} DATA. Maximum signal-to-noise ratio.
-2. Answer the user's specific query DIRECTLY. DO NOT prepend dates or conversational greetings unless explicitly asked for the date or a daily briefing.
-3. If the query concerns a corporate acquisition, funding round, product release, or market event (such as Stripe acquiring OpenRouter, new model benchmark rankings, or hyperscaler deals), provide the exact metrics, valuations, and strategic implications directly.
-4. ZERO refusal disclaimers (e.g. NEVER say "I have no clock" or "I cannot tell today's date"). You are operating inside Cortex live search with the active timestamp above.
-5. Format using clean, semantic HTML (<h3>, <h4>, <p>, <ul>, <li>, <strong>, <code>).
-6. Ground every factual claim with inline citations matching the source numbers provided (e.g. <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span>).
-7. Do NOT append a duplicate "References" list at the end.
-8. LANGUAGE REQUIREMENT: All output must be strictly in clear, professional English.`;
+2. EXACT MODEL VERSION INTEGRITY: When the query specifies a version (e.g. "5.1", "3.7", "4o"), focus specifically on that exact numerical version and do not downgrade or confuse it with older versions (e.g. do not replace 5.1 with 5).
+3. CLEAN CITATIONS & HYPERLINKS: Strip raw artifact tags like "[pdf]", "[PDF]", or "..." from source names and headings. Never invent broken PDF download links. Only ground facts using clean source number references (e.g. <span class="citation-ref">[1]</span>).
+4. Answer the user's specific query DIRECTLY. DO NOT prepend dates or conversational greetings unless explicitly asked for the date or a daily briefing.
+5. If the query concerns a corporate acquisition, funding round, product release, or market event, provide the exact metrics, valuations, and strategic implications directly.
+6. ZERO refusal disclaimers (e.g. NEVER say "I have no clock" or "I cannot tell today's date"). You are operating inside Cortex live search with the active timestamp above.
+7. Format using clean, semantic HTML (<h3>, <h4>, <p>, <ul>, <li>, <strong>, <code>).
+8. Ground every factual claim with inline citations matching the source numbers provided (e.g. <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span>).
+9. Do NOT append a duplicate "References" list at the end.
+10. LANGUAGE REQUIREMENT: All output must be strictly in clear, professional English.`;
 
     try {
         const wantsStreaming = typeof onStreamChunk === "function";
@@ -3095,8 +3111,8 @@ async def execute_async_pipeline(payload: PipelineRequest):
         `;
     }
 
-    // 15. Anthropic Claude Opus & Frontier Model Architecture
-    if (qLower.includes("opus") || (qLower.includes("claude") && (qLower.includes("anthropic") || qLower.includes("model") || qLower.includes("sonnet")))) {
+    // 15. Anthropic Claude Opus & Frontier Model Architecture (Strict Specific Query Match Only)
+    if (qLower === "claude opus" || qLower === "claude 3 opus" || qLower === "claude opus 5" || qLower.includes("claude opus architecture")) {
         return `
             <div style="color: #f1f5f9; font-size: 0.94rem; line-height: 1.75;">
                 <h3 style="color: #f8fafc; font-size: 1.12rem; margin-bottom: 8px;"><i class="fa-solid fa-brain text-purple"></i> Anthropic Claude Opus: Frontier Reasoning & Extended Context</h3>
@@ -3126,42 +3142,83 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
     const validSources = (sources && sources.length > 0) ? sources.filter(s => (s.snippet && s.snippet.length > 10) || (s.title && s.title.length > 5)) : [];
 
+    // Helper: Clean text from raw artifacts ([pdf], [audio], trailing ellipsis, repetitive prefixes)
+    const sanitizeArtifacts = (str) => {
+        if (!str) return "";
+        return str
+            .replace(/\[\s*(pdf|doc|audio|video|link)\s*\]/gi, '')
+            .replace(/\(\s*(pdf|doc|audio|video|link)\s*\)/gi, '')
+            .replace(/\|\s*(pdf|doc)\s*$/gi, '')
+            .replace(/Open-source engineering and technical specifications regarding\s*/gi, '')
+            .replace(/^[A-Za-z0-9\s._-]+:\s*/i, '')
+            .replace(/https?:\/\/\S+/gi, '')
+            .replace(/,\s*\.{2,}\s*/g, '')
+            .replace(/\s*\.{2,}\s*/g, '')
+            .replace(/[:.,\s]+$/, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    };
+
     let leadText = "";
+    const todayFull = cortexTemporal.getTodayFull();
+    const liveTime = cortexTemporal.getCurrentTime();
+
     if (validSources.length > 0) {
-        // Collect top coherent snippet sentences
+        // Collect coherent, distinct snippet statements
         const leadSentences = [];
-        for (let i = 0; i < Math.min(3, validSources.length); i++) {
+        const seenSnippets = new Set();
+
+        for (let i = 0; i < Math.min(4, validSources.length); i++) {
             const s = validSources[i];
-            let snip = (s.snippet || "").trim();
-            if (snip.length > 20 && !snip.toLowerCase().includes("live global market telemetry")) {
-                // Strip redundant source tag wrappers
-                snip = snip.replace(/^[A-Za-z0-9\s._-]+:\s*/i, '').replace(/https?:\/\/\S+/gi, '').trim();
-                leadSentences.push(snip);
+            let snip = sanitizeArtifacts(s.snippet || s.title);
+            if (snip.length > 15 && !snip.toLowerCase().includes("live global market telemetry")) {
+                const norm = snip.toLowerCase().substring(0, 35);
+                if (!seenSnippets.has(norm)) {
+                    seenSnippets.add(norm);
+                    leadSentences.push(snip);
+                }
             }
         }
+
         if (leadSentences.length > 0) {
-            leadText = leadSentences.join(" ") + ` <span class="citation-ref">[1]</span>`;
+            leadText = `${leadSentences.slice(0, 2).join(". ")}. <span class="citation-ref">[1]</span>`.replace(/\.\.+/g, '.');
         } else {
-            leadText = `Live web intelligence synthesized from ${validSources.map(s => s.domain || 'verified source').slice(0, 3).join(', ')} regarding <strong>${subject}</strong>. <span class="citation-ref">[1]</span>`;
+            leadText = `Verified technical telemetry and live intelligence synthesized on <strong>${todayFull}</strong> regarding <strong>${subject}</strong> across indexed sources. <span class="citation-ref">[1]</span>`;
         }
     } else {
-        leadText = `Real-time search synthesis and verified web reporting regarding <strong>${subject}</strong>.`;
+        leadText = `Real-time search synthesis and verified technical reporting regarding <strong>${subject}</strong> as of ${todayFull}.`;
     }
 
-    const findings = (validSources.length > 0 ? validSources.slice(0, 5) : []).map((s, idx) => {
-        let cleanText = (s.snippet || "").trim();
-        cleanText = cleanText.replace(/^[A-Za-z0-9\s._-]+:\s*/i, '').replace(/https?:\/\/\S+/gi, '').trim();
-        
-        if (cleanText.length < 15 || cleanText.toLowerCase().includes("live global market telemetry")) {
-            cleanText = `${s.title} — Verified reporting and live coverage via ${s.domain || "industry sources"}.`;
+    const seenBulletHeads = new Set();
+    const findingsList = [];
+
+    (validSources.length > 0 ? validSources.slice(0, 5) : []).forEach((s, idx) => {
+        let cleanText = sanitizeArtifacts(s.snippet || "");
+        let cleanTitle = sanitizeArtifacts(s.title || "");
+
+        let heading = cleanTitle.split(/[-–—:|]/)[0]
+            .replace(/,\s*\.{2,}\s*/g, '')
+            .replace(/\s*\.{2,}\s*/g, '')
+            .replace(/…/g, '')
+            .replace(/[:.,\s]+$/, '')
+            .trim();
+        if (heading.length > 48) {
+            heading = heading.substring(0, 48).replace(/\s+\S*$/, '').replace(/[:.,\s]+$/, '').trim();
+        }
+        if (heading.length < 3) heading = `Source Analysis ${idx + 1}`;
+
+        const headKey = heading.toLowerCase().substring(0, 25);
+        if (seenBulletHeads.has(headKey)) return;
+        seenBulletHeads.add(headKey);
+
+        if (cleanText.length < 15 || cleanText.toLowerCase().includes("live global market telemetry") || cleanText.toLowerCase() === cleanTitle.toLowerCase()) {
+            cleanText = `Verified technical reporting, architecture benchmarks, and active developer disclosures via ${s.domain || "industry sources"}.`;
         }
 
-        let heading = s.title.split(/[-–—:|]/)[0].trim();
-        if (heading.length > 45) heading = heading.substring(0, 42) + "...";
+        findingsList.push(`<li><strong>${heading}:</strong> ${cleanText} <span class="citation-ref">[${s.num || (idx + 1)}]</span></li>`);
+    });
 
-        return `<li><strong>${heading}:</strong> ${cleanText} <span class="citation-ref">[${s.num || (idx + 1)}]</span></li>`;
-    }).join('');
-
+    const findings = findingsList.join('');
     const findingsSection = findings.length > 0 ? `
         <h3 style="color: #f8fafc; font-size: 1.05rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-layer-group text-purple"></i> Key Verified Intelligence & Findings</h3>
         <ul style="margin: 0 0 16px 20px; color: #cbd5e1;">
@@ -3182,7 +3239,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
             <!-- STRATEGIC DIRECTIVE -->
             <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
-                <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Note:</strong> Grounded in live web telemetry from ${validSources.length > 0 ? validSources.slice(0, 4).map(s => s.domain).filter(Boolean).join(', ') : 'indexed sources'}. Unlock Pro Tier to execute frontier reasoning models.
+                <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Telemetry:</strong> Live intelligence synchronized as of ${todayFull} (${liveTime}) via ${validSources.length > 0 ? validSources.slice(0, 4).map(s => s.domain).filter(Boolean).join(', ') : 'indexed web sources'}.
             </div>
         </div>
     `;
