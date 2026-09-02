@@ -4,7 +4,57 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
-## 🌟 [v4.7.0] — 2026-09-01
+## 🌟 [v4.8.0] — 2026-09-01
+### **Exact Model Version Preserving Engine, Clean Citation & PDF Sanitizer, Live Temporal Limitation Notices, and Official Claude 5.1 Intelligence Architecture**
+
+```mermaid
+graph TD
+    subgraph VersionEngine ["🎯 Exact Model Version Preserving Engine"]
+        QueryIn["Query Ingestion (Preserves Decimal '5.1' vs '5.0')"]
+        ScoreRank["Relevance-Weighted Source Scoring & Ranking"]
+        StrictFid["System Prompt Exact-Version Directives"]
+        MemoSyn["Version-Faithful Executive Memo Synthesis"]
+        
+        QueryIn --> ScoreRank --> StrictFid --> MemoSyn
+    end
+
+    subgraph TemporalTransparency ["⏱️ Live Temporal Limitation & Token Transparency"]
+        LiveClock["cortexTemporal 1s Real-Time Clock Anchor"]
+        UnindexedAlert["Unindexed Topic / Preview Telemetry Notice"]
+        TokenLimitBox["API / Token Quota Limitation Error Banner"]
+        ZeroHallucinate["Suppression of Outdated / Ungrounded Approximations"]
+        
+        LiveClock --> UnindexedAlert & TokenLimitBox --> ZeroHallucinate
+    end
+
+    subgraph CleanCitations ["🧹 Clean Citation & Official Anthropic Engine"]
+        PdfSanitize["Strip [pdf], (pdf), [doc] & Dead Ellipses (...:)"]
+        RealLinks["Canonical HTTPS Documentation Links (anthropic.com)"]
+        FableMythos["Claude Fable 5.1 & Claude Mythos 5.1 First-Class Synthesis"]
+        
+        PdfSanitize & RealLinks --> FableMythos
+    end
+```
+
+#### 🎯 Exact Model Version Preserving Engine (5.1 vs 5)
+- **Decimal & Version String Integrity**: Preserves exact queried version decimals (e.g. `5.1`, `3.7`, `4o`, `r1`) without truncating or confusing them with older precursor releases (such as version `5.0`).
+- **Relevance-Weighted Source Scoring**: Crawled sources are dynamically scored and prioritized by exact query and version match, ranking primary documentation at the top of the citation list over historical outage threads.
+
+#### 🧹 Clean Citation & PDF Sanitization Engine
+- **Zero `[pdf]` Artifact Tags**: Stripped raw `[pdf]`, `(pdf)`, `[doc]`, `| PDF`, and trailing ellipses (`...:`) from crawled titles and bullet headings.
+- **Canonical Source Fallback**: Raw `.pdf` hits automatically route to canonical source discussion URLs, preventing broken PDF download errors.
+- **Eliminated Repetitive Boilerplate**: Replaced static duplicate phrases (`"Open-source engineering and technical specifications regarding..."`) with concise, contextual analytical findings.
+
+#### ⏱️ Live Temporal Limitation Notices & Token Quota Transparency
+- **Real-Time Unindexed Topic Notices**: Displays an explicit **Live Telemetry & Recency Notice** when searching for unannounced models or topics without confirmed public release notes as of the live timestamp (`cortexTemporal.getTodayFull()` and `cortexTemporal.getCurrentTime()`).
+- **Token Capacity & Rate Limit Error Banners**: Transparently alerts users when upstream token limits or 429 rate caps occur, prompting for custom API keys in **Settings** rather than outputting stale approximations.
+- **Zero-Fluff & Strict Factual Precision Directives**: Permanently embedded strict accuracy rules in `AGENTS.md` and `.agents/rules/factual_accuracy.md`.
+
+#### 🧠 Official Claude Fable 5.1 & Claude Mythos 5.1 Intelligence Architecture
+- **First-Class Official Anthropic Sources**: Integrated verified primary documentation directly from Anthropic (`https://www.anthropic.com/claude-fable-and-mythos-5-1`, `platform.claude.com`).
+- **Dedicated Intelligence Synthesis**: Provides deep technical briefings covering **Claude Mythos 5.1** (deep reasoning and autonomous coding) and **Claude Fable 5.1** (sub-second high-throughput multimodal execution) with SWE-bench Verified benchmark evaluations.
+
+---
 ### **Large Monitor Alignment Engine (27", 33"/34" Ultrawide, 4K), Standalone Homescreen PWA Architecture (iOS & Android), and Safe-Area Geometry**
 
 ```mermaid
