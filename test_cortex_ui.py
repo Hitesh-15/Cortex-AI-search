@@ -208,11 +208,11 @@ def test_full_cortex_suite():
         # Release Notes Modal
         rn_modal = driver.find_element(By.ID, "releaseNotesModal")
         modal_content = rn_modal.get_attribute("innerText") or rn_modal.text
-        assert "4.8.0" in modal_content, f"Version 4.8.0 not found in release notes modal! Content: {modal_content}"
+        assert "4.8.1" in modal_content, f"Version 4.8.1 not found in release notes modal! Content: {modal_content}"
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)
         assert "active" not in rn_modal.get_attribute("class"), "Release Notes modal failed to close!"
-        print("PASS: Release Notes modal v4.8.0 opened & verified.")
+        print("PASS: Release Notes modal v4.8.1 opened & verified.")
         
         # 1.8 Full Top Bar Market Tickers Test (GOLD, SILVER, COPPER, OIL, S&P 500, NASDAQ, US 10Y, VIX)
         print("--> Testing All 8 Market Ticker Pills & Deep Domain Relevance...")
