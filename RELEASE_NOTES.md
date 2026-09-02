@@ -4,6 +4,51 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v4.8.1] — 2026-09-01
+### **Real-Time Cross-Device Cloud Sync Relay Protocol, Multi-Device Thread Merging, and Instant Mobile Pro Key Unlock**
+
+```mermaid
+graph LR
+    subgraph PrimaryDevice ["💻 Primary Device (Laptop / Desktop)"]
+        SearchExec["Search Query Execution & Pro Key Setup"]
+        LocalSnap["Local Cache Snapshot"]
+        CloudPush["CortexLiveSyncEngine.pushSync()"]
+        
+        SearchExec --> LocalSnap & CloudPush
+    end
+
+    subgraph CloudRelay ["🌐 Real-Time Public HTTPS Cloud Relay"]
+        RelayTopic["ntfy.sh / cortex_sync_CTX-XXXXXX"]
+        DirectMsg["Direct JSON Message Payload"]
+        FileAttach["Automated Storage Attachments (>4KB)"]
+        
+        CloudPush --> RelayTopic
+        RelayTopic --> DirectMsg & FileAttach
+    end
+
+    subgraph MobileDevice ["📱 Secondary Device (Mobile Phone / Tablet)"]
+        JoinRoom["Enter 6-Digit Room Code (e.g. CTX-849204)"]
+        PullSync["CortexLiveSyncEngine.pullSync(true)"]
+        ThreadMerge["Auto-Merge Search Threads & History"]
+        KeyUnlock["Pro Frontier AI Unlocked (appState.auth & localStorage)"]
+        
+        JoinRoom --> PullSync
+        DirectMsg & FileAttach --> PullSync
+        PullSync --> ThreadMerge & KeyUnlock
+    end
+```
+
+#### 🔄 Real-Time Multi-Device Cloud Sync Relay (`CTX-XXXXXX`)
+- **Zero-Config 6-Digit Pairing**: Replaced local device storage sandboxing with an open-standard HTTPS Cloud Relay pub/sub channel. Pairing your phone with `CTX-XXXXXX` instantly pulls data across different physical networks and operating systems.
+- **Support for In-Depth Research Attachments**: Dynamically parses both inline JSON messages and large attachment file downloads (`attachment.url`), ensuring comprehensive research memos of any length sync seamlessly.
+
+#### 🧠 Cross-Device Thread Synchronization & Pro API Key Unlocking
+- **Thread History Merging**: Merges all active search threads, research memos, and follow-up drill-downs from your laptop directly into your mobile sidebar.
+- **Instant Mobile Pro Access**: Automatically synchronizes your OpenRouter/Frontier API keys and encrypted vault payload, unlocking **Pro Tier** on your phone immediately without retyping long API tokens.
+- **Continuous Background Auto-Sync**: Background polling (every 8 seconds) and auto-sync on browser tab focus / visibility change maintain real-time parity across all linked devices.
+
+---
+
 ## 🌟 [v4.8.0] — 2026-09-01
 ### **Exact Model Version Preserving Engine, Clean Citation & PDF Sanitizer, Live Temporal Limitation Notices, and Official Claude 5.1 Intelligence Architecture**
 
