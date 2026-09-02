@@ -2485,32 +2485,39 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel) 
                                 <i class="fa-solid fa-chart-line text-cyan" style="font-size: 0.85rem;"></i>
                             </div>
                             <div class="digest-card-content" style="margin-top: 10px;">
+                                <div style="font-size: 0.74rem; color: #94a3b8; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em;">
+                                    <i class="fa-solid fa-arrow-trend-up text-emerald"></i> 24h Macro & Equity Benchmark Trends
+                                </div>
                                 <!-- VISUAL SPARKLINE MINI-CHARTS -->
                                 <div class="sparkline-pill-row">
-                                    <span class="sparkline-pill up" title="S&P 500 Index">
+                                    <div class="sparkline-pill up" title="S&P 500 Index — US Large-Cap Equity Benchmark (+0.62% Daily Trend)">
+                                        <span>S&P 500</span>
                                         <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1 11L8 8L15 9L22 4L31 2" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
-                                        S&P +0.62%
-                                    </span>
-                                    <span class="sparkline-pill up" title="NASDAQ-100 Tech Index">
+                                        <span style="color: #34d399; font-weight: 700;">+0.62%</span>
+                                    </div>
+                                    <div class="sparkline-pill up" title="NASDAQ-100 — Tech & AI Mega-Cap Index (+0.94% Intraday Trend)">
+                                        <span>NASDAQ</span>
                                         <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1 12L9 9L16 6L23 7L31 2" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
-                                        NASDAQ +0.94%
-                                    </span>
-                                    <span class="sparkline-pill neutral" title="10-Year US Treasury Yield">
+                                        <span style="color: #34d399; font-weight: 700;">+0.94%</span>
+                                    </div>
+                                    <div class="sparkline-pill neutral" title="US 10-Year Treasury Yield — Benchmark Cost of Capital (4.26% Steady)">
+                                        <span>US 10Y</span>
                                         <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1 7L10 6L20 8L31 6" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
-                                        10Y 4.26%
-                                    </span>
-                                    <span class="sparkline-pill down" title="Brent Crude Oil">
+                                        <span style="color: #38bdf8; font-weight: 700;">4.26%</span>
+                                    </div>
+                                    <div class="sparkline-pill down" title="Brent Crude Oil — Energy & Commodity Input Costs ($76.80/bbl)">
+                                        <span>Brent Oil</span>
                                         <svg class="sparkline-svg" viewBox="0 0 32 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1 3L11 5L20 9L31 12" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
-                                        Oil $76.80
-                                    </span>
+                                        <span style="color: #f87171; font-weight: 700;">$76.80</span>
+                                    </div>
                                 </div>
                                 <p style="margin: 0; font-size: 0.86rem; color: #f1f5f9; line-height: 1.5;">
                                     Semiconductor equities lead broader indices as advanced packaging and foundry demand accelerates.
