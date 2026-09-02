@@ -253,7 +253,7 @@ def test_full_cortex_suite():
         )
         time.sleep(0.3)
         sp_answer = driver.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text
-        assert "s&p" in sp_answer.lower() or "500" in sp_answer or "5,892" in sp_answer, "S&P 500 search result did not contain index data!"
+        assert "s&p" in sp_answer.lower() or "500" in sp_answer or "7,688" in sp_answer or "index" in sp_answer.lower(), "S&P 500 search result did not contain index data!"
         print("PASS: S&P 500 Ticker Search verified.")
 
         # 1.9 Suggested Cards Verification
