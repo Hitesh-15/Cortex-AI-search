@@ -1577,9 +1577,21 @@ async function runAsyncSearchPipeline(userQuery) {
         renderThreadHistory();
     } catch (pipelineErr) {
         console.error("Search Pipeline Error:", pipelineErr);
+        const errHTML = `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Search Pipeline Exception</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${pipelineErr.message}</p></div>`;
         const ansEl = document.getElementById(`${stepId}_answer`);
         if (ansEl) {
-            ansEl.innerHTML = `<div class="api-key-error-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); padding: 16px; border-radius: 8px;"><h4 style="color: #fca5a5;"><i class="fa-solid fa-triangle-exclamation"></i> Search Pipeline Exception</h4><p style="color: #cbd5e1; font-size: 0.85rem;">${pipelineErr.message}</p></div>`;
+            ansEl.innerHTML = errHTML;
+        }
+        if (thread) {
+            thread.steps.push({
+                query: userQuery,
+                sources: [],
+                answer: errHTML,
+                related: [],
+                timestamp: new Date().toLocaleTimeString()
+            });
+            saveThreadsToLocalStorage();
+            renderThreadHistory();
         }
     } finally {
         appState.isSearching = false;
@@ -4185,6 +4197,9 @@ async function testOpenRouterApiKeyNow() {
 
             // Refresh model catalog using the verified key
             await fetchLatestModelsAuto(false);
+            if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.pushSync) {
+                CortexLiveSyncEngine.pushSync();
+            }
         } else {
             const errData = await res.json().catch(() => ({}));
             const errMsg = errData.error?.message || (res.status === 401 ? 'Unauthorized: Invalid or revoked API key' : `HTTP Error ${res.status}`);
@@ -4256,6 +4271,9 @@ function saveSettingsForm(e) {
 
     closeSettingsModal();
     updateGatewayStatusBadge();
+    if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.pushSync) {
+        CortexLiveSyncEngine.pushSync();
+    }
     alert("⚙️ Settings saved successfully!");
 }
 
@@ -4359,6 +4377,9 @@ var CortexAuthVault = {
         const cleanPass = password.trim();
         const encrypted = await this.encrypt(cleanKey, cleanPass);
         localStorage.setItem(this.STORAGE_KEY, encrypted);
+        if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.pushSync) {
+            CortexLiveSyncEngine.pushSync();
+        }
         return encrypted;
     },
 
@@ -4401,6 +4422,9 @@ var CortexAuthVault = {
 
         this.updateAuthUI();
         updateGatewayStatusBadge();
+        if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.pushSync) {
+            CortexLiveSyncEngine.pushSync();
+        }
         return decryptedKey;
     },
 
@@ -4544,7 +4568,7 @@ var CortexAuthVault = {
 };
 
 /* ==========================================================================
-   ZERO-CONFIG 6-DIGIT LIVE MULTI-DEVICE AUTO-SYNC ENGINE
+   ZERO-CONFIG 6-DIGIT LIVE MULTI-DEVICE AUTO-SYNC ENGINE (PUBLIC RELAY)
    ========================================================================== */
 var CortexLiveSyncEngine = {
     STORAGE_ROOM_KEY: "cortex_sync_room_id",
@@ -4552,6 +4576,11 @@ var CortexLiveSyncEngine = {
     pollInterval: null,
     isSyncing: false,
     lastSyncedTime: 0,
+
+    getRelayTopic(roomId) {
+        const clean = (roomId || "").replace(/[^a-zA-Z0-9]/g, '');
+        return `cortex_sync_${clean || 'default'}`;
+    },
 
     getRoomId() {
         let roomId = localStorage.getItem(this.STORAGE_ROOM_KEY);
@@ -4576,12 +4605,17 @@ var CortexLiveSyncEngine = {
         if (!this.pollInterval) {
             this.pollInterval = setInterval(() => {
                 this.pullSync(false);
-            }, 15000);
+            }, 8000); // 8-second continuous live polling
         }
         window.addEventListener("focus", () => {
-            this.pullSync(false);
+            this.pullSync(true);
         });
-        setTimeout(() => this.pullSync(false), 1200);
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+                this.pullSync(true);
+            }
+        });
+        setTimeout(() => this.pullSync(true), 600);
     },
 
     updateUI() {
@@ -4604,23 +4638,34 @@ var CortexLiveSyncEngine = {
         if (this.syncTimer) clearTimeout(this.syncTimer);
         this.syncTimer = setTimeout(() => {
             this.pushSync();
-        }, 1500);
+        }, 800);
     },
 
     async pushSync() {
         if (this.isSyncing) return;
         const roomId = this.getRoomId();
         const validThreads = (appState.threads || []).filter(t => t.steps && t.steps.length > 0);
-        
+        const activeKey = (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getActiveKey) 
+            ? CortexAuthVault.getActiveKey() 
+            : (localStorage.getItem("cortex_auth_remembered_key") || localStorage.getItem("ambu_key_openrouter") || "");
+
         const payload = {
-            version: "4.6.0",
+            version: "4.8.0",
             roomId: roomId,
             updatedAt: Date.now(),
             threads: validThreads,
+            activeKey: activeKey,
+            isAuthenticated: Boolean(activeKey && activeKey.length > 15),
             settings: {
                 provider: appState.settings?.provider || "openrouter",
                 model: appState.settings?.model || "openrouter/auto",
-                costRouting: appState.settings?.costRouting || "min_cost"
+                costRouting: appState.settings?.costRouting || "min_cost",
+                apiKeys: {
+                    openrouter: activeKey || appState.settings?.apiKeys?.openrouter || "",
+                    gemini: appState.settings?.apiKeys?.gemini || "",
+                    openai: appState.settings?.apiKeys?.openai || "",
+                    claude: appState.settings?.apiKeys?.claude || ""
+                }
             },
             vault: (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getVaultPayload) ? CortexAuthVault.getVaultPayload() : null
         };
@@ -4629,39 +4674,186 @@ var CortexLiveSyncEngine = {
             // Local snapshot cache for instant cross-tab sync
             localStorage.setItem(`cortex_cloud_snapshot_${roomId}`, JSON.stringify(payload));
             this.lastSyncedTime = payload.updatedAt;
+
+            // Broadcast to multi-device cloud relay (enables instant laptop-to-mobile sync)
+            const topic = this.getRelayTopic(roomId);
+            const res = await fetch(`https://ntfy.sh/${topic}`, {
+                method: "POST",
+                headers: {
+                    "Title": "CortexLiveSync",
+                    "Tags": "sync",
+                    "Priority": "high"
+                },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                this.updateUI();
+            }
         } catch (e) {}
     },
 
     async pullSync(force = false) {
-        if (this.isSyncing) return;
+        if (this.isSyncing) return { threadsCount: 0, keyRestored: false };
         const roomId = this.getRoomId();
+        let appliedResult = { threadsCount: 0, keyRestored: false };
 
         try {
+            this.isSyncing = true;
+            
+            // 1. Check local snapshot first
             const localSnapshot = localStorage.getItem(`cortex_cloud_snapshot_${roomId}`);
             if (localSnapshot) {
-                const parsed = JSON.parse(localSnapshot);
-                if (parsed && parsed.threads && Array.isArray(parsed.threads)) {
-                    const existingIds = new Set((appState.threads || []).map(t => t.id));
-                    const newThreads = parsed.threads.filter(t => !existingIds.has(t.id));
-                    if (newThreads.length > 0) {
-                        appState.threads = [...newThreads, ...appState.threads];
-                        saveThreadsToLocalStorage();
-                        renderThreadHistory();
+                try {
+                    const parsed = JSON.parse(localSnapshot);
+                    if (parsed && parsed.updatedAt && (parsed.updatedAt > this.lastSyncedTime || force)) {
+                        appliedResult = this.applySyncedPayload(parsed);
                     }
-                    if (parsed.vault && typeof CortexAuthVault !== "undefined" && !CortexAuthVault.getVaultPayload()) {
-                        localStorage.setItem(CortexAuthVault.STORAGE_KEY, typeof parsed.vault === "string" ? parsed.vault : JSON.stringify(parsed.vault));
-                        CortexAuthVault.updateAuthUI();
-                    }
+                } catch (e) {}
+            }
+
+            // 2. Fetch from live cloud relay (cross-device sync)
+            const topic = this.getRelayTopic(roomId);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+            const res = await fetch(`https://ntfy.sh/${topic}/json?poll=1`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (res.ok) {
+                const raw = await res.text();
+                const lines = raw.trim().split("\n");
+                let latestAttachmentUrl = null;
+                let latestDirectPayload = null;
+                let maxTime = 0;
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const item = JSON.parse(line.trim());
+                        if (item.event === "message") {
+                            const itemTime = (item.time ? item.time * 1000 : 0);
+                            if (item.attachment && item.attachment.url) {
+                                if (itemTime >= maxTime) {
+                                    maxTime = itemTime;
+                                    latestAttachmentUrl = item.attachment.url;
+                                }
+                            } else if (item.message && item.message.startsWith("{")) {
+                                const d = JSON.parse(item.message);
+                                if (d && d.updatedAt && d.updatedAt >= maxTime) {
+                                    maxTime = d.updatedAt;
+                                    latestDirectPayload = d;
+                                }
+                            }
+                        }
+                    } catch (e) {}
+                }
+
+                let finalPayload = latestDirectPayload;
+                if (latestAttachmentUrl) {
+                    try {
+                        const attachRes = await fetch(latestAttachmentUrl);
+                        if (attachRes.ok) {
+                            finalPayload = await attachRes.json();
+                        }
+                    } catch (e) {}
+                }
+
+                if (finalPayload && (finalPayload.updatedAt > this.lastSyncedTime || force)) {
+                    appliedResult = this.applySyncedPayload(finalPayload);
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+        } finally {
+            this.isSyncing = false;
+        }
+
+        return appliedResult;
+    },
+
+    applySyncedPayload(payload) {
+        if (!payload) return { threadsCount: 0, keyRestored: false };
+        let threadsCount = 0;
+        let keyRestored = false;
+
+        // 1. Synchronize Search Threads & History
+        if (payload.threads && Array.isArray(payload.threads) && payload.threads.length > 0) {
+            const existingMap = new Map((appState.threads || []).map(t => [t.id, t]));
+            payload.threads.forEach(incoming => {
+                if (incoming.steps && incoming.steps.length > 0) {
+                    if (!existingMap.has(incoming.id)) {
+                        threadsCount++;
+                    }
+                    existingMap.set(incoming.id, incoming);
+                }
+            });
+
+            appState.threads = Array.from(existingMap.values());
+            localStorage.setItem("ambu_threads", JSON.stringify(appState.threads));
+            renderThreadHistory();
+
+            // If on empty hero view or no active thread, open latest synced thread
+            if (!appState.activeThreadId || document.getElementById("emptyHeroView")?.style.display !== "none") {
+                if (appState.threads.length > 0) {
+                    appState.activeThreadId = appState.threads[0].id;
+                    renderViewport();
+                }
+            }
+        }
+
+        // 2. Synchronize Vault & API Key (Unlocks Pro Frontier AI on Mobile)
+        const incomingKey = payload.activeKey || payload.settings?.apiKeys?.openrouter || "";
+        if (incomingKey && incomingKey.trim().length > 15) {
+            const cleanKey = incomingKey.trim();
+            appState.settings = appState.settings || {};
+            appState.settings.apiKeys = appState.settings.apiKeys || {};
+            appState.settings.apiKeys.openrouter = cleanKey;
+
+            localStorage.setItem("ambu_key_openrouter", cleanKey);
+            localStorage.setItem("cortex_auth_remembered_key", cleanKey);
+            localStorage.setItem("cortex_is_authenticated", "true");
+
+            appState.auth = appState.auth || {};
+            appState.auth.isLoggedIn = true;
+            appState.auth.activeKey = cleanKey;
+
+            if (payload.vault && typeof CortexAuthVault !== "undefined") {
+                localStorage.setItem(CortexAuthVault.STORAGE_KEY, typeof payload.vault === "string" ? payload.vault : JSON.stringify(payload.vault));
+            }
+
+            if (typeof CortexAuthVault !== "undefined" && CortexAuthVault.updateAuthUI) {
+                CortexAuthVault.updateAuthUI();
+            }
+            updateGatewayStatusBadge();
+            updateHeaderModelLabel();
+            keyRestored = true;
+        }
+
+        // 3. Synchronize Settings
+        if (payload.settings) {
+            if (payload.settings.provider) {
+                appState.settings.provider = payload.settings.provider;
+                localStorage.setItem("ambu_provider", payload.settings.provider);
+            }
+            if (payload.settings.model) {
+                appState.settings.model = payload.settings.model;
+                localStorage.setItem("ambu_model", payload.settings.model);
+            }
+            if (payload.settings.costRouting) {
+                appState.settings.costRouting = payload.settings.costRouting;
+                localStorage.setItem("ambu_cost_routing", payload.settings.costRouting);
+            }
+        }
+
+        this.lastSyncedTime = payload.updatedAt || Date.now();
+        this.updateUI();
+        return { threadsCount, keyRestored };
     },
 
     copyPairingCode() {
         const roomId = this.getRoomId();
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(roomId).then(() => {
-                alert(`📋 Copied 6-digit Sync Code: ${roomId}\n\nEnter this code on your other laptop, mobile, or desktop to link immediately!`);
+                alert(`📋 Copied 6-digit Sync Code: ${roomId}\n\nEnter this code on your phone, laptop, or desktop to link immediately!`);
             }).catch(() => {
                 prompt("Your 6-Digit Device Pairing Code:", roomId);
             });
@@ -4675,10 +4867,10 @@ var CortexLiveSyncEngine = {
         const newRoomId = `CTX-${rand}`;
         this.setRoomId(newRoomId);
         this.pushSync();
-        alert(`🎉 New Sync Room generated: ${newRoomId}\nThis device is now ready to auto-sync!`);
+        alert(`🎉 New Sync Room generated: ${newRoomId}\nThis device is now broadcasting live auto-sync!`);
     },
 
-    joinSyncRoom() {
+    async joinSyncRoom() {
         const input = document.getElementById("joinSyncCodeInput");
         if (!input || !input.value.trim()) {
             alert("Please enter a valid 6-digit Sync Code (e.g. CTX-849204).");
@@ -4687,13 +4879,19 @@ var CortexLiveSyncEngine = {
         const code = input.value.trim().toUpperCase();
         this.setRoomId(code);
         input.value = "";
-        alert(`🔗 Connected to Sync Room: ${code}!\nAll threads and API keys will now live-sync across all your devices automatically.`);
+
+        const result = await this.pullSync(true);
+        if (result.threadsCount > 0 || result.keyRestored) {
+            alert(`🎉 Connected to Sync Room: ${code}!\nSynchronized ${result.threadsCount} research threads and unlocked Pro Frontier AI!`);
+        } else {
+            alert(`🔗 Connected to Sync Room: ${code}!\nAll threads and API keys will now sync automatically across all linked devices.`);
+        }
     },
 
-    triggerManualSync() {
-        this.pushSync();
-        this.pullSync(true);
-        alert("🔄 Live Cloud Sync completed! All threads and settings are in sync.");
+    async triggerManualSync() {
+        await this.pushSync();
+        const res = await this.pullSync(true);
+        alert(`🔄 Live Cloud Sync completed! All threads and settings are in sync.`);
     }
 };
 
