@@ -4,6 +4,56 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v5.0.0] — 2026-09-03
+### **Autonomous Deep Research Agent & Multi-Format Compute Studio: Native PowerPoint (.pptx) Presentations, Executive Whitepapers, Word (.docx) Reports, and Interactive In-App Slide Viewer**
+
+```mermaid
+graph TD
+    subgraph InputPillar ["⚡ Input & Intent Routing"]
+        UserInput["User Inquiry / Command (e.g. 'Compute whitepaper & 5-slide deck on AI Agents')"]
+        IntentRouter["Intent Classifier & @studio Tag Detector"]
+        UserInput --> IntentRouter
+    end
+
+    subgraph AgentPipeline ["🧠 Cortex Deep Research Agent (5-Stage Stepper)"]
+        Stage1["Stage 1: Hypothesis Decomposition (4 Pillars)"]
+        Stage2["Stage 2: Multi-Domain Real-World Citation Mining"]
+        Stage3["Stage 3: Cross-Model Fact & Benchmark Verification"]
+        Stage4["Stage 4: Executive Whitepaper & Deliverable Compilation"]
+        Stage5["Stage 5: Interactive Slide Deck (.PPTX) Synthesis"]
+        
+        IntentRouter --> Stage1 --> Stage2 --> Stage3 --> Stage4 --> Stage5
+    end
+
+    subgraph DeliverablesSuite ["📊 Multi-Format Compute Deliverables Suite"]
+        Tabs["Deliverable Tabs: [ 📑 Executive Whitepaper ] & [ 📊 Presentation Slides ]"]
+        Whitepaper["Structured Report: Executive Thesis, Benchmark Matrix & 12-Month Roadmap"]
+        DeckViewer["16:9 Widescreen In-App Slide Viewer (Previous/Next/Dots/Fullscreen)"]
+        PptxDl["1-Click Native Microsoft PowerPoint (.pptx via PptxGenJS)"]
+        DocxDl["1-Click Formatted Microsoft Word Document (.docx)"]
+        
+        Stage5 --> Tabs
+        Tabs --> Whitepaper & DeckViewer
+        Tabs --> PptxDl & DocxDl
+    end
+```
+
+#### ⚡ Autonomous Deep Research Agent (`CortexDeepResearchAgent`)
+- **Multi-Pillar Hypothesis Decomposition**: Automatically formulates 4 distinct investigative angles across Architectural Primitives, Latency/Throughput Constraints, Quantitative Unit Economics & TCO, and 12-Month Enterprise Trajectories.
+- **Dynamic 5-Stage Live Stepper UI**: Real-time visual progress card directly in the search viewport tracking the agent's progress through each stage with animated status indicators.
+- **Structured Executive Whitepapers**: Production-grade documents featuring Executive Summary callouts, empirical findings, a 4-dimension Comparative Benchmark Matrix table, operational risk mitigation vectors, and 12-month execution milestones.
+
+#### 📊 Presentation Slide Deck Generator & Interactive Viewer (`CortexComputeStudio`)
+- **Interactive In-App 16:9 Slide Viewer**: High-contrast dark titanium theme, custom diamond glyph bullets, executive takeaway cards, and responsive controls (Previous, Next, slide counter, and clickable thumbnail dots).
+- **1-Click Native PowerPoint (.pptx) Export**: Compiles presentation decks directly in the browser via `PptxGenJS` with styled widescreen slides, custom brand palettes, and headers/footers.
+- **On-Demand Memo-to-Deck Conversion**: Added `Generate Deck (.PPTX)` and `Export .DOCX` action buttons to the telemetry footer of **every** search memo in Cortex.
+
+#### 📄 Formatted Document Exporter (`.docx` & Markdown)
+- **1-Click Microsoft Word (.docx) Downloads**: Packages research reports into styled Word documents with embedded typography, tables, and metadata banners.
+- **Dedicated "Compute & Studio" Research Desk**: New sidebar navigation desk with 6 pre-configured prompt cards for enterprise agent workflows, battery chemistry benchmarks, nuclear energy briefs, and quantum computing whitepapers.
+
+---
+
 ## 🌟 [v4.8.1] — 2026-09-01
 ### **Real-Time Cross-Device Cloud Sync Relay Protocol, Multi-Device Thread Merging, and Instant Mobile Pro Key Unlock**
 
