@@ -3576,7 +3576,7 @@ ${sourceContext}
 Cortex Direct Precision Answering Guidelines:
 1. DIRECT ANSWER FIRST: Begin immediately with a concise, factual, and direct answer to the user's specific query in the first 1-2 sentences. No conversational greetings ("Hello", "Good morning"), no meta-preambles ("Based on the sources...", "Here is the information"), and zero robotic blurp.
 2. FOCUS & PRECISION (NO BLURP, NO CLUTTER): Answer precisely what was asked. If the query is about a person, state who they are and their role. If about a concept, define it clearly. If about a model or release, provide the exact version, pricing, benchmarks, and specs directly. DO NOT turn simple queries into academic research papers, corporate memos, or defense telemetry.
-3. SCANNABLE BULLETED DETAILS: Follow the direct answer with clear, structured bullet points using bold concepts (- <strong>Feature / Aspect:</strong> Explanation [1]) for effortless scanning.
+3. COHESIVE NARRATIVE SYNTHESIS (LIKE PERPLEXITY): Follow the direct answer with cohesive, flowing multi-paragraph narrative prose synthesizing the verified sources. Connect facts smoothly with natural transitions and inline citations. Organize into well-structured paragraphs under topical subheadings (e.g. ### Operational Architecture, ### Context & Implications). Reserve bullet lists strictly for discrete enumerations (such as command syntax, ingredient lists, or step-by-step instructions); do not default to bullet point dumps.
 4. NATURAL SUBHEADINGS: If the query has multiple facets, use natural, concise subheadings (### Overview, ### Key Specifications, ### Implementation) instead of heavy document headers.
 5. GROUNDED INLINE CITATIONS: Ground every fact with clean inline citation markers referencing source numbers (e.g. <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span>). Strip raw artifacts like "[pdf]" or "[PDF]".
 6. EXACT VERSION INTEGRITY: If the query specifies an exact version (e.g. "5.1", "3.7", "4o", "6", "Astra"), answer specifically for that exact version without downgrading or confusing it.
@@ -4527,8 +4527,8 @@ async def execute_async_pipeline(payload: PipelineRequest):
                 <h3 style="color: #f8fafc; font-size: 1.08rem; margin-top: 18px; margin-bottom: 8px;"><i class="fa-solid fa-network-wired text-cyan"></i> Supported Endpoints & Native Agentic Tools</h3>
                 <ul style="margin: 0 0 16px 20px; color: #cbd5e1;">
                     <li><strong>Production API Endpoints:</strong> <code>v1/chat/completions</code>, <code>v1/responses</code>, and <code>v1/batch</code> <span class="citation-ref">[1]</span>.</li>
-                    <li><strong>Native Responses API Tools:</strong> <code>computer_use</code> (direct desktop/browser GUI control), <code>hosted_shell</code> (isolated terminal bash execution), <code>apply_patch</code> (atomic code edits), <code>skills</code>, <code>mcp</code> (Model Context Protocol client), <code>code_interpreter</code>, <code>web_search</code>, and <code>file_search</code> <span class="citation-ref">[1]</span>.</li>
-                    <li><strong>Frontier Benchmark Evaluations:</strong> Achieves state-of-the-art milestones on ARC-AGI-3, the Artificial Analysis Coding Agent Index, and SWE-bench Verified through scaled test-time reasoning tokens <span class="citation-ref">[2]</span> <span class="citation-ref">[4]</span>.</li>
+                    <li><strong>Native Responses API Tools:</strong> The platform supports <code>computer_use</code> for direct desktop and browser GUI control, <code>hosted_shell</code> for isolated bash execution, <code>apply_patch</code> for automated atomic code refactoring, <code>mcp</code> for Model Context Protocol integration, and a suite of tools including <code>code_interpreter</code>, <code>web_search</code>, and <code>file_search</code> <span class="citation-ref">[1]</span>.</li>
+                    <li><strong>Frontier Benchmark Evaluations:</strong> The model achieves state-of-the-art performance across major evaluations, including ARC-AGI-3, the Artificial Analysis Coding Agent Index, and SWE-bench Verified, utilizing scaled test-time reasoning tokens to navigate complex logic and long-horizon software engineering tasks <span class="citation-ref">[2]</span> <span class="citation-ref">[4]</span>.</li>
                 </ul>
 
                 <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
@@ -4545,16 +4545,16 @@ async def execute_async_pipeline(payload: PipelineRequest):
         return `
             <div class="cortex-search-response">
                 <p class="cortex-lead-answer">
-                    The <strong>Great Firewall of China</strong> (GFW; <em>防火长城</em>) is the combination of legislative measures, regulatory mandates, and advanced network surveillance technologies deployed by the People's Republic of China to enforce domestic internet sovereignty and regulate cross-border cyberspace traffic <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>. Primarily overseen by the <strong>Cyberspace Administration of China (CAC)</strong> and integrated into the national <strong>Golden Shield Project</strong>, the system blocks access to selected foreign websites, throttles international bandwidth, and prevents the domestic distribution of blacklisted content <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button> <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.
+                    The <strong>Great Firewall of China</strong> (GFW; <em>防火长城</em>) is the combination of legislative measures, regulatory mandates, and advanced network surveillance technologies deployed by the People's Republic of China to enforce domestic internet sovereignty and regulate cross-border cyberspace traffic <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>. Primarily overseen by the <strong>Cyberspace Administration of China (CAC)</strong> and integrated into the national <strong>Golden Shield Project</strong>, the system blocks access to thousands of foreign websites, throttles international bandwidth, and prevents the domestic distribution of blacklisted content <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button> <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.
                 </p>
 
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> Core Architecture & Technical Enforcement Mechanisms</h3>
-                <ul class="cortex-search-bullets">
-                    <li><strong>DNS Spoofing & Cache Poisoning:</strong> When a user inside mainland China queries a restricted domain name (such as Google, Wikipedia, YouTube, or foreign news portals), edge gateway servers intercept the DNS request and return a forged, non-routable IP address before the authoritative DNS server can respond <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button> <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.</li>
-                    <li><strong>IP Address Blocking & BGP Null-Routing:</strong> Border gateway routers drop packets bound for specific IP subnets hosting restricted services, preventing direct TCP handshakes even if DNS resolution is bypassed via custom hosts files or encrypted DNS <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.</li>
-                    <li><strong>Deep Packet Inspection (DPI) & SNI Filtering:</strong> Hardware sniffers inspect unencrypted Server Name Indication (SNI) fields during the TLS client hello handshake and HTTP host headers. If a restricted keyword or domain is identified, edge routers inject spoofed <strong>TCP RST (Reset)</strong> packets to forcibly terminate the connection <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button> <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>.</li>
-                    <li><strong>Active Probing & Heuristic TLS Fingerprinting:</strong> When the firewall detects anomalous encrypted connections (such as Shadowsocks or custom proxy protocols), automated probing systems connect back to the suspect server with probe packets to confirm whether it is acting as an unauthorized proxy, immediately adding the server's IP and port to dynamic blocklists <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button> <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>.</li>
-                </ul>
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> Operational Architecture & Core Filtering Mechanisms</h3>
+                <p class="cortex-search-paragraph">
+                    The Great Firewall operates at state-owned international gateway exchanges (China Telecom, China Unicom, and China Mobile) through multiple coordinated layers of network interception <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>. At the domain resolution stage, edge resolvers deploy <strong>DNS spoofing and cache poisoning</strong> to return forged, non-routable IP addresses before authoritative root servers can reply, rendering blocked domains unreachable. Concurrently, border routers enforce <strong>BGP null-routing and IP blacklisting</strong> to discard inbound and outbound packets directed toward restricted overseas hosting clusters <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.
+                </p>
+                <p class="cortex-search-paragraph">
+                    For live transmission streams, the system utilizes high-throughput <strong>Deep Packet Inspection (DPI)</strong> to analyze unencrypted Server Name Indication (SNI) fields during the TLS handshake and scan packet payloads for politically sensitive keywords <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>. Whenever unauthorized content is detected, gateway hardware injects spoofed <strong>TCP RST (Reset)</strong> packets into the connection stream, abruptly terminating the TCP session between the client and foreign server. Furthermore, automated <strong>active probing</strong> engines continuously interrogate suspicious encrypted connections to discover and block unauthorized proxy endpoints <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>.
+                </p>
 
                 <h3 class="cortex-search-subheading"><i class="fa-solid fa-table-list text-teal"></i> System Telemetry & Operational Dimensions</h3>
                 <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; margin-bottom: 16px;">
@@ -4595,14 +4595,6 @@ async def execute_async_pipeline(payload: PipelineRequest):
                         </tbody>
                     </table>
                 </div>
-
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-shield-halved text-amber"></i> Circumvention Dynamics, "Wall Climbing" & Economic Bifurcation</h3>
-                <p class="cortex-search-paragraph">
-                    Within mainland China, bypassing the Great Firewall is colloquially referred to as <strong>"climbing the wall" (翻墙, <em>fānqiáng</em>)</strong> <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>. Because standard OpenVPN and WireGuard handshakes exhibit distinct packet characteristics that DPI engines detect and throttle immediately, users and developers rely on specialized obfuscation proxies—such as <strong>Shadowsocks</strong>, <strong>V2Ray (VMess/VLESS)</strong>, <strong>Trojan</strong>, and <strong>Xray</strong>—which mask proxy traffic to resemble standard HTTPS web traffic <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>.
-                </p>
-                <p class="cortex-search-paragraph">
-                    Beyond information control, the Great Firewall has functioned as an effective digital trade barrier, creating a parallel Chinese tech ecosystem where domestic platforms (such as WeChat, Weibo, Baidu, and Douyin) thrive without competition from blocked Western counterparts (Google, YouTube, X, Wikipedia, Meta, and OpenAI) <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button> <button type="button" class="citation-ref" data-source-num="4" onclick="jumpToSource(4, event)" onmouseenter="showCitationPreview(4, this)" onmouseleave="hideCitationPreview()" title="Source 4"><span class="citation-badge-num">4</span></button>.
-                </p>
 
                 <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
                     <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Telemetry:</strong> Grounded via real-time network measurement records, official Chinese regulatory documentation, and verified public telemetry as of ${todayFull} (${liveTime}).
@@ -4685,6 +4677,13 @@ async def execute_async_pipeline(payload: PipelineRequest):
     // Filter sources to prevent off-topic results while honoring the authoritative ranking from fetchWebSources
     const activeSources = [];
     validSources.forEach((s, idx) => {
+        // Discard entertainment media disambiguations (e.g. album, song, film, band) for technical/factual queries
+        const isMediaDisambiguation = /\((?:album|song|film|band|ep|soundtrack|tv series)\)/i.test(s.title || "");
+        const queryWantsMedia = /(?:album|song|music|band|film|movie|soundtrack|singer|actor|artist)/i.test(query);
+        if (isMediaDisambiguation && !queryWantsMedia) {
+            return;
+        }
+
         const isSyntheticSearch = s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"));
         const combinedText = `${s.title} ${s.snippet}`.toLowerCase();
         if (queriedVersion && combinedText.includes(queriedVersion.toLowerCase())) {
@@ -4784,58 +4783,91 @@ async def execute_async_pipeline(payload: PipelineRequest):
         return `<strong>${subj}</strong>: Public documentation and search results report verified information regarding ${subj}.`;
     };
 
-    let leadText = "";
+    // Helper: Extract clean factual sentences for fluid narrative synthesis
+    const extractNarrativeSentences = (source) => {
+        if (!source) return [];
+        let text = (source.snippet || source.title || "").trim();
+        text = text.replace(/\s*\([A-Za-z\s;:]*[\u4e00-\u9fa5]+[^)]*\)/g, '');
+        text = text.replace(/\s*\([A-Z0-9\s;,\-—]{1,25}\)/g, '');
+        text = sanitizeFactualProse(text);
+
+        const sentences = text.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 20);
+        const cleanSentences = [];
+        for (let sent of sentences) {
+            sent = sent.trim();
+            sent = sent.replace(/^public reporting and community discussion regarding\s+/i, '');
+            sent = sent.replace(/^peer-reviewed scientific and industry research regarding\s+/i, '');
+            sent = sent.replace(/^live global market telemetry,?\s*(?:industry developments,?\s*and verified reporting on)?\s*/i, '');
+            sent = sent.replace(/^open-source engineering and technical specifications regarding\s+/i, '');
+            sent = sent.replace(/^technical analysis regarding\s+/i, '');
+            if (/^(?:connecting|with|for their use|and|or|but|as well as|which|whose|that|because|in order to|by|from)\b/i.test(sent)) {
+                continue;
+            }
+            if (sent.length < 15) continue;
+            sent = sent.charAt(0).toUpperCase() + sent.slice(1);
+            if (!sent.endsWith('.')) sent += '.';
+            cleanSentences.push(sent);
+        }
+        return cleanSentences;
+    };
+
+    // Build Cohesive Multi-Paragraph Narrative Synthesis (Perplexity-Grade Narrative)
+    const narrativeSections = [];
+
     if (activeSources.length > 0) {
-        const primarySource = activeSources[0];
-        const primaryLead = extractGrammaticalLead(primarySource, subject);
-        const sNum = primarySource.num || 1;
-        leadText = `${primaryLead} <button type="button" class="citation-ref" data-source-num="${sNum}" onclick="jumpToSource(${sNum}, event)" onmouseenter="showCitationPreview(${sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${sNum}"><span class="citation-badge-num">${sNum}</span></button>`;
-    } else {
-        leadText = `<strong>${subject}</strong>: Web search query processed across public sources as of ${todayFull}.`;
+        // Paragraph 1: Direct Definition & Executive Synthesis
+        const p1Sentences = [];
+        const leadSent = extractGrammaticalLead(activeSources[0], subject);
+        const s1Num = activeSources[0]?.num || 1;
+        p1Sentences.push(`${leadSent} <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>`);
+
+        const source0Extras = extractNarrativeSentences(activeSources[0]);
+        if (source0Extras.length > 1 && !source0Extras[1].toLowerCase().includes(leadSent.toLowerCase().substring(0, 30))) {
+            p1Sentences.push(`${source0Extras[1]} <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>`);
+        }
+        narrativeSections.push(`<p class="cortex-lead-answer">${p1Sentences.join(' ')}</p>`);
+
+        // Paragraph 2: Operational Details & Mechanics
+        const p2Sentences = [];
+        if (source0Extras.length > 2 && !source0Extras[2].toLowerCase().includes(leadSent.toLowerCase().substring(0, 30))) {
+            p2Sentences.push(`${source0Extras[2]} <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>`);
+        }
+        for (let i = 1; i < Math.min(4, activeSources.length); i++) {
+            const s = activeSources[i];
+            const sNum = s.num || (i + 1);
+            const sents = extractNarrativeSentences(s);
+            if (sents.length > 0) {
+                p2Sentences.push(`${sents[0]} <button type="button" class="citation-ref" data-source-num="${sNum}" onclick="jumpToSource(${sNum}, event)" onmouseenter="showCitationPreview(${sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${sNum}"><span class="citation-badge-num">${sNum}</span></button>`);
+            }
+        }
+        if (p2Sentences.length > 0) {
+            narrativeSections.push(`
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> Operational Architecture & Core Details</h3>
+                <p class="cortex-search-paragraph">${p2Sentences.join(' ')}</p>
+            `);
+        }
+
+        // Paragraph 3: Context & Practical Implications
+        const p3Sentences = [];
+        for (let i = 3; i < Math.min(6, activeSources.length); i++) {
+            const s = activeSources[i];
+            const sNum = s.num || (i + 1);
+            const sents = extractNarrativeSentences(s);
+            if (sents.length > 0) {
+                p3Sentences.push(`${sents[0]} <button type="button" class="citation-ref" data-source-num="${sNum}" onclick="jumpToSource(${sNum}, event)" onmouseenter="showCitationPreview(${sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${sNum}"><span class="citation-badge-num">${sNum}</span></button>`);
+            }
+        }
+        if (p3Sentences.length > 0) {
+            narrativeSections.push(`
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-compass text-emerald"></i> Context & Industry Telemetry</h3>
+                <p class="cortex-search-paragraph">${p3Sentences.join(' ')}</p>
+            `);
+        }
     }
 
-    const seenBulletHeads = new Set();
-    const findingsList = [];
-
-    (activeSources.length > 0 ? activeSources.slice(0, 5) : []).forEach((s, idx) => {
-        let cleanText = sanitizeFactualProse(s.snippet || "");
-        let cleanTitle = sanitizeArtifacts(s.title || "");
-        const isSynthetic = s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"));
-
-        let heading = cleanTitle.split(/[-–—:|]/)[0]
-            .replace(/,\s*\.{2,}\s*/g, '')
-            .replace(/\s*\.{2,}\s*/g, '')
-            .replace(/…/g, '')
-            .replace(/[:.,\s]+$/, '')
-            .trim();
-        if (heading.length < 8 && cleanTitle.length > heading.length) {
-            heading = cleanTitle.substring(0, 48).replace(/[:.,\s]+$/, '').trim();
-        } else if (heading.length > 48) {
-            heading = heading.substring(0, 48).replace(/\s+\S*$/, '').replace(/[:.,\s]+$/, '').trim();
-        }
-        if (heading.length < 3) heading = s.domain || `Source ${idx + 1}`;
-
-        const headKey = heading.toLowerCase().substring(0, 25);
-        if (seenBulletHeads.has(headKey)) return;
-        seenBulletHeads.add(headKey);
-
-        if (isSynthetic) {
-            cleanText = `Indexed documentation and public search results via ${s.domain || "web portal"}.`;
-        } else if (cleanText.length < 15 || cleanText.toLowerCase().includes("live global market telemetry") || cleanText.toLowerCase() === cleanTitle.toLowerCase()) {
-            cleanText = `Public reporting and documentation published via ${s.domain || "source reference"}.`;
-        }
-
-        const sNum = s.num || (idx + 1);
-        findingsList.push(`<li><strong>${heading}:</strong> ${cleanText} <button type="button" class="citation-ref" data-source-num="${sNum}" onclick="jumpToSource(${sNum}, event)" onmouseenter="showCitationPreview(${sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${sNum}"><span class="citation-badge-num">${sNum}</span></button></li>`);
-    });
-
-    const findings = findingsList.join('');
-    const findingsSection = findings.length > 0 ? `
-        <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> Core Architecture & Key Capabilities</h3>
-        <ul class="cortex-search-bullets">
-            ${findings}
-        </ul>
-    ` : '';
+    const narrativeHTML = narrativeSections.length > 0
+        ? narrativeSections.join('\n')
+        : `<p class="cortex-lead-answer">Public documentation and search indexes contain limited direct factual sentences for <strong>${subject}</strong> at this time.</p>`;
 
     // Dynamic Specifications / Attributes Table when sources provide diverse telemetry
     let specsTableSection = "";
@@ -4877,10 +4909,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
     return `
         <div class="cortex-search-response">
             ${temporalLimitationBanner}
-            <p class="cortex-lead-answer">
-                ${leadText}
-            </p>
-            ${findingsSection}
+            ${narrativeHTML}
             ${specsTableSection}
             <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
                 <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Telemetry:</strong> Grounded via real-time public index and authoritative encyclopedic telemetry as of ${todayFull} (${liveTime}).
@@ -5414,7 +5443,7 @@ ${sourceContext}
 Cortex Direct Precision Answering Guidelines:
 1. DIRECT ANSWER FIRST: Begin immediately with a concise, factual, and direct answer to the user's specific query in the first 1-2 sentences. No conversational greetings ("Hello", "Good morning"), no meta-preambles, and zero blurp.
 2. FOCUS & PRECISION: Answer precisely what was asked. Avoid generic corporate memos, whitepapers, or fluff.
-3. SCANNABLE BULLETED DETAILS: Follow with concise bullet points using bold concepts (- <strong>Key Aspect:</strong> Explanation [1]).
+3. COHESIVE NARRATIVE SYNTHESIS (LIKE PERPLEXITY): Follow the direct answer with cohesive, flowing multi-paragraph narrative prose synthesizing the verified sources. Connect facts smoothly with natural transitions and inline citations (e.g. <span class="citation-ref">[1]</span>). Organize into well-structured paragraphs under topical subheadings. Reserve bullet lists strictly for discrete enumerations (like CLI flags, recipes, or sequential steps).
 4. NATURAL SUBHEADINGS: Use simple, natural subheadings (### Overview, ### Key Details) only when needed.
 5. GROUNDED CITATIONS: Ground claims with inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span>.
 6. Clean semantic HTML only (<h3>, <h4>, <p>, <ul>, <li>, <strong>, <code>). Output strictly in English.`;
@@ -5441,14 +5470,14 @@ Cortex Direct Precision Answering Guidelines:
                 }
                 return formatAIResponseHTML(rawText);
             } else if (res.status === 429) {
-                console.warn(`Gemini model ${currentModel} rate limited (429). Trying fallback model...`);
-                continue; // Failover to next Gemini model in list
+                console.warn(`AI model ${currentModel} rate limited (429). Trying fallback model...`);
+                continue; // Failover to next model in list
             } else {
                 const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error?.message || `Gemini HTTP ${res.status}`);
+                throw new Error(errData.error?.message || `HTTP ${res.status}`);
             }
         } catch (e) {
-            console.error(`Gemini API Call Exception for ${currentModel}:`, e);
+            console.error(`API Call Exception for ${currentModel}:`, e);
         }
     }
 
@@ -5459,10 +5488,10 @@ Cortex Direct Precision Answering Guidelines:
         <div class="api-limit-error-banner">
             <div class="api-limit-header">
                 <i class="fa-solid fa-gauge-high text-amber" style="color: #f59e0b;"></i>
-                <strong style="color: #fde047;">Gemini Rate Limit Reached (${liveTime}):</strong>
+                <strong style="color: #fde047;">AI Gateway Limit Reached (${liveTime}):</strong>
             </div>
             <div class="api-limit-desc">
-                Google's free rate threshold (15 RPM) was exceeded for this query. Outdated approximations have been suppressed to protect recency and factual integrity. Switched to local verified search synthesis below.
+                Public rate threshold was exceeded for this query. Outdated approximations have been suppressed to protect recency and factual integrity. Switched to local verified search synthesis below.
             </div>
         </div>
     ` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
@@ -5478,7 +5507,7 @@ async function callOpenAIProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 messages: [
-                    { role: "system", content: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nDirect answer first in 1-2 sharp sentences. No greetings, pleasantries, or blurp. Scannable bullets with bold concepts. Clean inline citations like <span class="citation-ref">[1]</span>. Format using clean HTML (h3, h4, p, ul, li, strong, code). Zero disclaimers. Always output in English.` },
+                    { role: "system", content: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nDirect answer first in 1-2 sharp sentences. Cohesive multi-paragraph narrative synthesis (like Perplexity). Connect verified facts with smooth transitions and natural inline citations like <span class="citation-ref">[1]</span>. Avoid shallow bullet dumps. Format using clean HTML (h3, h4, p, strong, code). Zero disclaimers. Always output in English.` },
                     { role: "user", content: `Query: ${query}\n\nWeb Sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }
                 ]
             })
@@ -5518,7 +5547,7 @@ async function callClaudeProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 max_tokens: 1500,
-                system: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nSynthesize clean HTML answer directly from the sources. Direct answer first in 1-2 sharp sentences. No greetings, preambles, or blurps. Scannable bullets with bold concepts. Clean inline citations like <span class="citation-ref">[1]</span>. Format using clean HTML (h3, h4, p, ul, li, strong). Zero disclaimers. Always in English.`,
+                system: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nSynthesize clean HTML answer directly from the sources. Direct answer first in 1-2 sharp sentences. Cohesive multi-paragraph narrative synthesis (like Perplexity). Connect verified facts with smooth transitions and natural inline citations like <span class="citation-ref">[1]</span>. Avoid shallow bullet lists or snippet dumps. Format using clean HTML (h3, h4, p, strong). Zero disclaimers. Always in English.`,
                 messages: [{ role: "user", content: `Synthesize clean HTML answer for query: "${query}" using sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }]
             })
         });
