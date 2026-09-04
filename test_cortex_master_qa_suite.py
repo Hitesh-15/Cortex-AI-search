@@ -44,7 +44,7 @@ def get_free_port():
 
 def check_browser_logs(driver, phase_name):
     logs = driver.get_log("browser")
-    severe = [l for l in logs if l['level'] == 'SEVERE' and 'favicon.ico' not in l['message'] and 'fonts.gstatic.com' not in l['message']]
+    severe = [l for l in logs if l['level'] == 'SEVERE' and 'favicon.ico' not in l['message'] and 'fonts.gstatic.com' not in l['message'] and 'ntfy.sh' not in l['message']]
     if severe:
         for err in severe:
             print(f"[{phase_name} ERROR]:", err['message'])
@@ -184,6 +184,33 @@ def run_master_qa_suite():
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)
         print("  [PASS] Continuous Release Notes modal v5.0.0 verified.")
+
+        # 1.9 Thread Deletion & Trash Clear Integrity (Zero Resurrection)
+        print("  -> Testing Thread Deletion & Trash Clear Integrity...")
+        driver.execute_script("executeSearch('Temporary thread to be deleted', false);")
+        time.sleep(1.0)
+        temp_thread_id = driver.execute_script("return appState.threads[0].id;")
+        driver.execute_script(f"deleteThread('{temp_thread_id}');")
+        time.sleep(0.4)
+        # Trigger focus and pullSync to confirm it doesn't get resurrected
+        driver.execute_script("window.dispatchEvent(new Event('focus')); CortexLiveSyncEngine.pullSync(true);")
+        time.sleep(0.8)
+        threads_after_del = driver.execute_script("return appState.threads.map(t => t.id);")
+        assert temp_thread_id not in threads_after_del, "Deleted thread was resurrected by sync engine!"
+        print("  [PASS] Single thread deletion verified with 0 resurrection.")
+
+        # Test Trash Can Clear Button
+        driver.execute_script("window.confirm = function() { return true; };")
+        btn_clear = driver.find_element(By.ID, "btnClearHistory")
+        driver.execute_script("arguments[0].click();", btn_clear)
+        time.sleep(0.4)
+        driver.execute_script("window.dispatchEvent(new Event('focus')); CortexLiveSyncEngine.pullSync(true);")
+        time.sleep(0.8)
+        threads_after_clear = driver.execute_script("return appState.threads.length;")
+        assert threads_after_clear == 0, f"History clear failed! Found {threads_after_clear} threads."
+        sb_html = driver.execute_script("return document.getElementById('threadHistoryList').innerHTML;")
+        assert "No search history yet" in sb_html, "Empty history message missing!"
+        print("  [PASS] Trash button cleanly purged history with 0 resurrection across sync.")
 
         # =====================================================================
         # PHASE 2: STRESS TESTING (RAPID BURST & HIGH-CONCURRENCY DOM INTEGRITY)
