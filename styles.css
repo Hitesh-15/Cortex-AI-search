@@ -2470,6 +2470,58 @@ option:active {
         font-size: 0.76rem;
         flex-shrink: 0;
     }
+
+    /* Studio & Deep Research Mobile Enhancements */
+    .cortex-slide-deck-viewer {
+        padding: 12px 10px;
+        margin: 12px 0;
+    }
+    .deck-stage {
+        aspect-ratio: auto;
+        min-height: 290px;
+        padding: 16px 14px;
+    }
+    .slide-title {
+        font-size: 1.15rem;
+        line-height: 1.3;
+        margin-bottom: 10px;
+    }
+    .slide-bullet-item {
+        font-size: 0.82rem;
+        gap: 8px;
+    }
+    .slide-takeaway-box {
+        font-size: 0.74rem;
+        padding: 6px 10px;
+    }
+    .cortex-deliverable-tabs {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+    .cortex-deliverable-tabs > div {
+        margin-left: 0 !important;
+        display: flex;
+        justify-content: stretch;
+        gap: 6px;
+        width: 100%;
+    }
+    .btn-deliverable-tab,
+    .btn-deck-action {
+        width: 100%;
+        justify-content: center;
+    }
+    .whitepaper-meta-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+    .deep-research-stepper {
+        padding: 12px 10px;
+    }
+    .stepper-stage {
+        font-size: 0.76rem;
+        padding: 4px 6px;
+    }
 }
 
 /* ==========================================================================
