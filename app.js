@@ -4450,10 +4450,6 @@ async def execute_async_pipeline(payload: PipelineRequest):
                     <li><strong>MATH-500 & GPQA Diamond:</strong> Demonstrates major performance gains in PhD-level scientific reasoning and formal mathematical synthesis <span class="citation-ref">[3]</span>.</li>
                     <li><strong>API & Global Availability:</strong> Available via the Anthropic API, Claude developer console, and major cloud gateways with active production status <span class="citation-ref">[4]</span>.</li>
                 </ul>
-
-                <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
-                    <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Telemetry:</strong> Live intelligence verified as of ${todayFull} (${liveTime}) via official Anthropic documentation (<a href="https://www.anthropic.com/claude-fable-and-mythos-5-1" target="_blank" rel="noopener" style="color: #38bdf8; text-decoration: underline;">anthropic.com</a>) and platform specifications.
-                </div>
             </div>
         `;
     }
@@ -4530,75 +4526,34 @@ async def execute_async_pipeline(payload: PipelineRequest):
                     <li><strong>Native Responses API Tools:</strong> The platform supports <code>computer_use</code> for direct desktop and browser GUI control, <code>hosted_shell</code> for isolated bash execution, <code>apply_patch</code> for automated atomic code refactoring, <code>mcp</code> for Model Context Protocol integration, and a suite of tools including <code>code_interpreter</code>, <code>web_search</code>, and <code>file_search</code> <span class="citation-ref">[1]</span>.</li>
                     <li><strong>Frontier Benchmark Evaluations:</strong> The model achieves state-of-the-art performance across major evaluations, including ARC-AGI-3, the Artificial Analysis Coding Agent Index, and SWE-bench Verified, utilizing scaled test-time reasoning tokens to navigate complex logic and long-horizon software engineering tasks <span class="citation-ref">[2]</span> <span class="citation-ref">[4]</span>.</li>
                 </ul>
-
-                <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
-                    <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Official Verification:</strong> Verified against official OpenAI Developer Documentation (<a href="https://developers.openai.com/api/docs/models/gpt-6-astra" target="_blank" rel="noopener" style="color: #38bdf8; text-decoration: underline;">developers.openai.com/api/docs/models/gpt-6-astra</a>) as of ${todayFull} (${liveTime}).
-                </div>
             </div>
         `;
     }
 
     // 15.8 The Great Firewall of China (GFW): Dedicated Architecture & Circumvention Telemetry
     if (qLower.includes("great firewall") || (qLower.includes("firewall") && qLower.includes("china"))) {
-        const todayFull = cortexTemporal.getTodayFull();
-        const liveTime = cortexTemporal.getCurrentTime();
         return `
             <div class="cortex-search-response">
                 <p class="cortex-lead-answer">
                     The <strong>Great Firewall of China</strong> (GFW; <em>防火长城</em>) is the combination of legislative measures, regulatory mandates, and advanced network surveillance technologies deployed by the People's Republic of China to enforce domestic internet sovereignty and regulate cross-border cyberspace traffic <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>. Primarily overseen by the <strong>Cyberspace Administration of China (CAC)</strong> and integrated into the national <strong>Golden Shield Project</strong>, the system blocks access to thousands of foreign websites, throttles international bandwidth, and prevents the domestic distribution of blacklisted content <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button> <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.
                 </p>
 
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> Operational Architecture & Core Filtering Mechanisms</h3>
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-shield-halved text-cyan"></i> Core Filtering & Interception Mechanisms</h3>
                 <p class="cortex-search-paragraph">
-                    The Great Firewall operates at state-owned international gateway exchanges (China Telecom, China Unicom, and China Mobile) through multiple coordinated layers of network interception <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>. At the domain resolution stage, edge resolvers deploy <strong>DNS spoofing and cache poisoning</strong> to return forged, non-routable IP addresses before authoritative root servers can reply, rendering blocked domains unreachable. Concurrently, border routers enforce <strong>BGP null-routing and IP blacklisting</strong> to discard inbound and outbound packets directed toward restricted overseas hosting clusters <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.
+                    The firewall operates primarily at state-owned international gateway exchanges (China Telecom, China Unicom, and China Mobile) through multiple coordinated technical layers:
                 </p>
+                <ul class="cortex-search-bullets" style="margin: 0 0 16px 20px; color: #cbd5e1; line-height: 1.75;">
+                    <li style="margin-bottom: 8px;"><strong>DNS Spoofing & Cache Poisoning:</strong> Edge resolvers inject forged, non-routable IP addresses to block domain resolution before legitimate DNS answers arrive <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>.</li>
+                    <li style="margin-bottom: 8px;"><strong>IP Blacklisting & BGP Null-Routing:</strong> State-owned gateway routers drop inbound and outbound packets destined for restricted overseas server clusters <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.</li>
+                    <li style="margin-bottom: 8px;"><strong>Deep Packet Inspection (DPI):</strong> High-throughput inspection hardware analyzes unencrypted Server Name Indication (SNI) fields during the TLS handshake and scans packet payloads for sensitive terms <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.</li>
+                    <li style="margin-bottom: 8px;"><strong>TCP Reset (RST) Injection:</strong> Gateway devices inject spoofed TCP RST packets into ongoing streams, abruptly terminating the connection between the client and foreign server <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>.</li>
+                    <li><strong>Automated Active Probing:</strong> Automated scanners interrogate suspicious encrypted connections to discover and block shadow proxy endpoints <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>.</li>
+                </ul>
+
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-compass text-emerald"></i> Circumvention Dynamics & Sovereign Impact</h3>
                 <p class="cortex-search-paragraph">
-                    For live transmission streams, the system utilizes high-throughput <strong>Deep Packet Inspection (DPI)</strong> to analyze unencrypted Server Name Indication (SNI) fields during the TLS handshake and scan packet payloads for politically sensitive keywords <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>. Whenever unauthorized content is detected, gateway hardware injects spoofed <strong>TCP RST (Reset)</strong> packets into the connection stream, abruptly terminating the TCP session between the client and foreign server. Furthermore, automated <strong>active probing</strong> engines continuously interrogate suspicious encrypted connections to discover and block unauthorized proxy endpoints <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>.
+                    To bypass censorship, domestic users engage in <em>"wall climbing"</em> (翻墙 / Fānqiáng) using obfuscated protocols including Shadowsocks, V2Ray/VMess, Trojan, and enterprise VPN tunnels <button type="button" class="citation-ref" data-source-num="3" onclick="jumpToSource(3, event)" onmouseenter="showCitationPreview(3, this)" onmouseleave="hideCitationPreview()" title="Source 3"><span class="citation-badge-num">3</span></button>. The firewall continuously trains machine learning models to detect heuristic anomalies in encrypted tunnels, leading to periodic protocol blockades. Beyond content control, the Great Firewall served as a protective digital trade barrier, enabling domestic tech conglomerates—such as WeChat (Tencent), Baidu, Alibaba, and ByteDance—to scale into global giants without competition from Silicon Valley equivalents <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button> <button type="button" class="citation-ref" data-source-num="2" onclick="jumpToSource(2, event)" onmouseenter="showCitationPreview(2, this)" onmouseleave="hideCitationPreview()" title="Source 2"><span class="citation-badge-num">2</span></button>.
                 </p>
-
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-table-list text-teal"></i> System Telemetry & Operational Dimensions</h3>
-                <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; margin-bottom: 16px;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; color: #cbd5e1;">
-                        <thead>
-                            <tr style="background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid rgba(255, 255, 255, 0.08); text-align: left;">
-                                <th style="padding: 9px 14px; color: #38bdf8;">Dimension</th>
-                                <th style="padding: 9px 14px; color: #38bdf8;">Operational Specification</th>
-                                <th style="padding: 9px 14px; color: #38bdf8;">Implementation Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                                <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Governing Body</td>
-                                <td style="padding: 8px 14px; color: #34d399; font-weight: 700;">Cyberspace Administration of China (CAC)</td>
-                                <td style="padding: 8px 14px;">Coordinated with Ministry of Public Security (MPS) and state telecom carriers</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                                <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Core Umbrella Program</td>
-                                <td style="padding: 8px 14px;">Golden Shield Project (金盾工程)</td>
-                                <td style="padding: 8px 14px;">National public security informatization and digital border management system</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                                <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Primary Interception Layers</td>
-                                <td style="padding: 8px 14px; color: #38bdf8;">DNS Spoofing, IP Null-Routing, DPI, TCP Reset</td>
-                                <td style="padding: 8px 14px;">Hardware deployed at international gateway exchanges (China Telecom, Unicom, Mobile)</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                                <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Circumvention Category</td>
-                                <td style="padding: 8px 14px;">"Wall Climbing" (翻墙 / Fānqiáng)</td>
-                                <td style="padding: 8px 14px;">Obfuscated protocols: Shadowsocks, V2Ray/VMess, Trojan, Xray, and enterprise VPNs</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Economic & Market Impact</td>
-                                <td style="padding: 8px 14px; color: #fbbf24;">Sovereign Digital Ecosystem</td>
-                                <td style="padding: 8px 14px;">Shielded domestic tech monopolies (WeChat, Baidu, Alibaba, ByteDance) from foreign competition</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
-                    <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Telemetry:</strong> Grounded via real-time network measurement records, official Chinese regulatory documentation, and verified public telemetry as of ${todayFull} (${liveTime}).
-                </div>
             </div>
         `;
     }
@@ -4840,9 +4795,27 @@ async def execute_async_pipeline(payload: PipelineRequest):
                 p2Sentences.push(`${sents[0]} <button type="button" class="citation-ref" data-source-num="${sNum}" onclick="jumpToSource(${sNum}, event)" onmouseenter="showCitationPreview(${sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${sNum}"><span class="citation-badge-num">${sNum}</span></button>`);
             }
         }
+        let section2Title = "Core Details & Key Mechanisms";
+        let section3Title = "Context & Additional Insights";
+
+        const qLower = (query || "").toLowerCase();
+        if (/\b(?:who|ceo|founder|president|leader|person|director|author|minister|born|died)\b/i.test(qLower)) {
+            section2Title = "Background & Career Milestones";
+            section3Title = "Leadership, Influence & Impact";
+        } else if (/\b(?:capital|city|country|where|geography|mountain|river|state|region)\b/i.test(qLower)) {
+            section2Title = "Geographic & Administrative Profile";
+            section3Title = "Significance & Modern Development";
+        } else if (/\b(?:python|rust|code|software|api|framework|architecture|lock|gil|algorithm|compiler|database)\b/i.test(qLower)) {
+            section2Title = "Core Mechanics & Architecture";
+            section3Title = "Ecosystem Context & Implementation";
+        } else if (/\b(?:what is|how does|explain|why|how to|meaning)\b/i.test(qLower)) {
+            section2Title = "How It Works & Core Concepts";
+            section3Title = "Context, Applications & Significance";
+        }
+
         if (p2Sentences.length > 0) {
             narrativeSections.push(`
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> Operational Architecture & Core Details</h3>
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> ${section2Title}</h3>
                 <p class="cortex-search-paragraph">${p2Sentences.join(' ')}</p>
             `);
         }
@@ -4859,7 +4832,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
         }
         if (p3Sentences.length > 0) {
             narrativeSections.push(`
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-compass text-emerald"></i> Context & Industry Telemetry</h3>
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-compass text-emerald"></i> ${section3Title}</h3>
                 <p class="cortex-search-paragraph">${p3Sentences.join(' ')}</p>
             `);
         }
@@ -4869,51 +4842,10 @@ async def execute_async_pipeline(payload: PipelineRequest):
         ? narrativeSections.join('\n')
         : `<p class="cortex-lead-answer">Public documentation and search indexes contain limited direct factual sentences for <strong>${subject}</strong> at this time.</p>`;
 
-    // Dynamic Specifications / Attributes Table when sources provide diverse telemetry
-    let specsTableSection = "";
-    if (activeSources.length >= 2) {
-        const top3 = activeSources.slice(0, 3);
-        specsTableSection = `
-            <h3 class="cortex-search-subheading"><i class="fa-solid fa-table-list text-teal"></i> System Telemetry & Entity Dimensions</h3>
-            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; margin-bottom: 16px;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; color: #cbd5e1;">
-                    <thead>
-                        <tr style="background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid rgba(255, 255, 255, 0.08); text-align: left;">
-                            <th style="padding: 9px 14px; color: #38bdf8;">Dimension</th>
-                            <th style="padding: 9px 14px; color: #38bdf8;">Primary Attribute</th>
-                            <th style="padding: 9px 14px; color: #38bdf8;">Source Authority</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                            <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Target Entity</td>
-                            <td style="padding: 8px 14px; color: #34d399; font-weight: 700;">${subject}</td>
-                            <td style="padding: 8px 14px;">Canonical Search Subject</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                            <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Primary Source</td>
-                            <td style="padding: 8px 14px;">${top3[0]?.title ? top3[0].title.substring(0, 42) : subject}</td>
-                            <td style="padding: 8px 14px;"><a href="${top3[0]?.url || '#'}" target="_blank" rel="noopener" style="color: #38bdf8; text-decoration: underline;">${top3[0]?.domain || "verified-source"}</a></td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px 14px; font-weight: 600; color: #f1f5f9;">Verification Index</td>
-                            <td style="padding: 8px 14px; color: #fbbf24;">Active Public Telemetry</td>
-                            <td style="padding: 8px 14px;">${todayFull} (${liveTime})</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
-
     return `
         <div class="cortex-search-response">
             ${temporalLimitationBanner}
             ${narrativeHTML}
-            ${specsTableSection}
-            <div style="background: rgba(56, 189, 248, 0.06); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 4px; margin-top: 14px; color: #e2e8f0; font-size: 0.88rem;">
-                <strong style="color: #38bdf8;"><i class="fa-solid fa-compass"></i> Verification Telemetry:</strong> Grounded via real-time public index and authoritative encyclopedic telemetry as of ${todayFull} (${liveTime}).
-            </div>
         </div>
     `;
 }
