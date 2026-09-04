@@ -3366,7 +3366,7 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
     const todayIso = cortexTemporal.getTodayIso();
     const currentYear = cortexTemporal.getCurrentYear();
 
-    const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision AI search engine modeled on Google Gemini Search and Gemini Spark.
+    const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.
 ${cortexTemporal.getSystemPromptContext()}
 
 User Search Query: "${query}"
@@ -3374,7 +3374,7 @@ User Search Query: "${query}"
 Verified Web Sources (Crawled on ${todayFull}):
 ${sourceContext}
 
-Gemini Search Answering Guidelines:
+Cortex Direct Precision Answering Guidelines:
 1. DIRECT ANSWER FIRST: Begin immediately with a concise, factual, and direct answer to the user's specific query in the first 1-2 sentences. No conversational greetings ("Hello", "Good morning"), no meta-preambles ("Based on the sources...", "Here is the information"), and zero robotic blurp.
 2. FOCUS & PRECISION (NO BLURP, NO CLUTTER): Answer precisely what was asked. If the query is about a person, state who they are and their role. If about a concept, define it clearly. If about a model or release, provide the exact version, pricing, benchmarks, and specs directly. DO NOT turn simple queries into academic research papers, corporate memos, or defense telemetry.
 3. SCANNABLE BULLETED DETAILS: Follow the direct answer with clear, structured bullet points using bold concepts (- <strong>Feature / Aspect:</strong> Explanation [1]) for effortless scanning.
@@ -4497,16 +4497,16 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
     const findings = findingsList.join('');
     const findingsSection = findings.length > 0 ? `
-        <h3 class="gemini-search-subheading"><i class="fa-solid fa-sparkles text-cyan"></i> Key Highlights</h3>
-        <ul class="gemini-bullets">
+        <h3 class="cortex-search-subheading"><i class="fa-solid fa-sparkles text-cyan"></i> Key Highlights</h3>
+        <ul class="cortex-search-bullets">
             ${findings}
         </ul>
     ` : '';
 
     return `
-        <div class="gemini-search-response">
+        <div class="cortex-search-response">
             ${temporalLimitationBanner}
-            <p class="gemini-lead-answer">
+            <p class="cortex-lead-answer">
                 ${leadText}
             </p>
             ${findingsSection}
@@ -4514,10 +4514,10 @@ async def execute_async_pipeline(payload: PipelineRequest):
     `;
 }
 
-// Helper: Clean Markdown & HTML Response Formatter (Modeled on Google Gemini Search & Gemini Spark)
+// Helper: Clean Markdown & HTML Response Formatter (Cortex Direct Precision Search Engine)
 function formatAIResponseHTML(text) {
     if (!text || text.trim() === "" || text === "undefined") {
-        return "<p class=\"gemini-paragraph\">Synthesized verified web intelligence.</p>";
+        return "<p class=\"cortex-search-paragraph\">Synthesized verified web intelligence.</p>";
     }
 
     let clean = text.trim();
@@ -4540,26 +4540,26 @@ function formatAIResponseHTML(text) {
         .replace(/from the provided sources/gi, 'from industry telemetry');
 
     // 2. Strip fake executive memo headers and metadata strips
-    clean = clean.replace(/(?:<h[1-3][^>]*>|<p[^>]*>)?\s*(?:Executive Research Memo|Research Memo|Market Intelligence Briefing):\s*([^<]+)(?:<\/h[1-3]>|<\/p>)?/gi, '<h3 class="gemini-search-subheading">$1</h3>');
+    clean = clean.replace(/(?:<h[1-3][^>]*>|<p[^>]*>)?\s*(?:Executive Research Memo|Research Memo|Market Intelligence Briefing):\s*([^<]+)(?:<\/h[1-3]>|<\/p>)?/gi, '<h3 class="cortex-search-subheading">$1</h3>');
     clean = clean.replace(/(?:<p[^>]*>)?\s*Date:\s*[^|]+\s*\|\s*Prepared for:\s*[^|]+\s*\|\s*Classification:\s*[^<\n]+(?:<\/p>)?/gi, '');
 
-    // 3. Standardize Markdown headers to clean Gemini Search subheadings
+    // 3. Standardize Markdown headers to clean Cortex Search subheadings
     clean = clean
-        .replace(/^### (.*$)/gim, '<h3 class="gemini-search-subheading">$1</h3>')
-        .replace(/^## (.*$)/gim, '<h3 class="gemini-search-subheading">$1</h3>')
-        .replace(/^# (.*$)/gim, '<h3 class="gemini-search-subheading">$1</h3>')
-        .replace(/<h[234][^>]*>(.*?)<\/h[234]>/gi, '<h3 class="gemini-search-subheading">$1</h3>')
+        .replace(/^### (.*$)/gim, '<h3 class="cortex-search-subheading">$1</h3>')
+        .replace(/^## (.*$)/gim, '<h3 class="cortex-search-subheading">$1</h3>')
+        .replace(/^# (.*$)/gim, '<h3 class="cortex-search-subheading">$1</h3>')
+        .replace(/<h[234][^>]*>(.*?)<\/h[234]>/gi, '<h3 class="cortex-search-subheading">$1</h3>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/`([0-9]{4})`/g, '$1')
-        .replace(/`([^`]+)`/g, '<code class="gemini-inline-code">$1</code>')
+        .replace(/`([^`]+)`/g, '<code class="cortex-search-code">$1</code>')
         .replace(/^\s*[\-\*]\s+(.*$)/gim, '<li>$1</li>');
 
     // Detect standalone section header lines (e.g. "Key Features & Capabilities")
     clean = clean.replace(/^(?:<strong>|<p[^>]*>)?([A-Z][A-Za-z0-9\s&–—\-/]{3,50})(?:<\/strong>|<\/p>)?$/gm, (match, heading) => {
         const trimmed = heading.trim();
         if (!trimmed.endsWith('.') && trimmed.length < 50 && !trimmed.toLowerCase().includes('http') && !trimmed.toLowerCase().startsWith('step ') && !trimmed.toLowerCase().startsWith('note')) {
-            return `<h3 class="gemini-search-subheading">${trimmed}</h3>`;
+            return `<h3 class="cortex-search-subheading">${trimmed}</h3>`;
         }
         return match;
     });
@@ -4567,12 +4567,12 @@ function formatAIResponseHTML(text) {
     // Clean Numbered Section Titles
     clean = clean.replace(/(?:^|<p[^>]*>|<h[34][^>]*>)\s*([1-9]|1[0-2])\.\s+([A-Z][\w\s&–—\-/]{2,50})(?::|\(([^)]+)\))(?:\s*<\/p>|\s*<\/h[34]>|\s*\n|$)/gim, (match, num, title, subtitle) => {
         const subHtml = subtitle ? `<span class="section-subtitle">(${subtitle.trim()})</span>` : '';
-        return `<h3 class="gemini-search-subheading"><span class="gemini-subheading-num">${num}</span> ${title.trim()} ${subHtml}</h3>`;
+        return `<h3 class="cortex-search-subheading"><span class="cortex-subheading-num">${num}</span> ${title.trim()} ${subHtml}</h3>`;
     });
 
     // Clean Conclusion / Takeaways into clean subheadings
     clean = clean.replace(/(?:<p[^>]*>)?\s*(?:Conclusion|Strategic Outlook|Key Takeaway):\s*([^<\n]+(?:<br>[^<\n]+)*)(?:<\/p>)?/gi, (match, conclText) => {
-        return `<h3 class="gemini-search-subheading">Key Takeaway</h3><p class="gemini-paragraph">${conclText.trim()}</p>`;
+        return `<h3 class="cortex-search-subheading">Key Takeaway</h3><p class="cortex-search-paragraph">${conclText.trim()}</p>`;
     });
 
     // Strip redundant trailing bibliography lists
@@ -4587,21 +4587,21 @@ function formatAIResponseHTML(text) {
     // Clean any whitespace between citation badges and punctuation marks
     clean = clean.replace(/(<\/button>)\s+([.,;:!])/g, '$1$2');
 
-    // Wrap floating <li> elements into <ul class="gemini-bullets">
+    // Wrap floating <li> elements into <ul class="cortex-search-bullets">
     if (clean.includes("<li>") && !clean.includes("<ul")) {
-        clean = clean.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul class="gemini-bullets">$1</ul>');
+        clean = clean.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul class="cortex-search-bullets">$1</ul>');
     }
 
     // Convert double newlines into clean paragraph breaks
     clean = clean
-        .replace(/\n\n/g, '</p><p class="gemini-paragraph">')
+        .replace(/\n\n/g, '</p><p class="cortex-search-paragraph">')
         .replace(/\n/g, '<br>');
 
     // Clean up empty tags
     clean = clean.replace(/<p[^>]*>\s*<\/p>/g, '');
     clean = clean.replace(/(<\/div>)\s*(?:<br\s*\/?>)+/gi, '$1');
-    clean = clean.replace(/(?:<br\s*\/?>)+\s*(<h3 class="gemini-search-subheading")/gi, '$1');
-    clean = clean.replace(/(<h3 class="gemini-search-subheading">[\s\S]*?<\/h3>)\s*(?:<br\s*\/?>)+/gi, '$1');
+    clean = clean.replace(/(?:<br\s*\/?>)+\s*(<h3 class="cortex-search-subheading")/gi, '$1');
+    clean = clean.replace(/(<h3 class="cortex-search-subheading">[\s\S]*?<\/h3>)\s*(?:<br\s*\/?>)+/gi, '$1');
     clean = clean.replace(/(?:<br\s*\/?>){2,}/g, '<br>');
 
     return clean;
@@ -4649,7 +4649,7 @@ function jumpToSource(num, event) {
 
 async function callGeminiProvider(query, sources, model, apiKey) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision AI search engine modeled on Google Gemini Search and Gemini Spark.
+    const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.
 ${cortexTemporal.getSystemPromptContext()}
 
 User Search Query: "${query}"
@@ -4657,7 +4657,7 @@ User Search Query: "${query}"
 Verified Web Sources (Crawled ${cortexTemporal.getTodayFull()}):
 ${sourceContext}
 
-Gemini Search Answering Guidelines:
+Cortex Direct Precision Answering Guidelines:
 1. DIRECT ANSWER FIRST: Begin immediately with a concise, factual, and direct answer to the user's specific query in the first 1-2 sentences. No conversational greetings ("Hello", "Good morning"), no meta-preambles, and zero blurp.
 2. FOCUS & PRECISION: Answer precisely what was asked. Avoid generic corporate memos, whitepapers, or fluff.
 3. SCANNABLE BULLETED DETAILS: Follow with concise bullet points using bold concepts (- <strong>Key Aspect:</strong> Explanation [1]).
@@ -4724,7 +4724,7 @@ async function callOpenAIProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 messages: [
-                    { role: "system", content: `You are Ambulkar Cortex AI search engine modeled on Google Gemini Search.\n${cortexTemporal.getSystemPromptContext()}\nDirect answer first in 1-2 sharp sentences. No greetings, pleasantries, or blurp. Scannable bullets with bold concepts. Clean inline citations like <span class="citation-ref">[1]</span>. Format using clean HTML (h3, h4, p, ul, li, strong, code). Zero disclaimers. Always output in English.` },
+                    { role: "system", content: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nDirect answer first in 1-2 sharp sentences. No greetings, pleasantries, or blurp. Scannable bullets with bold concepts. Clean inline citations like <span class="citation-ref">[1]</span>. Format using clean HTML (h3, h4, p, ul, li, strong, code). Zero disclaimers. Always output in English.` },
                     { role: "user", content: `Query: ${query}\n\nWeb Sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }
                 ]
             })
@@ -4764,7 +4764,7 @@ async function callClaudeProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 max_tokens: 1500,
-                system: `You are Ambulkar Cortex AI search engine modeled on Google Gemini Search.\n${cortexTemporal.getSystemPromptContext()}\nSynthesize clean HTML answer directly from the sources. Direct answer first in 1-2 sharp sentences. No greetings, preambles, or blurps. Scannable bullets with bold concepts. Clean inline citations like <span class="citation-ref">[1]</span>. Format using clean HTML (h3, h4, p, ul, li, strong). Zero disclaimers. Always in English.`,
+                system: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nSynthesize clean HTML answer directly from the sources. Direct answer first in 1-2 sharp sentences. No greetings, preambles, or blurps. Scannable bullets with bold concepts. Clean inline citations like <span class="citation-ref">[1]</span>. Format using clean HTML (h3, h4, p, ul, li, strong). Zero disclaimers. Always in English.`,
                 messages: [{ role: "user", content: `Synthesize clean HTML answer for query: "${query}" using sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }]
             })
         });

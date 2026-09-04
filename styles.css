@@ -1597,14 +1597,14 @@ option:active {
     margin-bottom: 6px;
 }
 
-/* GOOGLE GEMINI SEARCH & GEMINI SPARK DIRECT ANSWER TYPOGRAPHY */
-.gemini-search-response {
+/* CORTEX DIRECT PRECISION SEARCH TYPOGRAPHY */
+.cortex-search-response {
     color: #f1f5f9;
     font-size: 0.96rem;
     line-height: 1.8;
 }
 
-.gemini-lead-answer {
+.cortex-lead-answer {
     color: #f8fafc;
     font-size: 1.02rem;
     line-height: 1.75;
@@ -1612,12 +1612,12 @@ option:active {
     font-weight: 400;
 }
 
-.gemini-lead-answer strong {
+.cortex-lead-answer strong {
     color: #ffffff;
     font-weight: 600;
 }
 
-.gemini-search-subheading {
+.cortex-search-subheading {
     font-family: var(--font-heading);
     font-size: 1.08rem;
     font-weight: 700;
@@ -1629,7 +1629,7 @@ option:active {
     letter-spacing: -0.01em;
 }
 
-.gemini-subheading-num {
+.cortex-subheading-num {
     font-family: var(--font-mono);
     font-size: 0.72rem;
     font-weight: 700;
@@ -1640,30 +1640,30 @@ option:active {
     border-radius: 4px;
 }
 
-.gemini-bullets {
+.cortex-search-bullets {
     margin: 0 0 16px 0;
     padding-left: 20px;
     color: #cbd5e1;
     line-height: 1.75;
 }
 
-.gemini-bullets li {
+.cortex-search-bullets li {
     margin-bottom: 9px;
 }
 
-.gemini-bullets strong {
+.cortex-search-bullets strong {
     color: #f8fafc;
     font-weight: 600;
 }
 
-.gemini-paragraph {
+.cortex-search-paragraph {
     font-size: 0.95rem;
     color: #cbd5e1;
     line-height: 1.75;
     margin-bottom: 14px;
 }
 
-.gemini-inline-code {
+.cortex-search-code {
     font-family: var(--font-mono);
     font-size: 0.84em;
     background: rgba(255, 255, 255, 0.08);
