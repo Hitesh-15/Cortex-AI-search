@@ -3510,4 +3510,148 @@ option:active {
     color: #ffffff;
 }
 
+/* ==========================================================================
+   PARALLEL DUAL-ENGINE PIPELINE & COMPARISON CONTAINERS
+   ========================================================================== */
+.cortex-parallel-container,
+.cortex-compare-container {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.parallel-pipeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+}
+
+.parallel-pipeline-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #c084fc;
+    letter-spacing: -0.01em;
+}
+
+.parallel-flow-steps {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.parallel-step-pill {
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.parallel-step-pill.fast {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+}
+
+.parallel-step-pill.deep {
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #c084fc;
+}
+
+.parallel-status-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(45, 212, 191, 0.15);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+    color: #2dd4bf;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cortex-compare-header {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-compare-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-compare-tab:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f1f5f9;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.parallel-pane-split,
+.compare-pane-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+}
+
+.compare-split-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(8px);
+    overflow: hidden;
+}
+
+.compare-split-card.gemini {
+    border-left: 3px solid #38bdf8;
+}
+
+.compare-split-card.claude {
+    border-left: 3px solid #c084fc;
+}
+
+@media (max-width: 768px) {
+    .parallel-pane-split,
+    .compare-pane-split {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .parallel-pipeline-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
 
