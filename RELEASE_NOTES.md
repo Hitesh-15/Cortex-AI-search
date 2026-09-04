@@ -50,6 +50,12 @@ graph TD
 - **Wikipedia Full-Text Knowledge Integration**:
   - Replaced prefix opensearch with Wikipedia's full-text search API (`action=query&list=search`), enabling precise entity resolution (e.g. Tim Cook for Apple CEO, Canberra for Capital of Australia, Global Interpreter Lock for Python GIL).
   - Added snippet normalization to produce complete, grammatically sound encyclopedic definitions.
+- **Interactive Citation Popover & Source Highlight System**:
+  - **Live Popover Preview**: Hovering over any citation badge `[1]`, `[2]` now opens a sleek glassmorphic popover displaying the publishing domain, article title, snippet preview, and "Open full source ↗" action link.
+  - **Source Pill Jump & Highlight**: Clicking on reference `[1]` automatically pulses the corresponding source chip in the top sources bar with an animated cyan glow (`pulse-source-glow`), auto-expands the drawer if collapsed, and opens the source link in a new tab.
+- **Deep Factual Prose Cleaner & Zero-Footnote Grounding**:
+  - Automatically purges raw URLs (`//www...`), parenthetical engagement counts (`(1394 points...)`), and Wikipedia reference footnotes (`Retrieved 4 September 2026`, author citations, broken dangling quotes) from synthesized lead sentences.
+  - Ensures every lead answer begins with a clear, grammatically sound statement of verified facts.
 - **Master Automated QA Suite Verification (100% Pass)**:
   - Validated across all 4 phases: Functional User Journeys, Concurrency Stress Bursts, Factual Precision & Fluff Elimination, and Multi-Viewport Responsive Layouts (Desktop 1440x900, Tablet 768x1024, Mobile 390x844).
 
