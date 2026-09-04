@@ -5,7 +5,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 ---
 
 ## 🌟 [v5.0.2] — 2026-09-04
-### **Google Gemini Search & Gemini Spark Direct Answering Model, Zero-Blurp Precision, and Compute Studio Chatbox Uncluttering**
+### **Cortex Direct Precision Answering Model, Zero-Blurp Grounding, and Compute Studio Chatbox Uncluttering**
 
 ```mermaid
 graph TD
@@ -28,7 +28,7 @@ graph TD
         WikiAPI --> CleanSnip --> AuthorityRank
     end
 
-    subgraph GeminiPresentation ["✨ Gemini Search Answering Model"]
+    subgraph CortexPresentation ["✨ Cortex Direct Precision Answering Model"]
         DirectLead["1. Direct Answer First: Concise 1-2 Sentence Factual Lead"]
         ScannableBullets["2. Key Highlights: Clean Bullets with Bold Concepts"]
         CleanCitations["3. Grounded Inline Badges: [1], [2] Smooth Jump Anchors"]
@@ -39,9 +39,9 @@ graph TD
 ```
 
 #### 🎯 Architectural Highlights & Search Outcome Upgrades
-- **Google Gemini Search & Gemini Spark Answering Model**:
+- **Cortex Direct Precision Answering Engine**:
   - **Direct Answer First**: Answers begin immediately with a crisp, 1-2 sentence direct response to what was searched, eliminating conversational preambles, "Good morning" greetings, and meta-commentary.
-  - **Specific & Scannable Details**: Replaced heavy research paper templates with clean, natural subheadings (`<h3 class="gemini-search-subheading">`) and bullet points with bold concepts (`<strong>Key Aspect:</strong> detail`).
+  - **Specific & Scannable Details**: Replaced heavy research paper templates with clean, natural subheadings (`<h3 class="cortex-search-subheading">`) and bullet points with bold concepts (`<strong>Key Aspect:</strong> detail`).
   - **Zero Blurp & Zero Clutter**: Permanently eliminated fake corporate memo wrappers (`memo-hero-header`, `memo-meta-strip`), fake security classifications (`Classification: STRATEGIC`), and repetitive filler phrases like *"Verified technical reporting, architecture benchmarks, and active developer disclosures"*.
 - **Compute Studio Chatbox Uncluttering & Left Tab Isolation**:
   - Removed `#btnStudioToggle` from the chatbox search hints strip to eliminate clutter.
