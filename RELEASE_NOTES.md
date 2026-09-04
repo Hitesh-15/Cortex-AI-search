@@ -4,6 +4,57 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v5.0.2] — 2026-09-04
+### **Google Gemini Search & Gemini Spark Direct Answering Model, Zero-Blurp Precision, and Compute Studio Chatbox Uncluttering**
+
+```mermaid
+graph TD
+    subgraph QueryInput ["🔍 Clean Search Input & Intent Routing"]
+        UserQuery["User Search Query (e.g. 'Who is the CEO of Apple?')"]
+        LeftTab["Left Sidebar Desk: Compute & Studio (#deskStudio)"]
+        NormalSearch["Normal Search Route (Direct Precision)"]
+        StudioDesk["Dedicated Multi-Stage Compute Studio"]
+        
+        UserQuery --> NormalSearch
+        LeftTab --> StudioDesk
+    end
+
+    subgraph KnowledgeRetrieval ["📚 High-Precision Grounding Layer"]
+        WikiAPI["Wikipedia Full-Text Query API (action=query&list=search)"]
+        AuthorityRank["Domain Authority & Entity Relevance Scoring"]
+        CleanSnip["Sentence Completion & Normalization Engine"]
+        
+        NormalSearch --> WikiAPI
+        WikiAPI --> CleanSnip --> AuthorityRank
+    end
+
+    subgraph GeminiPresentation ["✨ Gemini Search Answering Model"]
+        DirectLead["1. Direct Answer First: Concise 1-2 Sentence Factual Lead"]
+        ScannableBullets["2. Key Highlights: Clean Bullets with Bold Concepts"]
+        CleanCitations["3. Grounded Inline Badges: [1], [2] Smooth Jump Anchors"]
+        ZeroBlurp["4. Zero Fluff: Stripped Fake Memos, Telemetry & Bento Clutter"]
+        
+        AuthorityRank --> DirectLead --> ScannableBullets --> CleanCitations --> ZeroBlurp
+    end
+```
+
+#### 🎯 Architectural Highlights & Search Outcome Upgrades
+- **Google Gemini Search & Gemini Spark Answering Model**:
+  - **Direct Answer First**: Answers begin immediately with a crisp, 1-2 sentence direct response to what was searched, eliminating conversational preambles, "Good morning" greetings, and meta-commentary.
+  - **Specific & Scannable Details**: Replaced heavy research paper templates with clean, natural subheadings (`<h3 class="gemini-search-subheading">`) and bullet points with bold concepts (`<strong>Key Aspect:</strong> detail`).
+  - **Zero Blurp & Zero Clutter**: Permanently eliminated fake corporate memo wrappers (`memo-hero-header`, `memo-meta-strip`), fake security classifications (`Classification: STRATEGIC`), and repetitive filler phrases like *"Verified technical reporting, architecture benchmarks, and active developer disclosures"*.
+- **Compute Studio Chatbox Uncluttering & Left Tab Isolation**:
+  - Removed `#btnStudioToggle` from the chatbox search hints strip to eliminate clutter.
+  - Compute Studio is now strictly accessible via the dedicated left sidebar desk (`#deskStudio`) or explicit presentation commands (`"compute ..."`, `"generate presentation ..."`).
+  - Hardened intent classifier ensures regular search queries never accidentally trigger the 5-stage compute agent pipeline or presentation deck generator.
+- **Wikipedia Full-Text Knowledge Integration**:
+  - Replaced prefix opensearch with Wikipedia's full-text search API (`action=query&list=search`), enabling precise entity resolution (e.g. Tim Cook for Apple CEO, Canberra for Capital of Australia, Global Interpreter Lock for Python GIL).
+  - Added snippet normalization to produce complete, grammatically sound encyclopedic definitions.
+- **Master Automated QA Suite Verification (100% Pass)**:
+  - Validated across all 4 phases: Functional User Journeys, Concurrency Stress Bursts, Factual Precision & Fluff Elimination, and Multi-Viewport Responsive Layouts (Desktop 1440x900, Tablet 768x1024, Mobile 390x844).
+
+---
+
 ## 🌟 [v5.0.1] — 2026-09-04
 ### **OpenAI GPT-6 Astra Verified Grounding, Official Documentation Telemetry & Frontier Refusal Interception Engine**
 
