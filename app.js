@@ -236,7 +236,7 @@ var appState = {
     activeThreadId: null,
     activeFocusMode: "web",
     activeEffortLevel: localStorage.getItem("ambu_effort_level") || "auto",
-    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v6") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
+    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v7") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
     attachedDocuments: [],
     isProSearch: false,
     isSearching: false,
@@ -810,6 +810,14 @@ function renderSuggestedCards(mode) {
         ? [...appState.dynamicSuggestions[currentMode]] 
         : [];
 
+    // Automatically heal any legacy cached titles ending with "..."
+    list = list.map(c => {
+        if (c.title && c.title.endsWith("...") && c.query && !c.query.endsWith("...")) {
+            return { ...c, title: c.query };
+        }
+        return c;
+    });
+
     // Guarantee the 3x2 grid always has exactly 6 rich, verified cards
     if (list.length < 6) {
         const fallbacks = FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web;
@@ -893,9 +901,15 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                         sub = "Frontier AI & Neural Models";
                     }
 
+                    // Preserve full complete sentence up to 85 chars without chopping words in half
+                    let displayTitle = cleanTitle;
+                    if (displayTitle.length > 85) {
+                        displayTitle = displayTitle.substring(0, 82).replace(/\s+\S*$/, '') + '...';
+                    }
+
                     liveCards.push({
                         icon: icon,
-                        title: cleanTitle.length > 40 ? (cleanTitle.substring(0, 38) + "...") : cleanTitle,
+                        title: displayTitle,
                         sub: sub,
                         query: cleanTitle
                     });
@@ -915,7 +929,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                 }
 
                 appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 6);
-                localStorage.setItem("cortex_live_trends_v6", JSON.stringify(appState.dynamicSuggestions));
+                localStorage.setItem("cortex_live_trends_v7", JSON.stringify(appState.dynamicSuggestions));
                 renderSuggestedCards(activeMode);
             }
         }

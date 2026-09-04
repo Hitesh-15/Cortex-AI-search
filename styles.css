@@ -794,7 +794,7 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 110px;
+    min-height: 120px;
     box-shadow: var(--shadow-card);
     position: relative;
     overflow: hidden;
@@ -831,8 +831,14 @@ html, body {
     font-size: 0.88rem;
     font-weight: 700;
     color: var(--text-primary);
-    line-height: 1.35;
-    margin-bottom: 4px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .suggested-card-sub {

@@ -56,6 +56,10 @@ graph TD
 - **Deep Factual Prose Cleaner & Zero-Footnote Grounding**:
   - Automatically purges raw URLs (`//www...`), parenthetical engagement counts (`(1394 points...)`), and Wikipedia reference footnotes (`Retrieved 4 September 2026`, author citations, broken dangling quotes) from synthesized lead sentences.
   - Ensures every lead answer begins with a clear, grammatically sound statement of verified facts.
+- **Full-Sentence Suggested Prompt Cards (Zero Mid-Word Truncation)**:
+  - Eliminated artificial 38-character slicing (`cleanTitle.substring(0, 38) + "..."`).
+  - Cards now render complete sentences across up to 3 natural wrapping lines with 120px minimum height, preventing words from being chopped in half (e.g. `messag...` or `engine...`).
+  - Implemented automatic cache healing to instantly restore complete sentences for existing users.
 - **Master Automated QA Suite Verification (100% Pass)**:
   - Validated across all 4 phases: Functional User Journeys, Concurrency Stress Bursts, Factual Precision & Fluff Elimination, and Multi-Viewport Responsive Layouts (Desktop 1440x900, Tablet 768x1024, Mobile 390x844).
 
