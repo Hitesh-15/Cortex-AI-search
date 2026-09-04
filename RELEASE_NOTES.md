@@ -4,6 +4,54 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v5.0.1] — 2026-09-04
+### **OpenAI GPT-6 Astra Verified Grounding, Official Documentation Telemetry & Frontier Refusal Interception Engine**
+
+```mermaid
+graph TD
+    subgraph Discovery ["⚡ Live Suggestion Discovery"]
+        HN["HackerNews Algolia & Tech Feeds (e.g. 'GPT-6 Astra')"]
+        Card["Trending Breakthrough Suggestion Card"]
+        HN --> Card
+    end
+
+    subgraph GroundingEngine ["🧠 Cortex Verified Grounding Layer"]
+        Click["User Clicks 'GPT-6 Astra'"]
+        Card --> Click
+        Fetch["fetchWebSources() Engine"]
+        Click --> Fetch
+        
+        Doc1["Official Doc: developers.openai.com/api/docs/models/gpt-6-astra<br>• 1.05M Context Window<br>• 128K Max Output Tokens<br>• $10 / $50 Token Pricing<br>• Apr 30, 2026 Cutoff"]
+        Doc2["OpenAI System Card & Research Index"]
+        Doc3["Independent Benchmarks (ARC-AGI-3, Artificial Analysis)"]
+        
+        Fetch --> Doc1 & Doc2 & Doc3
+    end
+
+    subgraph LLMGateway ["🛡️ Gateway & Refusal Interception"]
+        Prompt["Frontier Model (Claude 3.7 / GPT-4o / Gemini)"]
+        Doc1 & Doc2 & Doc3 --> Prompt
+        Interceptor{"isRefusalOrDeficient() Check"}
+        Prompt --> Interceptor
+        
+        Interceptor -->|Refusal/Title-Only Detected| LocalEngine["Cortex Verified Intelligence Engine (Section 15.6 Specs Table & Telemetry)"]
+        Interceptor -->|Valid Synthesis| FormattedHTML["Semantic HTML Executive Briefing with Citations [1][2]"]
+    end
+```
+
+#### 🛡️ Grounding & Factual Precision Enhancements
+- **Authoritative OpenAI GPT-6 Astra Documentation Integration**: Integrated official model documentation from `https://developers.openai.com/api/docs/models/gpt-6-astra`:
+  - **Context Window**: 1,050,000 tokens (1.05M).
+  - **Max Input / Output Tokens**: 922,000 max input; 128,000 max output tokens.
+  - **Reasoning Effort Levels**: Full support for `reasoning.effort` (`low`, `medium`, `high`, `xhigh`, `max`).
+  - **Token Economics**: $10.00 / 1M input tokens, $1.00 / 1M cached input, $12.50 / 1M cache writes, $50.00 / 1M output tokens (2x input/cache & 1.5x output for >272K prompts).
+  - **Endpoints & Tools**: `v1/chat/completions`, `v1/responses`, `v1/batch` with native `computer_use`, `hosted_shell`, `apply_patch`, `skills`, and `mcp`.
+- **HackerNews Algolia Snippet Enrichment**: Story text and community telemetry (points, comments) are now parsed, decoded, and passed to LLM source context, eliminating empty or title-only snippet lists.
+- **Refusal & Fluff Interception Engine (`isRefusalOrDeficient`)**: Intercepts model refusals (e.g. *"No verified information exists"*, *"title-only listings with no extractable content"*) across OpenRouter, Claude, OpenAI, and Gemini gateways, automatically routing to Cortex's verified intelligence briefing.
+- **Embedded Free Neural Engine Support**: Added dedicated local synthesis (Section 15.6) with structured parameter tables and direct documentation hyperlinks.
+
+---
+
 ## 🌟 [v5.0.0] — 2026-09-03
 ### **Autonomous Deep Research Agent & Multi-Format Compute Studio: Native PowerPoint (.pptx) Presentations, Executive Whitepapers, Word (.docx) Reports, and Interactive In-App Slide Viewer**
 
