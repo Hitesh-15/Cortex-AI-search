@@ -81,6 +81,10 @@
                     <i class="fa-solid fa-pen-nib text-rose"></i>
                     <span>Executive Memos</span>
                 </div>
+                <div class="focus-nav-item" data-mode="studio" id="deskStudio">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber"></i>
+                    <span>Compute & Studio</span>
+                </div>
             </div>
 
             <div class="sidebar-section-header" style="display: flex; align-items: center; justify-content: space-between; margin: 14px 8px 6px 8px;">
@@ -251,6 +255,7 @@
 
                         <!-- MODEL & WORKFLOW ROUTING CHIPS -->
                         <div class="search-hints-strip" id="searchHintsStrip">
+                            <button type="button" class="hint-tag-btn btn-studio-toggle" id="btnStudioToggle" onclick="toggleDeepResearchStudio()" title="Autonomous Deep Research & Multi-Format Compute Studio (Reports, Decks, Docs)"><i class="fa-solid fa-wand-magic-sparkles text-amber"></i> Compute Studio</button>
                             <button type="button" class="hint-tag-btn" onclick="toggleComparisonMode(true)" title="Launch Side-by-Side Comparison Matrix"><i class="fa-solid fa-scale-balanced text-cyan"></i> Compare</button>
                             <button type="button" class="hint-tag-btn" onclick="insertAtTag('@opus ')" title="Claude Opus 5 (Maximum Frontier Intelligence)">@opus</button>
                             <button type="button" class="hint-tag-btn" onclick="insertAtTag('@sonnet ')" title="Claude Sonnet 5 (Hybrid Reasoning)">@sonnet</button>
@@ -605,22 +610,21 @@
                 <button class="modal-close" id="btnCloseReleaseNotes" onclick="closeReleaseNotesModal()">&times;</button>
             </div>
             <div style="padding-top: 4px; font-size: 0.88rem; line-height: 1.6; color: #cbd5e1;">
-                <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
-                    <strong style="color: #38bdf8; font-size: 0.95rem;">🌟 Version 4.8.1 (Active Live Release • 2026.09.01)</strong>
-                    <p style="margin-top: 4px; font-size: 0.82rem; color: #94a3b8;">Real-Time Cross-Device Cloud Sync Relay Protocol, Multi-Device Thread Merging, and Instant Mobile Pro Key Unlock.</p>
+                <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+                    <strong style="color: #f59e0b; font-size: 0.95rem;">🌟 Version 5.0.0 (Active Live Release • 2026.09.03)</strong>
+                    <p style="margin-top: 4px; font-size: 0.82rem; color: #cbd5e1;">Autonomous Deep Research Agent & Multi-Format Compute Studio: Native PowerPoint (.pptx) Presentations, Executive Whitepapers, Word (.docx) Reports, and Interactive In-App Slide Viewer.</p>
                 </div>
+
+                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-wand-magic-sparkles text-amber"></i> Autonomous Deep Research & Compute Studio</h4>
+                <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
+                    <li><strong>Multi-Stage Agent Stepper:</strong> Live visual execution tracker displaying Hypothesis Planning ➔ Cross-Domain Citation Mining ➔ Evidence Fact-Checking ➔ Deliverable Synthesis.</li>
+                    <li><strong>Interactive Presentation Slide Decks:</strong> In-app 16:9 widescreen presentation viewer with 1-click native Microsoft PowerPoint (<code>.pptx</code>) export.</li>
+                    <li><strong>Executive Whitepapers & Reports:</strong> Production-grade research reports with structured summaries, comparative benchmark tables, risk matrices, and 1-click Word (<code>.docx</code>) & Markdown (<code>.md</code>) downloads.</li>
+                </ul>
 
                 <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-cloud-arrow-up text-cyan"></i> Real-Time Multi-Device Cloud Sync Relay (CTX-XXXXXX)</h4>
                 <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
-                    <li><strong>Public HTTPS Cloud Relay:</strong> Replaced local storage isolation with an open-standard real-time HTTPS pub/sub sync protocol across all your physical devices.</li>
-                    <li><strong>Deep Thread Merging & History:</strong> Automatically synchronizes search threads and research memos from your laptop to your smartphone.</li>
-                    <li><strong>Instant Pro Key & Vault Unlock:</strong> Restores your API key and auth credentials automatically on mobile without manual re-entry.</li>
-                </ul>
-
-                <h4 style="color: #f1f5f9; margin-top: 14px; margin-bottom: 6px;"><i class="fa-solid fa-bullseye text-teal"></i> Exact Model Version Preserving Engine & Official Claude 5.1</h4>
-                <ul style="margin-left: 18px; margin-bottom: 14px; font-size: 0.84rem;">
-                    <li><strong>Exact Decimal Fidelity:</strong> Strict preservation of queried version decimals (e.g. <code>5.1</code>, <code>3.7</code>, <code>4o</code>) without confusion with older versions.</li>
-                    <li><strong>Official Claude Fable 5.1 & Mythos 5.1:</strong> Dedicated synthesis covering Anthropic's latest 2026 frontier reasoning and multimodal architectures.</li>
+                    <li><strong>Public HTTPS Cloud Relay:</strong> Instant real-time pub/sub synchronization of active threads and API key vault across mobile, desktop, and tablet.</li>
                 </ul>
 
                 <div class="modal-footer" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
@@ -633,10 +637,12 @@
         </div>
     </div>
 
+    <!-- PptxGenJS for Native Microsoft PowerPoint (.pptx) Presentation Generation -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <!-- QR Code Generator for 1-Second Multi-Device Sync -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Application Script -->
-    <script src="app.js?v=2026.08.18.24"></script>
+    <script src="app.js?v=2026.09.03.01"></script>
 </body>
 
 </html>

@@ -6,9 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B-blue.svg)](https://developer.mozilla.org/)
 [![AI: Multi-Model Gateway](https://img.shields.io/badge/AI-Parallel%20Multi--Model%20Routing-cyan.svg)](#-features)
-[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v4.8.1-emerald.svg)](RELEASE_NOTES.md)
+[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v5.0.0-emerald.svg)](RELEASE_NOTES.md)
 
-Cortex is a state-of-the-art AI search engine and executive research memo platform. It synthesizes real-time facts across **10 to 20+ verified web sources**, executes parallel multi-model reasoning across frontier LLMs (**Claude 3.7 Sonnet, Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, DeepSeek R1**), and maintains 100% client-side privacy.
+Cortex is a state-of-the-art AI search engine, autonomous deep research workstation, and multi-format compute studio. It synthesizes real-time facts across **10 to 20+ verified web sources**, compiles comprehensive executive whitepapers, generates downloadable presentation slide decks (`.pptx`) and Word documents (`.docx`), executes parallel multi-model reasoning across frontier LLMs (**Claude 3.7 Sonnet, Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, DeepSeek R1**), and maintains 100% client-side privacy.
 
 ---
 
@@ -100,6 +100,8 @@ flowchart TD
 
 ## ✨ Key Features
 
+- ⚡ **Autonomous Deep Research & Multi-Format Compute Studio**: Multi-pillar hypothesis decomposition with dynamic 5-stage live agent stepper. Synthesizes comprehensive executive whitepapers and automatically compiles downloadable PowerPoint presentation decks (`.pptx`) and formatted Word documents (`.docx`).
+- 📊 **Interactive In-App Slide Viewer & 1-Click Deck Generator**: 16:9 widescreen presentation viewer with dark titanium theme, diamond glyph bullet hierarchy, takeaway callouts, slide counter, and 1-click native Microsoft PowerPoint export.
 - 🖥️ **Large Monitor & Ultrawide Alignment Engine**: Full layout alignment across 27-inch (`1240px`), 33"/34" ultrawide (`1420px`), and 4K displays with synchronized vertical bounding guidelines between header tickers, suggested prompts, memo answers, and search dock.
 - 📱 **Standalone Homescreen Bookmark & PWA Architecture**: Native web app experience with full `viewport-fit=cover`, dynamic iOS notch / Dynamic Island safe-area insets (`env(safe-area-inset-top)`), and bottom home swipe indicator / Android gesture nav clearance (`env(safe-area-inset-bottom)`).
 - ⏱️ **Live 1-Second Precision Clock & Recency Anchoring**: Continuous 1000ms temporal clock engine injecting live UTC ISO-8601 timestamps and local timezone into all LLM prompts to ground time-sensitive research queries.
