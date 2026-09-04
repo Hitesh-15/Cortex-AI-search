@@ -599,6 +599,8 @@ function setupNavigationListeners() {
         sidebarOverlay?.classList.remove("active");
     }
 
+    window.openMobileSidebar = openMobileSidebar;
+    window.closeMobileSidebar = closeMobileSidebar;
     if (btnMobileToggle) btnMobileToggle.addEventListener("click", openMobileSidebar);
     if (btnMobileClose) btnMobileClose.addEventListener("click", closeMobileSidebar);
     if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeMobileSidebar);
@@ -3226,6 +3228,7 @@ async function executeDeepResearchPipeline(actualQuery, stepId, stepElement, tar
     });
     saveThreadsToLocalStorage();
     renderThreadHistory();
+    appState.isSearching = false;
 }
 window.executeDeepResearchPipeline = executeDeepResearchPipeline;
 
@@ -6869,6 +6872,7 @@ window.toggleSourcesDrawer = toggleSourcesDrawer;
 window.toggleWorkflowDetails = toggleWorkflowDetails;
 window.fetchDynamicTrendingPrompts = fetchDynamicTrendingPrompts;
 window.renderSuggestedCards = renderSuggestedCards;
+window.setFocusMode = setFocusMode;
 window.executeSearch = executeSearch;
 window.insertAtTag = insertAtTag;
 window.applyChosenMentionTag = applyChosenMentionTag;
