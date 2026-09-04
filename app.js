@@ -1861,12 +1861,23 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                 .replace(/\s+/g, ' ')
                                 .trim();
 
-                            if (/^[^)]*\)\s*(is|was|are|were)\b/i.test(cleanSnip)) {
-                                cleanSnip = `${hit.title} ${cleanSnip.replace(/^[^)]*\)\s*/i, '')}`;
-                            } else if (/^(is|was|are|were)\b/i.test(cleanSnip)) {
-                                cleanSnip = `${hit.title} ${cleanSnip}`;
-                            } else if (!cleanSnip.toLowerCase().startsWith(hit.title.toLowerCase())) {
-                                cleanSnip = `${hit.title}: ${cleanSnip}`;
+                            // Detect if Wikipedia snippet is a raw bibliography footnote or citation index
+                            const isBibliographyFootnote = /\b(?:Retrieved|Accessed)\s+\d{1,2}\s+[A-Za-z]+\s+\d{4}\b/i.test(cleanSnip) ||
+                                                           /\b(?:Retrieved|Accessed)\s+[A-Za-z]+\s+\d{1,2},?\s+\d{4}\b/i.test(cleanSnip) ||
+                                                           /\.\s*[\w\-]+\.(wiki|org|com|net|io|edu|gov)\.\s*Retrieved/i.test(cleanSnip) ||
+                                                           /^[^\w\s]*"[^"]+"\.\s*[\w\-]+\./i.test(cleanSnip) ||
+                                                           /\b(cite journal|cite web|isbn|issn)\b/i.test(cleanSnip);
+
+                            if (isBibliographyFootnote) {
+                                cleanSnip = `Encyclopedic coverage and verified records regarding ${hit.title}.`;
+                            } else {
+                                if (/^[^)]*\)\s*(is|was|are|were)\b/i.test(cleanSnip)) {
+                                    cleanSnip = `${hit.title} ${cleanSnip.replace(/^[^)]*\)\s*/i, '')}`;
+                                } else if (/^(is|was|are|were)\b/i.test(cleanSnip)) {
+                                    cleanSnip = `${hit.title} ${cleanSnip}`;
+                                } else if (!cleanSnip.toLowerCase().startsWith(hit.title.toLowerCase())) {
+                                    cleanSnip = `${hit.title}: ${cleanSnip}`;
+                                }
                             }
 
                             const pageUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(hit.title.replace(/\s+/g, '_'))}`;
@@ -1935,12 +1946,12 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                         .replace(/&amp;/g, '&')
                                         .replace(/\s+/g, ' ')
                                         .trim();
-                                    if (textOnly.length > 20) {
+                                    // Discard if snippet is a raw URL or starts with // or http
+                                    if (textOnly.length > 20 && !/^(?:https?:)?\/\/[^\s]+$/i.test(textOnly) && !textOnly.startsWith('//') && !textOnly.startsWith('http')) {
                                         storySnippet = textOnly.substring(0, 350);
                                     }
                                 }
-                                const engagement = (hit.points || hit.num_comments) ? ` (${hit.points || 0} points, ${hit.num_comments || 0} comments on HackerNews)` : '';
-                                const finalSnippet = storySnippet ? `${storySnippet}${engagement}` : `Public reporting and community discussion regarding ${cleanStoryTitle}${engagement}.`;
+                                const finalSnippet = storySnippet ? storySnippet : `Public reporting and community discussion regarding ${cleanStoryTitle}.`;
                                 if (cleanStoryTitle.length > 5) {
                                     addSource(cleanStoryTitle, dom, rawUrl, finalSnippet);
                                 }
@@ -2137,7 +2148,7 @@ function renderSourcesGrid(stepId, sources) {
         chipsContainer.innerHTML = previewSources.map(s => {
             const cleanDom = (s.domain || "verified-source").replace(/^www\./i, '');
             return `
-                <a href="${s.url}" target="_blank" rel="noopener" class="source-chip" title="${s.title}">
+                <a href="${s.url}" target="_blank" rel="noopener" class="source-chip" data-source-num="${s.num}" id="source_chip_${s.num}" title="${s.title}">
                     <span class="source-chip-num">${s.num}</span>
                     <span>${cleanDom}</span>
                 </a>
@@ -4368,6 +4379,28 @@ async def execute_async_pipeline(payload: PipelineRequest):
             .trim();
     };
 
+    // Helper: Deep factual prose cleaner - strips URLs, comment stats, Wikipedia footnotes, and dangling quotes
+    const sanitizeFactualProse = (str) => {
+        if (!str) return "";
+        let clean = sanitizeArtifacts(str);
+        clean = clean.replace(/(?:https?:)?\/\/[^\s]+/gi, '');
+        clean = clean.replace(/\(\s*\d+\s+points,?\s*\d*\s*comments[^\)]*\)/gi, '');
+        clean = clean.replace(/\(\s*\d+\s+points[^\)]*\)/gi, '');
+        clean = clean.replace(/\(\s*\d+\s+comments[^\)]*\)/gi, '');
+        clean = clean.replace(/\b(?:Retrieved|Accessed)\s+\d{1,2}\s+[A-Za-z]+\s+\d{4}\b[.,;]?/gi, '');
+        clean = clean.replace(/\b(?:Retrieved|Accessed)\s+[A-Za-z]+\s+\d{1,2},?\s+\d{4}\b[.,;]?/gi, '');
+        clean = clean.replace(/\b[A-Z][a-z\-]+,\s+[A-Z][a-z\-]+\s*\(\d{1,2}\s+[A-Za-z]+\s+\d{4}\)[.,;]?/gi, '');
+        clean = clean.replace(/^[^\w\s]*"[^"]+"\.\s*[\w\-]+\.[a-z]{2,8}\.?/gi, '');
+        clean = clean.replace(/\.\s*[\w\-]+\.(wiki|org|com|net|io|edu|gov)\b/gi, '');
+        clean = clean.replace(/["']\s*What\s+OpenAI's\s+rogue\b[^\n]*/gi, '');
+        clean = clean.replace(/\b(cite web|cite journal|isbn|issn)\b/gi, '');
+        clean = clean.replace(/["'”’]+$/, '').trim();
+        clean = clean.replace(/\s+/g, ' ');
+        clean = clean.replace(/^[.,;:\-\s]+/, '');
+        clean = clean.replace(/[,;:\-\s]+$/, '');
+        return clean;
+    };
+
     const todayFull = cortexTemporal.getTodayFull();
     const liveTime = cortexTemporal.getCurrentTime();
 
@@ -4440,8 +4473,8 @@ async def execute_async_pipeline(payload: PipelineRequest):
             const s = validSources[i];
             const isSynthetic = s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"));
             if (!isSynthetic) {
-                let snip = sanitizeArtifacts(s.snippet || s.title);
-                if (snip.length > 15 && !snip.toLowerCase().includes("live global market telemetry") && !snip.toLowerCase().includes("verified technical reporting")) {
+                let snip = sanitizeFactualProse(s.snippet || s.title);
+                if (snip.length > 20 && !snip.toLowerCase().includes("live global market telemetry") && !snip.toLowerCase().includes("verified technical reporting")) {
                     const norm = snip.toLowerCase().substring(0, 35);
                     if (!seenSnippets.has(norm)) {
                         seenSnippets.add(norm);
@@ -4452,10 +4485,12 @@ async def execute_async_pipeline(payload: PipelineRequest):
         }
 
         if (leadSentences.length > 0) {
-            leadText = `${leadSentences.slice(0, 2).join(". ")}. <span class="citation-ref">[1]</span>`.replace(/\.\.+/g, '.');
+            let primarySentence = leadSentences[0];
+            if (!primarySentence.endsWith('.')) primarySentence += '.';
+            leadText = `${primarySentence} <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>`;
         } else {
-            const topTitle = sanitizeArtifacts(validSources[0].title || subject);
-            leadText = `<strong>${topTitle}</strong>: Public documentation and search results report active information regarding ${subject}. <span class="citation-ref">[1]</span>`;
+            const topTitle = sanitizeFactualProse(validSources[0].title || subject);
+            leadText = `<strong>${topTitle}</strong>: Public documentation and search results report active information regarding ${subject}. <button type="button" class="citation-ref" data-source-num="1" onclick="jumpToSource(1, event)" onmouseenter="showCitationPreview(1, this)" onmouseleave="hideCitationPreview()" title="Source 1"><span class="citation-badge-num">1</span></button>`;
         }
     } else {
         leadText = `<strong>${subject}</strong>: Web search query processed across public sources as of ${todayFull}.`;
@@ -4465,7 +4500,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
     const findingsList = [];
 
     (validSources.length > 0 ? validSources.slice(0, 5) : []).forEach((s, idx) => {
-        let cleanText = sanitizeArtifacts(s.snippet || "");
+        let cleanText = sanitizeFactualProse(s.snippet || "");
         let cleanTitle = sanitizeArtifacts(s.title || "");
         const isSynthetic = s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"));
 
@@ -4492,7 +4527,8 @@ async def execute_async_pipeline(payload: PipelineRequest):
             cleanText = `Public reporting and documentation published via ${s.domain || "source reference"}.`;
         }
 
-        findingsList.push(`<li><strong>${heading}:</strong> ${cleanText} <span class="citation-ref">[${s.num || (idx + 1)}]</span></li>`);
+        const sNum = s.num || (idx + 1);
+        findingsList.push(`<li><strong>${heading}:</strong> ${cleanText} <button type="button" class="citation-ref" data-source-num="${sNum}" onclick="jumpToSource(${sNum}, event)" onmouseenter="showCitationPreview(${sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${sNum}"><span class="citation-badge-num">${sNum}</span></button></li>`);
     });
 
     const findings = findingsList.join('');
@@ -4579,10 +4615,11 @@ function formatAIResponseHTML(text) {
     clean = clean.replace(/(?:<h[1-4][^>]*>|<p[^>]*>|<strong>|<div[^>]*>)?\s*(?:References referenced|References\b|Sources cited|Citations\b|Sources list)(?:<\/h[1-4]>|<\/p>|<\/strong>|<\/div>)?:?\s*(?:<ul[^>]*>[\s\S]*?<\/ul>|<ol[^>]*>[\s\S]*?<\/ol>|(?:<p[^>]*>)?\s*\[[0-9]+\][\s\S]*)/gi, '');
 
     // Normalize all citation spans into [N]
-    clean = clean.replace(/<span class="citation-ref">\[?([0-9]{1,2})\]?<\/span>/gi, '[$1]');
+    clean = clean.replace(/<(?:span|button)[^>]*class="citation-ref"[^>]*>\[?([0-9]{1,2})\]?<\/(?:span|button)>/gi, '[$1]');
+    clean = clean.replace(/<span class="citation-badge-num">([0-9]{1,2})<\/span>/gi, '$1');
 
     // Convert all [N] to clickable button with clean title attribute (no brackets in title)
-    clean = clean.replace(/\[([0-9]{1,2})\]/g, '<button type="button" class="citation-ref" onclick="jumpToSource($1, event)" data-src-num="$1" title="Source $1"><span class="citation-badge-num">$1</span></button>');
+    clean = clean.replace(/\[([0-9]{1,2})\]/g, '<button type="button" class="citation-ref" data-source-num="$1" onclick="jumpToSource($1, event)" onmouseenter="showCitationPreview($1, this)" onmouseleave="hideCitationPreview()" title="Source $1"><span class="citation-badge-num">$1</span></button>');
 
     // Clean any whitespace between citation badges and punctuation marks
     clean = clean.replace(/(<\/button>)\s+([.,;:!])/g, '$1$2');
@@ -4607,7 +4644,7 @@ function formatAIResponseHTML(text) {
     return clean;
 }
 
-// Interactive Citation Jump & Source Link Opener
+// Interactive Citation Jump, Source Highlight & Link Opener
 function jumpToSource(num, event) {
     if (event) {
         event.preventDefault();
@@ -4615,37 +4652,248 @@ function jumpToSource(num, event) {
     }
 
     const n = Number(num);
-    const activeThread = appState.threads.find(t => t.id === appState.activeThreadId);
+    if (!n) return;
+
+    // 1. Locate the source in the active step or thread
+    const stepBlock = event?.target ? event.target.closest('.query-thread-block') : null;
     let targetSource = null;
 
-    if (activeThread && activeThread.steps && activeThread.steps.length > 0) {
-        for (let i = activeThread.steps.length - 1; i >= 0; i--) {
-            const sList = activeThread.steps[i].sources || [];
-            targetSource = sList.find(s => s.num === n || s.id === n);
-            if (targetSource) break;
+    // A. Check in step's own source chips or drawer items
+    if (stepBlock) {
+        const chip = stepBlock.querySelector(`[data-source-num="${n}"]`);
+        if (chip) {
+            const href = chip.getAttribute('href');
+            if (href && href.startsWith('http')) {
+                targetSource = {
+                    num: n,
+                    url: href,
+                    title: chip.getAttribute('title') || chip.querySelector('.source-drawer-item-title')?.textContent || `Source [${n}]`,
+                    domain: chip.querySelector('span:last-child')?.textContent || chip.querySelector('.source-drawer-item-top strong')?.textContent || 'verified-source'
+                };
+            }
         }
     }
 
-    if (targetSource && targetSource.url && targetSource.url.startsWith("http")) {
-        window.open(targetSource.url, "_blank", "noopener,noreferrer");
-        showToast(`Opening source [${n}]: ${targetSource.domain}`, "info");
+    // B. Check in appState active thread steps
+    if (!targetSource) {
+        const activeThread = appState.threads.find(t => t.id === appState.activeThreadId);
+        if (activeThread && activeThread.steps) {
+            for (let i = activeThread.steps.length - 1; i >= 0; i--) {
+                const sList = activeThread.steps[i].sources || [];
+                const found = sList.find(s => s.num === n || s.id === n);
+                if (found) {
+                    targetSource = found;
+                    break;
+                }
+            }
+        }
+    }
+
+    // C. Check document-wide for data-source-num
+    if (!targetSource) {
+        const anyChip = document.querySelector(`[data-source-num="${n}"]`);
+        if (anyChip) {
+            const href = anyChip.getAttribute('href');
+            if (href && href.startsWith('http')) {
+                targetSource = {
+                    num: n,
+                    url: href,
+                    title: anyChip.getAttribute('title') || `Source [${n}]`,
+                    domain: 'verified-source'
+                };
+            }
+        }
+    }
+
+    // 2. Visual highlight & smooth scroll to source pill
+    highlightSourcePill(n, stepBlock);
+
+    // 3. Open the source link
+    if (targetSource && targetSource.url && targetSource.url.startsWith('http')) {
+        window.open(targetSource.url, '_blank', 'noopener,noreferrer');
+        showToast(`Opening source [${n}]: ${targetSource.domain || targetSource.title}`, 'info');
         return;
     }
 
-    // Secondary fallback: search DOM for source links
-    const card = document.querySelector(`[data-source-num="${n}"]`) || 
-                 document.getElementById(`source_card_${n}`);
-    if (card) {
-        const link = card.getAttribute("href") || card.querySelector("a")?.getAttribute("href");
-        if (link && link.startsWith("http")) {
-            window.open(link, "_blank", "noopener,noreferrer");
-            showToast(`Opening source [${n}]`, "info");
-            return;
+    showToast(`Source [${n}] highlighted in Sources bar above`, 'info');
+}
+
+// Highlight source pill in the sources strip with animated pulse
+function highlightSourcePill(num, stepBlock) {
+    const root = stepBlock || document;
+    document.querySelectorAll('.source-highlighted').forEach(el => el.classList.remove('source-highlighted'));
+
+    const matching = root.querySelectorAll(`[data-source-num="${num}"]`);
+    if (matching.length > 0) {
+        matching.forEach(el => el.classList.add('source-highlighted'));
+        const first = matching[0];
+        first.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+        setTimeout(() => {
+            matching.forEach(el => el.classList.remove('source-highlighted'));
+        }, 3500);
+    } else if (stepBlock) {
+        // If source is inside collapsed drawer, open the drawer
+        const stepId = stepBlock.id.replace('thread_step_', '');
+        const btnAll = stepBlock.querySelector('.btn-all-sources');
+        if (btnAll) {
+            toggleSourcesDrawer(stepId);
+            setTimeout(() => {
+                const drawerItem = stepBlock.querySelector(`.source-drawer-item[data-source-num="${num}"]`);
+                if (drawerItem) {
+                    drawerItem.classList.add('source-highlighted');
+                    drawerItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    setTimeout(() => drawerItem.classList.remove('source-highlighted'), 3500);
+                }
+            }, 120);
+        }
+    }
+}
+
+// Interactive Hover Popover Tooltip for Citations
+let citationPopoverTimer = null;
+
+function showCitationPreview(num, anchorEl) {
+    if (citationPopoverTimer) {
+        clearTimeout(citationPopoverTimer);
+        citationPopoverTimer = null;
+    }
+
+    const n = Number(num);
+    if (!n || !anchorEl) return;
+
+    // Find source data
+    const stepBlock = anchorEl.closest('.query-thread-block');
+    let sourceData = null;
+
+    if (stepBlock) {
+        const chip = stepBlock.querySelector(`.source-drawer-item[data-source-num="${n}"]`) || 
+                     stepBlock.querySelector(`.source-chip[data-source-num="${n}"]`);
+        if (chip) {
+            sourceData = {
+                num: n,
+                url: chip.getAttribute('href'),
+                title: chip.getAttribute('title') || chip.querySelector('.source-drawer-item-title')?.textContent,
+                domain: chip.querySelector('.source-drawer-item-top strong')?.textContent || chip.querySelector('span:last-child')?.textContent,
+                snippet: chip.querySelector('.source-drawer-item-desc')?.textContent
+            };
         }
     }
 
-    showToast(`Source [${n}] referenced in research synthesis`, "info");
+    if (!sourceData) {
+        const activeThread = appState.threads.find(t => t.id === appState.activeThreadId);
+        if (activeThread && activeThread.steps) {
+            for (let i = activeThread.steps.length - 1; i >= 0; i--) {
+                const sList = activeThread.steps[i].sources || [];
+                const found = sList.find(s => s.num === n || s.id === n);
+                if (found) {
+                    sourceData = found;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!sourceData) return;
+
+    let popover = document.getElementById('cortex_citation_popover');
+    if (!popover) {
+        popover = document.createElement('div');
+        popover.id = 'cortex_citation_popover';
+        popover.className = 'citation-preview-popover';
+        document.body.appendChild(popover);
+
+        popover.addEventListener('mouseenter', () => {
+            if (citationPopoverTimer) {
+                clearTimeout(citationPopoverTimer);
+                citationPopoverTimer = null;
+            }
+        });
+        popover.addEventListener('mouseleave', () => {
+            hideCitationPreview();
+        });
+    }
+
+    const cleanDom = (sourceData.domain || 'verified-source').replace(/^www\./i, '');
+    const cleanTitle = sourceData.title || `Source [${n}]`;
+    const cleanSnip = sourceData.snippet || `Verified source reporting via ${cleanDom}.`;
+    const cleanUrl = sourceData.url || '#';
+
+    popover.innerHTML = `
+        <div class="citation-popover-header">
+            <div class="citation-popover-domain">
+                <i class="fa-solid fa-globe text-cyan"></i>
+                <span>${cleanDom}</span>
+            </div>
+            <span class="citation-popover-badge">Source [${n}]</span>
+        </div>
+        <div class="citation-popover-title">${cleanTitle}</div>
+        <div class="citation-popover-snippet">${cleanSnip}</div>
+        <a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="citation-popover-link">
+            Open full source <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.68rem;"></i>
+        </a>
+    `;
+
+    // Position popover relative to anchorEl
+    const rect = anchorEl.getBoundingClientRect();
+    const popoverWidth = 320;
+    let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
+    if (left < 10) left = 10;
+    if (left + popoverWidth > window.innerWidth - 10) {
+        left = window.innerWidth - popoverWidth - 10;
+    }
+
+    let top = rect.top - 10;
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
+    popover.style.transform = 'translateY(-100%)';
+    popover.classList.add('visible');
+
+    // If popover goes above the viewport edge, place below anchorEl
+    const popoverRect = popover.getBoundingClientRect();
+    if (popoverRect.top < 10) {
+        top = rect.bottom + 8;
+        popover.style.top = `${top}px`;
+        popover.style.transform = 'translateY(0)';
+    }
 }
+
+function hideCitationPreview() {
+    citationPopoverTimer = setTimeout(() => {
+        const popover = document.getElementById('cortex_citation_popover');
+        if (popover) {
+            popover.classList.remove('visible');
+        }
+    }, 220);
+}
+
+// Global Event Delegation for Citations
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.citation-ref');
+    if (btn) {
+        const num = btn.getAttribute('data-source-num') || btn.getAttribute('data-src-num') || btn.textContent.replace(/[^0-9]/g, '');
+        if (num) {
+            jumpToSource(Number(num), e);
+        }
+    }
+});
+
+document.addEventListener('mouseover', (e) => {
+    const btn = e.target.closest('.citation-ref');
+    if (btn) {
+        const num = btn.getAttribute('data-source-num') || btn.getAttribute('data-src-num') || btn.textContent.replace(/[^0-9]/g, '');
+        if (num) {
+            showCitationPreview(Number(num), btn);
+        }
+    }
+});
+
+document.addEventListener('mouseout', (e) => {
+    const btn = e.target.closest('.citation-ref');
+    if (btn) {
+        hideCitationPreview();
+    }
+});
 
 async function callGeminiProvider(query, sources, model, apiKey) {
     const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');

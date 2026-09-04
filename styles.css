@@ -1724,6 +1724,112 @@ option:active {
     transform: scale(1.08);
 }
 
+.source-chip.source-highlighted,
+.source-drawer-item.source-highlighted {
+    background: rgba(56, 189, 248, 0.35) !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.6) !important;
+    transform: translateY(-2px) scale(1.06) !important;
+    animation: pulse-source-glow 1.5s ease-in-out infinite alternate !important;
+    z-index: 10;
+}
+
+@keyframes pulse-source-glow {
+    0% { box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
+    100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.85); }
+}
+
+/* INTERACTIVE CITATION PREVIEW POPOVER */
+.citation-preview-popover {
+    position: fixed;
+    z-index: 99999;
+    width: 320px;
+    max-width: 90vw;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    pointer-events: auto;
+    font-family: var(--font-sans);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+
+.citation-preview-popover.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.citation-popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.72rem;
+}
+
+.citation-popover-domain {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+.citation-popover-badge {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+.citation-popover-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #f8fafc;
+    line-height: 1.35;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.citation-popover-snippet {
+    font-size: 0.76rem;
+    color: #94a3b8;
+    line-height: 1.45;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.citation-popover-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #38bdf8;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.citation-popover-link:hover {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+
 /* TELEMETRY FOOTER BAR */
 .unified-telemetry-bar {
     display: flex;
