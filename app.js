@@ -4937,13 +4937,21 @@ function switchThread(threadId) {
 }
 
 function deleteThread(threadId) {
-    appState.threads = appState.threads.filter(t => t.id !== threadId);
+    if (!threadId) return;
+    if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.markThreadDeleted) {
+        CortexLiveSyncEngine.markThreadDeleted(threadId);
+    }
+    appState.threads = (appState.threads || []).filter(t => t.id !== threadId);
     if (appState.activeThreadId === threadId) {
         appState.activeThreadId = appState.threads[0]?.id || null;
     }
     saveThreadsToLocalStorage();
     renderThreadHistory();
     renderViewport();
+
+    if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.pushSync) {
+        CortexLiveSyncEngine.pushSync(true);
+    }
 }
 
 function updateGatewayStatusBadge() {
@@ -4976,11 +4984,15 @@ function updateGatewayStatusBadge() {
 
 function clearWorkspaceHistory() {
     if (confirm("Are you sure you want to clear your research workspace history?")) {
-        appState.threads = [];
-        appState.activeThreadId = null;
-        saveThreadsToLocalStorage();
-        renderThreadHistory();
-        renderViewport();
+        if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.clearAllHistory) {
+            CortexLiveSyncEngine.clearAllHistory();
+        } else {
+            appState.threads = [];
+            appState.activeThreadId = null;
+            saveThreadsToLocalStorage();
+            renderThreadHistory();
+            renderViewport();
+        }
     }
 }
 
@@ -5524,6 +5536,7 @@ var CortexLiveSyncEngine = {
     pollInterval: null,
     isSyncing: false,
     lastSyncedTime: 0,
+    rateLimitUntil: 0,
 
     getRelayTopic(roomId) {
         const clean = (roomId || "").replace(/[^a-zA-Z0-9]/g, '');
@@ -5582,6 +5595,70 @@ var CortexLiveSyncEngine = {
         if (title) title.textContent = "Live Auto-Sync Active";
     },
 
+    getDeletedThreadIds() {
+        try {
+            return new Set(JSON.parse(localStorage.getItem("cortex_deleted_thread_ids") || "[]"));
+        } catch (e) {
+            return new Set();
+        }
+    },
+
+    markThreadDeleted(threadId) {
+        if (!threadId) return;
+        const ids = this.getDeletedThreadIds();
+        ids.add(threadId);
+        const arr = Array.from(ids).slice(-500);
+        localStorage.setItem("cortex_deleted_thread_ids", JSON.stringify(arr));
+    },
+
+    clearAllHistory() {
+        const now = Date.now();
+        localStorage.setItem("cortex_history_cleared_at", String(now));
+        localStorage.setItem("ambu_threads", "[]");
+        localStorage.setItem("cortex_deleted_thread_ids", "[]");
+        appState.threads = [];
+        appState.activeThreadId = null;
+
+        const roomId = this.getRoomId();
+        const activeKey = (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getActiveKey) 
+            ? CortexAuthVault.getActiveKey() 
+            : (localStorage.getItem("cortex_auth_remembered_key") || localStorage.getItem("ambu_key_openrouter") || "");
+
+        const payload = {
+            version: "5.0.0",
+            roomId: roomId,
+            updatedAt: now,
+            clearAll: true,
+            clearedAt: now,
+            deletedThreadIds: [],
+            threads: [],
+            activeKey: activeKey,
+            isAuthenticated: Boolean(activeKey && activeKey.length > 15),
+            settings: {
+                provider: appState.settings?.provider || "openrouter",
+                model: appState.settings?.model || "openrouter/auto",
+                costRouting: appState.settings?.costRouting || "min_cost",
+                apiKeys: {
+                    openrouter: activeKey || appState.settings?.apiKeys?.openrouter || "",
+                    gemini: appState.settings?.apiKeys?.gemini || "",
+                    openai: appState.settings?.apiKeys?.openai || "",
+                    claude: appState.settings?.apiKeys?.claude || ""
+                }
+            },
+            vault: (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getVaultPayload) ? CortexAuthVault.getVaultPayload() : null
+        };
+
+        // Immediately overwrite snapshot with empty state
+        localStorage.setItem(`cortex_cloud_snapshot_${roomId}`, JSON.stringify(payload));
+        this.lastSyncedTime = now;
+
+        // Broadcast clear event to cloud relay immediately
+        this.pushSync(true, true);
+
+        renderThreadHistory();
+        renderViewport();
+    },
+
     schedulePush() {
         if (this.syncTimer) clearTimeout(this.syncTimer);
         this.syncTimer = setTimeout(() => {
@@ -5589,18 +5666,28 @@ var CortexLiveSyncEngine = {
         }, 800);
     },
 
-    async pushSync() {
+    async pushSync(immediate = false, isClearAll = false) {
+        if (immediate && this.syncTimer) {
+            clearTimeout(this.syncTimer);
+            this.syncTimer = null;
+        }
         if (this.isSyncing) return;
         const roomId = this.getRoomId();
-        const validThreads = (appState.threads || []).filter(t => t.steps && t.steps.length > 0);
+        const validThreads = isClearAll ? [] : (appState.threads || []).filter(t => t.steps && t.steps.length > 0);
         const activeKey = (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getActiveKey) 
             ? CortexAuthVault.getActiveKey() 
             : (localStorage.getItem("cortex_auth_remembered_key") || localStorage.getItem("ambu_key_openrouter") || "");
 
+        const clearedAt = parseInt(localStorage.getItem("cortex_history_cleared_at") || "0", 10);
+        const deletedThreadIds = isClearAll ? [] : Array.from(this.getDeletedThreadIds());
+
         const payload = {
-            version: "4.8.0",
+            version: "5.0.0",
             roomId: roomId,
             updatedAt: Date.now(),
+            clearAll: isClearAll || false,
+            clearedAt: clearedAt,
+            deletedThreadIds: deletedThreadIds,
             threads: validThreads,
             activeKey: activeKey,
             isAuthenticated: Boolean(activeKey && activeKey.length > 15),
@@ -5624,6 +5711,7 @@ var CortexLiveSyncEngine = {
             this.lastSyncedTime = payload.updatedAt;
 
             // Broadcast to multi-device cloud relay (enables instant laptop-to-mobile sync)
+            if (this.rateLimitUntil && Date.now() < this.rateLimitUntil) return;
             const topic = this.getRelayTopic(roomId);
             const res = await fetch(`https://ntfy.sh/${topic}`, {
                 method: "POST",
@@ -5634,6 +5722,10 @@ var CortexLiveSyncEngine = {
                 },
                 body: JSON.stringify(payload)
             });
+            if (res.status === 429) {
+                this.rateLimitUntil = Date.now() + 30000;
+                return;
+            }
             if (res.ok) {
                 this.updateUI();
             }
@@ -5660,12 +5752,20 @@ var CortexLiveSyncEngine = {
             }
 
             // 2. Fetch from live cloud relay (cross-device sync)
+            if (this.rateLimitUntil && Date.now() < this.rateLimitUntil) {
+                return appliedResult;
+            }
             const topic = this.getRelayTopic(roomId);
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 4000);
 
             const res = await fetch(`https://ntfy.sh/${topic}/json?poll=1`, { signal: controller.signal });
             clearTimeout(timeoutId);
+
+            if (res.status === 429) {
+                this.rateLimitUntil = Date.now() + 30000;
+                return appliedResult;
+            }
 
             if (res.ok) {
                 const raw = await res.text();
@@ -5723,28 +5823,66 @@ var CortexLiveSyncEngine = {
         let threadsCount = 0;
         let keyRestored = false;
 
-        // 1. Synchronize Search Threads & History
-        if (payload.threads && Array.isArray(payload.threads) && payload.threads.length > 0) {
+        const localClearedAt = parseInt(localStorage.getItem("cortex_history_cleared_at") || "0", 10);
+        const payloadClearedAt = payload.clearedAt || 0;
+        const effectiveClearedAt = Math.max(localClearedAt, payloadClearedAt);
+        if (payloadClearedAt > localClearedAt) {
+            localStorage.setItem("cortex_history_cleared_at", String(payloadClearedAt));
+        }
+
+        // 1. If payload explicitly cleared history or has an empty list generated at or after clear
+        if (payload.clearAll || (Array.isArray(payload.threads) && payload.threads.length === 0 && (payload.updatedAt || 0) >= effectiveClearedAt && effectiveClearedAt > 0)) {
+            appState.threads = [];
+            appState.activeThreadId = null;
+            localStorage.setItem("ambu_threads", "[]");
+            renderThreadHistory();
+            renderViewport();
+            return { threadsCount: 0, keyRestored: false };
+        }
+
+        // If this payload was produced BEFORE our local history was cleared, DISCARD its threads completely
+        if (effectiveClearedAt > 0 && payload.updatedAt && payload.updatedAt < effectiveClearedAt) {
+            return { threadsCount: 0, keyRestored: false };
+        }
+
+        // Synchronize Tombstones (Deleted Thread IDs)
+        const localDeleted = this.getDeletedThreadIds();
+        if (Array.isArray(payload.deletedThreadIds)) {
+            payload.deletedThreadIds.forEach(id => {
+                localDeleted.add(id);
+                this.markThreadDeleted(id);
+            });
+            // Immediately purge any deleted threads from appState.threads
+            appState.threads = (appState.threads || []).filter(t => !localDeleted.has(t.id));
+        }
+
+        // 2. Synchronize Search Threads & History
+        if (payload.threads && Array.isArray(payload.threads)) {
             const existingMap = new Map((appState.threads || []).map(t => [t.id, t]));
             payload.threads.forEach(incoming => {
-                if (incoming.steps && incoming.steps.length > 0) {
-                    if (!existingMap.has(incoming.id)) {
-                        threadsCount++;
-                    }
-                    existingMap.set(incoming.id, incoming);
+                // CRITICAL: If thread was explicitly deleted or has no steps, NEVER resurrect it
+                if (localDeleted.has(incoming.id)) return;
+                if (!incoming.steps || incoming.steps.length === 0) return;
+
+                if (!existingMap.has(incoming.id)) {
+                    threadsCount++;
                 }
+                existingMap.set(incoming.id, incoming);
             });
 
-            appState.threads = Array.from(existingMap.values());
+            appState.threads = Array.from(existingMap.values()).filter(t => !localDeleted.has(t.id));
             localStorage.setItem("ambu_threads", JSON.stringify(appState.threads));
             renderThreadHistory();
 
-            // If on empty hero view or no active thread, open latest synced thread
-            if (!appState.activeThreadId || document.getElementById("emptyHeroView")?.style.display !== "none") {
-                if (appState.threads.length > 0) {
+            // Only switch to thread if there are threads and no active thread
+            if (appState.threads.length > 0) {
+                if (!appState.activeThreadId) {
                     appState.activeThreadId = appState.threads[0].id;
                     renderViewport();
                 }
+            } else {
+                appState.activeThreadId = null;
+                renderViewport();
             }
         }
 
@@ -6863,6 +7001,8 @@ window.closeReleaseNotesModal = closeReleaseNotesModal;
 window.openLibraryModal = openLibraryModal;
 window.closeLibraryModal = closeLibraryModal;
 window.clearWorkspaceHistory = clearWorkspaceHistory;
+window.deleteThread = deleteThread;
+window.switchThread = switchThread;
 window.testOpenRouterApiKeyNow = testOpenRouterApiKeyNow;
 window.toggleApiKeyVisibility = toggleApiKeyVisibility;
 window.testDiscordWebhook = testDiscordWebhook;
