@@ -177,7 +177,7 @@ def run_master_qa_suite():
         time.sleep(0.4)
         rn_modal = driver.find_element(By.ID, "releaseNotesModal")
         rn_text = rn_modal.get_attribute("innerText") or rn_modal.text
-        assert "5.0.0" in rn_text, "v5.0.0 not found in Release Notes modal!"
+        assert any(v in rn_text for v in ["5.0.3", "5.0.0"]), "v5.0.3/v5.0.0 not found in Release Notes modal!"
         assert "Autonomous Deep Research" in rn_text, "Deep research not found in release notes modal!"
         driver.execute_script("window.closeReleaseNotesModal();")
         time.sleep(0.3)

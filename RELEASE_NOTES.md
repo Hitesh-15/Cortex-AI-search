@@ -4,6 +4,64 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
 
 ---
 
+## 🌟 [v5.0.3] — 2026-09-04
+### **4-Part Structured Answering Engine, Streamlined Pure Topic Desks & Intent-Based Deliverable Generation**
+
+```mermaid
+graph TD
+    subgraph QueryIntentRouting ["🔍 Intelligent Query Ingestion & Topic Scoping"]
+        UserQuery["User Input Query"]
+        TopicDesk["Left Sidebar: 5 Pure Research Topics<br/>(Market & Web • Financial Markets • Academic • Code • Executive Memos)"]
+        IntentClassifier{"Smart Deliverable Intent Classifier"}
+        
+        UserQuery & TopicDesk --> IntentClassifier
+        IntentClassifier -->|Informational / Analytical Query| StructuredSearch["4-Part Structured Answer Pipeline"]
+        IntentClassifier -->|Presentation, Slide Deck, Whitepaper| AutonomousDeliverable["Autonomous 5-Stage Deliverable Pipeline"]
+    end
+
+    subgraph StructuredSearchEngine ["✨ 4-Part Structured Answering Model"]
+        DirectLead["Part 1: Direct Executive Lead<br/>• 1-2 sentence direct authoritative answer<br/>• Bolded core facts & primary entities<br/>• Grounded inline citation badges [1], [2]"]
+        ConceptBullets["Part 2: Structured Core Breakdown<br/>• Topic-aware H3 Subheading<br/>• Unordered bullets with bold concept titles<br/>  (Concept Label: Explanation)"]
+        ContextNarrative["Part 3: Context & Real-World Implications<br/>• Second topical H3 Subheading<br/>• Fluid, high-level narrative synthesis<br/>• Trade-offs, macro dynamics & sovereign impacts"]
+        TakeawayCard["Part 4: Key Takeaway Card<br/>• Glassmorphic callout container (.cortex-takeaway-card)<br/>• Amber lightbulb icon & bottom-line takeaway"]
+        
+        StructuredSearch --> DirectLead --> ConceptBullets --> ContextNarrative --> TakeawayCard
+    end
+
+    subgraph DeliverableSuiteEngine ["📦 Autonomous Deliverable Suite"]
+        StageStepper["Dynamic 5-Stage Live Stepper<br/>(Hypotheses ➔ Evidence ➔ Verification ➔ Whitepaper ➔ Presentation)"]
+        Whitepaper["Executive Whitepaper<br/>• Comparative Benchmark Matrix<br/>• Strategic Execution Roadmap<br/>• 1-Click .DOCX Export"]
+        SlideDeck["Interactive Presentation Deck<br/>• 16:9 In-App Slide Viewer<br/>• Dot navigation & slide counter<br/>• 1-Click Native PowerPoint .PPTX Export"]
+        
+        AutonomousDeliverable --> StageStepper --> Whitepaper & SlideDeck
+    end
+```
+
+#### 🎯 Architectural Highlights & Functional Upgrades
+- **4-Part Structured Answering Engine**:
+  - **Part 1 (Direct Answer First)**: Immediate 1-2 sentence authoritative definition or answer with bolded entities and interactive inline citations (`[1]`, `[2]`), stripping conversational preamble and query punctuation.
+  - **Part 2 (Structured Core Breakdown)**: Rendered under a context-aware topical subheading (`h3.cortex-search-subheading`) with clean bullet points (`ul.cortex-search-bullets`) where **every bullet begins with an extracted bold concept title** (`<li><strong>Concept Label:</strong> Explanation sentence</li>`).
+  - **Part 3 (Context & Real-World Implications)**: Second context-aware subheading followed by a fluid narrative synthesis addressing real-world implications, market dynamics, and forward outlook.
+  - **Part 4 (Key Takeaway Card)**: Dedicated visual callout card (`.cortex-takeaway-card`) featuring an amber lightbulb icon and high-level bottom-line takeaway (`.cortex-takeaway-text`).
+- **Sidebar Streamlining to Pure Research Topics**:
+  - Completely eliminated the confusing "Compute & Studio" tab from the left sidebar navigation.
+  - The left sidebar now strictly and cleanly serves subject-matter research topics:
+    1. **Market & Web** (`web`)
+    2. **Financial Markets** (`finance`)
+    3. **Academic & Research** (`academic`)
+    4. **Engineering & Code** (`code`)
+    5. **Executive Memos** (`writing`)
+  - Solves the UX conflation between research subject matter (topics) and execution output format (deliverables).
+- **Smart Intent-Based Deliverable Generation**:
+  - Removed artificial manual mode switches (`appState.isStudioMode`, `#btnStudioToggle`).
+  - Implemented smart query intent classification that automatically triggers the 5-stage autonomous execution pipeline and Deliverable Suite whenever a query requests presentations, slide decks, slides, whitepapers, or formal briefing reports.
+  - Retains instant 1-click downloads for native Microsoft PowerPoint (`.pptx`) and formatted Microsoft Word (`.docx`).
+- **Provider System Prompt & Markdown Parser Standardization**:
+  - Standardized remote system prompts (OpenRouter, Gemini, OpenAI, Claude) to strictly adhere to the 4-Part Structure.
+  - Updated `formatAIResponseHTML` to parse markdown takeaway sections directly into native `.cortex-takeaway-card` elements.
+
+---
+
 ## 🌟 [v5.0.2] — 2026-09-04
 ### **Cortex Direct Precision Answering Model, Zero-Blurp Grounding, and Compute Studio Chatbox Uncluttering**
 
