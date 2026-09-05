@@ -56,6 +56,9 @@ graph TD
   - Removed artificial manual mode switches (`appState.isStudioMode`, `#btnStudioToggle`).
   - Implemented smart query intent classification that automatically triggers the 5-stage autonomous execution pipeline and Deliverable Suite whenever a query requests presentations, slide decks, slides, whitepapers, or formal briefing reports.
   - Retains instant 1-click downloads for native Microsoft PowerPoint (`.pptx`) and formatted Microsoft Word (`.docx`).
+- **Effort Menu Removal & Autonomous Reasoning Allocation**:
+  - Removed the manual "Effort: Auto / Low / Medium / High" dropdown menu from the search bar actions row, eliminating interface clutter.
+  - Query complexity is now dynamically and autonomously resolved on every search via the built-in reasoning classifier (`classifyQueryEffort`), automatically scaling test-time compute tokens and search depth without user friction.
 - **Provider System Prompt & Markdown Parser Standardization**:
   - Standardized remote system prompts (OpenRouter, Gemini, OpenAI, Claude) to strictly adhere to the 4-Part Structure.
   - Updated `formatAIResponseHTML` to parse markdown takeaway sections directly into native `.cortex-takeaway-card` elements.

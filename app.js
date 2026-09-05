@@ -1469,18 +1469,8 @@ async function runAsyncSearchPipeline(userQuery) {
     stepElement.className = "query-thread-block";
     stepElement.id = stepId;
 
-    // Determine Effort & Model Routing
-    let effortClassification;
-    if (appState.activeEffortLevel === "auto") {
-        effortClassification = classifyQueryEffort(actualQuery);
-    } else {
-        effortClassification = {
-            resolvedEffort: appState.activeEffortLevel,
-            label: appState.activeEffortLevel.toUpperCase(),
-            reason: `User explicitly selected ${appState.activeEffortLevel.toUpperCase()} effort.`
-        };
-    }
-
+    // Intelligent Adaptive Effort & Reasoning Routing: Autonomously classifies query depth (low, medium, high)
+    const effortClassification = classifyQueryEffort(actualQuery);
     const resolvedEffort = effortClassification.resolvedEffort;
 
     // Smart Intent Detection: Automatically trigger Deliverable Suite (Whitepaper & Presentation Slide Deck)
