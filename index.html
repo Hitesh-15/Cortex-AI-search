@@ -197,6 +197,11 @@
                     <!-- Dynamically populated by app.js -->
                 </div>
 
+                <!-- FLOATING / SLASH COMMANDS AUTOCOMPLETE MENU -->
+                <div id="slashCommandsMenu" class="slash-commands-popup" style="display: none;">
+                    <!-- Dynamically populated by app.js -->
+                </div>
+
                 <form id="searchForm" class="search-box-container" ondragover="handleSearchDragOver(event)" ondragleave="handleSearchDragLeave(event)" ondrop="handleSearchDrop(event)">
                     <!-- ATTACHED DOCUMENTS PILL BAR -->
                     <div id="attachedFilesBar" class="attached-files-bar" style="display: none;"></div>
@@ -639,6 +644,8 @@
     <script src="src/core/event_bus.js"></script>
     <script src="src/core/tools.js"></script>
     <script src="src/sandbox/compute_sandbox.js"></script>
+    <script src="src/sandbox/code_sandbox.js"></script>
+    <script src="src/sandbox/chart_studio.js"></script>
     <script src="src/verification/guardrails.js"></script>
     <script src="src/retrieval/retrieval_engine.js"></script>
     <script src="src/core/agent_harness.js"></script>

@@ -1116,12 +1116,157 @@ function closeAtMentionMenu() {
     if (menu) menu.style.display = "none";
 }
 
+// Cortex All-in-One Slash Commands Registry & Autocomplete Menu
+const CORTEX_SLASH_COMMANDS = [
+    { cmd: "/code", title: "Code Sandbox", desc: "Interactive in-browser execution playground", mode: "code" },
+    { cmd: "/math", title: "Deterministic Compute", desc: "High-precision math, CAGR & statistics", mode: "finance" },
+    { cmd: "/chart", title: "SVG Chart Studio", desc: "Render responsive line charts and comparative bars", mode: "web" },
+    { cmd: "/deck", title: "Presentation Deck", desc: "Synthesize 16:9 slides and executive whitepapers", mode: "studio" },
+    { cmd: "/research", title: "Deep Web Intelligence", desc: "Multi-source retrieval with verified citations", mode: "web" },
+    { cmd: "/academic", title: "Academic & arXiv Papers", desc: "Peer-reviewed scientific preprints & studies", mode: "academic" },
+    { cmd: "/finance", title: "Institutional Market Telemetry", desc: "Corporate disclosures, treasury yields & 10-K analysis", mode: "finance" },
+    { cmd: "/clear", title: "Reset Workspace", desc: "Clear active thread and start a new search", mode: "clear" }
+];
+
+let activeSlashIndex = 0;
+
+function setupSlashCommandsController() {
+    const input = document.getElementById("searchInput");
+    const menu = document.getElementById("slashCommandsMenu");
+    if (!input || !menu) return;
+
+    input.addEventListener("input", () => {
+        handleSlashCommandQuery();
+    });
+
+    input.addEventListener("keydown", (e) => {
+        if (menu.style.display !== "none") {
+            const items = menu.querySelectorAll(".slash-cmd-item");
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                activeSlashIndex = (activeSlashIndex + 1) % (items.length || 1);
+                updateActiveSlashItem(items);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                activeSlashIndex = (activeSlashIndex - 1 + (items.length || 1)) % (items.length || 1);
+                updateActiveSlashItem(items);
+            } else if (e.key === "Enter" || e.key === "Tab") {
+                if (items.length > 0 && activeSlashIndex >= 0 && activeSlashIndex < items.length) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const cmd = items[activeSlashIndex].getAttribute("data-cmd");
+                    if (cmd) {
+                        applyChosenSlashCommand(cmd);
+                    }
+                }
+            } else if (e.key === "Escape") {
+                closeSlashCommandsMenu();
+            }
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!menu.contains(e.target) && e.target !== input) {
+            closeSlashCommandsMenu();
+        }
+    });
+}
+
+function closeSlashCommandsMenu() {
+    const menu = document.getElementById("slashCommandsMenu");
+    if (menu) {
+        menu.style.display = "none";
+        menu.classList.remove("active");
+    }
+}
+
+function updateActiveSlashItem(items) {
+    items.forEach((it, idx) => {
+        it.classList.toggle("selected", idx === activeSlashIndex);
+        if (idx === activeSlashIndex) {
+            it.scrollIntoView({ block: "nearest" });
+        }
+    });
+}
+
+function handleSlashCommandQuery() {
+    const input = document.getElementById("searchInput");
+    const menu = document.getElementById("slashCommandsMenu");
+    if (!input || !menu) return;
+
+    const val = input.value;
+    const cursor = input.selectionStart || val.length;
+    const textBeforeCursor = val.substring(0, cursor);
+
+    const match = textBeforeCursor.match(/(?:^|\s)\/([a-zA-Z0-9_\-]*)$/);
+    if (!match) {
+        closeSlashCommandsMenu();
+        return;
+    }
+
+    const query = match[1].toLowerCase();
+    const filtered = CORTEX_SLASH_COMMANDS.filter(c =>
+        c.cmd.toLowerCase().includes(query) ||
+        c.title.toLowerCase().includes(query) ||
+        c.desc.toLowerCase().includes(query)
+    );
+
+    if (filtered.length === 0) {
+        closeSlashCommandsMenu();
+        return;
+    }
+
+    activeSlashIndex = 0;
+    menu.innerHTML = filtered.map((c, idx) => `
+        <div class="slash-cmd-item ${idx === 0 ? 'selected' : ''}" data-cmd="${c.cmd}" onclick="applyChosenSlashCommand('${c.cmd}')">
+            <span class="slash-cmd-badge">${c.cmd}</span>
+            <div class="slash-cmd-info" style="display: flex; flex-direction: column; gap: 2px;">
+                <span class="slash-cmd-title" style="color: #f8fafc; font-size: 13px; font-weight: 600;">${c.title}</span>
+                <span class="slash-cmd-desc" style="font-size: 11px; color: #94a3b8;">${c.desc}</span>
+            </div>
+        </div>
+    `).join('');
+
+    menu.style.display = "block";
+    menu.classList.add("active");
+}
+
+function applyChosenSlashCommand(cmd) {
+    const input = document.getElementById("searchInput");
+    const found = CORTEX_SLASH_COMMANDS.find(c => c.cmd === cmd);
+    closeSlashCommandsMenu();
+
+    if (!input || !found) return;
+
+    if (found.mode === "clear") {
+        input.value = "";
+        const btnNew = document.getElementById("btnNewThread");
+        if (btnNew) btnNew.click();
+        if (typeof showToast === "function") showToast("Workspace reset", "info");
+        return;
+    }
+
+    if (found.mode === "studio") {
+        input.value = "@studio ";
+        input.focus();
+        if (typeof showToast === "function") showToast("Presentation Deck Studio activated", "info");
+    } else {
+        const deskNav = document.querySelector(`.focus-nav-item[data-mode='${found.mode}']`);
+        if (deskNav) deskNav.click();
+        input.value = "";
+        input.focus();
+        if (typeof showToast === "function") showToast(`Switched to ${found.title}`, "info");
+    }
+}
+window.applyChosenSlashCommand = applyChosenSlashCommand;
+
 function setupSearchForm() {
     const form = document.getElementById("searchForm");
     const input = document.getElementById("searchInput");
     const btnSubmit = document.getElementById("btnSubmitSearch");
 
     setupAtMentionController();
+    setupSlashCommandsController();
 
     const handleSearchTrigger = (e) => {
         if (e) {
@@ -1129,6 +1274,7 @@ function setupSearchForm() {
             e.stopPropagation();
         }
         closeAtMentionMenu();
+        closeSlashCommandsMenu();
         const query = input ? input.value.trim() : "";
         if (query) {
             if (input) input.value = "";
@@ -1149,6 +1295,10 @@ function setupSearchForm() {
             const menu = document.getElementById("atMentionMenu");
             if (menu && menu.style.display !== "none" && (e.key === "Enter" || e.key === "ArrowDown" || e.key === "ArrowUp")) {
                 return; // Let mention controller handle selection
+            }
+            const slashMenu = document.getElementById("slashCommandsMenu");
+            if (slashMenu && slashMenu.style.display !== "none" && (e.key === "Enter" || e.key === "ArrowDown" || e.key === "ArrowUp")) {
+                return; // Let slash command controller handle selection
             }
             if (e.key === "Enter" && !e.shiftKey) {
                 handleSearchTrigger(e);
@@ -5441,8 +5591,16 @@ function formatAIResponseHTML(text, sources = null) {
     }
 
     let clean = text.trim();
-    // Strip codeblock wrappers if returned by AI model
-    clean = clean.replace(/^```(html|markdown|json)?/gi, '').replace(/```$/gi, '').trim();
+    // Strip outer codeblock wrappers if returned by AI model
+    clean = clean.replace(/^```(html|markdown|json)?\n?/gi, '').replace(/\n?```$/gi, '').trim();
+
+    // Preserve inner code blocks and chart widgets before Markdown transformations
+    const preservedCodeBlocks = [];
+    clean = clean.replace(/```([a-zA-Z0-9_\-:]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+        const token = `___CORTEX_CODE_BLOCK_${preservedCodeBlocks.length}___`;
+        preservedCodeBlocks.push({ lang: (lang || 'javascript').trim(), code: code.trim() });
+        return token;
+    });
 
     // Determine available sources count for deterministic citation cross-matching & verification
     let maxSourceNum = (Array.isArray(sources) && sources.length > 0) ? sources.length : 0;
@@ -5554,8 +5712,35 @@ function formatAIResponseHTML(text, sources = null) {
     clean = clean.replace(/<p[^>]*>\s*<\/p>/g, '');
     clean = clean.replace(/(<\/div>)\s*(?:<br\s*\/?>)+/gi, '$1');
     clean = clean.replace(/(?:<br\s*\/?>)+\s*(<h3 class="cortex-search-subheading")/gi, '$1');
-    clean = clean.replace(/(<h3 class="cortex-search-subheading">[\s\S]*?<\/h3>)\s*(?:<br\s*\/?>)+/gi, '$1');
     clean = clean.replace(/(?:<br\s*\/?>){2,}/g, '<br>');
+
+    // Restore preserved code blocks as interactive Cortex Code Sandbox or Chart Studio widgets
+    if (typeof preservedCodeBlocks !== 'undefined' && Array.isArray(preservedCodeBlocks)) {
+        preservedCodeBlocks.forEach((block, idx) => {
+            const token = `___CORTEX_CODE_BLOCK_${idx}___`;
+            let blockHtml = '';
+            if (block.lang && block.lang.startsWith('chart') && typeof CortexChartStudio !== 'undefined') {
+                try {
+                    const parsed = JSON.parse(block.code);
+                    if (block.lang.includes('bar')) {
+                        blockHtml = CortexChartStudio.renderBarChart(parsed.data || parsed, parsed.options || {});
+                    } else {
+                        blockHtml = CortexChartStudio.renderLineChart(parsed.data || parsed, parsed.options || {});
+                    }
+                } catch (e) {
+                    blockHtml = typeof CortexCodeSandbox !== 'undefined'
+                        ? CortexCodeSandbox.formatInteractiveBlock(block.code, block.lang)
+                        : `<pre class="cortex-code-pre"><code>${block.code}</code></pre>`;
+                }
+            } else if (typeof CortexCodeSandbox !== 'undefined' && CortexCodeSandbox.formatInteractiveBlock) {
+                blockHtml = CortexCodeSandbox.formatInteractiveBlock(block.code, block.lang);
+            } else {
+                const escaped = block.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                blockHtml = `<pre class="cortex-code-pre"><code class="language-${block.lang}">${escaped}</code></pre>`;
+            }
+            clean = clean.replace(token, blockHtml);
+        });
+    }
 
     return clean;
 }

@@ -2,6 +2,70 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v6.1.0] — 2026-09-05
+### **All-in-One Autonomous Platform: Interactive Code Sandbox, Dynamic SVG Chart Studio & Spotlight Slash Commands**
+
+```mermaid
+graph TD
+    subgraph ClientOmniSurface ["⚡ 1. Omni-Surface & Spotlight Controls"]
+        OmniInput["Spotlight Input Bar (#searchInput)"]
+        SlashMenu["Slash Commands Palette (/code • /math • /chart • /deck • /clear)"]
+        DeskRouting["5 Domain Desks (Market • Finance • Academic • Code • Executive)"]
+    end
+
+    subgraph SandboxedExecutionLayer ["🧰 2. Client-Side Sandboxes & Active Runtimes"]
+        CodeSandbox["In-Browser Code Sandbox (Client-Side JS & Terminal Stdout)"]
+        ComputeEngine["Deterministic Compute Engine (CAGR • Variance • Correlation)"]
+        ChartStudio["SVG Vector Chart Studio (Time-Series Lines • Comparative Bars)"]
+    end
+
+    subgraph ModularAgentHarness ["⚙️ 3. Decoupled Agent Harness & Telemetry"]
+        EventBus["CortexEventBus (Telemetry & Pub/Sub Lifecycle)"]
+        ToolRegistry["CortexToolRegistry (Declarative Tool Schemas & Dispatch)"]
+        AgentHarness["CortexAgentHarness (Unrolled Autonomous Execution Loop)"]
+    end
+
+    subgraph GroundedVerificationPipeline ["🛡️ 4. Grounding, Verification & Deliverables"]
+        NeuralRetrieval["Multi-Index Retrieval & Semantic Re-Ranking"]
+        CitationAuditor["Deterministic Citation Auditing & Evidence Highlighting"]
+        DeliverableSuite["16:9 Presentation Decks (.PPTX) & Executive Whitepapers (.DOCX)"]
+    end
+
+    OmniInput --> SlashMenu & DeskRouting
+    SlashMenu --> SandboxedExecutionLayer
+    SandboxedExecutionLayer --> ModularAgentHarness
+    ModularAgentHarness --> GroundedVerificationPipeline
+```
+
+#### 🎯 Key Capabilities & Architectural Enhancements
+- **Interactive In-Browser Code & Execution Sandbox (`src/sandbox/code_sandbox.js`)**:
+  - Direct client-side code execution with isolated scopes and intercepted standard output.
+  - Automatically upgrades standard response code blocks into interactive sandbox widgets equipped with syntax highlighting, one-click `Run in Sandbox`, `Copy to Clipboard`, and live terminal stdout drawers.
+  - Sub-millisecond execution times with zero external server dependencies.
+- **Dynamic SVG Vector Chart Studio (`src/sandbox/chart_studio.js`)**:
+  - Embeds lightweight, responsive vector data visualizations directly into synthesized research answers.
+  - Supports time-series line charts with gradient fills, coordinates, and metric tooltips, as well as comparative horizontal bar charts with relative percentage scaling.
+  - Zero third-party visualization libraries required; renders native SVG vector markup.
+- **Spotlight Slash Command Palette (`/`)**:
+  - Instant command palette integrated directly into the omni-search input.
+  - Accessible via `/` keystroke with seamless keyboard navigation (`ArrowUp`, `ArrowDown`, `Enter`, `Tab`, `Escape`) and direct mouse triggers:
+    - `/code`: Instant switch to code sandbox and algorithmic execution desk.
+    - `/math`: Deterministic quantitative computation for financial ratios, CAGR, and statistics.
+    - `/chart`: SVG vector data visualization engine.
+    - `/deck`: Autonomous deliverable studio generating 16:9 slide decks and executive whitepapers.
+    - `/research`: Multi-source web search intelligence.
+    - `/academic`: Peer-reviewed scientific preprint analysis.
+    - `/finance`: Institutional market telemetry and SEC disclosures.
+    - `/clear`: Instant workspace reset.
+- **Formal System Harness Specification (`HARNESS.md` & `AGENTS.md`)**:
+  - Decoupled monolithic scripts into clean, single-responsibility domain modules (`src/core/`, `src/sandbox/`, `src/retrieval/`, `src/verification/`).
+  - Added formal system harness documentation (`HARNESS.md`) detailing boundaries, state transitions, tool schemas, and safety controls.
+  - Streamlined `AGENTS.md` as an instruction contract pointing to the underlying harness architecture.
+- **100% Brand Neutrality & Legal Cleanliness**:
+  - Strictly eliminates any third-party tool names, trademarks, or proprietary brand identities from the codebase, comments, and release documentation.
+
+---
+
 ## 🌟 [v6.0.0] — 2026-09-05
 ### **Modular Agent Architecture, In-Browser Compute Sandbox & Declarative Tool Protocol**
 

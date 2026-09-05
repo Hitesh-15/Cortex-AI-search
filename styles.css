@@ -3716,5 +3716,301 @@ option:active {
     }
 }
 
+/* ==========================================================================
+   CORTEX ALL-IN-ONE: CODE SANDBOX, TERMINAL RUNNER & SVG CHART STUDIO
+   ========================================================================== */
 
+.cortex-code-sandbox-card {
+    margin: 18px 0;
+    background: #0d1117;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+    transition: border-color 0.2s ease;
+}
 
+.cortex-code-sandbox-card:hover {
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.cortex-code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: #161b22;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cortex-code-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cortex-code-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.cortex-code-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-code-action {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-code-action:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-code-run {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35));
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #34d399;
+}
+
+.btn-code-run:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.5));
+    color: #6ee7b7;
+    border-color: rgba(16, 185, 129, 0.6);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+}
+
+.cortex-code-pre {
+    margin: 0;
+    padding: 14px 16px;
+    background: #0d1117;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.cortex-code-content {
+    color: #e2e8f0;
+    white-space: pre;
+}
+
+.cortex-code-terminal {
+    background: #090d13;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    animation: fadeInSlideDown 0.2s ease forwards;
+}
+
+@keyframes fadeInSlideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cortex-terminal-head,
+.cortex-terminal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 14px;
+    background: #111620;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.cortex-terminal-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #cbd5e1;
+}
+
+.cortex-terminal-time {
+    font-size: 11px;
+    color: #64748b;
+    font-family: var(--font-mono, monospace);
+}
+
+.cortex-terminal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+
+.cortex-terminal-body,
+.cortex-terminal-stdout {
+    padding: 12px 16px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #38bdf8;
+    max-height: 240px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+}
+
+.cortex-terminal-stdout.error {
+    color: #f87171;
+}
+
+.cortex-terminal-stdout.success {
+    color: #34d399;
+}
+
+/* SVG Chart Studio */
+.cortex-chart-card {
+    margin: 18px 0;
+    padding: 16px 18px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+}
+
+.cortex-chart-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cortex-chart-title svg {
+    color: #38bdf8;
+}
+
+.cortex-chart-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+}
+
+/* Horizontal Bar Chart Rows */
+.cortex-bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.cortex-bar-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 70px;
+    align-items: center;
+    gap: 12px;
+    font-size: 12.5px;
+}
+
+.cortex-bar-label {
+    color: #cbd5e1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cortex-bar-track {
+    background: rgba(255, 255, 255, 0.08);
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.cortex-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    border-radius: 5px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cortex-bar-val {
+    color: #94a3b8;
+    text-align: right;
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+}
+
+/* Slash Commands Menu */
+.slash-commands-popup {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 16px;
+    width: 320px;
+    max-height: 280px;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 6px;
+    display: none;
+    backdrop-filter: blur(12px);
+}
+
+.slash-commands-popup.active {
+    display: block;
+    animation: fadeInSlideDown 0.15s ease forwards;
+}
+
+.slash-cmd-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.slash-cmd-item:hover,
+.slash-cmd-item.selected {
+    background: rgba(56, 189, 248, 0.15);
+}
+
+.slash-cmd-badge {
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.slash-cmd-desc {
+    font-size: 12px;
+    color: #94a3b8;
+}
