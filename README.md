@@ -6,9 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B-blue.svg)](https://developer.mozilla.org/)
 [![AI: Multi-Model Gateway](https://img.shields.io/badge/AI-Parallel%20Multi--Model%20Routing-cyan.svg)](#-features)
-[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v5.0.0-emerald.svg)](RELEASE_NOTES.md)
+[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v5.0.3-emerald.svg)](RELEASE_NOTES.md)
 
-Cortex is a state-of-the-art AI search engine, autonomous deep research workstation, and multi-format compute studio. It synthesizes real-time facts across **10 to 20+ verified web sources**, compiles comprehensive executive whitepapers, generates downloadable presentation slide decks (`.pptx`) and Word documents (`.docx`), executes parallel multi-model reasoning across frontier LLMs (**Claude 3.7 Sonnet, Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, DeepSeek R1**), and maintains 100% client-side privacy.
+Cortex is a state-of-the-art AI search engine, autonomous deep research workstation, and multi-format deliverable studio. It synthesizes real-time facts across **10 to 20+ verified web sources**, delivers an authoritative **4-Part Structured Answering Framework** (Direct Answer First ➔ Structured Concept Bullets ➔ Context Narrative ➔ Key Takeaway Card), compiles comprehensive executive whitepapers, generates downloadable presentation slide decks (`.pptx`) and Word documents (`.docx`), executes parallel multi-model reasoning across frontier LLMs (**Claude 3.7 Sonnet, Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, DeepSeek R1**), and maintains 100% client-side privacy.
 
 ---
 
@@ -38,22 +38,22 @@ flowchart TD
         ClockTick --> TimestampFormat --> HeaderPulse & PromptAnchor
     end
 
-    subgraph Ingestion["3. Query Ingestion & Context Routing"]
+    subgraph Ingestion["3. Query Ingestion, Pure Topic Desks & Intent Routing"]
         UserQ["User Research Query / + New Search<br/>(In-Chat @mention Autocomplete • Quick Hints)"]
-        TrendingFeeds["Dynamic Trending Feeds<br/>(Google News • HackerNews • Wikipedia)"]
-        Classifier["Effort & Focus Mode Router<br/>(Market • Financial • Academic • Code • Writing)"]
-        UserQ --> Classifier
-        TrendingFeeds --> Classifier
+        TopicDesks["Sidebar Topic Desks (Pure Topics Only)<br/>(Market & Web • Financial Markets • Academic • Code • Executive Memos)"]
+        IntentRouter{"Smart Deliverable Intent Classifier<br/>(Presentations, Decks, Slides, Whitepapers?)"}
+        
+        UserQ & TopicDesks --> IntentRouter
     end
 
     subgraph Crawler["4. Deep Parallel Web Crawler"]
         MultiCrawler["Multi-Engine Parallel Crawler"]
         DDG["DuckDuckGo Instant API"]
-        Wiki["Wikipedia OpenSearch API"]
+        Wiki["Wikipedia Full-Text API"]
         HN["HackerNews Algolia API"]
         DomainIdx["Global Intelligence Index<br/>(Reuters, Bloomberg, ArXiv, SEC, Nature, PubMed, GitHub)"]
         
-        Classifier --> MultiCrawler
+        IntentRouter -->|Standard Search Route| MultiCrawler
         MultiCrawler --> DDG & Wiki & HN & DomainIdx
         DDG & Wiki & HN & DomainIdx --> SourcesAggregator["20+ Verified Sources Aggregator & Deduplicator"]
     end
@@ -72,18 +72,21 @@ flowchart TD
         Router -->|"Free Built-In Route"| FreeNeural["Cortex Free Neural Engine (Dynamic Fact Synthesis)"]
     end
 
-    subgraph Processing["6. Synthesis, Citation Engine & Post-Processing"]
-        MemoAssembler["Executive Research Memo Assembler<br/>(Single-Pass [N] Citation Normalizer • Section Standardizer)"]
-        Telemetry["Dynamic Model Telemetry & USD Spend Tracker<br/>(Live Rate Cards • Exact Model Name Resolution)"]
-        FollowUps["Dynamic Smart Follow-up Inquiries<br/>(Contextual Sub-Question Drill-Downs)"]
-        ThreadStore["Thread History Restoration Engine<br/>(Bidirectional Sidebar Switching & Viewport Lock)"]
-        Discord["Autonomous Topic Tracker & Discord Alerts"]
+    subgraph Processing["6. 4-Part Structured Answering & Deliverable Engine"]
+        StructuredAnswer["4-Part Structured Answer Engine<br/>• Part 1: Direct Lead Answer (1-2 sentences with [1][2])<br/>• Part 2: Topical Subheading + Bold Concept Bullets<br/>• Part 3: Context & Real-World Implications<br/>• Part 4: Key Takeaway Card (.cortex-takeaway-card)"]
+        DeliverablePipeline["Autonomous 5-Stage Deliverable Pipeline<br/>(Hypotheses ➔ Evidence ➔ Fact-Checking ➔ Whitepaper ➔ Slides)"]
+        Whitepaper["Executive Whitepaper (.DOCX Export)"]
+        SlideDeck["Interactive 16:9 Slide Deck (.PPTX Export)"]
+        Telemetry["Dynamic Model Telemetry & USD Spend Tracker"]
+        FollowUps["Dynamic Contextual Smart Follow-up Inquiries"]
         
-        Stage2 --> MemoAssembler
-        SingleModel --> MemoAssembler
-        FreeNeural --> MemoAssembler
+        Stage2 --> StructuredAnswer
+        SingleModel --> StructuredAnswer
+        FreeNeural --> StructuredAnswer
         
-        MemoAssembler --> Telemetry & FollowUps & ThreadStore & Discord
+        IntentRouter -->|Deliverable Intent| DeliverablePipeline
+        DeliverablePipeline --> Whitepaper & SlideDeck
+        StructuredAnswer --> Telemetry & FollowUps
     end
 
     subgraph Output["7. Multi-Device Adaptive Presentation Layer"]
@@ -91,7 +94,7 @@ flowchart TD
         MobilePWA["Standalone Homescreen PWA Architecture<br/>(iOS Dynamic Island / Notch & Android Safe Areas • 100dvh • 0% Overflow)"]
         ModernUI["OLED Obsidian Canvas + Glassmorphism 2.0<br/>(Floating Spotlight Dock Scrim + Bento Viewport)"]
         
-        MemoAssembler --> ModernUI
+        StructuredAnswer & Whitepaper & SlideDeck --> ModernUI
         ModernUI --> LargeMonitor & MobilePWA
     end
 ```
@@ -100,7 +103,9 @@ flowchart TD
 
 ## ✨ Key Features
 
-- ⚡ **Autonomous Deep Research & Multi-Format Compute Studio**: Multi-pillar hypothesis decomposition with dynamic 5-stage live agent stepper. Synthesizes comprehensive executive whitepapers and automatically compiles downloadable PowerPoint presentation decks (`.pptx`) and formatted Word documents (`.docx`).
+- 🎯 **4-Part Structured Answering Framework**: Direct, authoritative executive lead answers with bold core facts, topical subheadings with scannable bullet points led by bold concept labels (`<strong>Concept:</strong> Explanation`), cohesive narrative context syntheses, and dedicated Key Takeaway cards (`.cortex-takeaway-card`).
+- 📁 **Pure Research Topic Desks**: Left sidebar navigation is strictly dedicated to subject-matter domains (**Market & Web**, **Financial Markets**, **Academic & Research**, **Engineering & Code**, **Executive Memos**) with zero artificial mode clutter.
+- ⚡ **Smart Intent-Based Deliverable Suite**: Automatically launches the 5-stage autonomous execution stepper, Executive Whitepaper (`.docx`), and Interactive 16:9 Presentation Deck (`.pptx`) when user queries ask for presentations, slide decks, slides, or whitepapers—no manual mode toggling required.
 - 📊 **Interactive In-App Slide Viewer & 1-Click Deck Generator**: 16:9 widescreen presentation viewer with dark titanium theme, diamond glyph bullet hierarchy, takeaway callouts, slide counter, and 1-click native Microsoft PowerPoint export.
 - 🖥️ **Large Monitor & Ultrawide Alignment Engine**: Full layout alignment across 27-inch (`1240px`), 33"/34" ultrawide (`1420px`), and 4K displays with synchronized vertical bounding guidelines between header tickers, suggested prompts, memo answers, and search dock.
 - 📱 **Standalone Homescreen Bookmark & PWA Architecture**: Native web app experience with full `viewport-fit=cover`, dynamic iOS notch / Dynamic Island safe-area insets (`env(safe-area-inset-top)`), and bottom home swipe indicator / Android gesture nav clearance (`env(safe-area-inset-bottom)`).
