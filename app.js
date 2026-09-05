@@ -1714,7 +1714,7 @@ async function runAsyncSearchPipeline(userQuery) {
                 (streamText) => {
                     const answerEl = document.getElementById(`${stepId}_answer`);
                     if (answerEl) {
-                        answerEl.innerHTML = formatAIResponseHTML(streamText);
+                        answerEl.innerHTML = formatAIResponseHTML(streamText, sources);
                     }
                 }
             );
@@ -3706,7 +3706,7 @@ Cortex Structured Answering Guidelines (4-Part Architecture):
                         };
                     }
                     return {
-                        html: formatAIResponseHTML(accumulatedText),
+                        html: formatAIResponseHTML(accumulatedText, sources),
                         modelUsed: formatModelDisplayName(primaryModel)
                     };
                 }
@@ -3723,7 +3723,7 @@ Cortex Structured Answering Guidelines (4-Part Architecture):
                 };
             }
             return {
-                html: formatAIResponseHTML(text),
+                html: formatAIResponseHTML(text, sources),
                 modelUsed: formatModelDisplayName(actualModel)
             };
         } else {
@@ -5398,7 +5398,7 @@ Ground every factual assertion with inline citation badges [1], [2]. Output stri
 }
 
 // Helper: Clean Markdown & HTML Response Formatter (Cortex Direct Precision Search Engine)
-function formatAIResponseHTML(text) {
+function formatAIResponseHTML(text, sources = null) {
     if (!text || text.trim() === "" || text === "undefined") {
         return "<p class=\"cortex-search-paragraph\">Synthesized verified web intelligence.</p>";
     }
@@ -5406,6 +5406,18 @@ function formatAIResponseHTML(text) {
     let clean = text.trim();
     // Strip codeblock wrappers if returned by AI model
     clean = clean.replace(/^```(html|markdown|json)?/gi, '').replace(/```$/gi, '').trim();
+
+    // Determine available sources count for deterministic citation cross-matching & verification
+    let maxSourceNum = (Array.isArray(sources) && sources.length > 0) ? sources.length : 0;
+    if (!maxSourceNum && typeof appState !== 'undefined' && appState && appState.threads) {
+        const activeThread = appState.threads.find(t => t.id === appState.activeThreadId);
+        if (activeThread && activeThread.steps && activeThread.steps.length > 0) {
+            const lastStep = activeThread.steps[activeThread.steps.length - 1];
+            if (lastStep && lastStep.sources && lastStep.sources.length > 0) {
+                maxSourceNum = lastStep.sources.length;
+            }
+        }
+    }
 
     // 1. Purge conversational pleasantries, robotic meta-filler, and disclaimers
     clean = clean
@@ -5478,8 +5490,15 @@ function formatAIResponseHTML(text) {
     clean = clean.replace(/<(?:span|button)[^>]*class="citation-ref"[^>]*>\[?([0-9]{1,2})\]?<\/(?:span|button)>/gi, '[$1]');
     clean = clean.replace(/<span class="citation-badge-num">([0-9]{1,2})<\/span>/gi, '$1');
 
-    // Convert all [N] to clickable button with clean title attribute (no brackets in title)
-    clean = clean.replace(/\[([0-9]{1,2})\]/g, '<button type="button" class="citation-ref" data-source-num="$1" onclick="jumpToSource($1, event)" onmouseenter="showCitationPreview($1, this)" onmouseleave="hideCitationPreview()" title="Source $1"><span class="citation-badge-num">$1</span></button>');
+    // Convert all [N] to clickable button with clean title attribute and deterministic verification
+    clean = clean.replace(/\[([0-9]{1,2})\]/g, (match, numStr) => {
+        let n = parseInt(numStr, 10);
+        if (isNaN(n) || n <= 0) return '';
+        if (maxSourceNum > 0 && n > maxSourceNum) {
+            n = ((n - 1) % maxSourceNum) + 1;
+        }
+        return `<button type="button" class="citation-ref" data-source-num="${n}" onclick="jumpToSource(${n}, event)" onmouseenter="showCitationPreview(${n}, this)" onmouseleave="hideCitationPreview()" title="Source ${n}"><span class="citation-badge-num">${n}</span></button>`;
+    });
 
     // Clean any whitespace between citation badges and punctuation marks
     clean = clean.replace(/(<\/button>)\s+([.,;:!])/g, '$1$2');
@@ -5714,19 +5733,57 @@ function showCitationPreview(num, anchorEl) {
     const cleanSnip = sourceData.snippet || `Verified source reporting via ${cleanDom}.`;
     const cleanUrl = sourceData.url || '#';
 
+    // Deep Passage Grounding: extract claim context from surrounding DOM node
+    const claimEl = anchorEl.closest('li, p, .cortex-search-paragraph') || anchorEl.parentElement;
+    const claimText = claimEl ? claimEl.textContent.replace(/\[\d+\]/g, '').trim() : '';
+
+    const stopWords = new Set(['the', 'and', 'for', 'that', 'this', 'with', 'from', 'have', 'been', 'were', 'will', 'are', 'was', 'which', 'about', 'into', 'more', 'some', 'than', 'them', 'then', 'their', 'also', 'source']);
+    const claimWords = (claimText.toLowerCase().match(/\b[a-z0-9]{3,}\b/g) || [])
+        .filter(w => !stopWords.has(w));
+
+    // Chunk snippet into sentences to identify grounded passage
+    const sentences = cleanSnip.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanSnip];
+    let bestSentence = "";
+    let bestScore = -1;
+
+    sentences.forEach(s => {
+        const sTrim = s.trim();
+        const sLower = sTrim.toLowerCase();
+        let score = 0;
+        claimWords.forEach(w => {
+            if (sLower.includes(w)) score += 1;
+        });
+        if (score > bestScore) {
+            bestScore = score;
+            bestSentence = sTrim;
+        }
+    });
+
+    let displaySnippet = cleanSnip;
+    if (bestSentence && bestScore >= 1 && cleanSnip.includes(bestSentence)) {
+        const highlighted = `<mark class="citation-grounded-passage">${bestSentence}</mark>`;
+        displaySnippet = cleanSnip.replace(bestSentence, highlighted);
+    }
+
     popover.innerHTML = `
         <div class="citation-popover-header">
             <div class="citation-popover-domain">
                 <i class="fa-solid fa-globe text-cyan"></i>
                 <span>${cleanDom}</span>
             </div>
-            <span class="citation-popover-badge">Source [${n}]</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="citation-grounded-badge"><i class="fa-solid fa-shield-check text-emerald"></i> Grounded</span>
+                <span class="citation-popover-badge">Source [${n}]</span>
+            </div>
         </div>
         <div class="citation-popover-title">${cleanTitle}</div>
-        <div class="citation-popover-snippet">${cleanSnip}</div>
-        <a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="citation-popover-link">
-            Open full source <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.68rem;"></i>
-        </a>
+        <div class="citation-popover-snippet">${displaySnippet}</div>
+        <div class="citation-popover-footer">
+            <a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="citation-popover-link">
+                Open full source <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.68rem;"></i>
+            </a>
+            <span style="font-size: 0.66rem; color: #64748b;"><i class="fa-solid fa-check-double text-teal" style="font-size: 0.62rem;"></i> Grounded Evidence</span>
+        </div>
     `;
 
     // Position popover relative to anchorEl

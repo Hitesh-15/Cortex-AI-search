@@ -9,12 +9,13 @@ This document outlines the phased, versioned development roadmap for Cortex. Eac
 | Version | Focus Area | Key Capabilities |
 | :--- | :--- | :--- |
 | **v5.0** | **Autonomous Deep Research & Multi-Format Compute Studio** | Recursive multi-step exploration agent, live execution stepper, automated executive whitepaper generation, downloadable reports & presentation slide decks (`.pptx`, `.docx`, `.pdf`, markdown). |
-| **v5.1** | **Client-Side Code Sandbox & Active Compute Engine** | In-browser Python execution via Pyodide/WebAssembly, client-side dataset math, dynamic charts (Plotly/Chart.js), and live interactive UI artifact previews. |
-| **v5.2** | **Dual-Speaker Studio Audio Briefings & Conversational Voice Agent** | Two-host dialogue synthesis, interactive voice Q&A, hands-free Voice Activity Detection (VAD). |
-| **v5.3** | **Institutional SEC EDGAR & Financial Intelligence Terminal** | 10-K, 10-Q, 8-K live filing parser, financial statement waterfalls, earnings call transcript analysis. |
-| **v5.4** | **Zero-Cost Local AI & Private WebGPU/Ollama Gateway** | In-browser local model inference (WebLLM) and 1-click Ollama / LM Studio connector (`localhost:11434`). |
-| **v5.5** | **Infinite Spatial Research Canvas & Knowledge Graph** | 2D node-based canvas, visual relationship mapping, thread clustering, visual export. |
-| **v5.6** | **Connected Workspace Ecosystem & Direct Integrations** | Direct 1-click sync to Notion, Obsidian, Google Docs, Slack, and Discord webhooks. |
+| **v5.1** | **Agent Runtime & Neural Semantic Retrieval Engine** | Hybrid multi-index retrieval, neural semantic re-ranking (`cortexSemanticReRanker`), token-budgeted context scheduling (`buildTokenBudgetedSourceContext`), deterministic citation verification, and deep passage grounding popovers. |
+| **v5.2** | **Client-Side Code Sandbox & Active Compute Engine** | In-browser Python execution via Pyodide/WebAssembly, client-side dataset math, dynamic charts (Plotly/Chart.js), and live interactive UI artifact previews. |
+| **v5.3** | **Dual-Speaker Studio Audio Briefings & Conversational Voice Agent** | Two-host dialogue synthesis, interactive voice Q&A, hands-free Voice Activity Detection (VAD). |
+| **v5.4** | **Institutional SEC EDGAR & Financial Intelligence Terminal** | 10-K, 10-Q, 8-K live filing parser, financial statement waterfalls, earnings call transcript analysis. |
+| **v5.5** | **Zero-Cost Local AI & Private WebGPU/Ollama Gateway** | In-browser local model inference (WebLLM) and 1-click Ollama / LM Studio connector (`localhost:11434`). |
+| **v5.6** | **Infinite Spatial Research Canvas & Knowledge Graph** | 2D node-based canvas, visual relationship mapping, thread clustering, visual export. |
+| **v5.7** | **Connected Workspace Ecosystem & Direct Integrations** | Direct 1-click sync to Notion, Obsidian, Google Docs, Slack, and Discord webhooks. |
 
 ---
 
