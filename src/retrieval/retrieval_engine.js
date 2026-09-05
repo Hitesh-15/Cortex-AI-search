@@ -122,6 +122,53 @@ class CortexRetrievalEngine {
 
         return packedPassages.join('\n\n');
     }
+
+    /**
+     * Extract Core Entities and Targeted Keywords from User Query
+     * @param {string} query - Raw query
+     * @returns {Object} { primaryEntity, keywords, targetedQuery, namedEntities }
+     */
+    static extractSearchEntities(query) {
+        if (!query) return { primaryEntity: "", keywords: [], targetedQuery: "", namedEntities: [] };
+        const stopWords = new Set([
+            'what', 'is', 'the', 'of', 'in', 'and', 'for', 'to', 'how', 'does', 'why',
+            'who', 'are', 'a', 'an', 'on', 'with', 'at', 'by', 'from', 'about', 'as', 'into',
+            'has', 'more', 'than', 'before', 'after', 'that', 'this', 'tell', 'me', 'explain', 'show',
+            'search', 'find', 'provide', 'compare', 'difference', 'between'
+        ]);
+
+        const words = query.trim().split(/\s+/);
+        const keyTerms = words
+            .map(w => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ''))
+            .filter(w => w.length > 1 && !stopWords.has(w.toLowerCase()));
+
+        const namedEntities = [];
+        let currentGroup = [];
+        for (const w of words) {
+            const cleanW = w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+            if (cleanW && /^[A-Z]/.test(cleanW) && !stopWords.has(cleanW.toLowerCase())) {
+                currentGroup.push(cleanW);
+            } else {
+                if (currentGroup.length > 0) {
+                    namedEntities.push(currentGroup.join(' '));
+                    currentGroup = [];
+                }
+            }
+        }
+        if (currentGroup.length > 0) {
+            namedEntities.push(currentGroup.join(' '));
+        }
+
+        const primaryEntity = namedEntities[0] || keyTerms[0] || query.trim();
+        const targetedQuery = keyTerms.slice(0, 4).join(' ') || query.trim();
+
+        return {
+            primaryEntity,
+            keywords: keyTerms,
+            targetedQuery,
+            namedEntities
+        };
+    }
 }
 
 window.CortexRetrievalEngine = CortexRetrievalEngine;
