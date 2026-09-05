@@ -848,7 +848,7 @@ html, body {
 }
 
 /* ==========================================================================
-   SPOTLIGHT SEARCH COMMAND DOCK (Perplexity / Raycast Style)
+   SPOTLIGHT SEARCH COMMAND DOCK (Floating Command Bar)
    ========================================================================== */
 .bottom-search-wrapper {
     position: absolute;
