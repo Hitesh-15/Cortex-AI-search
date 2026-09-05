@@ -1,6 +1,6 @@
 /**
  * Cortex Autonomous Agent Harness & Runtime Loop
- * Inspired by OpenAI Codex session run loop, xAI Grok Build run_loop.rs, and Google ADK Runner.
+ * Built on modular agent runtime standards and event-driven harness architecture.
  * Orchestrates multi-step reasoning, tool dispatching, context compaction, and deterministic verification.
  */
 

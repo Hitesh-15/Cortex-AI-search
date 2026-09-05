@@ -1,6 +1,6 @@
 /**
  * Cortex Event Bus & Lifecycle Protocol
- * Inspired by production event-driven agent harnesses (OpenAI Codex App Server, Grok Build runtime).
+ * Event-driven agent harness protocol for non-blocking state and streaming telemetry.
  * Decouples agent execution, tool dispatching, and streaming telemetry from UI rendering.
  */
 
