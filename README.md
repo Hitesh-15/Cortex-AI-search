@@ -106,6 +106,7 @@ flowchart TD
 - 🎯 **4-Part Structured Answering Framework**: Direct, authoritative executive lead answers with bold core facts, topical subheadings with scannable bullet points led by bold concept labels (`<strong>Concept:</strong> Explanation`), cohesive narrative context syntheses, and dedicated Key Takeaway cards (`.cortex-takeaway-card`).
 - 📁 **Pure Research Topic Desks**: Left sidebar navigation is strictly dedicated to subject-matter domains (**Market & Web**, **Financial Markets**, **Academic & Research**, **Engineering & Code**, **Executive Memos**) with zero artificial mode clutter.
 - ⚡ **Smart Intent-Based Deliverable Suite**: Automatically launches the 5-stage autonomous execution stepper, Executive Whitepaper (`.docx`), and Interactive 16:9 Presentation Deck (`.pptx`) when user queries ask for presentations, slide decks, slides, or whitepapers—no manual mode toggling required.
+- 🧠 **Autonomous Reasoning Effort Allocation**: Removed the manual "Effort: Auto / Low / Medium / High" dropdown menu. The system autonomously resolves and scales reasoning depth, test-time compute tokens, and web crawl width dynamically on every query without user friction.
 - 📊 **Interactive In-App Slide Viewer & 1-Click Deck Generator**: 16:9 widescreen presentation viewer with dark titanium theme, diamond glyph bullet hierarchy, takeaway callouts, slide counter, and 1-click native Microsoft PowerPoint export.
 - 🖥️ **Large Monitor & Ultrawide Alignment Engine**: Full layout alignment across 27-inch (`1240px`), 33"/34" ultrawide (`1420px`), and 4K displays with synchronized vertical bounding guidelines between header tickers, suggested prompts, memo answers, and search dock.
 - 📱 **Standalone Homescreen Bookmark & PWA Architecture**: Native web app experience with full `viewport-fit=cover`, dynamic iOS notch / Dynamic Island safe-area insets (`env(safe-area-inset-top)`), and bottom home swipe indicator / Android gesture nav clearance (`env(safe-area-inset-bottom)`).
@@ -115,7 +116,7 @@ flowchart TD
 - 🎨 **2026 Modern Design & UI/UX Revamp**:
   - **OLED Void Backdrop (`#030712`)**: Atmospheric radial glow meshes and sleek dark mode aesthetics.
   - **Glassmorphism 2.0**: High-clarity frosted glass blurs (`backdrop-filter: blur(28px) saturate(190%)`), specular inner highlights, and translucent borders.
-  - **Floating Spotlight Command Dock**: Multi-line elastic search bar with embedded reasoning effort dials, quick model chips, file attachments, and comparison triggers.
+  - **Floating Spotlight Command Dock**: Multi-line elastic search bar with quick model chips, file attachments, and comparison triggers.
   - **Bento-Box Research Viewport**: Scannable briefing cards, interactive citation badges `[1]`, `[2]`, horizontal sources ribbon with real domain favicons, and unified telemetry.
 - ⚡ **Zero-Boilerplate Dynamic Factual Synthesis**: Automatically extracts and synthesizes authentic news quotes, statistics, and domain facts from live crawled web sources in free/offline mode.
 - 🌐 **Deep Web Crawler (20+ Sources per Query)**: Simultaneously crawls and cross-references DuckDuckGo, Wikipedia, HackerNews, Reuters, Bloomberg, ArXiv, MIT Technology Review, Nature, SEC EDGAR, GitHub, StackOverflow, and PubMed.
