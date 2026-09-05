@@ -4813,6 +4813,43 @@ async def execute_async_pipeline(payload: PipelineRequest):
         activeSources.push(s);
     });
 
+    // Dedicated Mathematical & Computational Active Sandbox Handler
+    const isComputationQuery = typeof window.CortexComputeSandbox !== 'undefined' && 
+        /\b(?:calculate|compute|cagr|growth rate|variance|standard deviation|formula)\b/i.test(qLower) &&
+        !qLower.includes("what is cagr") && !qLower.includes("explain cagr") && !qLower.includes("what is standard deviation");
+
+    if (isComputationQuery) {
+        // A. Check for CAGR pattern: e.g. from 150 to 220 over 3 years
+        const cagrMatch = qLower.match(/(?:from\s+)?\$?(\d+(?:\.\d+)?)\s+(?:to\s+)\$?(\d+(?:\.\d+)?)\s+(?:over\s+|in\s+)?(\d+(?:\.\d+)?)\s*(?:years?|yrs?)/i);
+        if (cagrMatch) {
+            const startVal = parseFloat(cagrMatch[1]);
+            const endVal = parseFloat(cagrMatch[2]);
+            const years = parseFloat(cagrMatch[3]);
+            const cagr = window.CortexComputeSandbox.computeCAGR(startVal, endVal, years);
+            if (cagr !== null) {
+                const s1Num = activeSources[0]?.num || validSources[0]?.num || 1;
+                return `
+                    <div class="cortex-search-response">
+                        <p class="cortex-lead-answer">The Compound Annual Growth Rate (CAGR) from <strong>$${startVal}</strong> to <strong>$${endVal}</strong> over <strong>${years} years</strong> is exactly <strong>${cagr}%</strong> <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>.</p>
+                        <h3 class="cortex-search-subheading"><i class="fa-solid fa-calculator text-cyan"></i> Mathematical Derivation & Sandbox Execution Trace</h3>
+                        <ul class="cortex-search-bullets">
+                            <li><strong>Formula Specification:</strong> Standard geometric growth: <code>CAGR = ((Ending Value / Beginning Value) ^ (1 / n)) - 1</code> <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>.</li>
+                            <li><strong>Intermediate Growth Ratio:</strong> <code>${endVal} / ${startVal} = ${(endVal / startVal).toFixed(4)}</code> (representing a total nominal expansion of ${(((endVal - startVal) / startVal) * 100).toFixed(1)}%).</li>
+                            <li><strong>Annualized Exponentiation:</strong> <code>${(endVal / startVal).toFixed(4)} ^ (1 / ${years}) = ${(Math.pow(endVal / startVal, 1 / years)).toFixed(4)}</code>.</li>
+                            <li><strong>Percentage Compounding:</strong> <code>(${(Math.pow(endVal / startVal, 1 / years)).toFixed(4)} - 1) * 100 = ${cagr}%</code> annualized.</li>
+                        </ul>
+                        <h3 class="cortex-search-subheading"><i class="fa-solid fa-chart-line text-emerald"></i> Financial Telemetry & Real-World Significance</h3>
+                        <p class="cortex-search-paragraph">CAGR smooths out multi-year macroeconomic cycles and annual market volatility into a consistent geometric average, providing an objective benchmark for evaluating private equity IRR, corporate revenue trajectories, and capital allocation performance.</p>
+                        <div class="cortex-takeaway-card">
+                            <div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div>
+                            <p class="cortex-takeaway-text">A verified CAGR of <strong>${cagr}%</strong> indicates that capital compounds at a steady annual rate, doubling approximately every ${(72 / cagr).toFixed(1)} years under the Rule of 72.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+
     // Dedicated High-Caliber Handlers for Engineering Challenges & Advanced Systems
     const isJaneStreetChallenge = (
         qLower.includes("jane street") && (

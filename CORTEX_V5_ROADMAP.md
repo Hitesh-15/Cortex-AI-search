@@ -1,4 +1,4 @@
-# Cortex v5.0 Master Roadmap & Versioned Release Plan
+# Cortex Master Roadmap & Versioned Architectural Plan
 
 This document outlines the phased, versioned development roadmap for Cortex. Each version is self-contained, with independent Git tags and commits to guarantee clear rollback points, modular testing, and progressive enhancement.
 
@@ -10,12 +10,12 @@ This document outlines the phased, versioned development roadmap for Cortex. Eac
 | :--- | :--- | :--- |
 | **v5.0** | **Autonomous Deep Research & Multi-Format Compute Studio** | Recursive multi-step exploration agent, live execution stepper, automated executive whitepaper generation, downloadable reports & presentation slide decks (`.pptx`, `.docx`, `.pdf`, markdown). |
 | **v5.1** | **Agent Runtime & Neural Semantic Retrieval Engine** | Hybrid multi-index retrieval, neural semantic re-ranking (`cortexSemanticReRanker`), token-budgeted context scheduling (`buildTokenBudgetedSourceContext`), deterministic citation verification, and deep passage grounding popovers. |
-| **v5.2** | **Client-Side Code Sandbox & Active Compute Engine** | In-browser Python execution via Pyodide/WebAssembly, client-side dataset math, dynamic charts (Plotly/Chart.js), and live interactive UI artifact previews. |
-| **v5.3** | **Dual-Speaker Studio Audio Briefings & Conversational Voice Agent** | Two-host dialogue synthesis, interactive voice Q&A, hands-free Voice Activity Detection (VAD). |
-| **v5.4** | **Institutional SEC EDGAR & Financial Intelligence Terminal** | 10-K, 10-Q, 8-K live filing parser, financial statement waterfalls, earnings call transcript analysis. |
-| **v5.5** | **Zero-Cost Local AI & Private WebGPU/Ollama Gateway** | In-browser local model inference (WebLLM) and 1-click Ollama / LM Studio connector (`localhost:11434`). |
-| **v5.6** | **Infinite Spatial Research Canvas & Knowledge Graph** | 2D node-based canvas, visual relationship mapping, thread clustering, visual export. |
-| **v5.7** | **Connected Workspace Ecosystem & Direct Integrations** | Direct 1-click sync to Notion, Obsidian, Google Docs, Slack, and Discord webhooks. |
+| **v6.0** | **Modular Agent Architecture & Active Compute Sandbox** | Clean decoupled architecture (`src/`), `CortexEventBus`, declarative `CortexToolRegistry`, in-browser client-side active compute engine (`CortexComputeSandbox`), and boundary guardrails. |
+| **v6.1** | **Dual-Speaker Studio Audio Briefings & Conversational Voice Agent** | Two-host dialogue synthesis, interactive voice Q&A, hands-free Voice Activity Detection (VAD). |
+| **v6.2** | **Institutional SEC EDGAR & Financial Intelligence Terminal** | 10-K, 10-Q, 8-K live filing parser, financial statement waterfalls, earnings call transcript analysis. |
+| **v6.3** | **Zero-Cost Local AI & Private WebGPU/Ollama Gateway** | In-browser local model inference (WebLLM) and 1-click Ollama / LM Studio connector (`localhost:11434`). |
+| **v6.4** | **Infinite Spatial Research Canvas & Knowledge Graph** | 2D node-based canvas, visual relationship mapping, thread clustering, visual export. |
+| **v6.5** | **Connected Workspace Ecosystem & Direct Integrations** | Direct 1-click sync to Notion, Obsidian, Google Docs, Slack, and Discord webhooks. |
 
 ---
 

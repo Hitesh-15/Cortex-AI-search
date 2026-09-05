@@ -2,6 +2,80 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v6.0.0] — 2026-09-05
+### **Modular Agent Architecture, In-Browser Compute Sandbox & Declarative Tool Protocol**
+
+```mermaid
+graph TD
+    subgraph ClientLayer ["🖥️ 1. Client Experience & Domain Desks"]
+        OmniSearch["Spotlight Omni-Search (#searchInput)"]
+        TopicDesks["5 Domain Desks (Market • Finance • Academic • Code • Executive)"]
+        MacroTickers["24/7 Financial Macro Tickers & Real-Time Clock Anchor"]
+    end
+
+    subgraph AgentRuntimeHarness ["⚙️ 2. Modular Agent Runtime & Event Loop"]
+        EventBus["CortexEventBus (Lifecycle Telemetry & Decoupled State)"]
+        ToolRegistry["CortexToolRegistry (Declarative Tool Protocol)"]
+        AgentHarness["CortexAgentHarness (Unrolled Observe ➔ Plan ➔ Act ➔ Reflect Loop)"]
+    end
+
+    subgraph ActiveComputeSandbox ["🧰 3. In-Browser Compute Sandbox"]
+        MathEngine["Deterministic Math & Arithmetic Evaluator"]
+        StatsEngine["Statistical Metrics (Mean, Median, StdDev, Variance)"]
+        FinancialFormulas["Financial CAGR, Correlation & Ratio Engines"]
+    end
+
+    subgraph NeuralRetrievalPipeline ["⚡ 4. Neural Retrieval & Semantic Re-Ranking"]
+        MultiIndexRetriever["Multi-Index Candidate Retrieval Engine"]
+        SemanticReRanker["Semantic Intent Proximity & Domain Authority Scorer"]
+        ContextPacker["Token-Budgeted Context Scheduler (2048 Token Ceiling)"]
+    end
+
+    subgraph GuardrailsVerification ["🛡️ 5. Guardrails & Deterministic Verification"]
+        RefusalFilter["Refusal & Deficient Output Guardrail"]
+        CitationAuditor["Deterministic Citation Cross-Matching & Realignment"]
+        PassageHighlighter["Deep Passage Evidence Grounding & Offset Tracer"]
+    end
+
+    subgraph Deliverables ["📦 6. Autonomous Deliverable Suite"]
+        GroundedAnswer["4-Part Grounded Answer (Lead ➔ Bullets ➔ Context ➔ Takeaway)"]
+        StudioArtifacts["Executive Whitepaper (.DOCX) & 16:9 Presentation Deck (.PPTX)"]
+    end
+
+    ClientLayer --> AgentRuntimeHarness
+    AgentRuntimeHarness --> ToolRegistry
+    ToolRegistry --> ActiveComputeSandbox & NeuralRetrievalPipeline
+    NeuralRetrievalPipeline --> AgentRuntimeHarness
+    ActiveComputeSandbox --> AgentRuntimeHarness
+    AgentRuntimeHarness --> GuardrailsVerification
+    GuardrailsVerification --> Deliverables
+```
+
+#### 🎯 Architectural Highlights & Functional Upgrades
+- **Modular Directory Architecture (`src/`)**:
+  - Successfully partitioned the engine into dedicated, decoupled modules:
+    1. `src/core/event_bus.js`: Non-blocking, event-driven lifecycle telemetry (`CortexEventBus`).
+    2. `src/core/tools.js`: Formal declarative tool registry (`CortexToolRegistry`) adhering to standard tool calling schemas.
+    3. `src/sandbox/compute_sandbox.js`: In-browser client-side active compute engine (`CortexComputeSandbox`) for arithmetic, statistics, and financial modeling.
+    4. `src/verification/guardrails.js`: Boundary guardrails (`CortexGuardrails`) providing refusal suppression, citation auditing, and deep passage evidence extraction.
+    5. `src/retrieval/retrieval_engine.js`: Multi-index candidate retrieval, intent proximity re-ranking, and token-budget context scheduling.
+    6. `src/core/agent_harness.js`: The unrolled autonomous agent loop (`CortexAgentHarness`).
+- **Zero Build-Step Simplicity**:
+  - Implemented with pure browser-native JavaScript standards. Zero npm build steps, zero node_modules, and instant static hosting compatibility on GitHub Pages (`cortex.ambulkar.com`).
+- **In-Browser Active Compute Sandbox**:
+  - Empowers Cortex with a deterministic "Agent Computer" calculation layer.
+  - Automatically evaluates quantitative queries (e.g. CAGR calculations, variance, standard deviation, financial ratios) with mathematical precision, preventing arithmetic hallucinations.
+- **Declarative Tool Calling Protocol**:
+  - Standardized tool schemas with input validation, execution timeouts, error isolation, and telemetry event logging.
+- **Production Guardrails & Boundary Verification**:
+  - Intercepts canned AI refusal disclaimers and seamlessly defaults to the deterministic local factual intelligence engine.
+  - Mathematically audits every inline citation badge `[N]`, folding hallucinated numbers into existing sources so no broken links ever escape to the DOM.
+  - Highlights exact grounded evidence passages in hover popovers with an emerald verification badge.
+- **100% Brand-Neutral Independence**:
+  - Zero proprietary trademarks, brand identifiers, or third-party personas in code, styling, or documentation.
+
+---
+
 ## 🌟 [v5.1.0] — 2026-09-05
 ### **Agent Runtime Architecture, Neural Semantic Re-Ranking & Deep Passage Grounding Verification**
 
