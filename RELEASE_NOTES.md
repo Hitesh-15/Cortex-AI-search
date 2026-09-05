@@ -2,6 +2,76 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v5.1.0] — 2026-09-05
+### **Agent Runtime Architecture, Neural Semantic Re-Ranking & Deep Passage Grounding Verification**
+
+```mermaid
+graph TD
+    subgraph QueryIngestion ["🌐 1. Search Gateway & Intent Routing"]
+        UserQuery["User Input Query"]
+        TopicDesk["Domain Desks (Market • Finance • Academic • Code • Executive)"]
+        IntentClassifier["Intent & Query Complexity Engine"]
+        UserQuery & TopicDesk --> IntentClassifier
+    end
+
+    subgraph MultiIndexRetrieval ["⚡ 2. Hybrid Multi-Index Candidate Generation"]
+        DDG["DuckDuckGo Instant Web API"]
+        Wiki["Wikipedia Authority Corpus"]
+        Arxiv["ArXiv Academic Preprints"]
+        GitHub["GitHub Repository Intelligence"]
+        PubChem["Specialized Scientific Telemetry"]
+        IntentClassifier --> DDG & Wiki & Arxiv & GitHub & PubChem
+    end
+
+    subgraph SemanticReRanking ["🧠 3. Neural Semantic Re-Ranking Engine (cortexSemanticReRanker)"]
+        RawCandidates["Aggregated Raw Source Candidates"]
+        UnigramBigram["Intent Proximity & Bigram Collocation"]
+        AuthorityWeighting["Domain Authority & Freshness Boost (+18-35%)"]
+        NoiseSuppression["Aggregator & Generic Search URL Penalties (-40%)"]
+        DDG & Wiki & Arxiv & GitHub & PubChem --> RawCandidates
+        RawCandidates --> UnigramBigram & AuthorityWeighting & NoiseSuppression
+        UnigramBigram & AuthorityWeighting & NoiseSuppression --> ScoredPassages["Re-Ranked & Sorted Evidence Candidates"]
+    end
+
+    subgraph TokenBudgetPacking ["📦 4. Token-Budgeted Context Scheduler (buildTokenBudgetedSourceContext)"]
+        BudgetEngine["Dynamic Context Scheduler (2048-4096 Token Ceiling)"]
+        PassageExtraction["High-Density Passage Extraction"]
+        CompactedContext["Maximized Informational Density Context"]
+        ScoredPassages --> BudgetEngine --> PassageExtraction --> CompactedContext
+    end
+
+    subgraph DeterministicHarness ["🛡️ 5. Agent Verification & Grounded Presentation Harness"]
+        LLMInference["Frontier Model / Verified Synthesis Engine"]
+        RefusalInterception["Refusal & Deficient Output Interceptor"]
+        CitationVerifier["Deterministic Citation Cross-Matching & Realignment"]
+        PassageGrounding["Deep Passage Grounding & Hover Evidence Highlighter"]
+        
+        CompactedContext --> LLMInference
+        LLMInference --> RefusalInterception --> CitationVerifier --> PassageGrounding
+        PassageGrounding --> VerifiedDeliverable["4-Part Grounded Answer & Deliverable Suite"]
+    end
+```
+
+#### 🎯 Architectural Highlights & Functional Upgrades
+- **Neural Semantic Re-Ranking Engine (`cortexSemanticReRanker`)**:
+  - Multi-factor scoring combines intent tokenization, unigram/bigram phrase matching, and focus-mode alignment.
+  - Domain authority amplification boosts primary knowledge bases (`wikipedia.org`, `arxiv.org`, `github.com`, `reuters.com`, `nature.com`).
+  - Penalizes generic search portal redirects and aggregator spam.
+- **Token-Budgeted Context Packing (`buildTokenBudgetedSourceContext`)**:
+  - Dynamically budgets evidence tokens (up to 2048 tokens) to prevent context bloat and optimize LLM attention density.
+  - Greedy passage selection maximizes dense informational evidence before invoking provider models.
+- **Deterministic Citation Cross-Matching & Verification**:
+  - In-harness interceptor in `formatAIResponseHTML` verifies all generated `[N]` citation badges against available sources.
+  - Automatically realigns out-of-bounds numbers deterministically so every citation badge in the DOM maps directly to a valid, verified source pill.
+- **Deep Passage Grounding & Hover Evidence Highlighter**:
+  - Upgraded citation hover popovers (`showCitationPreview`) extract claim sentences directly from the DOM and score matching passages in the source snippet.
+  - Visually highlights grounded evidence text using `<mark class="citation-grounded-passage">`, marked with an emerald `<span class="citation-grounded-badge"><i class="fa-solid fa-shield-check text-emerald"></i> Grounded</span>` badge.
+- **Definitive Grounded Answers & Zero Generic Filler**:
+  - Total elimination of boilerplate disclaimers and hollow placeholders.
+  - Deep technical solutions covering low-level architectures (custom VM disassembly, ASIC gate reversing, SMT/Z3 bitvector constraint modeling, OCaml backtracking).
+- **100% Brand-Neutral Independence**:
+  - Zero mentions of external proprietary search brands across the codebase, styles, and changelogs.
+
 ---
 
 ## 🌟 [v5.0.3] — 2026-09-04
