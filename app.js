@@ -1781,7 +1781,10 @@ async function runAsyncSearchPipeline(userQuery) {
             }
         }
 
-        document.getElementById(`${stepId}_answer`).innerHTML = synthesisResult.answerHTML + discordCardHTML + costBannerHTML;
+        const ansContainer = document.getElementById(`${stepId}_answer`);
+        if (ansContainer) {
+            ansContainer.innerHTML = synthesisResult.answerHTML + discordCardHTML + costBannerHTML;
+        }
 
         // Update Session Total Spend
         appState.totalSessionSpend += validCost;
@@ -1791,7 +1794,9 @@ async function runAsyncSearchPipeline(userQuery) {
         // Related Follow-up Questions (Dynamically Contextualized from Answer, Sources & Thread History)
         const previousSteps = thread.steps || [];
         const relatedQuestions = generateRelatedQuestions(actualQuery, appState.activeFocusMode, synthesisResult.answerHTML, sources, previousSteps);
-        renderRelatedQuestions(stepElement, relatedQuestions);
+        if (stepElement && stepElement.isConnected) {
+            renderRelatedQuestions(stepElement, relatedQuestions);
+        }
 
         thread.steps.push({
             query: userQuery,
@@ -5317,6 +5322,41 @@ function formatAIResponseHTML(text) {
     return clean;
 }
 
+// Sleek In-App Toast Notification Controller
+function showToast(message, type = "info") {
+    let container = document.getElementById("cortexToastContainer");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "cortexToastContainer";
+        container.style.cssText = "position: fixed; bottom: 24px; right: 24px; z-index: 999999; display: flex; flex-direction: column; gap: 8px; pointer-events: none;";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `cortex-toast cortex-toast-${type}`;
+    const bg = type === "success" ? "rgba(16, 185, 129, 0.94)" : (type === "warning" ? "rgba(245, 158, 11, 0.94)" : "rgba(15, 23, 42, 0.94)");
+    const border = type === "success" ? "#10b981" : (type === "warning" ? "#f59e0b" : "rgba(56, 189, 248, 0.4)");
+    const icon = type === "success" ? "fa-circle-check text-emerald" : (type === "warning" ? "fa-triangle-exclamation text-amber" : "fa-circle-info text-cyan");
+
+    toast.style.cssText = `background: ${bg}; border: 1px solid ${border}; color: #f8fafc; padding: 10px 16px; border-radius: 8px; font-size: 0.84rem; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); backdrop-filter: blur(8px); transform: translateY(12px); opacity: 0; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto;`;
+    toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.style.transform = "translateY(0)";
+        toast.style.opacity = "1";
+    });
+
+    setTimeout(() => {
+        toast.style.transform = "translateY(12px)";
+        toast.style.opacity = "0";
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+    }, 3200);
+}
+window.showToast = showToast;
+
 // Interactive Citation Jump, Source Highlight & Link Opener
 function jumpToSource(num, event) {
     if (event) {
@@ -5906,7 +5946,7 @@ function renderViewport() {
                             <span class="sources-label"><i class="fa-solid fa-link text-cyan"></i> Sources (${step.sources.length})</span>
                             <div class="source-chips-row">
                                 ${step.sources.slice(0, 4).map(s => `
-                                    <a href="${s.url}" target="_blank" rel="noopener" class="source-chip" title="${s.title}">
+                                    <a href="${s.url}" target="_blank" rel="noopener" class="source-chip" data-source-num="${s.num}" title="${s.title}">
                                         <span class="source-chip-num">${s.num}</span>
                                         <span>${s.domain}</span>
                                     </a>
