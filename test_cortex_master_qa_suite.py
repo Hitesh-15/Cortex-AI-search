@@ -112,24 +112,22 @@ def run_master_qa_suite():
         driver.execute_script("toggleComparisonMode(false);")
         time.sleep(0.3)
 
-        # 1.3 Compute Studio Toggle & Sidebar Desk
-        print("  -> Testing Compute Studio Toggle & Desk...")
-        studio_btn = driver.find_element(By.ID, "btnStudioToggle")
-        driver.execute_script("arguments[0].click();", studio_btn)
-        time.sleep(0.3)
-        assert "active" in studio_btn.get_attribute("class"), "Studio toggle button not active!"
-        assert "Compute" in search_input.get_attribute("placeholder"), "Placeholder not updated to studio mode!"
-        print("  [PASS] Compute Studio toggle activated with dynamic placeholder.")
+        # 1.3 Pure Research Topic Desks Verification
+        print("  -> Verifying Pure Research Topic Desks in Sidebar...")
+        topics = ["web", "finance", "academic", "code", "writing"]
+        for topic_mode in topics:
+            desk_el = driver.find_element(By.CSS_SELECTOR, f".focus-nav-item[data-mode='{topic_mode}']")
+            assert desk_el.is_displayed(), f"Topic desk {topic_mode} not displayed!"
+            driver.execute_script("arguments[0].click();", desk_el)
+            time.sleep(0.2)
+        
+        # Verify no confusing compute engine in the topic sidebar
+        studio_desks = driver.find_elements(By.ID, "deskStudio")
+        assert len(studio_desks) == 0, "Confusing deskStudio should not exist in topic sidebar!"
+        print("  [PASS] All 5 research topic desks verified without artificial compute clutter.")
 
-        studio_desk = driver.find_element(By.ID, "deskStudio")
-        driver.execute_script("arguments[0].click();", studio_desk)
-        time.sleep(0.5)
-        cards = driver.find_elements(By.CSS_SELECTOR, ".suggested-card")
-        assert len(cards) >= 6, f"Expected 6 suggested cards for studio desk, found {len(cards)}"
-        print(f"  [PASS] Compute & Studio desk loaded {len(cards)} verified cards.")
-
-        # 1.4 Deep Research Pipeline & Stepper Execution
-        print("  -> Executing Autonomous Deep Research & Compute Query...")
+        # 1.4 Deep Research & Deliverable Execution via Smart Query Intent
+        print("  -> Executing Autonomous Deliverable Query via Intent...")
         deep_query = "Compute an executive whitepaper and 5-slide presentation deck on Autonomous AI Agent Architectures in Enterprise"
         driver.execute_script(f"executeSearch('{deep_query}');")
 

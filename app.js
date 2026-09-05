@@ -737,20 +737,15 @@ function setFocusMode(mode) {
             academic: "Search arXiv, PubMed, IEEE & Academic Papers...",
             code: "Search GitHub repos, documentation, StackOverflow & code...",
             finance: "Search SEC filings, market data, earnings & finance...",
-            writing: "Draft, summarize, brainstorm or write creatively...",
-            studio: "Compute research report, document, or presentation deck... (e.g. 'Generate 5-slide deck on AI agent frameworks')"
+            writing: "Draft, summarize, brainstorm or write creatively..."
         };
         searchInput.placeholder = placeholders[mode] || "Ask Ambulkar Cortex anything...";
     }
 
-    if (mode === "studio") {
-        appState.isStudioMode = true;
-    } else {
-        appState.isStudioMode = false;
-    }
+    appState.isStudioMode = false;
     const studioBtn = document.getElementById("btnStudioToggle");
     if (studioBtn) {
-        studioBtn.classList.toggle("active", appState.isStudioMode);
+        studioBtn.classList.remove("active");
     }
 
     // Render immediately from cache and auto-fetch fresh live breakthroughs for this category
@@ -1488,21 +1483,27 @@ async function runAsyncSearchPipeline(userQuery) {
 
     const resolvedEffort = effortClassification.resolvedEffort;
 
-    // Detect Autonomous Deep Research & Compute Studio Mode (Strictly isolated to Studio Desk or explicit presentation deck commands)
+    // Smart Intent Detection: Automatically trigger Deliverable Suite (Whitepaper & Presentation Slide Deck)
+    // when the user's query asks for a presentation, deck, slides, whitepaper, or document deliverables.
     const qLower = actualQuery.toLowerCase();
-    const hasStudioIntent = isDeepResearchMode ||
-        (appState.activeFocusMode === "studio") ||
+    const hasDeliverableIntent = isDeepResearchMode ||
+        qLower.includes("presentation deck") ||
+        qLower.includes("slide deck") ||
+        qLower.includes("presentation") ||
+        qLower.includes("slides on") ||
+        qLower.includes("slides about") ||
+        qLower.includes("5-slide") ||
+        qLower.includes("whitepaper") ||
+        qLower.includes("executive report and deck") ||
         qLower.startsWith("compute ") ||
         qLower.startsWith("generate presentation") ||
         qLower.startsWith("generate slide deck") ||
         qLower.startsWith("generate deck") ||
-        qLower.startsWith("generate 5-slide") ||
-        qLower.includes("5-slide presentation") ||
-        qLower.includes("5-slide deck") ||
         qLower.startsWith("generate executive whitepaper") ||
-        qLower.startsWith("generate pptx");
+        qLower.startsWith("generate pptx") ||
+        qLower.includes(".pptx");
 
-    if (hasStudioIntent) {
+    if (hasDeliverableIntent) {
         return executeDeepResearchPipeline(actualQuery, stepId, stepElement, targetModelOverride, resolvedEffort, effortClassification, thread);
     }
 
