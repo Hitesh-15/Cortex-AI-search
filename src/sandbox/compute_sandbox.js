@@ -1,6 +1,6 @@
 /**
  * Cortex In-Browser Compute Sandbox
- * Inspired by modern sandboxed agent environments (Codex sandboxing, Grok Workspace).
+ * Deterministic sandboxed agent calculation environment.
  * Empowers the agent with a deterministic client-side calculation engine for math,
  * financial formulas, statistics, and tabular data transformations.
  */

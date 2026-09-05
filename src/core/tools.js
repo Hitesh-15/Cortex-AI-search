@@ -1,6 +1,6 @@
 /**
  * Cortex Declarative Tool Registry & Execution Protocol
- * Inspired by Google ADK (Agent Development Kit), OpenAI Agents SDK, and Grok Build tools crate.
+ * Standard declarative tool definition and execution protocol for autonomous agents.
  * Decouples tool execution, validation, and schemas from model inference.
  */
 

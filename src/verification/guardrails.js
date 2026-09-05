@@ -1,6 +1,6 @@
 /**
  * Cortex Verification Guardrails & Grounding Engine
- * Inspired by OpenAI Agents SDK guardrails and Claude Code verification layers.
+ * Multi-layer deterministic boundary protections and active verification harness.
  * Provides deterministic boundary protections: refusal interception, citation cross-matching,
  * deep passage grounding, and numeric consistency auditing.
  */

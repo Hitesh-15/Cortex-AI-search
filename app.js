@@ -708,12 +708,25 @@ function setupNavigationListeners() {
         });
     });
 
-    // Keyboard Shortcuts (Cmd/Ctrl + K)
+    // Keyboard Shortcuts (Cmd/Ctrl + K or / to trigger spotlight search)
     document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
             e.preventDefault();
             const searchInput = document.getElementById("searchInput");
-            if (searchInput) searchInput.focus();
+            if (searchInput) {
+                searchInput.focus();
+                searchInput.select();
+            }
+        } else if (e.key === "/" && document.activeElement !== document.getElementById("searchInput") && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
+            e.preventDefault();
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) {
+                searchInput.focus();
+                searchInput.value = "/";
+                if (typeof handleSlashCommandQuery === "function") {
+                    handleSlashCommandQuery();
+                }
+            }
         }
     });
 }

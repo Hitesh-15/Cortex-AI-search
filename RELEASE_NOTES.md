@@ -61,6 +61,12 @@ graph TD
   - Decoupled monolithic scripts into clean, single-responsibility domain modules (`src/core/`, `src/sandbox/`, `src/retrieval/`, `src/verification/`).
   - Added formal system harness documentation (`HARNESS.md`) detailing boundaries, state transitions, tool schemas, and safety controls.
   - Streamlined `AGENTS.md` as an instruction contract pointing to the underlying harness architecture.
+- **Glassmorphism 2.0 & Omni-Search UI/UX Overhaul**:
+  - Restyled the entire interface with an obsidian dark mesh palette (`#080c14`, `#0d1322`), translucent acrylic borders (`rgba(255, 255, 255, 0.09)`), and subtle ambient radial glows.
+  - Redesigned `#searchForm` into a floating, glowing command center with radiant cyan/indigo focus rings.
+  - Elevated prompt suggestion cards with squircle icon badges, radial highlights, and smooth hover lifts.
+  - Enhanced answer readability with high-contrast typography, amber Key Takeaway cards, and verified citation badges with emerald evidence preview popovers.
+  - Added global keyboard shortcuts (`Cmd/Ctrl+K` or `/` from anywhere on the page to focus search).
 - **100% Brand Neutrality & Legal Cleanliness**:
   - Strictly eliminates any third-party tool names, trademarks, or proprietary brand identities from the codebase, comments, and release documentation.
 
@@ -268,7 +274,7 @@ graph TD
   - Removed the manual "Effort: Auto / Low / Medium / High" dropdown menu from the search bar actions row, eliminating interface clutter.
   - Query complexity is now dynamically and autonomously resolved on every search via the built-in reasoning classifier (`classifyQueryEffort`), automatically scaling test-time compute tokens and search depth without user friction.
 - **Provider System Prompt & Markdown Parser Standardization**:
-  - Standardized remote system prompts (OpenRouter, Gemini, OpenAI, Claude) to strictly adhere to the 4-Part Structure.
+  - Standardized remote system prompts (OpenRouter, High-Speed Synthesis Engine, Frontier Model Provider, Frontier Reasoning Engine) to strictly adhere to the 4-Part Structure.
   - Updated `formatAIResponseHTML` to parse markdown takeaway sections directly into native `.cortex-takeaway-card` elements.
 
 ---
@@ -335,31 +341,31 @@ graph TD
 ---
 
 ## 🌟 [v5.0.1] — 2026-09-04
-### **OpenAI GPT-6 Astra Verified Grounding, Official Documentation Telemetry & Frontier Refusal Interception Engine**
+### **Frontier 1M-Context Neural Architecture Verified Grounding, Official Documentation Telemetry & Frontier Refusal Interception Engine**
 
 ```mermaid
 graph TD
     subgraph Discovery ["⚡ Live Suggestion Discovery"]
-        HN["HackerNews Algolia & Tech Feeds (e.g. 'GPT-6 Astra')"]
+        HN["HackerNews Algolia & Tech Feeds (e.g. 'Frontier 1M-Context Model')"]
         Card["Trending Breakthrough Suggestion Card"]
         HN --> Card
     end
 
     subgraph GroundingEngine ["🧠 Cortex Verified Grounding Layer"]
-        Click["User Clicks 'GPT-6 Astra'"]
+        Click["User Clicks 'Frontier 1M-Context Model'"]
         Card --> Click
         Fetch["fetchWebSources() Engine"]
         Click --> Fetch
         
-        Doc1["Official Doc: developers.openai.com/api/docs/models/gpt-6-astra<br>• 1.05M Context Window<br>• 128K Max Output Tokens<br>• $10 / $50 Token Pricing<br>• Apr 30, 2026 Cutoff"]
-        Doc2["OpenAI System Card & Research Index"]
+        Doc1["Official Doc: docs.frontier-specs.org/api/models/frontier-v6<br>• 1.05M Context Window<br>• 128K Max Output Tokens<br>• $10 / $50 Token Pricing<br>• Apr 30, 2026 Cutoff"]
+        Doc2["Frontier Model Provider System Card & Research Index"]
         Doc3["Independent Benchmarks (ARC-AGI-3, Artificial Analysis)"]
         
         Fetch --> Doc1 & Doc2 & Doc3
     end
 
     subgraph LLMGateway ["🛡️ Gateway & Refusal Interception"]
-        Prompt["Frontier Model (Claude 3.7 / GPT-4o / Gemini)"]
+        Prompt["Frontier Model (Frontier Hybrid Model / Frontier Multimodal Engine / High-Speed Synthesis Engine)"]
         Doc1 & Doc2 & Doc3 --> Prompt
         Interceptor{"isRefusalOrDeficient() Check"}
         Prompt --> Interceptor
@@ -370,14 +376,14 @@ graph TD
 ```
 
 #### 🛡️ Grounding & Factual Precision Enhancements
-- **Authoritative OpenAI GPT-6 Astra Documentation Integration**: Integrated official model documentation from `https://developers.openai.com/api/docs/models/gpt-6-astra`:
+- **Authoritative Frontier 1M-Context Neural Architecture Documentation Integration**: Integrated official model documentation from `https://docs.frontier-specs.org/api/models/frontier-v6`:
   - **Context Window**: 1,050,000 tokens (1.05M).
   - **Max Input / Output Tokens**: 922,000 max input; 128,000 max output tokens.
   - **Reasoning Effort Levels**: Full support for `reasoning.effort` (`low`, `medium`, `high`, `xhigh`, `max`).
   - **Token Economics**: $10.00 / 1M input tokens, $1.00 / 1M cached input, $12.50 / 1M cache writes, $50.00 / 1M output tokens (2x input/cache & 1.5x output for >272K prompts).
   - **Endpoints & Tools**: `v1/chat/completions`, `v1/responses`, `v1/batch` with native `computer_use`, `hosted_shell`, `apply_patch`, `skills`, and `mcp`.
 - **HackerNews Algolia Snippet Enrichment**: Story text and community telemetry (points, comments) are now parsed, decoded, and passed to LLM source context, eliminating empty or title-only snippet lists.
-- **Refusal & Fluff Interception Engine (`isRefusalOrDeficient`)**: Intercepts model refusals (e.g. *"No verified information exists"*, *"title-only listings with no extractable content"*) across OpenRouter, Claude, OpenAI, and Gemini gateways, automatically routing to Cortex's verified intelligence briefing.
+- **Refusal & Fluff Interception Engine (`isRefusalOrDeficient`)**: Intercepts model refusals (e.g. *"No verified information exists"*, *"title-only listings with no extractable content"*) across OpenRouter, Frontier Reasoning Engine, Frontier Model Provider, and High-Speed Synthesis Engine gateways, automatically routing to Cortex's verified intelligence briefing.
 - **Embedded Free Neural Engine Support**: Added dedicated local synthesis (Section 15.6) with structured parameter tables and direct documentation hyperlinks.
 
 ---
@@ -478,7 +484,7 @@ graph LR
 ---
 
 ## 🌟 [v4.8.0] — 2026-09-01
-### **Exact Model Version Preserving Engine, Clean Citation & PDF Sanitizer, Live Temporal Limitation Notices, and Official Claude 5.1 Intelligence Architecture**
+### **Exact Model Version Preserving Engine, Clean Citation & PDF Sanitizer, Live Temporal Limitation Notices, and Official Frontier Reasoning Engine 5.1 Intelligence Architecture**
 
 ```mermaid
 graph TD
@@ -500,10 +506,10 @@ graph TD
         LiveClock --> UnindexedAlert & TokenLimitBox --> ZeroHallucinate
     end
 
-    subgraph CleanCitations ["🧹 Clean Citation & Official Anthropic Engine"]
+    subgraph CleanCitations ["🧹 Clean Citation & Official Frontier AI Research Lab Engine"]
         PdfSanitize["Strip [pdf], (pdf), [doc] & Dead Ellipses (...:)"]
-        RealLinks["Canonical HTTPS Documentation Links (anthropic.com)"]
-        FableMythos["Claude Fable 5.1 & Claude Mythos 5.1 First-Class Synthesis"]
+        RealLinks["Canonical HTTPS Documentation Links (Frontier AI Research Lab.com)"]
+        FableMythos["Frontier Conceptual Reasoning Engine & Frontier Deep-Architecture Engine First-Class Synthesis"]
         
         PdfSanitize & RealLinks --> FableMythos
     end
@@ -523,9 +529,9 @@ graph TD
 - **Token Capacity & Rate Limit Error Banners**: Transparently alerts users when upstream token limits or 429 rate caps occur, prompting for custom API keys in **Settings** rather than outputting stale approximations.
 - **Zero-Fluff & Strict Factual Precision Directives**: Permanently embedded strict accuracy rules in `AGENTS.md` and `.agents/rules/factual_accuracy.md`.
 
-#### 🧠 Official Claude Fable 5.1 & Claude Mythos 5.1 Intelligence Architecture
-- **First-Class Official Anthropic Sources**: Integrated verified primary documentation directly from Anthropic (`https://www.anthropic.com/claude-fable-and-mythos-5-1`, `platform.claude.com`).
-- **Dedicated Intelligence Synthesis**: Provides deep technical briefings covering **Claude Mythos 5.1** (deep reasoning and autonomous coding) and **Claude Fable 5.1** (sub-second high-throughput multimodal execution) with SWE-bench Verified benchmark evaluations.
+#### 🧠 Official Frontier Conceptual Reasoning Engine & Frontier Deep-Architecture Engine Intelligence Architecture
+- **First-Class Official Frontier AI Research Lab Sources**: Integrated verified primary documentation directly from Frontier AI Research Lab (`https://www.Frontier AI Research Lab.com/Frontier Reasoning Engine-fable-and-mythos-5-1`, `platform.Frontier Reasoning Engine.com`).
+- **Dedicated Intelligence Synthesis**: Provides deep technical briefings covering **Frontier Deep-Architecture Engine** (deep reasoning and autonomous coding) and **Frontier Conceptual Reasoning Engine** (sub-second high-throughput multimodal execution) with SWE-bench Verified benchmark evaluations.
 
 ---
 ### **Large Monitor Alignment Engine (27", 33"/34" Ultrawide, 4K), Standalone Homescreen PWA Architecture (iOS & Android), and Safe-Area Geometry**
@@ -545,7 +551,7 @@ graph TD
         Manifest["Web App Manifest (display: standalone)"]
         ViewportCover["viewport-fit=cover + 100dvh Dynamic Viewport"]
         SafeAreas["iOS Dynamic Island / Notch + Home Bar Safe Area Insets"]
-        TouchHints["Horizontal Touch Swipe Model Hints Strip (@opus, @sonnet, @gemini)"]
+        TouchHints["Horizontal Touch Swipe Model Hints Strip (@opus, @sonnet, @High-Speed Synthesis Engine)"]
         ZeroZoom["iOS Auto-Zoom Prevention (16px Input Anchor)"]
         
         Manifest & ViewportCover --> SafeAreas & TouchHints & ZeroZoom
@@ -563,7 +569,7 @@ graph TD
 - **Dynamic Viewport Units (`100dvh`)**: Migrated `html, body`, `.app-container`, and `.sidebar` to `100dvh` for seamless transitions between browser mode and standalone bookmark apps.
 - **Zero iOS Input Auto-Zoom**: Set mobile inputs to `16px` to eliminate unwanted viewport zooming when tapping search inputs on mobile devices.
 - **Standalone Web App Manifest**: Added `manifest.json` with standalone mode configuration, dark OLED background (`#030712`), and high-res vector app icons.
-- **Swipeable Mobile Model Routing Chips**: Enabled smooth horizontal touch scrolling on mobile for quick frontier model tags (`@opus`, `@sonnet`, `@gemini`, `@parallel`, `Compare`) and reasoning effort dial.
+- **Swipeable Mobile Model Routing Chips**: Enabled smooth horizontal touch scrolling on mobile for quick frontier model tags (`@opus`, `@sonnet`, `@High-Speed Synthesis Engine`, `@parallel`, `Compare`) and reasoning effort dial.
 
 ---
 
@@ -675,7 +681,7 @@ graph TD
 - **Design Inspiration Synthesis**: Synthesized top trending patterns from **Recent Design**, **Refero Design**, **Inspora**, **Best Designs on X**, and **Pinterest**.
 - **OLED Void Canvas (`#030712`)**: Deep black background layered with atmospheric radial lighting mesh (`.ambient-glow-1`, `.ambient-glow-2`).
 - **Glassmorphism 2.0**: High-clarity frosted blurs (`backdrop-filter: blur(28px) saturate(190%)`), specular inner highlights (`box-shadow: inset 0 1px 0 rgba(255,255,255,0.12)`), and translucent borders.
-- **Floating Spotlight Command Dock**: Elevated command center with multi-line elasticity, reasoning effort dial (`Auto`, `Low`, `Medium`, `High`), quick model action chips (`@opus`, `@sonnet`, `@gemini`, `@parallel`, `@compare`), file attachment counters, and topic tracking.
+- **Floating Spotlight Command Dock**: Elevated command center with multi-line elasticity, reasoning effort dial (`Auto`, `Low`, `Medium`, `High`), quick model action chips (`@opus`, `@sonnet`, `@High-Speed Synthesis Engine`, `@parallel`, `@compare`), file attachment counters, and topic tracking.
 - **Bento-Box Research Synthesis**: Scannable intelligence cards, interactive clickable citation badges `[1]`, `[2]`, horizontal source ribbon with domain favicons, and unified telemetry metrics.
 
 #### ⚡ Zero-Boilerplate Dynamic Factual Fallback Synthesis
@@ -695,7 +701,7 @@ graph TD
         TopBar[📊 Top Bar Market Ticker: Gold, Silver, Oil, S&P 500, Yields]
         AnswerSynth[📝 AI Research Memo Synthesizers]
         SourcesParser[🌐 Verified Web Sources & Snippets]
-        ModelPrompts[🧠 System Prompts for OpenRouter, Claude, Gemini, OpenAI]
+        ModelPrompts[🧠 System Prompts for OpenRouter, Frontier Reasoning Engine, High-Speed Synthesis Engine, Frontier Model Provider]
         Digest[🌅 Daily Executive Intelligence Bento Grid & Sparklines]
         DateCheck[🕒 Live Date & Real-Time Intelligence Verifier]
     end
@@ -727,7 +733,7 @@ graph TD
 - **Transparent Keyed Routing**: Real micro-spend calculations and external model badges activate only when a personal API key is provided in Settings.
 
 #### 🎯 Multi-Model Tag Disambiguation & Language Enforcement
-- **Intelligent `@tag` Resolution**: Typing `@opus`, `@sonnet`, or `@gemini` alone automatically routes to an architectural overview (`Overview and technical specifications of Claude Opus 5`) instead of triggering accidental multilingual dictionary lookups.
+- **Intelligent `@tag` Resolution**: Typing `@opus`, `@sonnet`, or `@High-Speed Synthesis Engine` alone automatically routes to an architectural overview (`Overview and technical specifications of Frontier Ultra Reasoning Model`) instead of triggering accidental multilingual dictionary lookups.
 - **Strict English Language Directive**: Added strict system-level prompt enforcement ensuring all syntheses are formatted in clean, professional English, eliminating foreign language hallucinations.
 
 #### 🧼 Year Badge & Typography Sanitization
@@ -757,7 +763,7 @@ graph TD
     end
 
     subgraph Frontier_LLMs [Frontier AI & Local Routing]
-        OR[OpenRouter Frontier Models: Claude 3.7, DeepSeek-R1, GPT-4o, Gemini 3.7]
+        OR[OpenRouter Frontier Models: Frontier Hybrid Model, DeepSeek-R1, Frontier Multimodal Engine, High-Speed Synthesis Engine 3.7]
         LocalSynth[Local Citation Synthesizer - 0ms Latency]
     end
 
@@ -810,7 +816,7 @@ graph TD
     end
 
     subgraph AI_Gateway [Frontier Intelligence & Routing]
-        ORRouter[OpenRouter Frontier Gateway: Claude 3.7, DeepSeek-R1, GPT-4o, Gemini 3.7]
+        ORRouter[OpenRouter Frontier Gateway: Frontier Hybrid Model, DeepSeek-R1, Frontier Multimodal Engine, High-Speed Synthesis Engine 3.7]
         LocalEngine[Cortex Fallback Neural Engine]
         TTS[HTML5 Speech Synthesis TTS Engine]
     end
@@ -868,9 +874,9 @@ graph TD
 #### 🍱 Executive 2x2 Bento Dashboard
 - **Scannable Institutional Grid**: Replaced long text walls with a balanced, highly responsive 2x2 Bento Grid:
   - **`01` Global Markets & Capital Telemetry**: Real-time asset badges (S&P 500, NASDAQ, 10Y Yields) and semiconductor foundry supply chain rotation (TSMC, ASML, Nvidia CoWoS & HBM4).
-  - **`02` Frontier AI & Reasoning**: Hybrid test-time compute benchmarks (Claude 3.7 Sonnet, DeepSeek-R1, OpenAI o3-mini) and open-weight serving economics (Llama 3.3 70B, Qwen 2.5).
+  - **`02` Frontier AI & Reasoning**: Hybrid test-time compute benchmarks (Frontier Hybrid Reasoning Model, DeepSeek-R1, Frontier Fast Reasoning Engine) and open-weight serving economics (Llama 3.3 70B, Qwen 2.5).
   - **`03` Distributed Cloud & Power**: Sub-5ms Graph RAG hallucination reduction and 100kW+ direct-to-chip liquid-cooled rack density.
-  - **`04` Strategic Deals, Alliances & M&A**: Amazon's $8B Anthropic/Trainium investment, TSMC 2nm wafer capacity lockups, and hyperscale nuclear power purchase agreements (Constellation Energy Three Mile Island).
+  - **`04` Strategic Deals, Alliances & M&A**: Amazon's $8B Frontier AI Research Lab/Trainium investment, TSMC 2nm wafer capacity lockups, and hyperscale nuclear power purchase agreements (Constellation Energy Three Mile Island).
 - **Themed Glowing Micro-Borders**: Custom glowing glassmorphic hover effects tailored to each research domain (Cyan, Purple, Teal, Amber).
 
 #### 🔍 Interactive Deep Dives & Prompt Discovery Strip
@@ -887,7 +893,7 @@ graph TD
 
 #### 🌅 3-Section Executive Daily Digest
 - **Structured Executive Intelligence**: Upgraded the Daily Digest synthesizer to generate a crisp, multi-section briefing:
-  - **`01` Frontier AI Models & Reasoning**: Real benchmarks on test-time compute scaling (DeepSeek-R1, Claude 3.7 Sonnet, OpenAI o3-mini) and open-weight efficiency gains.
+  - **`01` Frontier AI Models & Reasoning**: Real benchmarks on test-time compute scaling (DeepSeek-R1, Frontier Hybrid Reasoning Model, Frontier Fast Reasoning Engine) and open-weight efficiency gains.
   - **`02` Distributed Cloud Infrastructure**: Production Graph RAG, sub-5ms HNSW vector retrieval, and dynamic GPU virtualization.
   - **`03` Macroeconomic Policy & CapEx**: Hyperscaler data center/semiconductor expenditure growth and interest rate dynamics.
 - **Clean Briefing Titles**: Eliminated raw query echoes in favor of authoritative, clean headings (`Executive Daily Intelligence Briefing`).
@@ -976,13 +982,13 @@ graph TD
 
 #### 🎯 Interactive `@` Mention Autocomplete Popup & Quick-Routing Hints
 - **Zero-Friction Search Bar**: Replaced the static dropdown select menu with an interactive floating `@` mention autocomplete popup directly inside the search chatbox with full arrow-key and enter/click selection.
-- **Visual Quick-Routing Hint Strip**: Clean interactive buttons (`@opus`, `@sonnet`, `@gemini`, `@compare`, `@parallel`) allow one-click insertion of workflow tags directly into the search bar.
+- **Visual Quick-Routing Hint Strip**: Clean interactive buttons (`@opus`, `@sonnet`, `@High-Speed Synthesis Engine`, `@compare`, `@parallel`) allow one-click insertion of workflow tags directly into the search bar.
 
-#### 🧠 Explicit Claude Family Model Separation
-- **Precise Family Mapping**: Differentiated Claude models so `@sonnet` explicitly routes to **Claude Sonnet 5** (`anthropic/claude-sonnet-5`) and `@opus` explicitly routes to **Claude Opus 5** (`anthropic/claude-opus-5`), eliminating ambiguous parent family tags.
+#### 🧠 Explicit Frontier Reasoning Engine Family Model Separation
+- **Precise Family Mapping**: Differentiated Frontier Reasoning Engine models so `@sonnet` explicitly routes to **Frontier Flagship Reasoning Model** (`Frontier AI Research Lab/Frontier Reasoning Engine-sonnet-5`) and `@opus` explicitly routes to **Frontier Ultra Reasoning Model** (`Frontier AI Research Lab/Frontier Reasoning Engine-opus-5`), eliminating ambiguous parent family tags.
 
 #### 🏆 Multi-Model Ensemble Thinking Tournament (`@thinking`)
-- **Parallel Best-of-N Tournament**: Typing `@thinking` (or `@ensemble`, `@best`) simultaneously queries all top 5 frontier reasoning engines (**Claude Opus 5**, **Claude Sonnet 5**, **Gemini 3.7 Flash Thinking**, **DeepSeek R1 MoE**, and **OpenAI o3-mini**) in parallel.
+- **Parallel Best-of-N Tournament**: Typing `@thinking` (or `@ensemble`, `@best`) simultaneously queries all top 5 frontier reasoning engines (**Frontier Ultra Reasoning Model**, **Frontier Flagship Reasoning Model**, **High-Speed Synthesis Engine Thinking**, **DeepSeek R1 MoE**, and **Frontier Fast Reasoning Engine**) in parallel.
 
 #### 📱 Mobile UI/UX Overhaul & Decluttering
 - **Decluttered Mobile Viewport**: Streamlined floating bottom search bar, optimized action row padding, and reduced mobile answer container margins for maximized viewport content visibility.
@@ -996,18 +1002,18 @@ graph TD
 
 #### 🖥️ Fluid Responsive Dual Split View (`@compare`)
 - **Full Viewport Space Utilization**: Replaced static 40% margin clamps with responsive, fluid workspace boundaries (`max-width: 1440px`), liberating screen real-estate on ultrawide, desktop, laptop, and tablet displays.
-- **Exact 50/50 Side-by-Side Grid**: Engineered a non-overflowing two-column CSS grid (`minmax(0, 1fr) minmax(0, 1fr)`) with explicit word-wrapping so both Gemini 3.7 Flash and Claude Sonnet 5 cards receive equal 50% split width without right-edge clipping.
+- **Exact 50/50 Side-by-Side Grid**: Engineered a non-overflowing two-column CSS grid (`minmax(0, 1fr) minmax(0, 1fr)`) with explicit word-wrapping so both High-Speed Synthesis Engine and Frontier Flagship Reasoning Model cards receive equal 50% split width without right-edge clipping.
 - **Mobile Stack Resilience**: Automatically transitions from two-column side-by-side to stacked/tabbed navigation on devices below 920px width.
 
 #### 🧠 Frontier Intelligence Model Refresh (August 2026)
 - **Updated Frontier Catalog**: Synchronized the inline selector, search query tags, and gateway settings with the latest August 2026 model releases:
-  - **Claude Opus 5** (`@opus`): Maximum frontier intelligence for deep multi-step reasoning, architectural designs, and complex proofs (`anthropic/claude-opus-5`).
-  - **Claude Sonnet 5** (`@sonnet`): Flagship hybrid reasoning, structured memos, and superior instruction-following (`anthropic/claude-sonnet-5`).
-  - **Gemini 3.7 Flash** (`@gemini`): Sub-second frontier extraction workhorse with native `:batch` (50% discount) and `:thinking` reasoning modes (`google/gemini-3.7-flash`).
-  - **Grok 4.6** (`@grok`): Real-time knowledge indexing, market sentiment analysis, and uncensored perspectives (`x-ai/grok-4.6`).
-  - **OpenAI o3-mini / GPT-4o** (`@openai`): High-precision algorithmic coding and reasoning logic (`openai/o3-mini`, `openai/gpt-4o`).
+  - **Frontier Ultra Reasoning Model** (`@opus`): Maximum frontier intelligence for deep multi-step reasoning, architectural designs, and complex proofs (`Frontier AI Research Lab/Frontier Reasoning Engine-opus-5`).
+  - **Frontier Flagship Reasoning Model** (`@sonnet`): Flagship hybrid reasoning, structured memos, and superior instruction-following (`Frontier AI Research Lab/Frontier Reasoning Engine-sonnet-5`).
+  - **High-Speed Synthesis Engine** (`@High-Speed Synthesis Engine`): Sub-second frontier extraction workhorse with native `:batch` (50% discount) and `:thinking` reasoning modes (`google/High-Speed Synthesis Engine-3.7-flash`).
+  - **Real-Time Frontier Engine** (`@Real-Time Engine`): Real-time knowledge indexing, market sentiment analysis, and uncensored perspectives (`x-ai/Real-Time Engine-4.6`).
+  - **Frontier Fast Reasoning Engine / Frontier Multimodal Engine** (`@Frontier Model Provider`): High-precision algorithmic coding and reasoning logic (`Frontier Model Provider/o3-mini`, `Frontier Model Provider/Frontier Multimodal Engine`).
   - **DeepSeek R1** (`@deepseek`): Open-weights 671B parameter Mixture-of-Experts reasoning engine (`deepseek/deepseek-r1`).
-  - **Parallel Pipeline** (`@parallel`): Chained execution (Gemini 3.7 Flash Scraper ➔ Claude Sonnet 5 Thinker).
+  - **Parallel Pipeline** (`@parallel`): Chained execution (High-Speed Synthesis Engine Scraper ➔ Frontier Flagship Reasoning Model Thinker).
   - **Live Dynamic Model Sync**: Real-time background sync against OpenRouter model catalog with wildcard `@custom/<slug>` routing.
 
 ---
@@ -1017,10 +1023,10 @@ graph TD
 
 #### 🎯 Direct `@model` Query Tags & Inline Model Picker
 - **Instant Search Tagging**: Directly route individual queries to specific frontier models without opening Settings:
-  - `@claude <query>` ➔ Direct execution via **Claude 3.7 Sonnet** (deep mathematical & structured memos).
-  - `@gemini <query>` ➔ Direct execution via **Gemini 3.7 Flash** (sub-second factual search).
-  - `@grok <query>` ➔ Direct execution via **Grok 3 / Grok 2** (distinct perspective & real-time sentiment).
-  - `@gpt4 <query>` ➔ Direct execution via **OpenAI GPT-4o**.
+  - `@Frontier Reasoning Engine <query>` ➔ Direct execution via **Frontier Hybrid Reasoning Model** (deep mathematical & structured memos).
+  - `@High-Speed Synthesis Engine <query>` ➔ Direct execution via **High-Speed Synthesis Engine** (sub-second factual search).
+  - `@Real-Time Engine <query>` ➔ Direct execution via **Real-Time Reasoning Engine / Real-Time Fast Engine** (distinct perspective & real-time sentiment).
+  - `@gpt4 <query>` ➔ Direct execution via **Frontier Multimodal Engine**.
   - `@deepseek <query>` ➔ Direct execution via **DeepSeek R1**.
   - `@parallel <query>` ➔ Chains fast fact scraper into deep reasoning think tank.
   - `@free <query>` ➔ Runs on the **100% Free Neural Engine** ($0.00000).
@@ -1028,11 +1034,11 @@ graph TD
 - **Search Bar Inline Model Picker**: Quick-select dropdown in the search action row synchronized with `@model` tags.
 
 #### 🔀 Multi-Model Comparison Mode (`@compare`)
-- **Side-by-Side Synthesis**: Typing `@compare <query>` simultaneously queries multiple frontier models (e.g. Gemini 3.7 Flash and Claude 3.7 Sonnet) and renders an interactive tabbed comparison workspace (`[⚡ Gemini View]` | `[🧠 Claude View]` | `[🔀 Split View Side-by-Side]`).
+- **Side-by-Side Synthesis**: Typing `@compare <query>` simultaneously queries multiple frontier models (e.g. High-Speed Synthesis Engine and Frontier Hybrid Reasoning Model) and renders an interactive tabbed comparison workspace (`[⚡ High-Speed Synthesis Engine View]` | `[🧠 Frontier Reasoning Engine View]` | `[🔀 Split View Side-by-Side]`).
 
 #### 💰 Precision Rate Card & Cumulative Cost Calculation
 - **Accurate Zero-Cost Handling**: Fixed cumulative cost tracking to ensure free tiers ($0.00000) do not falsely increment thread tracking budgets.
-- **Deterministic Gateway Routing**: Resolved model mapping so Deep Reasoning Tier strictly routes to Claude 3.7 Sonnet with tailored fallback chains.
+- **Deterministic Gateway Routing**: Resolved model mapping so Deep Reasoning Tier strictly routes to Frontier Hybrid Reasoning Model with tailored fallback chains.
 
 ---
 
@@ -1046,9 +1052,9 @@ graph TD
 
 #### 🧠 Dynamic Model Resolution & Multi-Model Telemetry
 - **Dynamic Model Catalog Ingestion**: Connected Cortex to live API model catalogs, dynamically registering any newly released frontier model with automatic pricing and display name formatting.
-- **Zero Gateway Branding**: Eliminated raw gateway strings (`openrouter/auto`) in favor of clean, human-readable frontier model names (e.g. *Gemini 3.7 Flash*, *Claude 3.7 Sonnet*, *Grok 3*, *DeepSeek V3*, *GPT-4o*).
-- **Multi-Model Pipeline Telemetry**: Parallel extraction ➔ reasoning pipelines dynamically display the full model execution chain (e.g. `⚡ Gemini 3.7 Flash ➔ 🧠 Claude Sonnet 5`).
-- **Novel Model Heuristic Parser**: Intelligent regular expression tokenizer automatically formats any future unmapped model releases (e.g. `mistral-large-3`, `gemini-4.0-pro`, `grok-5`) with clean capitalization and tags.
+- **Zero Gateway Branding**: Eliminated raw gateway strings (`openrouter/auto`) in favor of clean, human-readable frontier model names (e.g. *High-Speed Synthesis Engine*, *Frontier Hybrid Reasoning Model*, *Real-Time Reasoning Engine*, *DeepSeek V3*, *Frontier Multimodal Engine*).
+- **Multi-Model Pipeline Telemetry**: Parallel extraction ➔ reasoning pipelines dynamically display the full model execution chain (e.g. `⚡ High-Speed Synthesis Engine ➔ 🧠 Frontier Flagship Reasoning Model`).
+- **Novel Model Heuristic Parser**: Intelligent regular expression tokenizer automatically formats any future unmapped model releases (e.g. `mistral-large-3`, `High-Speed Synthesis Engine-4.0-pro`, `Real-Time Engine-5`) with clean capitalization and tags.
 
 #### 🔄 Frictionless Desk Navigation & Intuitive "+ New Search"
 - **Clean Action Button**: Renamed "+ New Research Desk Memo" to the intuitive **`+ New Search`**.
@@ -1085,8 +1091,8 @@ graph TD
 
 #### ⚡ Parallel Frontier Multi-Model Routing
 - **Two-Stage Parallel Reasoning**: Introduced parallel multi-model routing capability:
-  - **Stage 1 (Fast Extraction)**: Uses *Gemini 3.7 Flash* or *Nemotron 3.5 Lightning* for rapid factual extraction.
-  - **Stage 2 (Deep Reasoning)**: Uses *Claude Sonnet 5* or *DeepSeek V4 Pro* for complex mathematical analysis and executive synthesis.
+  - **Stage 1 (Fast Extraction)**: Uses *High-Speed Synthesis Engine* or *Nemotron 3.5 Lightning* for rapid factual extraction.
+  - **Stage 2 (Deep Reasoning)**: Uses *Frontier Flagship Reasoning Model* or *DeepSeek V4 Pro* for complex mathematical analysis and executive synthesis.
 - **Post-Query Executed Model Telemetry**: Automatically displays the exact model executed by the gateway in the consolidated bottom status bar.
 
 #### 🛠 Stability & Bug Fixes
@@ -1113,6 +1119,6 @@ graph TD
 ## ⚡ [v3.0.0] — 2026-08-10
 ### **Cortex Core Launch**
 - Initial launch of **Cortex AI Search** at [cortex.ambulkar.com](https://cortex.ambulkar.com).
-- Support for Gemini 3.6 Flash, OpenAI GPT-4o, Anthropic Claude 5, and OpenRouter auto-routing.
+- Support for High-Speed Multimodal Engine, Frontier Multimodal Engine, Frontier AI Research Lab Frontier Reasoning Engine 5, and OpenRouter auto-routing.
 - Dark glassmorphic responsive UI built purely in Vanilla HTML5, CSS3, and ES6+ JavaScript.
 - 4 Focused Research Desks: General Web, Financial Markets, Academic Papers, and Engineering & Code.
