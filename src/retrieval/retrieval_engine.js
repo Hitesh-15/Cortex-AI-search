@@ -37,10 +37,25 @@ class CortexRetrievalEngine {
 
         const stopWords = new Set([
             'what', 'is', 'the', 'of', 'in', 'and', 'for', 'to', 'how', 'does', 'why',
-            'who', 'are', 'a', 'an', 'on', 'with', 'at', 'by', 'from', 'about', 'as', 'into'
+            'who', 'are', 'a', 'an', 'on', 'with', 'at', 'by', 'from', 'about', 'as', 'into',
+            'has', 'more', 'than', 'before', 'after', 'that', 'this', 'tell', 'me', 'explain', 'show',
+            'search', 'find', 'provide', 'compare', 'difference', 'between', 'new', 'latest', 'recent'
         ]);
 
-        const qWords = (query || "").toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+        const genericWords = new Set([
+            'discovery', 'overview', 'analysis', 'impact', 'guide', 'review', 'history',
+            'future', 'status', 'release', 'announcement', 'development', 'report', 'study',
+            'details', 'summary', 'breakdown', 'understanding', 'features'
+        ]);
+
+        const entityAnalysis = CortexRetrievalEngine.extractSearchEntities(query);
+        const primaryEntityLower = (entityAnalysis.primaryEntity || "").toLowerCase();
+
+        const words = (query || "").toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/);
+        const qWords = words.filter(w => w.length > 2 && !stopWords.has(w));
+        const coreTerms = qWords.filter(w => !genericWords.has(w));
+        const effectiveCoreTerms = coreTerms.length > 0 ? coreTerms : qWords;
+
         const qBigrams = [];
         for (let i = 0; i < qWords.length - 1; i++) {
             qBigrams.push(`${qWords[i]} ${qWords[i+1]}`);
@@ -50,38 +65,57 @@ class CortexRetrievalEngine {
             let score = 0;
             const textCorpus = `${s.title || ''} ${s.snippet || ''}`.toLowerCase();
 
-            // Unigram match (+10 pts per match)
-            qWords.forEach(w => {
-                if (textCorpus.includes(w)) score += 10;
+            // Check how many core terms are matched
+            let coreMatches = 0;
+            effectiveCoreTerms.forEach(term => {
+                if (textCorpus.includes(term)) {
+                    score += 20;
+                    coreMatches++;
+                }
             });
 
-            // Bigram match (+25 pts per consecutive match)
-            qBigrams.forEach(bg => {
-                if (textCorpus.includes(bg)) score += 25;
-            });
-
-            // Exact query phrase match (+50 pts)
-            if (query && query.length > 5 && textCorpus.includes(query.toLowerCase())) {
-                score += 50;
+            // Primary entity match bonus
+            if (primaryEntityLower && primaryEntityLower.length >= 2 && textCorpus.includes(primaryEntityLower)) {
+                score += 35;
+                coreMatches++;
             }
 
-            // Domain Authority Boost
-            const domMult = CortexRetrievalEngine.getDomainAuthorityScore(s.domain);
-            score = score * domMult;
+            // Bigram match (+30 pts per consecutive match)
+            qBigrams.forEach(bg => {
+                if (textCorpus.includes(bg)) score += 30;
+            });
 
-            // Focus Mode contextual affinity
-            if (focusMode === 'finance' && /\b(treasury|yield|fed|bond|equity|sp500|nasdaq|macro|rate|inflation)\b/i.test(textCorpus)) score += 30;
-            if (focusMode === 'code' && /\b(python|rust|c\+\+|algorithm|compiler|github|function|api|framework|bytecode)\b/i.test(textCorpus)) score += 30;
-            if (focusMode === 'academic' && /\b(arxiv|journal|paper|study|doi|research|methodology)\b/i.test(textCorpus)) score += 30;
+            // Exact query phrase match (+60 pts)
+            if (query && query.length > 5 && textCorpus.includes(query.toLowerCase())) {
+                score += 60;
+            }
+
+            // Severe penalty if ZERO core terms or primary entity matched
+            if (coreMatches === 0 && !textCorpus.includes(query.toLowerCase())) {
+                score = 0;
+            } else {
+                // Domain Authority Boost (only applied to relevant documents!)
+                const domMult = CortexRetrievalEngine.getDomainAuthorityScore(s.domain);
+                score = score * domMult;
+
+                // Focus Mode contextual affinity
+                if (focusMode === 'finance' && /\b(treasury|yield|fed|bond|equity|sp500|nasdaq|macro|rate|inflation)\b/i.test(textCorpus)) score += 30;
+                if (focusMode === 'code' && /\b(python|rust|c\+\+|algorithm|compiler|github|function|api|framework|bytecode)\b/i.test(textCorpus)) score += 30;
+                if (focusMode === 'academic' && /\b(arxiv|journal|paper|study|doi|research|methodology)\b/i.test(textCorpus)) score += 30;
+            }
 
             return { source: s, score };
         });
 
+        // Filter out sources with 0 score if we have any relevant sources
+        const hasRelevantSources = scored.some(item => item.score > 0);
+        const filtered = hasRelevantSources ? scored.filter(item => item.score > 0) : scored;
+
         // Sort descending by score
-        scored.sort((a, b) => b.score - a.score);
+        filtered.sort((a, b) => b.score - a.score);
 
         // Normalize indices [1, 2, 3...]
-        return scored.map((item, idx) => ({
+        return filtered.map((item, idx) => ({
             ...item.source,
             num: idx + 1,
             relevanceScore: item.score
@@ -130,23 +164,57 @@ class CortexRetrievalEngine {
      */
     static extractSearchEntities(query) {
         if (!query) return { primaryEntity: "", keywords: [], targetedQuery: "", namedEntities: [] };
+
         const stopWords = new Set([
             'what', 'is', 'the', 'of', 'in', 'and', 'for', 'to', 'how', 'does', 'why',
             'who', 'are', 'a', 'an', 'on', 'with', 'at', 'by', 'from', 'about', 'as', 'into',
             'has', 'more', 'than', 'before', 'after', 'that', 'this', 'tell', 'me', 'explain', 'show',
-            'search', 'find', 'provide', 'compare', 'difference', 'between'
+            'search', 'find', 'provide', 'compare', 'difference', 'between', 'new', 'latest', 'recent'
         ]);
+
+        const genericWords = new Set([
+            'discovery', 'overview', 'analysis', 'impact', 'guide', 'review', 'history',
+            'future', 'status', 'release', 'announcement', 'development', 'report', 'study',
+            'details', 'summary', 'breakdown', 'understanding', 'features', 'role', 'effects',
+            'meaning', 'definition', 'list', 'top', 'best', 'working', 'instances'
+        ]);
+
+        const knownEntities = [
+            'OpenAI', 'Google', 'Apple', 'Microsoft', 'Nvidia', 'Meta', 'Amazon', 'Anthropic',
+            'DeepSeek', 'Tesla', 'Nitter', 'Twitter', 'Linux', 'Python', 'Rust', 'Docker',
+            'Kubernetes', 'TypeScript', 'JavaScript', 'FastAPI', 'PyTorch', 'TensorFlow', 'Ethereum',
+            'Bitcoin', 'Tim Cook', 'Satya Nadella', 'Sam Altman', 'Jensen Huang', 'Elon Musk',
+            'Sycamore', 'OpenRouter'
+        ];
+
+        // 1. Check for recognized high-priority knowledge entities
+        let detectedPrimary = "";
+        for (const ent of knownEntities) {
+            const regex = new RegExp(`\\b${ent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+            if (regex.test(query)) {
+                detectedPrimary = ent;
+                break;
+            }
+        }
 
         const words = query.trim().split(/\s+/);
         const keyTerms = words
             .map(w => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ''))
             .filter(w => w.length > 1 && !stopWords.has(w.toLowerCase()));
 
+        // 2. Extract named entity candidates, excluding generic sentence-initial words
         const namedEntities = [];
         let currentGroup = [];
-        for (const w of words) {
-            const cleanW = w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
-            if (cleanW && /^[A-Z]/.test(cleanW) && !stopWords.has(cleanW.toLowerCase())) {
+        for (let idx = 0; idx < words.length; idx++) {
+            const cleanW = words[idx].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+            if (!cleanW) continue;
+
+            const isFirstWord = (idx === 0);
+            const isGenericFirst = isFirstWord && genericWords.has(cleanW.toLowerCase());
+            const isCamelOrAcronym = /[a-z][A-Z]/.test(cleanW) || (/^[A-Z]{2,6}$/.test(cleanW) && !stopWords.has(cleanW.toLowerCase()));
+            const isCapitalized = /^[A-Z]/.test(cleanW) && !stopWords.has(cleanW.toLowerCase()) && !isGenericFirst;
+
+            if (isCamelOrAcronym || isCapitalized) {
                 currentGroup.push(cleanW);
             } else {
                 if (currentGroup.length > 0) {
@@ -159,8 +227,20 @@ class CortexRetrievalEngine {
             namedEntities.push(currentGroup.join(' '));
         }
 
-        const primaryEntity = namedEntities[0] || keyTerms[0] || query.trim();
-        const targetedQuery = keyTerms.slice(0, 4).join(' ') || query.trim();
+        const primaryEntity = detectedPrimary || namedEntities[0] || keyTerms[0] || query.trim();
+
+        // 3. Form targeted search query by removing introductory fluff and stopwords
+        const meaningfulTerms = words
+            .map(w => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ''))
+            .filter((w, idx) => {
+                if (!w || w.length <= 1) return false;
+                const lower = w.toLowerCase();
+                if (stopWords.has(lower)) return false;
+                if (idx === 0 && genericWords.has(lower)) return false;
+                return true;
+            });
+
+        const targetedQuery = meaningfulTerms.length > 0 ? meaningfulTerms.join(' ') : query.trim();
 
         return {
             primaryEntity,
