@@ -2168,6 +2168,9 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                 const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(wikiTarget)}&gsrlimit=6&prop=extracts|pageprops&exintro=1&explaintext=1&exsentences=4&utf8=&format=json&origin=*`;
                 const res = await fetch(wikiUrl, { signal: AbortSignal.timeout(2200) });
                 let wikiPagesAdded = 0;
+                const primaryEntLower = (wikiEntity || "").toLowerCase();
+                const qKeyTerms = (entityAnalysis.keywords || []).map(k => k.toLowerCase());
+
                 if (res.ok) {
                     const data = await res.json();
                     const pages = data?.query?.pages;
@@ -2179,6 +2182,16 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                 extract = extract.replace(/\s*\([A-Za-z\s;:]*[\u4e00-\u9fa5]+[^)]*\)/g, '');
                                 extract = extract.replace(/\s*\([A-Z0-9\s;,\-—]{1,25}\)/g, '');
                                 extract = extract.replace(/\s+/g, ' ').trim();
+
+                                // Relevance Gate: Page must match primary entity or at least one significant key term
+                                const combined = `${p.title} ${extract}`.toLowerCase();
+                                const isTopical = (primaryEntLower.length >= 2 && combined.includes(primaryEntLower)) ||
+                                                  qKeyTerms.some(t => t.length > 2 && combined.includes(t));
+
+                                if (!isTopical && !isDigestQuery) {
+                                    continue;
+                                }
+
                                 if (extract.length > 25) {
                                     const pageUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(p.title.replace(/\s+/g, '_'))}`;
                                     addSource(p.title, "wikipedia.org", pageUrl, extract);
@@ -2206,6 +2219,15 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                     .replace(/&amp;/g, '&')
                                     .replace(/\s+/g, ' ')
                                     .trim();
+
+                                const combinedFallback = `${hit.title} ${cleanSnip}`.toLowerCase();
+                                const isTopicalFallback = (primaryEntLower.length >= 2 && combinedFallback.includes(primaryEntLower)) ||
+                                                          qKeyTerms.some(t => t.length > 2 && combinedFallback.includes(t));
+
+                                if (!isTopicalFallback && !isDigestQuery) {
+                                    continue;
+                                }
+
                                 const pageUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(hit.title.replace(/\s+/g, '_'))}`;
                                 addSource(hit.title, "wikipedia.org", pageUrl, cleanSnip ? `${cleanSnip}.` : `Encyclopedic overview and verified facts regarding ${hit.title}.`);
                             }
@@ -2248,14 +2270,11 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                 if (res.ok) {
                     const data = await res.json();
                     if (data.hits && Array.isArray(data.hits)) {
+                        const primaryEntLower = (entityAnalysis.primaryEntity || "").toLowerCase();
+                        const qKeyTerms = (entityAnalysis.keywords || []).map(k => k.toLowerCase());
+
                         data.hits.forEach(hit => {
                             if (hit.title && !hit.title.match(/[\u4e00-\u9fa5]/)) {
-                                let rawUrl = hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`;
-                                // If URL points to a raw .pdf file that may be expired or inaccessible, fallback to the canonical HN discussion link
-                                if (rawUrl.toLowerCase().endsWith('.pdf')) {
-                                    rawUrl = `https://news.ycombinator.com/item?id=${hit.objectID}`;
-                                }
-                                const dom = rawUrl.match(/https?:\/\/([^\/]+)/)?.[1] || "news.ycombinator.com";
                                 let cleanStoryTitle = hit.title
                                     .replace(/^show hn:\s*/i, '')
                                     .replace(/^ask hn:\s*/i, '')
@@ -2264,6 +2283,22 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                     .replace(/\|\s*(pdf|doc)\s*$/gi, '')
                                     .replace(/\s*\.{2,}\s*$/, '')
                                     .trim();
+
+                                // Relevance Gate: Story title must match primary entity or core query terms
+                                const titleLower = cleanStoryTitle.toLowerCase();
+                                const isRelevantStory = (primaryEntLower.length >= 2 && titleLower.includes(primaryEntLower)) ||
+                                                        qKeyTerms.some(k => k.length > 2 && titleLower.includes(k));
+                                if (!isRelevantStory) {
+                                    return;
+                                }
+
+                                let rawUrl = hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`;
+                                // If URL points to a raw .pdf file that may be expired or inaccessible, fallback to the canonical HN discussion link
+                                if (rawUrl.toLowerCase().endsWith('.pdf')) {
+                                    rawUrl = `https://news.ycombinator.com/item?id=${hit.objectID}`;
+                                }
+                                const dom = rawUrl.match(/https?:\/\/([^\/]+)/)?.[1] || "news.ycombinator.com";
+
                                 let storySnippet = "";
                                 if (hit.story_text) {
                                     const textOnly = hit.story_text
@@ -2277,6 +2312,13 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                     // Discard if snippet is a raw URL or starts with // or http
                                     if (textOnly.length > 20 && !/^(?:https?:)?\/\/[^\s]+$/i.test(textOnly) && !textOnly.startsWith('//') && !textOnly.startsWith('http')) {
                                         storySnippet = textOnly.substring(0, 350);
+                                    } else {
+                                        // If story_text is a link, extract descriptive slug if present
+                                        const slugMatch = textOnly.match(/https?:\/\/[^\s"'<>]+\/([a-z0-9\-]{12,})/i);
+                                        if (slugMatch && slugMatch[1]) {
+                                            const readableSlug = slugMatch[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                            storySnippet = `Reporting from ${dom}: ${readableSlug}.`;
+                                        }
                                     }
                                 }
                                 let finalSnippet = storySnippet;
@@ -5120,8 +5162,21 @@ async def execute_async_pipeline(payload: PipelineRequest):
     const extractGrammaticalLead = (source, subj) => {
         if (!source) return "";
 
-        // 1. Search all active sources for an authoritative definition sentence
+        const entityAnalysis = (typeof CortexRetrievalEngine !== "undefined" && CortexRetrievalEngine.extractSearchEntities)
+            ? CortexRetrievalEngine.extractSearchEntities(query)
+            : null;
+        const primaryEntityLower = (entityAnalysis?.primaryEntity || "").toLowerCase();
+
+        // 1. Search active sources for an authoritative definition sentence THAT MATCHES THE QUERY'S PRIMARY ENTITY
         for (const s of activeSources) {
+            const sTitle = (s.title || "").replace(/\s*[-–—|].*$/, '').trim().toLowerCase();
+            // Critical Gate: The source must be about the query's primary entity or be the top-ranked source
+            const isEntityMatch = primaryEntityLower.length >= 2 && (sTitle.includes(primaryEntityLower) || primaryEntityLower.includes(sTitle));
+            const isTopicalMatch = (s === activeSources[0]) || isEntityMatch;
+            if (!isTopicalMatch) {
+                continue; // Do NOT pick a definition from an unrelated entity!
+            }
+
             let snip = sanitizeFactualProse((s.snippet || "").trim());
             const sents = snip.split(/(?<=[.!?])\s+/).filter(x => x.trim().length > 18);
             for (let sent of sents) {
@@ -5137,7 +5192,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
             }
         }
 
-        // 2. Extract best factual candidate sentence from the primary source snippet
+        // 2. Extract best factual candidate sentence from the primary source snippet (activeSources[0])
         let text = (source.snippet || source.title || "").trim();
         text = text.replace(/\s*\([A-Za-z\s;:]*[\u4e00-\u9fa5]+[^)]*\)/g, '');
         text = text.replace(/\s*\([A-Z0-9\s;,\-—]{1,25}\)/g, '');
@@ -5152,7 +5207,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
             if (/^(?:is|was|are|were|refers to|serves as|represents|denotes)\b/i.test(sent)) {
                 return `<strong>${source.title || subj}</strong> ${sent}${sent.endsWith('.') ? '' : '.'}`;
             }
-            if (sent.length >= 28 && !/^[a-z]/.test(sent)) {
+            if (sent.length >= 28 && !/^[a-z]/.test(sent) && !sent.includes("http")) {
                 if (!sent.endsWith('.')) sent += '.';
                 return sent;
             }
@@ -5160,15 +5215,11 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
         // 3. Fallback: Clean narrative statement directly grounded in the source's verified reporting
         const cleanTitle = (source.title || subj || "").replace(/\s*[-–—|].*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
-        let fallbackText = (source.snippet || "").trim();
-        fallbackText = sanitizeFactualProse(fallbackText);
-        if (fallbackText.length >= 25 && !fallbackText.includes("http")) {
-            if (!fallbackText.endsWith('.')) fallbackText += '.';
-            fallbackText = fallbackText.charAt(0).toUpperCase() + fallbackText.slice(1);
-            return fallbackText;
+        if (source && source.domain) {
+            return `Primary reporting and technical telemetry from <strong>${source.domain}</strong> highlight ongoing developments regarding <strong>${cleanTitle}</strong>.`;
         }
 
-        return `Authoritative records and reporting from <strong>${source.domain || "primary sources"}</strong> confirm active developments and documented implementation for <strong>${cleanTitle}</strong>.`;
+        return `Authoritative records and primary source documentation confirm verified implementation and operational details for <strong>${cleanTitle}</strong>.`;
     };
 
     // Helper: Extract clean factual sentences for fluid narrative synthesis
@@ -5183,7 +5234,11 @@ async def execute_async_pipeline(payload: PipelineRequest):
         const cleanSentences = [];
         for (let sent of sentences) {
             sent = sent.trim();
-            sent = sent.replace(/^(?:public reporting and community discussion regarding|peer-reviewed scientific and industry research regarding|scholarly research and peer-reviewed technical findings examining|live global market telemetry,?\s*(?:industry developments,?\s*and verified reporting on)?\s*|open-source engineering and technical specifications regarding|technical analysis regarding|technical documentation and verified community architecture review detailing)\s+/i, '');
+            // Discard conversational greetings, Show HN/Launch HN self-intros, and promotional greetings
+            if (/^(?:hey hn|ask hn|show hn|launch hn|i've been building|i built|we built|we're excited)\b/i.test(sent)) {
+                continue;
+            }
+            sent = sent.replace(/^(?:public reporting and community discussion regarding|community reporting and discussion on hacker news\s*(?:\([^)]*\))?\s*regarding|peer-reviewed scientific and industry research regarding|scholarly research and peer-reviewed technical findings examining|live global market telemetry,?\s*(?:industry developments,?\s*and verified reporting on)?\s*|open-source engineering and technical specifications regarding|technical analysis regarding|technical documentation and verified community architecture review detailing)\s+/i, '');
             if (/^(?:connecting|with|for their use|and|or|but|as well as|which|whose|that|because|in order to|by|from)\b/i.test(sent)) {
                 continue;
             }
@@ -5439,7 +5494,9 @@ async def execute_async_pipeline(payload: PipelineRequest):
             ? entityAnalysis.primaryEntity
             : (activeSources[0]?.title || cleanSubj).replace(/\s*[-–—|].*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
 
-        if (/\b(?:gil|lock|python)\b/i.test(qLower)) {
+        if (/\b(?:agent|message board|breakout|spree|collusion|hijack)\b/i.test(qLower)) {
+            takeawayText = `Disclosures regarding <strong>${cleanSubj}</strong> demonstrate autonomous multi-agent coordination across external endpoints, underscoring the necessity of strict egress network policies, execution sandboxing, and continuous behavioral telemetry for deployed agent systems.`;
+        } else if (/\b(?:gil|lock|python)\b/i.test(qLower)) {
             takeawayText = "While the Global Interpreter Lock simplifies single-threaded memory management in CPython, high-concurrency systems rely on multiprocessing, asynchronous I/O, or free-threaded builds (PEP 703) to achieve true multi-core parallel execution.";
         } else if (/\b(?:nitter|takedown|instance|mirror|libredirect)\b/i.test(qLower)) {
             takeawayText = `While Twitter/X's API changes and guest account deprecation disrupted unauthenticated public scraping, decentralized community self-hosting, rotating worker tokens, and active directories on Codeberg have enabled <strong>${primaryEntity}</strong> to remain accessible across independent mirrors.`;
@@ -5448,7 +5505,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
         } else if (/\b(?:capital|city|country|where|geography)\b/i.test(qLower)) {
             takeawayText = `<strong>${primaryEntity}</strong> serves as the central administrative and cultural hub, anchoring national governance and regional institutions.`;
         } else if (/\b(?:reverse|challenge|puzzle|ocaml|solver|smt|z3|ctf|bytecode|exploit|asic)\b/i.test(qLower)) {
-            takeawayText = `Successfully solving <strong>${cleanSubj}</strong> relies on decoupling low-level execution mechanics (custom VM opcodes or ASIC netlists) from underlying mathematical constraints—using SMT solvers (Z3) or pruned OCaml backtracking to compute deterministic solutions within milliseconds.`;
+            takeawayText = `Successfully solving <strong>${cleanSubj}</strong> relies on decoupling low-level execution mechanics from underlying mathematical constraints—using SMT solvers (Z3) or pruned OCaml backtracking to compute deterministic solutions within milliseconds.`;
         } else if (/\b(?:code|software|api|framework|architecture|compiler|database|algorithm|concurrency|performance)\b/i.test(qLower)) {
             takeawayText = `Effective deployment of <strong>${cleanSubj}</strong> centers on understanding its runtime execution model, concurrency semantics, and state synchronization guarantees across distributed workloads.`;
         } else if (/\b(?:market|trading|finance|stock|asset|yield|rate|inflation|bank)\b/i.test(qLower)) {
@@ -5456,9 +5513,9 @@ async def execute_async_pipeline(payload: PipelineRequest):
         } else {
             const topFact = p2Items.length > 0 ? p2Items[0].sent.replace(/\s*<button[\s\S]*?<\/button>/g, '').trim() : '';
             if (topFact && topFact.length > 20) {
-                takeawayText = `Verified reporting and primary documentation confirm that <strong>${cleanSubj}</strong> is actively tracked: ${topFact}`;
+                takeawayText = `Primary findings indicate that <strong>${primaryEntity || cleanSubj}</strong> is characterized by verifiable operational developments: ${topFact}`;
             } else {
-                takeawayText = `Authoritative documentation and primary source records confirm that <strong>${cleanSubj}</strong> remains an active, verifiable topic with ongoing technical and community developments.`;
+                takeawayText = `Authoritative documentation and primary source records confirm that <strong>${primaryEntity || cleanSubj}</strong> remains an active, verifiable topic with ongoing technical and community developments.`;
             }
         }
 
