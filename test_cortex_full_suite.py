@@ -202,14 +202,10 @@ def run_full_test_suite():
         assert "solid-state" in thread_html.lower() or "batteries" in thread_html.lower(), "Search query subject missing from result!"
         assert "Primary technical specifications, market dynamics, and verified telemetry" not in thread_html, "Found forbidden repetitive boilerplate text in search output!"
         assert "citation-ref" in thread_html or "source" in thread_html.lower(), "Citation badges / sources ribbon missing from output!"
-        print("  PASS: Search executed smoothly; verified rich citations, bento layout, and 0 boilerplate.")
-
-        # Test suggested card 1-click execution
-        driver.find_element(By.ID, "btnNewThread").click()
-        time.sleep(0.5)
-        empty_hero = driver.find_element(By.ID, "emptyHeroView")
-        assert empty_hero.is_displayed(), "Empty hero view should be visible on New Search click!"
-        print("  PASS: 'New Search' resets thread view back to empty hero.")
+        # Check desktop displays full action suite
+        desktop_actions = [b for b in driver.find_elements(By.CLASS_NAME, "btn-memo-action") if b.is_displayed()]
+        assert len(desktop_actions) >= 5, f"Expected >= 5 action buttons visible on desktop, found {len(desktop_actions)}"
+        print("  PASS: Search executed smoothly; verified rich citations, bento layout, and full desktop actions.")
 
         # ------------------------------------------------------------------
         # SUITE 6: Multi-Device Responsive Viewports (Desktop, Tablet, Mobile)
@@ -220,9 +216,17 @@ def run_full_test_suite():
         driver.set_window_size(768, 1024)
         time.sleep(0.4)
         assert driver.find_element(By.ID, "searchInput").is_displayed(), "Search input hidden on tablet!"
-        print("  PASS: Tablet layout (768x1024) rendering clean.")
+        tablet_desktop_actions = [b for b in driver.find_elements(By.CLASS_NAME, "desktop-only-action") if b.is_displayed()]
+        assert len(tablet_desktop_actions) == 0, f"Found {len(tablet_desktop_actions)} desktop actions visible on tablet!"
+        print("  PASS: Tablet layout (768x1024) rendering clean; desktop-only actions hidden.")
 
-        # Mobile Viewport Simulation
+        # Mobile Viewport Simulation (390 x 844)
+        driver.set_window_size(390, 844)
+        time.sleep(0.4)
+        mobile_desktop_actions = [b for b in driver.find_elements(By.CLASS_NAME, "desktop-only-action") if b.is_displayed()]
+        assert len(mobile_desktop_actions) == 0, f"Found {len(mobile_desktop_actions)} desktop actions visible on mobile!"
+        print("  PASS: Mobile layout (390x844) verified; desktop-only actions hidden.")
+
         # Simulate mobile toggle action directly and verify sidebar open/close functionality
         driver.execute_script("document.getElementById('btnMobileToggle').click();")
         time.sleep(0.4)
@@ -236,6 +240,15 @@ def run_full_test_suite():
         sidebar_cls_closed = sidebar.get_attribute("class")
         assert "active" not in sidebar_cls_closed and "open" not in sidebar_cls_closed, "Sidebar did not close on mobile close tap!"
         print("  PASS: Mobile layout navigation drawer and controls fully functional.")
+
+        # Reset to desktop and test 'New Search' resets thread view back to empty hero
+        driver.set_window_size(1440, 900)
+        time.sleep(0.4)
+        driver.find_element(By.ID, "btnNewThread").click()
+        time.sleep(0.5)
+        empty_hero = driver.find_element(By.ID, "emptyHeroView")
+        assert empty_hero.is_displayed(), "Empty hero view should be visible on New Search click!"
+        print("  PASS: 'New Search' resets thread view back to empty hero.")
 
         print("\n========================================================")
         print("SUCCESS: ALL 6 COMPREHENSIVE TEST SUITES PASSED FLAWLESSLY!")

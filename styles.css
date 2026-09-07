@@ -2486,6 +2486,22 @@ option:active {
         grid-template-columns: repeat(2, 1fr);
         gap: 14px;
     }
+
+    /* Hide desktop-only export, save, and print actions on mobile & tablet screens */
+    .btn-memo-action.desktop-only-action,
+    .btn-memo-action.btn-studio-ppt,
+    .btn-memo-action.btn-studio-doc,
+    .btn-memo-action.btn-memo-save,
+    .btn-memo-action.btn-memo-export-md,
+    .btn-memo-action.btn-memo-print {
+        display: none !important;
+    }
+
+    .unified-telemetry-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 }
 
 @media (max-width: 900px) {

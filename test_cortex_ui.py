@@ -301,6 +301,11 @@ def test_full_cortex_suite():
         driver.set_window_size(768, 1024)
         time.sleep(0.5)
         
+        # Verify desktop-only export/save/print actions are hidden on tablet
+        for b in driver.find_elements(By.CLASS_NAME, "desktop-only-action"):
+            assert not b.is_displayed(), f"Action {b.text} should be hidden on tablet!"
+        print("PASS: Tablet viewport verified (desktop-only actions hidden).")
+
         btn_mobile_toggle = driver.find_element(By.ID, "btnMobileToggle")
         btn_mobile_toggle.click()
         time.sleep(0.3)
@@ -320,6 +325,11 @@ def test_full_cortex_suite():
         driver.set_window_size(390, 844)
         time.sleep(0.5)
         
+        # Verify desktop-only export/save/print actions are hidden on mobile
+        for b in driver.find_elements(By.CLASS_NAME, "desktop-only-action"):
+            assert not b.is_displayed(), f"Action {b.text} should be hidden on mobile!"
+        print("PASS: Phone viewport verified (desktop-only actions hidden).")
+
         btn_mobile_toggle.click()
         time.sleep(0.3)
         assert "active" in sidebar.get_attribute("class"), "Phone sidebar drawer did not open!"

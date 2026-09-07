@@ -2809,25 +2809,25 @@ function renderUnifiedTelemetryBar(modelDisplay, costUSD, totalTokens, effortCla
                 <span class="unified-pill effort" title="${effortReason}"><i class="fa-solid fa-gauge-high"></i> ${effortLabel}</span>
             </div>
             <div class="unified-telemetry-actions">
-                <button type="button" class="btn-memo-action btn-studio-ppt" onclick="generateSlideDeckFromMemo(this)" title="Generate Presentation Slide Deck (.PPTX & In-App Viewer)">
+                <button type="button" class="btn-memo-action btn-studio-ppt desktop-only-action" onclick="generateSlideDeckFromMemo(this)" title="Generate Presentation Slide Deck (.PPTX & In-App Viewer)">
                     <i class="fa-solid fa-file-powerpoint text-amber"></i> <span>Generate Deck (.PPTX)</span>
                 </button>
-                <button type="button" class="btn-memo-action btn-studio-doc" onclick="generateDocumentFromMemo(this)" title="Download Formatted Word Document (.DOCX)">
+                <button type="button" class="btn-memo-action btn-studio-doc desktop-only-action" onclick="generateDocumentFromMemo(this)" title="Download Formatted Word Document (.DOCX)">
                     <i class="fa-solid fa-file-word text-cyan"></i> <span>Export .DOCX</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="toggleAudioBriefing(this)" title="Listen to 60-Second Audio Executive Briefing">
+                <button type="button" class="btn-memo-action btn-memo-listen" onclick="toggleAudioBriefing(this)" title="Listen to 60-Second Audio Executive Briefing">
                     <i class="fa-solid fa-headphones text-purple"></i> <span>Listen</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="saveCurrentMemoToLibrary(this)" title="Save to Research Library">
+                <button type="button" class="btn-memo-action btn-memo-save desktop-only-action" onclick="saveCurrentMemoToLibrary(this)" title="Save to Research Library">
                     <i class="fa-solid fa-bookmark text-teal"></i> <span>Save</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="copyMemoContent(this)" title="Copy Executive Memo to Clipboard">
+                <button type="button" class="btn-memo-action btn-memo-copy" onclick="copyMemoContent(this)" title="Copy Executive Memo to Clipboard">
                     <i class="fa-solid fa-copy"></i> <span>Copy Memo</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="exportMemoMarkdown(this)" title="Download Executive Memo as Markdown (.md)">
+                <button type="button" class="btn-memo-action btn-memo-export-md desktop-only-action" onclick="exportMemoMarkdown(this)" title="Download Executive Memo as Markdown (.md)">
                     <i class="fa-solid fa-download"></i> <span>Export .MD</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="printExecutiveMemo(this)" title="Print or Save as Clean PDF">
+                <button type="button" class="btn-memo-action btn-memo-print desktop-only-action" onclick="printExecutiveMemo(this)" title="Print or Save as Clean PDF">
                     <i class="fa-solid fa-print"></i> <span>Print / PDF</span>
                 </button>
             </div>
@@ -3711,22 +3711,22 @@ async function executeDeepResearchPipeline(actualQuery, stepId, stepElement, tar
                 <span class="unified-pill effort" title="High Effort Deep Research"><i class="fa-solid fa-gauge-high"></i> DEEP COMPUTE</span>
             </div>
             <div class="unified-telemetry-actions">
-                <button type="button" class="btn-memo-action btn-studio-ppt" onclick="CortexComputeStudio.downloadPptx('deck_${stepId}')" title="Download Presentation Slide Deck (.PPTX)">
+                <button type="button" class="btn-memo-action btn-studio-ppt desktop-only-action" onclick="CortexComputeStudio.downloadPptx('deck_${stepId}')" title="Download Presentation Slide Deck (.PPTX)">
                     <i class="fa-solid fa-file-powerpoint text-amber"></i> <span>Download .PPTX</span>
                 </button>
-                <button type="button" class="btn-memo-action btn-studio-doc" onclick="CortexComputeStudio.downloadDocx('${stepId}')" title="Download Formatted Word Document (.DOCX)">
+                <button type="button" class="btn-memo-action btn-studio-doc desktop-only-action" onclick="CortexComputeStudio.downloadDocx('${stepId}')" title="Download Formatted Word Document (.DOCX)">
                     <i class="fa-solid fa-file-word text-cyan"></i> <span>Export .DOCX</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="toggleAudioBriefing(this)" title="Listen to 60-Second Audio Executive Briefing">
+                <button type="button" class="btn-memo-action btn-memo-listen" onclick="toggleAudioBriefing(this)" title="Listen to 60-Second Audio Executive Briefing">
                     <i class="fa-solid fa-headphones text-purple"></i> <span>Listen</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="saveCurrentMemoToLibrary(this)" title="Save to Research Library">
+                <button type="button" class="btn-memo-action btn-memo-save desktop-only-action" onclick="saveCurrentMemoToLibrary(this)" title="Save to Research Library">
                     <i class="fa-solid fa-bookmark text-teal"></i> <span>Save</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="copyMemoContent(this)" title="Copy Executive Memo to Clipboard">
+                <button type="button" class="btn-memo-action btn-memo-copy" onclick="copyMemoContent(this)" title="Copy Executive Memo to Clipboard">
                     <i class="fa-solid fa-copy"></i> <span>Copy Memo</span>
                 </button>
-                <button type="button" class="btn-memo-action" onclick="printExecutiveMemo(this)" title="Print or Save as Clean PDF">
+                <button type="button" class="btn-memo-action btn-memo-print desktop-only-action" onclick="printExecutiveMemo(this)" title="Print or Save as Clean PDF">
                     <i class="fa-solid fa-print"></i> <span>Print / PDF</span>
                 </button>
             </div>
