@@ -618,7 +618,7 @@ graph TD
 
 #### ⏱️ Real-Time 1-Second Precision Clock Counter & Prompt Anchoring
 - **Continuous 1000ms Interval Timer**: Added `startRealtimeClock()` to `CortexTemporalIntelligenceEngine` that updates second-by-second across UTC, local time, timezone, and calendar date.
-- **Frontier Prompt Grounding**: Automatically injects exact live UTC ISO-8601 timestamps, epoch milliseconds, and local timezone into every LLM request (`callOpenRouterProvider`, `callGeminiProvider`, `callOpenAIProvider`, `callClaudeProvider`), ensuring all relative queries (*"latest"*, *"today"*, *"current"*, *"this week"*) strictly prioritize 2026 data.
+- **Frontier Prompt Grounding**: Automatically injects exact live UTC ISO-8601 timestamps, epoch milliseconds, and local timezone into every LLM request (`callOpenRouterProvider`, `callOpenAIProvider`, `callClaudeProvider`), ensuring all relative queries (*"latest"*, *"today"*, *"current"*, *"this week"*) strictly prioritize 2026 data.
 - **Top Header Status Badge**: Added a live ticking status badge with a pulsing cyan indicator dot in the top navigation bar.
 
 #### 🧵 Thread History Navigation & Bidirectional Viewport Sync
@@ -720,7 +720,7 @@ graph TD
 - **Synchronized UI Broadcast**: Whenever market feeds refresh, `cortexTemporal.updateAsset(...)` triggers `cortexTemporal.broadcastToUI()`, instantly updating all DOM pills and active research synthesizers in lockstep.
 
 #### 🕒 Dynamic 2026 Temporal Grounding & System Date Anchoring
-- **Real-Time Temporal Anchor**: Injected dynamic, system-level temporal anchors (`Tuesday, August 18, 2026`) across all provider endpoints (`callOpenRouterProvider`, `callClaudeProvider`, `callGeminiProvider`, `callOpenAIProvider`).
+- **Real-Time Temporal Anchor**: Injected dynamic, system-level temporal anchors (`Tuesday, August 18, 2026`) across all provider endpoints (`callOpenRouterProvider`, `callClaudeProvider`, `callOpenAIProvider`).
 - **Eliminated Refusal Disclaimers**: Explicitly instructs models that Cortex is operating with active web browsing in August 2026, eliminating *"I have no clock / training data cutoff early 2025"* disclaimers.
 - **Continuous Date Tracking**: Anchored all synthesis pipelines to compute the live date dynamically (`cortexTemporal.getTodayFull()`) every single day going forward.
 

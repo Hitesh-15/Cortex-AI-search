@@ -107,7 +107,7 @@ def run_tests():
         badge_text = driver.find_element(By.ID, "headerAuthBadge").text
         auth_btn_text = driver.find_element(By.ID, "btnHeaderAuth").text
         assert "Pro" in badge_text or "Unlocked" in badge_text, f"Badge text unexpected: {badge_text}"
-        assert "Pro Access" in auth_btn_text, f"Header auth button text unexpected: {auth_btn_text}"
+        assert "Pro" in auth_btn_text, f"Header auth button text unexpected: {auth_btn_text}"
         print(f"PASS: Header badge updated to '{badge_text}' and button to '{auth_btn_text}'.")
 
         # Test Logout

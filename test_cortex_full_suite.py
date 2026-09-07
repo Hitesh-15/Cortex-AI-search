@@ -1,3 +1,4 @@
+import sys
 import time
 import subprocess
 import socket
@@ -18,6 +19,7 @@ def get_driver():
         opts.add_argument('--headless=new')
         opts.add_argument('--no-sandbox')
         opts.add_argument('--disable-dev-shm-usage')
+        opts.add_argument('--disable-gpu')
         opts.add_argument('--window-size=1440,900')
         return webdriver.Chrome(options=opts)
     except Exception:
@@ -25,7 +27,7 @@ def get_driver():
         opts.add_argument('--headless')
         opts.add_argument('--no-sandbox')
         opts.add_argument('--disable-dev-shm-usage')
-        opts.add_argument('--window-size=1440,900')
+        opts.add_argument('--disable-gpu')
         return webdriver.Edge(options=opts)
 
 def get_free_port():
@@ -36,8 +38,8 @@ def get_free_port():
 def run_full_test_suite():
     port = get_free_port()
     print(f"--> Starting local test server on port {port}...")
-    server = subprocess.Popen(["python", "-m", "http.server", str(port), "--directory", str(CORTEX_DIR)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    time.sleep(1.2)
+    server = subprocess.Popen([sys.executable, "-m", "http.server", str(port), "--directory", str(CORTEX_DIR)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(1.5)
     
     driver = get_driver()
     try:

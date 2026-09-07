@@ -249,7 +249,6 @@ var appState = {
         costRouting: localStorage.getItem("ambu_cost_routing") || "min_cost",
         autoUpdateModels: localStorage.getItem("ambu_auto_update") !== "false",
         apiKeys: {
-            gemini: localStorage.getItem("ambu_key_gemini") || "",
             openai: localStorage.getItem("ambu_key_openai") || "",
             claude: localStorage.getItem("ambu_key_claude") || "",
             deepseek: localStorage.getItem("ambu_key_deepseek") || "",
@@ -2860,10 +2859,7 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     const hasCustomKey = Boolean(apiKey || orKey);
     let activeModelDisplay = formatSingleModelName(activeModel);
 
-    if (provider === "gemini" && apiKey) {
-        contentHTML = await callGeminiProvider(query, sources, activeModel, apiKey);
-        activeModelDisplay = "Gemini 3.7 Flash";
-    } else if (provider === "openai" && apiKey) {
+    if (provider === "openai" && apiKey) {
         contentHTML = await callOpenAIProvider(query, sources, activeModel, apiKey);
         activeModelDisplay = "OpenAI GPT-4o";
     } else if (provider === "claude" && apiKey) {
@@ -6191,78 +6187,7 @@ document.addEventListener('mouseout', (e) => {
     }
 });
 
-async function callGeminiProvider(query, sources, model, apiKey) {
-    const sourceContext = sources.map(s => `[${s.num}] ${s.title}: ${s.snippet}`).join('\n');
-    const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.
-${cortexTemporal.getSystemPromptContext()}
 
-User Search Query: "${query}"
-
-Verified Web Sources (Crawled ${cortexTemporal.getTodayFull()}):
-${sourceContext}
-
-Cortex Structured Answering Guidelines (4-Part Architecture):
-1. PART 1 - DIRECT ANSWER: Begin immediately with a concise, authoritative answer in 1-2 sentences with key terms bolded and inline citations [1]. Zero greetings or meta-announcements.
-2. PART 2 - STRUCTURED CORE BREAKDOWN: Under an informative subheading (### Core Mechanics & Architecture, or ### Key Developments & Milestones), present structured bullet points. EVERY bullet point MUST begin with a bold concept title followed by explanation (e.g. * **Concept Title:** Clear explanation with inline citations [1]).
-3. PART 3 - CONTEXT & IMPLICATIONS: Under a second informative subheading (### Ecosystem Context & Practical Implications, or ### Significance & Real-World Impact), provide a fluid 2-3 sentence narrative deep dive explaining the broader picture, trade-offs, or current developments.
-4. PART 4 - KEY TAKEAWAY: Conclude with a highlighted takeaway card:
-<div class="cortex-takeaway-card">
-  <div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div>
-  <p class="cortex-takeaway-text">A sharp, high-level summary sentence capturing the definitive conclusion.</p>
-</div>
-5. PART 5 - SMART FOLLOW-UP QUESTIONS: At the very end of your response, provide exactly 3 logically progressive, highly relevant follow-up search inquiries that a researcher would ask next after reading your answer. Format them strictly as:
-<div class="cortex-followups">Question 1? | Question 2? | Question 3?</div>
-6. GROUNDED INLINE CITATIONS: Ground claims with inline citations like <span class="citation-ref">[1]</span>, <span class="citation-ref">[2]</span>.
-7. Clean semantic HTML only (<h3>, <h4>, <p>, <ul>, <li>, <strong>, <code>). Output strictly in English.`;
-
-    const modelOptions = [model.trim(), "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
-
-    for (const currentModel of modelOptions) {
-        try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey.trim()}`;
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
-                })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-                if (isRefusalOrDeficient(rawText)) {
-                    return generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
-                }
-                return formatAIResponseHTML(rawText);
-            } else if (res.status === 429) {
-                console.warn(`AI model ${currentModel} rate limited (429). Trying fallback model...`);
-                continue; // Failover to next model in list
-            } else {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error?.message || `HTTP ${res.status}`);
-            }
-        } catch (e) {
-            console.error(`API Call Exception for ${currentModel}:`, e);
-        }
-    }
-
-    const liveTime = cortexTemporal.getCurrentTime();
-    const todayFull = cortexTemporal.getTodayFull();
-
-    return `
-        <div class="api-limit-error-banner">
-            <div class="api-limit-header">
-                <i class="fa-solid fa-gauge-high text-amber" style="color: #f59e0b;"></i>
-                <strong style="color: #fde047;">AI Gateway Limit Reached (${liveTime}):</strong>
-            </div>
-            <div class="api-limit-desc">
-                Public rate threshold was exceeded for this query. Outdated approximations have been suppressed to protect recency and factual integrity. Switched to local verified search synthesis below.
-            </div>
-        </div>
-    ` + generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel);
-}
 
 async function callOpenAIProvider(query, sources, model, apiKey) {
     const liveTime = cortexTemporal.getCurrentTime();
@@ -6935,7 +6860,6 @@ function updateGatewayStatusBadge() {
 
     const orKey = (appState.settings?.apiKeys?.openrouter || localStorage.getItem("ambu_key_openrouter") || localStorage.getItem("openrouter_api_key") || "").trim();
     const openaiKey = (appState.settings?.apiKeys?.openai || localStorage.getItem("ambu_key_openai") || "").trim();
-    const geminiKey = (appState.settings?.apiKeys?.gemini || localStorage.getItem("ambu_key_gemini") || "").trim();
     const claudeKey = (appState.settings?.apiKeys?.claude || localStorage.getItem("ambu_key_claude") || "").trim();
 
     if (orKey) {
@@ -6943,8 +6867,8 @@ function updateGatewayStatusBadge() {
         badge.style.borderColor = "rgba(16, 185, 129, 0.25)";
         badge.innerHTML = `<span class="status-dot-pulse"></span> <span id="gatewayStatusText">OpenRouter Connected</span>`;
         badge.title = "OpenRouter Multi-Model Frontier Gateway Active";
-    } else if (openaiKey || geminiKey || claudeKey) {
-        const providerName = openaiKey ? "OpenAI" : (geminiKey ? "Gemini" : "Claude");
+    } else if (openaiKey || claudeKey) {
+        const providerName = openaiKey ? "OpenAI" : "Claude";
         badge.style.background = "rgba(16, 185, 129, 0.08)";
         badge.style.borderColor = "rgba(16, 185, 129, 0.25)";
         badge.innerHTML = `<span class="status-dot-pulse"></span> <span id="gatewayStatusText">${providerName} API Active</span>`;
