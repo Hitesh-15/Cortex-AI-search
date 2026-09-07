@@ -1,9 +1,36 @@
-# Rule: Strict Factual Accuracy & Verified Data Only
+# Rule: Strict Factual Accuracy, Query Precision & Architectural Invariance
 
-## Directive
-- **Only Real Information**: Provide strictly accurate, verified data grounded in official documentation, empirical benchmarks, or real-time live sources.
-- **Zero Fluff**: Eliminate repetitive boilerplates, conversational greetings, redundant filler, and generic placeholder text.
-- **Zero Hallucination / Unverified Assumptions**: Never guess, invent, or substitute unverified precursor data for newer versions or unreleased topics.
-- **Explicit Transparency**: If information is unconfirmed, unindexed, or constrained by token/rate limits as of the current date and time, explicitly state the limitation directly without speculation.
-- **Exact Version Fidelity**: Always preserve exact model names, version numbers (e.g. 5.1 vs 5.0), and technical specifications.
-- **Always Use Latest Model Generations**: Never compromise or downgrade to older models for speed. Always route to and use the latest, state-of-the-art model versions as of today's date and time (tracked via live clock telemetry) to ensure responses carry the freshest frontier reasoning, context window capacity, and benchmark accuracy.
+## Core Directives
+
+### 1. Direct Answer First (Zero Meta-Reporting)
+- **Immediate Precision**: The lead paragraph's first sentence must directly, concisely, and authoritatively answer the exact question or event queried.
+- **Zero Meta-Commentary**: Never preface an answer with crawler or forum metadata (e.g., *"Community reporting and discussion on Hacker News regarding..."*, *"Verified developer disclosures confirm..."*, *"Live global market telemetry..."*). The user asked for facts, not crawler activity.
+- **Action/Event Recognition**: When a query specifies an event or status (e.g. *"...resumes service after legal advice"*, *"...acquires company"*, *"...releases model"*), synthesize the direct outcome into an active, grammatically complete assertion in the lead sentence.
+- **Conciseness**: The lead sentence must be focused and devoid of fluff. As a user, the response must answer the query in the first few seconds of reading.
+
+### 2. Strict Homonym Rejection Gate (Zero Historical Homonym Bleed)
+- **Category Mismatch Enforcement**: Queries about technology, software, web services, algorithms, or finance must NEVER be polluted by unrelated historical figures who share a surname (e.g. 19th/20th-century physicians, cricketers, politicians, clergymen, noblemen).
+- **Secondary Disambiguation Suppression**: When a query targets a known entity (e.g., `Tim Cook`), suppress parenthetical disambiguations (e.g., `Tim Cook (historian)`, `Tim Cook (cricketer)`) if the primary article is present.
+- **Rejection Across All Retrieval Stages**: The homonym rejection gate is mandatory in:
+  1. Primary API fetch (`fetchWebSources` - generator and list searches)
+  2. Neural semantic re-ranking (`cortexSemanticReRanker` / `CortexRetrievalEngine.reRankSources`)
+  3. Active source selection (`activeSources` in `generateLocalSynthesizedAnswer`)
+  4. Lead sentence selection (`extractGrammaticalLead`)
+  5. Narrative sentence extraction (`extractNarrativeSentences`)
+
+### 3. Pure Organic Evidence & Zero Synthetic Snippet Infection
+- **Synthetic Stub Rejection**: Search stubs (`/search`, `site-search`) or fallback query echoes must never contribute narrative sentences to bullet points. `extractNarrativeSentences` must immediately return empty arrays for synthetic stubs.
+- **Raw Headline Preservation**: When processing forum or news items without body text, use the pristine clean headline without prepending synthetic prefixes like *"Verified developer disclosures..."*.
+- **Informative Bullets**: Each bullet item must pair a bold concept label with genuine factual sentences from high-authority sources (Wikipedia, GitHub, ArXiv, official documentation). Never repeat query fragments as bullet points.
+
+### 4. Architectural Invariance Across UI & Design Modifications
+- **Design Decoupling**: Modifications to UI components, layout, typography, CSS styling, modal designs, or desktop/mobile structures must NEVER alter, weaken, bypass, or regress the retrieval ranking, homonym rejection filters, or answer synthesis pipeline.
+- **Mandatory Pre-Commit Verification**: Before completing any structural, UI, or design task, verify:
+  1. `python scratch/check_js.py` (0 syntax or runtime errors)
+  2. `python scratch/test_modular_runtime.py` (100% pass on all sandbox/tool engines)
+  3. `python scratch/test_diverse_queries.py` (validate lead answers are concise, direct, and free of homonyms)
+  4. `python scratch/reproduce_issue.py` (verify Nitter synthesis has zero physician homonym and zero meta-prefix)
+
+### 5. Deterministic Math & Quantitative Integrity
+- **Never Guess**: Never estimate CAGR, geometric returns, or statistical metrics. Always compute deterministically via `CortexComputeSandbox`.
+- **Exact Version Fidelity**: Preserve exact version numbers (e.g. 5.1 vs 5.0) and model routing specifications.

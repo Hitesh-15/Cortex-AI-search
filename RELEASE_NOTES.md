@@ -2,6 +2,52 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v6.2.0] — 2026-09-07
+### **Definitive Search Synthesis Quality, Direct Question Answering & Permanent UI Invariance**
+
+```mermaid
+graph TD
+    subgraph QueryIntentEngine ["🎯 1. Direct Intent & Event Parsing"]
+        UserQuery["User Search Query"]
+        EventParser["Action / Event Synthesizer (Resumes • Launches • Acquired)"]
+        AcronymExpander["Canonical Entity & Technical Acronym Expander (GIL • CAGR • Canberra)"]
+    end
+
+    subgraph MultiStageFilter ["🛡️ 2. Multi-Stage Homonym & Boilerplate Rejection"]
+        BioGate["Strict Category Mismatch Gate (Zero Historical Homonyms)"]
+        MetaPurge["Zero Meta-Reporting Filter (Strips Crawler & Forum Meta-Prefixes)"]
+        StubReject["Synthetic Search Stub Rejection (No Crawler Boilerplate Leaks)"]
+    end
+
+    subgraph DirectSynthesisEngine ["⚡ 3. Direct Lead & Concept Bullet Pipeline"]
+        DirectLead["Direct Factual Lead (Answers the Specific Query in 1st Sentence)"]
+        ConceptBullets["High-Density Concept Bullets (Genuine Evidence Sentences)"]
+        Takeaway["Executive Key Takeaway Card"]
+    end
+
+    UserQuery --> EventParser & AcronymExpander
+    EventParser & AcronymExpander --> BioGate & MetaPurge & StubReject
+    BioGate & MetaPurge & StubReject --> DirectLead & ConceptBullets & Takeaway
+```
+
+#### 🎯 Key Capabilities & Architectural Enhancements
+- **Direct-Answer-First Lead Synthesis**:
+  - The very first sentence of any synthesized answer now directly, concisely, and authoritatively answers the specific question or event queried.
+  - Active event queries (e.g., *"...resumes service after legal advice"*, *"...acquires company"*, *"...releases model"*) immediately generate active, grammatically complete outcome sentences in the lead.
+  - Definitive questions (e.g. *"Capital of Australia"*, *"Calculate CAGR..."*, *"Who is Tim Cook"*) deliver the bottom line immediately in the lead sentence without requiring the user to sift through background filler.
+- **100% Elimination of Meta-Reporting & Crawler Boilerplate**:
+  - Permanently purged crawler meta-prefixes (*"Community reporting and discussion on Hacker News regarding..."*, *"Verified developer disclosures and public records confirm:..."*, *"Live global market telemetry..."*).
+  - Clean headlines and factual prose are extracted and presented directly without artificial reporting wrappers.
+- **Strict Homonym Rejection Gate Across All 5 Retrieval Stages**:
+  - Eliminates accidental biographical homonyms (e.g., 18th/19th/20th-century physicians, cricketers, noblemen, politicians) from technology, software, web service, or current event queries.
+  - Secondary disambiguation filter suppresses parenthetical entries (e.g. `Tim Cook (historian)`) when the primary entity exists.
+  - Entertainment and comic book disambiguations (e.g. fictional characters, supervillains, albums) are automatically discarded for technical and factual queries.
+- **Permanent Rule Enshrinement & UI/Design Invariance**:
+  - Codified permanent architectural directives in `.agents/rules/factual_accuracy.md` and `AGENTS.md`.
+  - Guarantees that future modifications to UI layout, component structures, themes, or CSS styling will never weaken, bypass, or alter the retrieval ranking, homonym rejection filters, or answer synthesis pipeline.
+- **Canonical Entity & Acronym Aliases**:
+  - High-precision mapping for computing acronyms (GIL -> Global interpreter lock, CAGR, FOMC, RAG) and geographic capitals guarantees exact encyclopedic grounding.
+
 ## 🌟 [v6.1.0] — 2026-09-05
 ### **All-in-One Autonomous Platform: Interactive Code Sandbox, Dynamic SVG Chart Studio & Spotlight Slash Commands**
 

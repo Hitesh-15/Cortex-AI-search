@@ -64,6 +64,21 @@ class CortexRetrievalEngine {
         const scored = rawSources.map(s => {
             let score = 0;
             const textCorpus = `${s.title || ''} ${s.snippet || ''}`.toLowerCase();
+            const sTitleClean = (s.title || "").trim().toLowerCase().replace(/\s*\(.*?\)/, '');
+
+            // Strict Category Mismatch & Homonym Rejection Gate:
+            // If the query is about technology, web services, software, finance, or current events,
+            // reject biographical entries about historical persons (physicians, 18th/19th/early-20th-century figures)
+            // that only match an accidental surname homonym!
+            const isHistoricalBiography = 
+                /\b(?:physician|oncologist|pediatrician|clergyman|bishop|nobleman|cricketer|landowner)\b/i.test(textCorpus) ||
+                (/\b(?:politician|businessman|merchant|general|admiral)\b/i.test(textCorpus) && !/(?:policy|market|economy|business|finance|trade|company|ceo|founder|corporate|government|election)\b/i.test((query || "").toLowerCase())) ||
+                /\([0-9]{1,2}\s+[a-z]+\s+[12]\d{3}\b|\([12]\d{3}\s*[\u2010-\u2015\u2212\-\/]\s*[12]\d{3}\)|\b(?:born|died)\s+(?:in\s+)?[12]\d{3}\b/i.test(textCorpus) ||
+                /\b(?:was an?|is an?)\s+(?:[a-z]+\s+){0,3}(?:physician|politician|businessman|merchant|doctor|nobleman|clergyman|bishop|cricketer|landowner)\b/i.test(textCorpus);
+            const isBiographyQuery = /\b(?:who is|who was|biography|born|died|physician|doctor|politician|merchant|ancestry|person|profile|ceo|founder|executive|leader)\b/i.test((query || "").toLowerCase()) || (sTitleClean === primaryEntityLower && (query || "").toLowerCase().startsWith('who'));
+            if (isHistoricalBiography && !isBiographyQuery) {
+                return { source: s, score: 0 };
+            }
 
             // Check how many core terms are matched
             let coreMatches = 0;
@@ -74,8 +89,11 @@ class CortexRetrievalEngine {
                 }
             });
 
-            // Primary entity match bonus
-            if (primaryEntityLower && primaryEntityLower.length >= 2 && textCorpus.includes(primaryEntityLower)) {
+            // Exact entity title bonus: e.g. source title "Nitter" matches primaryEntity "Nitter"
+            if (primaryEntityLower && sTitleClean === primaryEntityLower) {
+                score += 80;
+                coreMatches++;
+            } else if (primaryEntityLower && primaryEntityLower.length >= 2 && textCorpus.includes(primaryEntityLower)) {
                 score += 35;
                 coreMatches++;
             }
@@ -88,6 +106,19 @@ class CortexRetrievalEngine {
             // Exact query phrase match (+60 pts)
             if (query && query.length > 5 && textCorpus.includes(query.toLowerCase())) {
                 score += 60;
+            }
+
+            // Penalize low-signal synthetic search URLs and generic telemetry boilerplate
+            if (s.url && (s.url.includes("/search") || s.url.includes("search?") || s.url.includes("site-search"))) {
+                score -= 40;
+            }
+            if (/(?:live global market telemetry|financial exposure, corporate disclosures|institutional intelligence, governance|technical specifications, empirical research)/i.test(s.snippet || "")) {
+                score -= 50;
+            }
+
+            // Multi-term coverage penalty: If query has 3+ core terms, a document matching only 1 term is penalized
+            if (effectiveCoreTerms.length >= 3 && coreMatches <= 1 && !textCorpus.includes(query.toLowerCase())) {
+                score = score * 0.3;
             }
 
             // Severe penalty if ZERO core terms or primary entity matched
