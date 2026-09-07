@@ -2581,21 +2581,38 @@ option:active {
         font-size: 0.75rem;
     }
 
-    /* Scroll Viewport on Mobile with Generous Border & Bottom Clearance */
+    /* Mobile Master Canvas Boundaries (Eliminates horizontal drift & 50% void) */
+    html, body, .app-container, .main-content {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    .ambient-glow-1,
+    .ambient-glow-2 {
+        display: none !important; /* Prevents 700px invisible overflow */
+    }
+
+    /* Scroll Viewport on Mobile: Full-Width Stretch without Flex Center Clipping */
     .view-scroll-area {
-        padding-top: 14px;
+        align-items: stretch !important; /* Critical: Prevents CSS flexbox centering data loss */
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        padding-top: 12px;
         padding-left: max(14px, env(safe-area-inset-left));
         padding-right: max(14px, env(safe-area-inset-right));
-        padding-bottom: calc(240px + env(safe-area-inset-bottom));
+        padding-bottom: calc(230px + env(safe-area-inset-bottom));
         -webkit-overflow-scrolling: touch;
     }
     .empty-hero {
-        padding: 16px 6px 20px 6px;
+        padding: 16px 4px 20px 4px;
         max-width: 100%;
+        width: 100%;
         margin-top: 2vh;
+        box-sizing: border-box;
     }
     .hero-title {
-        font-size: 1.6rem;
+        font-size: 1.55rem;
         line-height: 1.25;
         margin-bottom: 8px;
     }
@@ -2607,11 +2624,15 @@ option:active {
         grid-template-columns: 1fr;
         gap: 10px;
         margin-top: 12px;
+        width: 100%;
+        box-sizing: border-box;
     }
     .suggested-card {
         padding: 14px 16px;
         border-radius: 14px;
         min-height: 95px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* Floating Spotlight Command Search Dock on Mobile (Safe for Home Swipe Bar) */
@@ -2620,7 +2641,9 @@ option:active {
         bottom: 0;
         left: 0;
         right: 0;
-        width: 100%;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
         padding-top: 10px;
         padding-left: max(12px, env(safe-area-inset-left));
         padding-right: max(12px, env(safe-area-inset-right));
@@ -2631,35 +2654,41 @@ option:active {
         border-radius: 16px;
         padding: 10px 12px 8px 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-        max-width: 100%;
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     .search-input-row {
         gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
     }
     .btn-attach-doc {
         width: 34px;
         height: 34px;
         font-size: 0.86rem;
+        flex-shrink: 0;
     }
     .btn-submit-search {
         width: 34px;
         height: 34px;
         font-size: 0.9rem;
+        flex-shrink: 0;
     }
     .search-input {
         font-size: 16px !important;
         padding: 3px 4px;
+        min-width: 0;
     }
     .search-actions-row {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        display: flex;
+        align-items: center;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden;
         gap: 6px;
-        flex-wrap: nowrap;
         padding-top: 6px;
-    }
-    .search-actions-row::-webkit-scrollbar {
-        display: none;
+        min-width: 0;
     }
     .effort-picker-container {
         font-size: 0.72rem;
@@ -2670,18 +2699,22 @@ option:active {
     }
     .search-hints-strip {
         display: flex;
+        align-items: center;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         gap: 4px;
-        flex-shrink: 0;
+        flex: 1 1 auto;
+        min-width: 0 !important; /* Critical for flex item horizontal scroll */
     }
     .search-hints-strip::-webkit-scrollbar {
         display: none;
     }
     .hint-tag-btn {
-        padding: 2px 6px;
+        padding: 2px 8px;
         font-size: 0.7rem;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
     .watchdog-toggle-container {
         margin-left: auto;
@@ -2689,23 +2722,41 @@ option:active {
     }
     .btn-watchdog-toggle {
         font-size: 0.7rem;
-        padding: 2px 6px;
+        padding: 2px 8px;
+        white-space: nowrap;
     }
 
-    /* Bento Research Memo Layout on Mobile */
+    /* Bento Research Memo Layout on Mobile: Edge-to-Edge 100% Width */
+    #activeThreadContainer {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        align-items: stretch !important;
+    }
     .query-thread-block {
-        margin-bottom: 20px;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 20px 0 !important;
+        box-sizing: border-box !important;
+        align-items: stretch !important;
     }
     .user-query-heading {
-        font-size: 1.18rem;
+        font-size: 1.15rem;
         line-height: 1.35;
         margin-bottom: 10px;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
     .ai-answer-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
         padding: 18px 14px;
         border-radius: 14px;
         font-size: 0.92rem;
         line-height: 1.65;
+        overflow-x: hidden !important;
     }
     .bento-section-header {
         margin: 18px 0 10px 0;
@@ -2720,6 +2771,8 @@ option:active {
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         padding-bottom: 2px;
+        width: 100%;
+        box-sizing: border-box;
     }
     .source-chips-row::-webkit-scrollbar {
         display: none;
@@ -2728,6 +2781,96 @@ option:active {
         padding: 4px 8px;
         font-size: 0.72rem;
         flex-shrink: 0;
+    }
+
+    /* Mobile Structured Takeaway Card */
+    .cortex-takeaway-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 14px 14px !important;
+        margin: 16px 0 10px 0 !important;
+    }
+    .cortex-takeaway-label {
+        font-size: 0.78rem;
+    }
+    .cortex-takeaway-text {
+        font-size: 0.88rem;
+        line-height: 1.6;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* Mobile Unified Telemetry Bar: 2-Column Responsive Action Grid */
+    .unified-telemetry-bar {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 12px 10px !important;
+        margin-top: 16px !important;
+    }
+    .unified-telemetry-left {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        width: 100%;
+    }
+    .unified-pill {
+        font-size: 0.72rem;
+        padding: 3px 8px;
+    }
+    .unified-telemetry-actions {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .btn-memo-action {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 9px 8px !important;
+        font-size: 0.74rem !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+    }
+    .btn-memo-action.btn-studio-ppt {
+        grid-column: 1 / -1 !important; /* Full width button for slide presentation */
+        padding: 10px !important;
+        font-weight: 600;
+        font-size: 0.78rem !important;
+    }
+
+    /* Mobile Follow-up Searches */
+    .related-questions-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-top: 16px !important;
+    }
+    .related-chips {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .related-chip-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 0.82rem !important;
+        padding: 10px 12px !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
     }
 
     /* Modal Layouts on Mobile (Safe for Notches and Viewport Bounds) */

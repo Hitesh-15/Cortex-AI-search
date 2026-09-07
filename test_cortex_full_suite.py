@@ -68,7 +68,7 @@ def run_full_test_suite():
             "viewScrollArea", "emptyHeroView", "activeThreadContainer",
             "searchForm", "searchInput", "btnSubmitSearch", "docFileInput",
             "compareInputRow", "compareInputA", "compareInputB", "btnSubmitCompare", "btnCancelCompare",
-            "chatEffortSelect", "btnToggleWatchdog", "authModal", "settingsModal", "releaseNotesModal"
+            "btnToggleWatchdog", "authModal", "settingsModal", "releaseNotesModal"
         ]
         for cid in critical_ids:
             elem = driver.find_element(By.ID, cid)

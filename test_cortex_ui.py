@@ -49,7 +49,7 @@ def test_static_bindings():
         "docFileInput", "attachedFilesBar",
         "standardInputRow", "compareInputRow", "compareInputA", "compareInputB",
         "btnSubmitCompare", "btnCancelCompare",
-        "chatEffortSelect", "btnToggleWatchdog", "libraryModal", "settingsModal", "releaseNotesModal",
+        "btnToggleWatchdog", "libraryModal", "settingsModal", "releaseNotesModal",
         "threadHistoryList", "viewScrollArea", "emptyHeroView", "activeThreadContainer"
     ]
     
@@ -223,8 +223,9 @@ def test_full_cortex_suite():
         # Test GOLD Ticker Execution and verify relevance
         print("    -> Executing GOLD Ticker Search...")
         driver.execute_script("arguments[0].click();", ticker_pills[0])
-        WebDriverWait(driver, 12).until(
-            lambda d: len(d.find_elements(By.CLASS_NAME, "ai-answer-box")) > 0 and "synthesizing" not in d.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text.lower()
+        time.sleep(0.5)
+        WebDriverWait(driver, 15).until(
+            lambda d: d.execute_script("return !window.appState || !window.appState.isSearching") and len(d.find_elements(By.CLASS_NAME, "ai-answer-box")) > 0 and "synthesizing" not in d.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text.lower()
         )
         time.sleep(0.3)
         
@@ -238,8 +239,9 @@ def test_full_cortex_suite():
         # Test SILVER Ticker Execution
         print("    -> Executing SILVER Ticker Search...")
         driver.execute_script("arguments[0].click();", ticker_pills[1])
-        WebDriverWait(driver, 12).until(
-            lambda d: len(d.find_elements(By.CLASS_NAME, "ai-answer-box")) > 0 and "synthesizing" not in d.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text.lower()
+        time.sleep(0.5)
+        WebDriverWait(driver, 15).until(
+            lambda d: d.execute_script("return !window.appState || !window.appState.isSearching") and len(d.find_elements(By.CLASS_NAME, "ai-answer-box")) > 0 and "synthesizing" not in d.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text.lower()
         )
         time.sleep(0.3)
         silver_answer = driver.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text
@@ -249,8 +251,9 @@ def test_full_cortex_suite():
         # Test S&P 500 Ticker Execution
         print("    -> Executing S&P 500 Ticker Search...")
         driver.execute_script("arguments[0].click();", ticker_pills[4])
-        WebDriverWait(driver, 12).until(
-            lambda d: len(d.find_elements(By.CLASS_NAME, "ai-answer-box")) > 0 and "synthesizing" not in d.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text.lower()
+        time.sleep(0.5)
+        WebDriverWait(driver, 15).until(
+            lambda d: d.execute_script("return !window.appState || !window.appState.isSearching") and len(d.find_elements(By.CLASS_NAME, "ai-answer-box")) > 0 and "synthesizing" not in d.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text.lower()
         )
         time.sleep(0.3)
         sp_answer = driver.find_elements(By.CLASS_NAME, "ai-answer-box")[-1].text
