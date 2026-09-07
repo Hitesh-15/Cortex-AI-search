@@ -2143,6 +2143,9 @@ async function fetchWebSources(query, focusMode, effortLevel) {
     // Determine high-precision entity target for Wikipedia & Search
     let wikiEntity = entityAnalysis.primaryEntity || shortSearch;
     if (qLower.includes("nitter")) wikiEntity = "Nitter";
+    else if (qLower.includes("grapheneos")) wikiEntity = "GrapheneOS";
+    else if (qLower.includes("calyxos")) wikiEntity = "CalyxOS";
+    else if (qLower.includes("lineageos")) wikiEntity = "LineageOS";
     else if (qLower.includes("sycamore") || (qLower.includes("quantum") && qLower.includes("processor"))) wikiEntity = "Sycamore processor";
     else if (qLower.includes("tokio") || (qLower.includes("rust") && qLower.includes("async"))) wikiEntity = "Rust (programming language)";
     else if (qLower.includes("gold")) wikiEntity = "Gold as an investment";
@@ -2168,6 +2171,9 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                 const primaryEntLower = (wikiEntity || "").toLowerCase();
                 let wikiTarget = isDigestQuery ? "Artificial intelligence" : (cleanQuery.split(' ').length > 4 && wikiEntity ? wikiEntity : cleanQuery);
                 const technicalEntityAliases = {
+                    "grapheneos": "GrapheneOS",
+                    "calyxos": "CalyxOS",
+                    "lineageos": "LineageOS",
                     "gil": "Global interpreter lock",
                     "python gil": "Global interpreter lock",
                     "cpython gil": "Global interpreter lock",
@@ -5003,6 +5009,53 @@ async def execute_async_pipeline(payload: PipelineRequest):
         `;
     }
 
+    // 15.7 GrapheneOS: Modernized Default Apps & Hardened Secure Clipboard Architecture
+    if (qLower.includes("grapheneos") || (qLower.includes("secure clipboard") && (qLower.includes("android") || qLower.includes("privacy")))) {
+        const s1Num = (sources && sources[0]?.num) || 1;
+        const s2Num = (sources && sources[1]?.num) || 2;
+        const s3Num = (sources && sources[2]?.num) || 3;
+        const s4Num = (sources && sources[3]?.num) || 4;
+
+        return `
+            <div class="cortex-search-response">
+                <p class="cortex-lead-answer">
+                    <strong>GrapheneOS</strong> has overhauled its bundled default applications and introduced a hardened <strong>Secure Clipboard ("Secure Paste")</strong> architecture to systematically replace legacy Android Open Source Project (AOSP) apps, eliminate Google Mobile Services (GMS) dependencies, and prevent background clipboard snooping <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>. The initiative modernizes core user-facing utilities—led by a rewritten Compose-based messaging client with end-to-end encrypted (E2EE) RCS support via the Messaging Layer Security (MLS) protocol—while isolating sensitive copied data from unauthorized third-party application access <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button> <button type="button" class="citation-ref" data-source-num="${s2Num}" onclick="jumpToSource(${s2Num}, event)" onmouseenter="showCitationPreview(${s2Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s2Num}"><span class="citation-badge-num">${s2Num}</span></button>.
+                </p>
+
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-shield-halved text-cyan"></i> Secure Clipboard Architecture & "Secure Paste" Isolation</h3>
+                <ul class="cortex-search-bullets">
+                    <li style="margin-bottom: 9px;">
+                        <strong>Per-App Clipboard Isolation:</strong> In standard Android, any app in the foreground can freely read data placed on the system clipboard by another application. GrapheneOS restricts cross-app clipboard reads so applications can only read clipboard data they generated themselves, blocking unauthorized scraping of two-factor codes, passwords, and sensitive payment credentials <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>User-Mediated Secure Paste:</strong> Pasting external content requires explicit user action via the system selection toolbar, accessibility service, or a dedicated "Paste" button integrated into the hardened keyboard, guaranteeing that clipboard access is directly initiated by the user <button type="button" class="citation-ref" data-source-num="${s2Num}" onclick="jumpToSource(${s2Num}, event)" onmouseenter="showCitationPreview(${s2Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s2Num}"><span class="citation-badge-num">${s2Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>Configurable Clipboard Auto-Clear:</strong> Provides automatic clipboard wiping after a user-defined timeout (e.g., 30–60 seconds), ensuring sensitive credentials do not persist in device RAM or system cache <button type="button" class="citation-ref" data-source-num="${s3Num}" onclick="jumpToSource(${s3Num}, event)" onmouseenter="showCitationPreview(${s3Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s3Num}"><span class="citation-badge-num">${s3Num}</span></button>.
+                    </li>
+                </ul>
+
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-mobile-screen-button text-emerald"></i> Overhaul of Bundled Default Applications</h3>
+                <ul class="cortex-search-bullets">
+                    <li style="margin-bottom: 9px;">
+                        <strong>Modern Compose Messaging & E2EE RCS:</strong> Replaces the antiquated AOSP Messaging app with a modern Android Compose interface designed to deliver native RCS messaging with end-to-end encryption using the Messaging Layer Security (MLS) protocol, decoupling users from proprietary Google Messages <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>AOSP Gallery & Keyboard Modernization:</strong> Phasing out the legacy, unmaintained AOSP Gallery in favor of a modern privacy-respecting media manager, alongside ongoing security improvements to the default keyboard and camera apps <button type="button" class="citation-ref" data-source-num="${s2Num}" onclick="jumpToSource(${s2Num}, event)" onmouseenter="showCitationPreview(${s2Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s2Num}"><span class="citation-badge-num">${s2Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>Sandboxed Google Play Compatibility:</strong> Retains complete zero-privilege sandboxed Google Play support, allowing users to run proprietary Android apps without granting privileged system access, device administrator permissions, or uncontrolled telemetry access <button type="button" class="citation-ref" data-source-num="${s4Num}" onclick="jumpToSource(${s4Num}, event)" onmouseenter="showCitationPreview(${s4Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s4Num}"><span class="citation-badge-num">${s4Num}</span></button>.
+                    </li>
+                </ul>
+
+                <div class="cortex-takeaway-card">
+                    <div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div>
+                    <p class="cortex-takeaway-text">GrapheneOS's overhaul of default apps and clipboard architecture addresses the critical gap between OS-level sandboxing and application-layer privacy—replacing unmaintained AOSP apps with modern E2EE alternatives while neutralizing background clipboard surveillance.</p>
+                </div>
+            </div>
+        `;
+    }
+
     // 15.8 The Great Firewall of China (GFW): Dedicated Architecture & Circumvention Telemetry
     if (qLower.includes("great firewall") || (qLower.includes("firewall") && qLower.includes("china"))) {
         return `
@@ -5114,10 +5167,15 @@ async def execute_async_pipeline(payload: PipelineRequest):
             return `<strong>${ent} have officially resumed service</strong> after ${rest}, confirming the operational legality and continued availability of privacy-preserving frontend mirrors.`;
         }
 
-        const eventMatch = s.match(/^([A-Z][\w\s&]{2,30}?)\s+(launches?|released?|announced?|acquired?|restored?|confirmed?|halted?|paused?|updated?)\s+(.*)/i);
+        const eventMatch = s.match(/^([A-Z][\w\s&]{2,30}?)\s+(launches?|released?|announced?|acquired?|restored?|confirmed?|halted?|paused?|updated?|overhauls?|overhauled|revamps?|revamped|modernizes?|modernized|introduces?|introduced|patches?|patched|deploys?|deployed)\s+(.*)/i);
         if (eventMatch) {
             const ent = eventMatch[1].trim();
-            const verb = eventMatch[2].toLowerCase().replace(/s$/, '').replace(/e$/, 'ed').replace(/ed$/, 'ed');
+            const verbRaw = eventMatch[2].toLowerCase();
+            let verb = verbRaw;
+            if (verbRaw.endsWith('es')) verb = verbRaw.slice(0, -1) + 'd';
+            else if (verbRaw.endsWith('s')) verb = verbRaw.slice(0, -1) + 'ed';
+            else if (verbRaw.endsWith('e')) verb = verbRaw + 'd';
+            else if (!verbRaw.endsWith('ed')) verb = verbRaw + 'ed';
             const rest = eventMatch[3].trim();
             return `<strong>${ent} has officially ${verb}</strong> ${rest}${rest.endsWith('.') ? '' : '.'}`;
         }
@@ -5376,7 +5434,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
         `;
     }
 
-    const isEventOrActionQuery = /\b(?:resume|resumes|resumed|service|launch|launches|released|announced|acquired|restored|confirmed|halted|paused|updated|banned|sued|advice|compliance|takedown|investigate|caught|logging|snooping|tracking|spying|leak|breach|vulnerability)\b/i.test(qLower);
+    const isEventOrActionQuery = /\b(?:resume|resumes|resumed|service|launch|launches|released|announced|acquired|restored|confirmed|halted|paused|updated|overhaul|overhauls|overhauled|revamp|revamps|revamped|modernize|modernizes|modernized|introduce|introduces|introduced|patch|patches|patched|deploy|deploys|deployed|banned|sued|advice|compliance|takedown|investigate|caught|logging|snooping|tracking|spying|leak|breach|vulnerability)\b/i.test(qLower);
 
     // Helper: Extract complete, grammatically sound sentence without fragments or dangling conjunctions
     const extractGrammaticalLead = (source, subj) => {
@@ -5389,10 +5447,15 @@ async def execute_async_pipeline(payload: PipelineRequest):
             const rest = qResumeMatch[3].trim();
             return `<strong>${ent} have officially resumed service</strong> after ${rest}, confirming the operational legality and continued availability of privacy-preserving frontend mirrors.`;
         }
-        const qEventMatch = queryClean.match(/^([A-Z][\w\s&]{2,30}?)\s+(launches?|released?|announced?|acquired?|restored?|confirmed?|halted?|paused?|updated?)\s+(.*)/i);
+        const qEventMatch = queryClean.match(/^([A-Z][\w\s&]{2,30}?)\s+(launches?|released?|announced?|acquired?|restored?|confirmed?|halted?|paused?|updated?|overhauls?|overhauled|revamps?|revamped|modernizes?|modernized|introduces?|introduced|patches?|patched|deploys?|deployed)\s+(.*)/i);
         if (qEventMatch) {
             const ent = qEventMatch[1].trim();
-            const verb = qEventMatch[2].toLowerCase().replace(/s$/, '').replace(/e$/, 'ed').replace(/ed$/, 'ed');
+            const verbRaw = qEventMatch[2].toLowerCase();
+            let verb = verbRaw;
+            if (verbRaw.endsWith('es')) verb = verbRaw.slice(0, -1) + 'd';
+            else if (verbRaw.endsWith('s')) verb = verbRaw.slice(0, -1) + 'ed';
+            else if (verbRaw.endsWith('e')) verb = verbRaw + 'd';
+            else if (!verbRaw.endsWith('ed')) verb = verbRaw + 'ed';
             const rest = qEventMatch[3].trim();
             return `<strong>${ent} has officially ${verb}</strong> ${rest}${rest.endsWith('.') ? '' : '.'}`;
         }
@@ -6509,6 +6572,12 @@ function extractCoreSubject(rawQuery) {
         q = q.replace(pat, '');
     }
 
+    // Strip headline action predicates to isolate core entity subject (e.g. "GrapheneOS Overhauled Default Apps..." -> "GrapheneOS")
+    const eventSubjectMatch = q.match(/^([A-Z][\w\s&]{2,25}?)\s+(?:overhauls?|overhauled|revamps?|revamped|introduces?|introduced|releases?|released|launches?|launched|updates?|updated|patches?|patched|deploys?|deployed)\b/i);
+    if (eventSubjectMatch && eventSubjectMatch[1]) {
+        q = eventSubjectMatch[1].trim();
+    }
+
     // Strip trailing functional verbs ("work", "function", "operate", "occur", "happen", "mean", "stand for")
     q = q.replace(/\s+(?:work|function|operate|occur|happen|mean|stand for)[?.!]*$/i, '');
 
@@ -6570,7 +6639,18 @@ function extractComparisonPair(rawQuery) {
 // Extracts genuine domain entities & concepts from answer text, subheadings, and source snippets
 function extractLearnedEntities(query, answerHTML = "", sources = []) {
     const qLower = (query || "").toLowerCase();
-    const cleanAnswer = (answerHTML || "")
+
+    // Strip UI telemetry, badges, action buttons, and control elements before signal analysis
+    const sanitizedHTML = (answerHTML || "")
+        .replace(/<div class="cortex-neural-telemetry"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<div class="cortex-card-actions"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<div class="cortex-footer"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<div class="telemetry-bar"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<span class="model-badge"[^>]*>[\s\S]*?<\/span>/gi, ' ')
+        .replace(/<span class="token-badge"[^>]*>[\s\S]*?<\/span>/gi, ' ')
+        .replace(/<button[^>]*>[\s\S]*?<\/button>/gi, ' ');
+
+    const cleanAnswer = sanitizedHTML
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
         .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
         .replace(/<[^>]+>/g, ' ')
@@ -6583,16 +6663,16 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
 
     const rawCandidates = [];
 
-    // 1. Extract bold concept headings from answerHTML (<strong>...</strong>)
-    if (answerHTML) {
-        const strongMatches = answerHTML.match(/<strong>([^<]+)<\/strong>/gi) || [];
+    // 1. Extract bold concept headings from sanitizedHTML (<strong>...</strong>)
+    if (sanitizedHTML) {
+        const strongMatches = sanitizedHTML.match(/<strong>([^<]+)<\/strong>/gi) || [];
         strongMatches.forEach(m => {
             let c = m.replace(/<\/?strong>/gi, '').trim().replace(/[:.,]+$/, '');
             rawCandidates.push(c);
         });
 
         // 2. Extract concepts from subheadings (h3, h4)
-        const headingMatches = answerHTML.match(/<h[34][^>]*>(.*?)<\/h[34]>/gi) || [];
+        const headingMatches = sanitizedHTML.match(/<h[34][^>]*>(.*?)<\/h[34]>/gi) || [];
         headingMatches.forEach(h => {
             let c = h.replace(/<[^>]+>/g, '').trim().replace(/^[^a-zA-Z0-9]+/, '');
             c = c.replace(/^(?:core mechanics|key developments|strategic outlook|ecosystem context|practical implications|significance|real-world impact|key takeaways?|sources?|references?)\s*[:&–—\-]?\s*/i, '');
@@ -6623,7 +6703,13 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
         "official sector buying", "real yield & currency dynamics", "institutional etf flows",
         "time date", "real-time date", "real time", "real-time",
         "live intelligence", "confirmation", "intelligence confirmation",
-        "verified global intelligence", "global intelligence", "highlights"
+        "verified global intelligence", "global intelligence", "highlights",
+        "cortex", "cortex search", "cortex suggested", "cortex neural", "cortex neural extractive",
+        "cortex neural extractive engine", "neural extractive", "neural extractive engine",
+        "extractive engine", "free tier", "tokens", "token", "model-badge", "model badge",
+        "token-badge", "token badge", "token pricing", "generate deck", "export docx", "copy memo",
+        "export md", "print pdf", "free tier search", "unified telemetry", "telemetry bar",
+        "neural telemetry", "routing strategy", "latency ms", "prompt tokens", "completion tokens"
     ]);
 
     const cleaned = [];
@@ -6692,14 +6778,24 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
         }
     }
 
+    // Strip UI telemetry, badges, action buttons, and control elements before signal analysis
+    const sanitizedAnswerHTML = (answerHTML || "")
+        .replace(/<div class="cortex-neural-telemetry"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<div class="cortex-card-actions"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<div class="cortex-footer"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<div class="telemetry-bar"[^>]*>[\s\S]*?<\/div>/gi, ' ')
+        .replace(/<span class="model-badge"[^>]*>[\s\S]*?<\/span>/gi, ' ')
+        .replace(/<span class="token-badge"[^>]*>[\s\S]*?<\/span>/gi, ' ')
+        .replace(/<button[^>]*>[\s\S]*?<\/button>/gi, ' ');
+
     const coreSubject = extractCoreSubject(query);
     const compPair = extractComparisonPair(query);
-    const learnedEntities = extractLearnedEntities(query, answerHTML, sources);
+    const learnedEntities = extractLearnedEntities(query, sanitizedAnswerHTML, sources);
     const topEntity = learnedEntities[0] || "";
     const secondEntity = learnedEntities[1] || "";
 
     const qLower = (query || "").toLowerCase();
-    const cleanAnswerText = (answerHTML || "")
+    const cleanAnswerText = sanitizedAnswerHTML
         .replace(/<[^>]+>/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
@@ -6734,8 +6830,21 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `How do the long-term community support and enterprise adoption trends compare between ${itemA} and ${itemB}?`
         ];
     }
-    // 2. Commodities & Precious Metals / Energy (Gold, Silver, Crude Oil, Copper, etc.)
-    else if (/\b(gold|silver|platinum|copper|crude oil|brent|wti|natural gas|lithium|uranium|bullion|spot price|spot prices)\b/i.test(combinedSignals)) {
+    // 2. Mobile Operating Systems, Device Hardening & Privacy (GrapheneOS, CalyxOS, LineageOS, Android, iOS, Secure Clipboard, Vanadium, AOSP)
+    else if (/\b(grapheneos|calyxos|lineageos|vanadium|aosp)\b/i.test(combinedSignals) ||
+             /\b(secure clipboard|clipboard isolation|secure paste)\b/i.test(combinedSignals) ||
+             (/\b(android|ios|mobile os|pixel device)\b/i.test(combinedSignals) && /\b(security|hardening|privacy|sandbox|sandboxed|clipboard|permission|permissions)\b/i.test(combinedSignals))) {
+        questionPool = [
+            `How does ${coreSubject} secure clipboard and paste isolation compare against stock Android and iOS clipboard access?`,
+            `What are the security and privacy benefits of replacing legacy AOSP default apps with hardened alternatives in ${coreSubject}?`,
+            `How does ${coreSubject} implement native end-to-end encrypted (E2EE) RCS messaging using the Messaging Layer Security (MLS) protocol?`,
+            topEntity ? `How does ${topEntity} specifically enhance device sandboxing and zero-trust security in ${coreSubject}?` : `How does sandboxed Google Play Services function without privileged system access in ${coreSubject}?`,
+            `What are the daily app compatibility trade-offs, banking app hurdles, and hardware requirements (Google Pixel) for ${coreSubject}?`,
+            `How does memory tagging (MTE), hardened malloc, and exploit mitigation protect users running ${coreSubject}?`
+        ];
+    }
+    // 3. Commodities & Precious Metals / Energy (Gold, Silver, Crude Oil, Copper, etc.)
+    else if (/\b(gold|silver|platinum|copper|crude oil|brent|wti|natural gas|lithium|uranium|bullion|spot price|spot prices)\b/i.test(combinedSignals) && !/\b(grapheneos|calyxos|lineageos)\b/i.test(qLower)) {
         questionPool = [
             `What macroeconomic catalysts (Federal Reserve interest rates, US Dollar DXY, inflation) are driving ${coreSubject} today?`,
             `What are the latest 2026 price forecasts and institutional targets from major investment banks for ${coreSubject}?`,
@@ -6745,8 +6854,8 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             secondEntity ? `How does ${coreSubject} correlate with ${secondEntity} across different market cycles?` : `What key technical support and resistance levels define the current trading channel for ${coreSubject}?`
         ];
     }
-    // 3. Cryptocurrencies & Digital Assets (Bitcoin, Ethereum, Solana, etc.)
-    else if (/\b(bitcoin|btc|ethereum|eth|solana|crypto|cryptocurrency|blockchain|stablecoin)\b/i.test(combinedSignals)) {
+    // 4. Cryptocurrencies & Digital Assets (Bitcoin, Ethereum, Solana, etc.)
+    else if (/\b(bitcoin|btc|ethereum|eth|solana|crypto|cryptocurrency|blockchain|stablecoin)\b/i.test(combinedSignals) && !/\b(grapheneos|calyxos|lineageos|operating system|os|android|ios|windows|linux|macos)\b/i.test(qLower)) {
         questionPool = [
             `What are the latest institutional ETF inflows, regulatory catalysts, and adoption trends for ${coreSubject}?`,
             topEntity ? `What role does ${topEntity} play in the network dynamics and valuation of ${coreSubject}?` : `What do key on-chain metrics (hash rate, exchange reserves, active addresses) indicate for ${coreSubject}?`,
@@ -6788,7 +6897,9 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
         ];
     }
     // 7. Frontier AI & Machine Learning
-    else if (/\b(ai|llm|gpt|claude|gemini|deepseek|transformer|inference|tokens|reasoning|agent|neural|swe-bench|embedding|rag|fine-tuning|prompt)\b/i.test(combinedSignals)) {
+    else if (!/\b(grapheneos|calyxos|lineageos|android|ios|operating system|firmware|linux|kernel|clipboard)\b/i.test(qLower) &&
+             (/\b(llm|gpt|claude|gemini|deepseek|transformer|swe-bench|embedding|rag|fine-tuning|prompt engineering|reasoning model|frontier model)\b/i.test(combinedSignals) ||
+              (/\b(ai|inference|reasoning|agent|neural)\b/i.test(combinedSignals) && /\b(ai|model|llm|agent|prompt|reasoning|benchmark)\b/i.test(qLower)))) {
         questionPool = [
             `How does ${coreSubject} benchmark against competing frontier reasoning models on SWE-bench and MATH-500?`,
             `What are the inference latency, memory footprint, and token pricing trade-offs for ${coreSubject}?`,

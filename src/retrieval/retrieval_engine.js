@@ -15,6 +15,7 @@ class CortexRetrievalEngine {
         if (d.includes('wikipedia.org')) return 1.45;
         if (d.includes('arxiv.org') || d.includes('nature.com') || d.includes('sciencedirect.com')) return 1.40;
         if (d.includes('github.com') || d.includes('python.org') || d.includes('kernel.org') || d.includes('rust-lang.org')) return 1.35;
+        if (d.includes('grapheneos.org') || d.includes('grapheneos.social')) return 1.40;
         if (d.includes('reuters.com') || d.includes('bloomberg.com') || d.includes('wsj.com') || d.includes('ft.com')) return 1.35;
         if (d.includes('sec.gov') || d.includes('federalreserve.gov') || d.includes('treasury.gov')) return 1.40;
 
@@ -223,11 +224,25 @@ class CortexRetrievalEngine {
 
         const knownEntities = [
             'OpenAI', 'Google', 'Apple', 'Microsoft', 'Nvidia', 'Meta', 'Amazon', 'Anthropic',
-            'DeepSeek', 'Tesla', 'LG', 'LG Electronics', 'Samsung', 'Sony', 'Nitter', 'Twitter', 'Linux', 'Python', 'Rust', 'Docker',
+            'DeepSeek', 'Tesla', 'LG', 'LG Electronics', 'Samsung', 'Sony', 'Nitter', 'Twitter',
+            'GrapheneOS', 'CalyxOS', 'LineageOS', 'Android', 'iOS', 'webOS', 'Tizen', 'macOS', 'Windows',
+            'Linux', 'Ubuntu', 'Debian', 'Fedora', 'Arch Linux', 'Python', 'Rust', 'Docker',
             'Kubernetes', 'TypeScript', 'JavaScript', 'FastAPI', 'PyTorch', 'TensorFlow', 'Ethereum',
-            'Bitcoin', 'Tim Cook', 'Satya Nadella', 'Sam Altman', 'Jensen Huang', 'Elon Musk',
+            'Bitcoin', 'Signal', 'Telegram', 'WhatsApp', 'Tor', 'Tim Cook', 'Satya Nadella', 'Sam Altman', 'Jensen Huang', 'Elon Musk',
             'Sycamore', 'OpenRouter'
         ];
+
+        const actionVerbs = new Set([
+            'overhaul', 'overhauls', 'overhauled', 'release', 'releases', 'released',
+            'launch', 'launches', 'launched', 'announce', 'announces', 'announced',
+            'revamp', 'revamps', 'revamped', 'modernize', 'modernizes', 'modernized',
+            'introduce', 'introduces', 'introduced', 'patch', 'patches', 'patched',
+            'deploy', 'deploys', 'deployed', 'fix', 'fixes', 'fixed',
+            'update', 'updates', 'updated', 'acquire', 'acquires', 'acquired',
+            'restore', 'restores', 'restored', 'halt', 'halts', 'halted',
+            'pause', 'pauses', 'paused', 'confirm', 'confirms', 'confirmed',
+            'ban', 'bans', 'banned', 'sue', 'sues', 'sued'
+        ]);
 
         // 1. Check for recognized high-priority knowledge entities
         let detectedPrimary = "";
@@ -244,17 +259,26 @@ class CortexRetrievalEngine {
             .map(w => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ''))
             .filter(w => w.length > 1 && !stopWords.has(w.toLowerCase()));
 
-        // 2. Extract named entity candidates, excluding generic sentence-initial words
+        // 2. Extract named entity candidates, excluding generic words and action verbs
         const namedEntities = [];
         let currentGroup = [];
         for (let idx = 0; idx < words.length; idx++) {
             const cleanW = words[idx].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
             if (!cleanW) continue;
 
+            const cleanWLower = cleanW.toLowerCase();
+            if (actionVerbs.has(cleanWLower)) {
+                if (currentGroup.length > 0) {
+                    namedEntities.push(currentGroup.join(' '));
+                    currentGroup = [];
+                }
+                continue;
+            }
+
             const isFirstWord = (idx === 0);
-            const isGenericFirst = isFirstWord && genericWords.has(cleanW.toLowerCase());
-            const isCamelOrAcronym = /[a-z][A-Z]/.test(cleanW) || (/^[A-Z]{2,6}$/.test(cleanW) && !stopWords.has(cleanW.toLowerCase()));
-            const isCapitalized = /^[A-Z]/.test(cleanW) && !stopWords.has(cleanW.toLowerCase()) && !isGenericFirst;
+            const isGenericFirst = isFirstWord && genericWords.has(cleanWLower);
+            const isCamelOrAcronym = /[a-z][A-Z]/.test(cleanW) || (/^[A-Z]{2,6}$/.test(cleanW) && !stopWords.has(cleanWLower));
+            const isCapitalized = /^[A-Z]/.test(cleanW) && !stopWords.has(cleanWLower) && !isGenericFirst;
 
             if (isCamelOrAcronym || isCapitalized) {
                 currentGroup.push(cleanW);
