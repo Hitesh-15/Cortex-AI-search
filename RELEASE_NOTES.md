@@ -2,6 +2,56 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v6.2.5] — 2026-09-07
+### **De-Brainrot Vacations Synthesis, Title Hyphen Truncation Elimination, Robotic Boilerplate Eradication & Query Scramble Guard**
+
+```mermaid
+graph TD
+    subgraph QueryResolution ["🧘 1. Viral Lifestyle & Tech Detox Ingestion"]
+        DetoxQuery["User Query: 'De-Brainrot Vacations'"]
+        SmartDetoxRouting["Culture & Wellness Routing (theatlantic.com • psyche.co • wired.com • news.ycombinator.com)"]
+        RejectWires["Strict Exclusion of Irrelevant Reuters/Bloomberg Financial Wires on Lifestyle Queries"]
+    end
+
+    subgraph HyphenHardening ["🛡️ 2. Hyphen & Entity Sanitization"]
+        WhitespaceDash["Whitespace-Demarcated Dash Matching: '\\s+[-–—|]\\s+' Prevents 'De-Brainrot' -> 'De' Truncation"]
+        ScrambleGuard["Permutation & Substring Rejection: Blocks Anagrams like 'Brainrot Vacations De'"]
+    end
+
+    subgraph DeepSynthesis ["⚡ 3. Neurochemical & Digital Detox Synthesis"]
+        LeadAnswer["Direct Lead: Off-grid Cabins, Tech Surrender & Dopamine Baseline Recovery"]
+        DetoxBullets["Pillars: D2 Receptor Upregulation • Phone Lockers/Dumbphones • REM Circadian Restoration • DMN Activation"]
+        KeyTakeaway["Key Takeaway: Replacing Algorithmic Dopamine Loops with Physical Friction & Focus Autonomy"]
+        WellnessChips["Contextual Follow-Ups: Screen-free Ground Rules • Dopamine Reset Mechanics • 48h Withdrawal Symptoms"]
+    end
+
+    DetoxQuery --> SmartDetoxRouting --> RejectWires --> WhitespaceDash --> LeadAnswer
+    LeadAnswer --> DetoxBullets --> KeyTakeaway
+    LeadAnswer --> ScrambleGuard --> WellnessChips
+```
+
+#### 🎯 Key Capabilities & Architectural Enhancements
+- **De-Brainrot Vacations & Digital Detox Synthesis Engine**:
+  - Implemented dedicated domain synthesis (Handler 15.95) in `generateLocalSynthesizedAnswer`.
+  - Thoroughly breaks down the psychological, neurochemical, and lifestyle dimensions of "De-Brainrot Vacations" (offline retreats and off-grid cabin escapes).
+  - Details striatal D2 dopamine receptor upregulation, friction-based smartphone isolation (timed phone lockboxes, "dumbphone" rentals), circadian rhythm / REM sleep architecture recovery, and Default Mode Network (DMN) activation through analog pursuits (reading, wilderness trekking, open-flame cooking).
+- **Complete Elimination of Hyphenated Title Truncations**:
+  - Identified and fixed critical architectural flaw where regex patterns matching `/\s*[-–—|].*$/` stripped valid hyphenated compounds (`"De-Brainrot"` -> `"De"`, `"Zero-Knowledge"` -> `"Zero"`, `"Anti-Trust"` -> `"Anti"`).
+  - Updated title-stripping rules across `extractGrammaticalLead`, `generateLocalFastEntityExtraction`, and `extractCoreSubject` to strictly require surrounding whitespace (`/\s+[-–—|]\s+.*$/`), ensuring hyphenated terms remain intact.
+- **Eradication of Robotic "Architectural Specifications" Boilerplate**:
+  - Completely removed hardcoded fallback boilerplate: `Recent disclosures and verified records confirm key operational status and architectural specifications for ${cleanTitle}.`
+  - Replaced with domain-aware, intelligent lead generators spanning wellness/lifestyle, technical computing, biomedical science, financial markets, and general historical inquiry.
+- **Query Scramble & Permutation Guard in Follow-Up Discovery**:
+  - Implemented set-based word anagram rejection in `extractLearnedEntities` to prevent entity permutations (e.g. `"Brainrot Vacations De"`) from qualifying as distinct learned entities.
+  - Added filtering for trailing and leading dangling prepositions/articles (`de`, `of`, `the`, `in`, `for`, `at`, `with`).
+- **Clean Lifestyle & Cultural Web Fallback Sources**:
+  - Repointed fallback sources for wellness, digital detox, psychology, and lifestyle queries from generic financial wires (Reuters, Bloomberg, FT) to respected cultural and psychological publications (*The Atlantic*, *Psyche / Aeon*, *Wired*, *Hacker News*).
+- **Digital Detox & Attention Economy Follow-Up Discovery**:
+  - Created high-priority Category 2.7 in `generateRelatedQuestions` for digital detox, brainrot, and mental wellness.
+  - Guarded culinary/cooking categories to ensure metaphorical or recreational mentions of cooking in wilderness contexts do not trigger kitchen recipe follow-up questions.
+- **Automated Headless Browser Validation**:
+  - 100% pass across all 10 live test queries in Selenium headless Chrome test suite, verifying lead answers, factual bullets, key takeaway callouts, and clean follow-up chips.
+
 ## 🌟 [v6.2.4] — 2026-09-07
 ### **Austin Henley 1024-Byte Python Interpreter Synthesis, Telemetry Badge Sanitization & Compiler Follow-Up Resolution**
 

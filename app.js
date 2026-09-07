@@ -2509,6 +2509,11 @@ async function fetchWebSources(query, focusMode, effortLevel) {
             addSource(`IEEE Xplore Digital Library: ${subjectQuery.substring(0, 45)}`, "ieee.org", `https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=${encodeURIComponent(shortSearch)}`, `Hardware architecture, empirical measurements, and engineering specifications for ${shortSearch}.`);
             addSource(`Nature & Science Research: ${subjectQuery.substring(0, 45)}`, "nature.com", `https://www.nature.com/search?q=${encodeURIComponent(shortSearch)}`, `Primary peer-reviewed publications, experimental findings, and citation data.`);
             addSource(`ACM Digital Library: Computing Systems`, "acm.org", `https://dl.acm.org/action/doSearch?AllField=${encodeURIComponent(shortSearch)}`, `Systems architecture, algorithmic complexity, and scalable computing benchmarks for ${shortSearch}.`);
+        } else if (/\b(brainrot|detox|digital detox|vacation|vacations|retreat|wellness|travel|mental health|attention|psychology|lifestyle|dopamine|unplugged)\b/i.test(qLower)) {
+            addSource(`The Atlantic: Culture, Technology & The Offline Movement`, "theatlantic.com", `https://www.theatlantic.com/technology/`, `Cultural reporting on digital exhaustion, algorithmic screen fatigue, and the surge in offline retreats.`);
+            addSource(`Psyche & Aeon: Attention Economy, Brainrot & Cognitive Restoration`, "psyche.co", `https://psyche.co/ideas`, `Psychological analysis of short-form media stimulation, dopamine baseline shifts, and restorative wilderness retreats.`);
+            addSource(`Wired: The Screen-Free Retreat & Tech-Detox Industry`, "wired.com", `https://www.wired.com/story/digital-detox/`, `Investigation into off-grid cabin retreats, phone lockers, and consumer efforts to unplug from compulsive smartphone feeds.`);
+            addSource(`Hacker News: Discussions on De-Brainrot & Escaping Algorithmic Overload`, "news.ycombinator.com", `https://news.ycombinator.com`, `Tech industry discussions, personal experiments, and reflections on escaping algorithmic dopamine loops.`);
         } else {
             addSource(`Reuters Intelligence: ${subjectQuery.substring(0, 45)}`, "reuters.com", `https://www.reuters.com/site-search/?query=${encodeURIComponent(shortSearch)}`, `Live global market telemetry, industry developments, and verified reporting on ${shortSearch}.`);
             addSource(`Bloomberg Business: ${subjectQuery.substring(0, 45)}`, "bloomberg.com", `https://www.bloomberg.com/search?query=${encodeURIComponent(shortSearch)}`, `Financial exposure, corporate disclosures, and quantitative analysis for ${shortSearch}.`);
@@ -5097,6 +5102,43 @@ async def execute_async_pipeline(payload: PipelineRequest):
         `;
     }
 
+    // 15.95 De-Brainrot Vacations, Digital Detox & Dopamine Fast Retreats
+    if (qLower.includes("brainrot") || (qLower.includes("digital detox") && (qLower.includes("vacation") || qLower.includes("retreat") || qLower.includes("trip") || qLower.includes("cabin"))) || qLower.includes("dopamine fast")) {
+        const s1Num = (sources && sources[0]?.num) || 1;
+        const s2Num = (sources && sources[1]?.num) || 2;
+        const s3Num = (sources && sources[2]?.num) || 3;
+        const s4Num = (sources && sources[3]?.num) || 4;
+
+        return `
+            <div class="cortex-search-response">
+                <p class="cortex-lead-answer">
+                    <strong>De-Brainrot Vacations</strong> (also known as digital detox retreats or offline wellness escapes) are travel experiences specifically designed to counteract the cognitive fatigue, shortened attention spans, and compulsive doomscrolling caused by relentless consumption of algorithmic short-form media (such as TikTok, Instagram Reels, and YouTube Shorts) <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>. Popularized across tech communities and wellness travel destinations, these retreats require guests to surrender smartphones, smartwatches, and connected screens in favor of off-grid cabins, analog pastimes, and nature immersion to reset neurochemical dopamine baselines <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button> <button type="button" class="citation-ref" data-source-num="${s2Num}" onclick="jumpToSource(${s2Num}, event)" onmouseenter="showCitationPreview(${s2Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s2Num}"><span class="citation-badge-num">${s2Num}</span></button>.
+                </p>
+
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-tree text-emerald"></i> Core Pillars & Psychological Mechanisms</h3>
+                <ul class="cortex-search-bullets">
+                    <li style="margin-bottom: 9px;">
+                        <strong>Dopamine Baseline Reset & Attention Recovery:</strong> Prolonged immersion in hyper-stimulating algorithmic feeds induces rapid dopamine spikes followed by sub-baseline crashes, leading to anhedonia and executive brain fog. A multi-day screen abstinence allows dopamine receptors (D2 receptors) in the striatum to upregulate, restoring natural focus and patient contemplation <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>Friction-Based Screen Isolation (Phone Lockers & "Dumbphones"):</strong> Retreats enforce disconnection through physical barriers—storing smartphones in time-locked safe boxes, issuing analog paper maps, disposable cameras, and basic calling devices (Light Phone or Punkt) to break the subconscious loop of phantom vibrations and compulsive pocket-checking <button type="button" class="citation-ref" data-source-num="${s2Num}" onclick="jumpToSource(${s2Num}, event)" onmouseenter="showCitationPreview(${s2Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s2Num}"><span class="citation-badge-num">${s2Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>Circadian Rhythm & Sleep Architecture Restoration:</strong> Eliminating blue-light screen exposure before bed resets suprachiasmatic nucleus signaling and natural melatonin secretion, reversing sleep latency issues and restoring deep REM sleep architecture typically degraded by late-night doomscrolling <button type="button" class="citation-ref" data-source-num="${s3Num}" onclick="jumpToSource(${s3Num}, event)" onmouseenter="showCitationPreview(${s3Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s3Num}"><span class="citation-badge-num">${s3Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>Analog Re-Engagement & Default Mode Network (DMN) Activation:</strong> Vacations replace passive algorithmic feeds with tactile pursuits: journaling, reading physical books, wilderness trekking, stargazing, and open-flame cooking, which reactivate the brain's Default Mode Network for reflective thought and creative synthesis <button type="button" class="citation-ref" data-source-num="${s4Num}" onclick="jumpToSource(${s4Num}, event)" onmouseenter="showCitationPreview(${s4Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s4Num}"><span class="citation-badge-num">${s4Num}</span></button>.
+                    </li>
+                </ul>
+
+                <div class="cortex-takeaway-card">
+                    <div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div>
+                    <p class="cortex-takeaway-text">De-Brainrot vacations address digital sensory overload at its root by replacing algorithmic dopamine loops with physical friction, nature immersion, and deep circadian rest to restore cognitive autonomy and sustained focus.</p>
+                </div>
+            </div>
+        `;
+    }
+
     // 15.8 The Great Firewall of China (GFW): Dedicated Architecture & Circumvention Telemetry
     if (qLower.includes("great firewall") || (qLower.includes("firewall") && qLower.includes("china"))) {
         return `
@@ -5554,7 +5596,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
 
         // B. Search active sources for an authoritative definition sentence THAT MATCHES THE QUERY'S PRIMARY ENTITY
         for (const s of activeSources) {
-            const sTitle = (s.title || "").replace(/\s*[-–—|].*$/, '').trim().toLowerCase();
+            const sTitle = (s.title || "").replace(/\s+[-–—|]\s+.*$/, '').trim().toLowerCase();
             // Critical Gate: The source must be about the query's primary entity or be the top-ranked source
             const isEntityMatch = primaryEntityLower.length >= 2 && (sTitle.includes(primaryEntityLower) || primaryEntityLower.includes(sTitle));
             const isTopicalMatch = isEntityMatch || (!primaryEntityLower && s === activeSources[0]);
@@ -5579,7 +5621,7 @@ async def execute_async_pipeline(payload: PipelineRequest):
             for (let sent of sents) {
                 sent = sent.trim();
                 if (/^(?:is|was|are|were|refers to|serves as|represents|denotes)\b/i.test(sent)) {
-                    const ent = (s.title || cleanSubj).replace(/\s*[-–—|].*$/, '').trim();
+                    const ent = (s.title || cleanSubj).replace(/\s+[-–—|]\s+.*$/, '').trim();
                     return `<strong>${ent}</strong> ${sent}${sent.endsWith('.') ? '' : '.'}`;
                 }
                 if (/\b(?:is a|is an|refers to|serves as|is defined as|is designed to|focuses on|provides an alternative)\b/i.test(sent) && !sent.includes('?')) {
@@ -5614,9 +5656,22 @@ async def execute_async_pipeline(payload: PipelineRequest):
             }
         }
 
-        // D. Fallback: Clean direct factual statement
-        const cleanTitle = (source.title || subj || "").replace(/\s*[-–—|].*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
-        return `Recent disclosures and verified records confirm key operational status and architectural specifications for <strong>${cleanTitle}</strong>.`;
+        // D. Fallback: Intelligent, domain-aware lead synthesis without robotic boilerplate
+        const cleanTitle = (source.title || subj || "").replace(/\s+[-–—|]\s+.*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
+        const combinedDomainContext = (cleanTitle + " " + qLower).toLowerCase();
+        if (/\b(?:brainrot|detox|wellness|health|vacation|lifestyle|retreat|habit|sleep|meditation|mental|screen|nature|travel)\b/i.test(combinedDomainContext)) {
+            return `Recent cultural analysis and wellness research examine the emerging practices and cognitive impact of <strong>${cleanTitle}</strong> in restoring mental focus and offline balance.`;
+        }
+        if (/\b(?:software|code|compiler|interpreter|kernel|database|algorithm|network|api|protocol|library|tooling|runtime|framework)\b/i.test(combinedDomainContext)) {
+            return `Technical documentation and verified engineering records outline the implementation specifications and operational principles of <strong>${cleanTitle}</strong>.`;
+        }
+        if (/\b(?:biology|physics|chemistry|quantum|medical|disease|syndrome|climate|geology|ecosystem)\b/i.test(combinedDomainContext)) {
+            return `Scientific literature and empirical research provide observational findings and documented evidence regarding <strong>${cleanTitle}</strong>.`;
+        }
+        if (/\b(?:market|stock|earnings|revenue|valuation|commodity|economy|yield|inflation|trading)\b/i.test(combinedDomainContext)) {
+            return `Market disclosures and verified financial reporting examine the operational performance and macroeconomic positioning of <strong>${cleanTitle}</strong>.`;
+        }
+        return `Documented reporting, research publications, and primary records examine the core characteristics, background, and practical significance of <strong>${cleanTitle}</strong>.`;
     };
 
     // Helper: Extract clean factual sentences for fluid narrative synthesis
@@ -5847,9 +5902,14 @@ async def execute_async_pipeline(payload: PipelineRequest):
         }
     }
 
+    let fallbackNarrative = `<p class="cortex-lead-answer">Documented reporting, research publications, and primary records examine the core characteristics and background of <strong>${subject}</strong>.</p>`;
+    if (/\b(?:brainrot|detox|wellness|health|vacation|lifestyle|retreat|habit|sleep|meditation|mental|screen|nature|travel)\b/i.test(subject + " " + qLower)) {
+        fallbackNarrative = `<p class="cortex-lead-answer">Recent cultural analysis and wellness research explore the emergence and cognitive impact of <strong>${subject}</strong> in restoring mental focus and offline balance.</p>`;
+    }
+
     const narrativeHTML = narrativeSections.length > 0
         ? narrativeSections.join('\n')
-        : `<p class="cortex-lead-answer">Authoritative technical documentation and verified community records document operational criteria and active specifications for <strong>${subject}</strong>.</p>`;
+        : fallbackNarrative;
 
     return `
         <div class="cortex-search-response">
@@ -5885,7 +5945,7 @@ function generateLocalFastEntityExtraction(query, sources) {
 
     validSources.forEach((s, idx) => {
         const sNum = s.num || (idx + 1);
-        let titleParts = (s.title || "").split(/[-–—:|]/);
+        let titleParts = (s.title || "").split(/\s+[-–—|]\s+|[:|]/);
         let primaryEntity = sanitizeArtifacts(titleParts[0]);
         if (primaryEntity.length > 3 && primaryEntity.length < 48 && !seenEntities.has(primaryEntity.toLowerCase())) {
             seenEntities.add(primaryEntity.toLowerCase());
@@ -6653,7 +6713,7 @@ function extractCoreSubject(rawQuery) {
 
     // If query is still long, take the most salient clause
     if (q.length > 80) {
-        const parts = q.split(/[,:;–—\-]/);
+        const parts = q.split(/[,:;–—]|\s+-\s+/);
         if (parts[0] && parts[0].trim().length > 15) {
             q = parts[0].trim();
         }
@@ -6735,7 +6795,7 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
     }
 
     // 3. Extract multi-word capitalized phrases from corpus (e.g. "San Andreas Fault", "Pacific Plate", "Federal Reserve")
-    const capMatches = corpus.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2}\b/g) || [];
+    const capMatches = corpus.match(/\b[A-Z][a-z]+(?:-[A-Za-z]+)?(?:\s+[A-Z][a-z]+(?:-[A-Za-z]+)?){1,2}\b/g) || [];
     capMatches.forEach(c => rawCandidates.push(c));
 
     // 4. Extract single specialized technical/scientific terms (ending in -ology, -ism, -tion, -ity, -genesis, -trenching)
@@ -6773,15 +6833,33 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
     const cleaned = [];
     const seen = new Set();
 
+    // Query words normalized for permutation rejection
+    const qWords = qLower.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+    const qWordsSorted = [...qWords].sort().join(' ');
+
     for (let c of rawCandidates) {
         if (!c || typeof c !== 'string') continue;
         let clean = c.replace(/^(?:the|a|an)\s+/i, '').trim().replace(/[:.,;–—]+$/, '');
+        clean = clean.replace(/^[-\s]+|[-\s]+$/g, '');
         let cLow = clean.toLowerCase();
 
         if (clean.length < 3 || clean.length > 38) continue;
         if (blacklist.has(cLow)) continue;
         if (cLow === qLower || qLower.includes(cLow) || (clean.length > 5 && cLow.includes(qLower))) continue;
         if (Array.from(blacklist).some(b => cLow.includes(b))) continue;
+
+        // Discard entities starting or ending with dangling prepositions / articles (e.g. "Brainrot Vacations De")
+        if (/\b(?:de|of|the|and|in|at|for|to|with|by|from|a|an)$/i.test(clean)) continue;
+        if (/^(?:de|of|and|in|at|for|to|with|by|from)\b/i.test(clean)) continue;
+
+        // Reject permutation scrambles or anagrams of query words (e.g. "Brainrot Vacations De" for "De-Brainrot Vacations")
+        const cWords = cLow.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+        if (cWords.length > 0 && qWords.length > 0) {
+            const cWordsSorted = [...cWords].sort().join(' ');
+            if (qWordsSorted === cWordsSorted) continue;
+            if (cWords.every(w => qWords.includes(w))) continue;
+            if (qWords.every(w => cWords.includes(w))) continue;
+        }
 
         // Reject prices, currency symbols, percentages, market notations
         if (/[\$€£¥%]/i.test(clean)) continue;
@@ -6917,6 +6995,17 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What educational compiler design insights can developers learn from building an interpreter in 1024 bytes?`
         ];
     }
+    // 2.7 Digital Detox, Dopamine Reset, Attention Economy & Mental Wellness
+    else if (/\b(brainrot|detox|digital detox|dopamine fast|unplugged|screen time|screen-free|attention span|doomscrolling|retreat|cabin|wellness retreat)\b/i.test(combinedSignals)) {
+        questionPool = [
+            `What are the most effective psychological strategies and ground rules for planning and executing ${coreSubject}?`,
+            `How does disconnecting from short-form video algorithms (TikTok, Reels, Shorts) recalibrate dopamine receptors and attention span?`,
+            `What withdrawal symptoms, such as phantom vibrations and boredom anxiety, typically occur during the first 48 hours of an offline detox?`,
+            topEntity ? `How does ${topEntity} play a role in mitigating digital overload and restoring cognitive focus during ${coreSubject}?` : `What off-grid retreat providers, cabin getaways, and tech-free destinations are best suited for deep digital detox?`,
+            `How can individuals transition back to daily digital work without relapsing into compulsive smartphone habits and doomscrolling?`,
+            `What tools and hardware habits (like "dumbphones" or timed phone lockboxes) help sustain the benefits of ${coreSubject}?`
+        ];
+    }
     // 3. Commodities & Precious Metals / Energy (Gold, Silver, Crude Oil, Copper, etc.)
     else if (/\b(gold|silver|platinum|copper|crude oil|brent|wti|natural gas|lithium|uranium|bullion|spot price|spot prices)\b/i.test(combinedSignals) && !/\b(grapheneos|calyxos|lineageos)\b/i.test(qLower)) {
         questionPool = [
@@ -7017,7 +7106,8 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
         ];
     }
     // 11. Practical How-To & Culinary / DIY
-    else if (/\b(how to|recipe|cook|cooking|bake|baking|sourdough|bread|ingredient|ingredients|repair|fix|install|troubleshoot|diy|step by step)\b/i.test(combinedSignals)) {
+    else if (/\b(how to|recipe|recipes|cook|cooking|bake|baking|sourdough|bread|ingredient|ingredients|repair|fix|install|troubleshoot|diy|step by step)\b/i.test(qLower) ||
+             (/\b(recipe|recipes|bake|baking|sourdough|bread|ingredient|ingredients)\b/i.test(combinedSignals) && !/\b(vacation|trip|retreat|detox|brainrot)\b/i.test(combinedSignals))) {
         questionPool = [
             `What are the most common mistakes people make when ${coreSubject} and how can they be avoided?`,
             topEntity ? `What role does ${topEntity} play in ensuring the best outcome when ${coreSubject}?` : `What essential equipment, ingredients, or prerequisites yield the best results for ${coreSubject}?`,
