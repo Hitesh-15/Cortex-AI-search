@@ -15,7 +15,7 @@ class CortexRetrievalEngine {
         if (d.includes('wikipedia.org')) return 1.45;
         if (d.includes('arxiv.org') || d.includes('nature.com') || d.includes('sciencedirect.com')) return 1.40;
         if (d.includes('github.com') || d.includes('python.org') || d.includes('kernel.org') || d.includes('rust-lang.org')) return 1.35;
-        if (d.includes('grapheneos.org') || d.includes('grapheneos.social')) return 1.40;
+        if (d.includes('grapheneos.org') || d.includes('grapheneos.social') || d.includes('austinhenley.com')) return 1.40;
         if (d.includes('reuters.com') || d.includes('bloomberg.com') || d.includes('wsj.com') || d.includes('ft.com')) return 1.35;
         if (d.includes('sec.gov') || d.includes('federalreserve.gov') || d.includes('treasury.gov')) return 1.40;
 
@@ -226,7 +226,8 @@ class CortexRetrievalEngine {
             'OpenAI', 'Google', 'Apple', 'Microsoft', 'Nvidia', 'Meta', 'Amazon', 'Anthropic',
             'DeepSeek', 'Tesla', 'LG', 'LG Electronics', 'Samsung', 'Sony', 'Nitter', 'Twitter',
             'GrapheneOS', 'CalyxOS', 'LineageOS', 'Android', 'iOS', 'webOS', 'Tizen', 'macOS', 'Windows',
-            'Linux', 'Ubuntu', 'Debian', 'Fedora', 'Arch Linux', 'Python', 'Rust', 'Docker',
+            'Linux', 'Ubuntu', 'Debian', 'Fedora', 'Arch Linux', 'Python', 'CPython', 'MicroPython', 'PyPy',
+            'Austin Henley', 'Austin Z. Henley', 'Rust', 'Docker',
             'Kubernetes', 'TypeScript', 'JavaScript', 'FastAPI', 'PyTorch', 'TensorFlow', 'Ethereum',
             'Bitcoin', 'Signal', 'Telegram', 'WhatsApp', 'Tor', 'Tim Cook', 'Satya Nadella', 'Sam Altman', 'Jensen Huang', 'Elon Musk',
             'Sycamore', 'OpenRouter'
@@ -241,7 +242,10 @@ class CortexRetrievalEngine {
             'update', 'updates', 'updated', 'acquire', 'acquires', 'acquired',
             'restore', 'restores', 'restored', 'halt', 'halts', 'halted',
             'pause', 'pauses', 'paused', 'confirm', 'confirms', 'confirmed',
-            'ban', 'bans', 'banned', 'sue', 'sues', 'sued'
+            'ban', 'bans', 'banned', 'sue', 'sues', 'sued',
+            'make', 'makes', 'making', 'made', 'build', 'builds', 'building', 'built',
+            'create', 'creates', 'creating', 'created', 'implement', 'implements', 'implementing',
+            'write', 'writes', 'writing', 'wrote'
         ]);
 
         // 1. Check for recognized high-priority knowledge entities
