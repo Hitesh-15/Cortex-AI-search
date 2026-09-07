@@ -6346,7 +6346,7 @@ function extractCoreSubject(rawQuery) {
     if (!rawQuery) return "this topic";
     let q = rawQuery.trim();
 
-    // Strip common AI prompt wrappers & dynamic trending prefix phrases
+    // Strip common AI prompt wrappers & conversational prefix phrases
     const prefixPatterns = [
         /^financial analysis,\s*corporate disclosures,\s*and earnings impact of:\s*/i,
         /^detailed technical analysis and market implications of:\s*/i,
@@ -6354,15 +6354,28 @@ function extractCoreSubject(rawQuery) {
         /^analyze developer consensus and technical breakthroughs regarding:\s*/i,
         /^search for recent research,\s*breakthroughs,\s*and analysis on:\s*/i,
         /^what are the top 2026 ai breakthroughs and\s*/i,
-        /^explain how\s*/i,
-        /^what are\s*/i,
-        /^how does\s*/i,
-        /^summarize\s*/i
+        /^who (?:was|is|were|are)\s+/i,
+        /^what (?:is|are|was|were)\s+(?:the\s+)?/i,
+        /^how (?:to|do|does|can|should|would)\s+(?:i\s+|we\s+|you\s+)?/i,
+        /^explain (?:how|why|what|the)\s+/i,
+        /^why (?:is|are|was|were|do|does|did)\s+/i,
+        /^summarize\s+(?:the\s+)?/i,
+        /^overview of\s+(?:the\s+)?/i,
+        /^guide to\s+(?:the\s+)?/i
     ];
 
     for (const pat of prefixPatterns) {
         q = q.replace(pat, '');
     }
+
+    // Grammatical gerund conversions for fluid sentence insertion
+    q = q.replace(/^make\s+/i, 'making ')
+         .replace(/^bake\s+/i, 'baking ')
+         .replace(/^cook\s+/i, 'cooking ')
+         .replace(/^build\s+/i, 'building ')
+         .replace(/^use\s+/i, 'using ')
+         .replace(/^repair\s+/i, 'repairing ')
+         .replace(/^create\s+/i, 'creating ');
 
     // Strip trailing punctuation
     q = q.replace(/[?.!]+$/, '').trim();
@@ -6379,12 +6392,15 @@ function extractCoreSubject(rawQuery) {
 }
 
 // Dynamic Context-Aware Follow-up Questions Generator
+// Learns from the user query, synthesized answer content, takeaway findings, and source evidence
 function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [], previousSteps = []) {
     // 1. Check if LLM embedded custom follow-up questions in output
     if (answerHTML) {
         const followupsMatch = answerHTML.match(/<div class="cortex-followups"[^>]*>(.*?)<\/div>/is);
         if (followupsMatch && followupsMatch[1]) {
-            const parsed = followupsMatch[1].split('|').map(s => s.trim().replace(/^[\d\.\-\*\s]+/, '')).filter(s => s.length > 10);
+            const parsed = followupsMatch[1].split('|')
+                .map(s => s.trim().replace(/^[\d\.\-\*\s]+/, ''))
+                .filter(s => s.length > 12 && s.endsWith('?'));
             if (parsed.length >= 3) {
                 return parsed.slice(0, 3);
             }
@@ -6392,16 +6408,32 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
     }
 
     const coreSubject = extractCoreSubject(query);
+    const qLower = (query || "").toLowerCase();
+    const cleanAnswerText = (answerHTML || "")
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const answerLower = cleanAnswerText.toLowerCase();
 
-    // 2. Extract salient entities & keywords from answer HTML and sources
+    // 2. Extract salient entities, takeaway highlights & concepts from answer HTML
     const entities = [];
     if (answerHTML) {
-        // Extract terms inside strong tags
+        // Extract terms inside strong tags (bold concepts & mechanisms)
         const strongMatches = answerHTML.match(/<strong>([^<]+)<\/strong>/gi) || [];
         strongMatches.forEach(m => {
-            const clean = m.replace(/<\/?strong>/gi, '').trim().replace(/[:.,]+$/, '');
-            if (clean.length > 3 && clean.length < 35 && !/^(executive summary|key takeaways|forward outlook|strategic outlook|summary|breakthroughs|conclusion|overview)$/i.test(clean)) {
+            let clean = m.replace(/<\/?strong>/gi, '').trim().replace(/[:.,]+$/, '');
+            if (clean.length > 3 && clean.length < 40 && 
+                !/^(executive summary|key takeaways?|forward outlook|strategic outlook|summary|breakthroughs?|conclusion|overview|note|analysis|implications)$/i.test(clean)) {
                 entities.push(clean);
+            }
+        });
+
+        // Extract concepts from subheadings (h3, h4)
+        const headingMatches = answerHTML.match(/<h[34][^>]*>(.*?)<\/h[34]>/gi) || [];
+        headingMatches.forEach(h => {
+            const cleanH = h.replace(/<[^>]+>/g, '').trim().replace(/^[^a-zA-Z0-9]+/, '');
+            if (cleanH.length > 5 && cleanH.length < 45 && !/^(sources|citations|workflow|references)/i.test(cleanH)) {
+                entities.push(cleanH);
             }
         });
     }
@@ -6410,18 +6442,24 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
         sources.slice(0, 4).forEach(s => {
             if (s.title) {
                 const cleanT = s.title.replace(/\s+[-|–—]\s+.*$/, '').trim();
-                if (cleanT.length > 5 && cleanT.length < 40 && cleanT.toLowerCase() !== coreSubject.toLowerCase()) {
+                if (cleanT.length > 4 && cleanT.length < 40) {
                     entities.push(cleanT);
                 }
             }
         });
     }
 
-    const uniqueEntities = [...new Set(entities)].filter(e => e.toLowerCase() !== coreSubject.toLowerCase());
+    // Filter out entities that repeat the query or core subject
+    const cLow = coreSubject.toLowerCase();
+    const uniqueEntities = [...new Set(entities)].filter(e => {
+        const eLow = e.toLowerCase();
+        return eLow !== cLow && !eLow.includes(cLow) && !cLow.includes(eLow) && !qLower.includes(eLow) && !/^(what|who|why|how|where|when|the|this)\b/i.test(eLow);
+    });
+
     const topEntity = uniqueEntities[0] || "";
     const secondEntity = uniqueEntities[1] || "";
 
-    // 3. Collect previously asked follow-up questions in this thread to ensure zero repetition
+    // 3. Collect previously asked questions in this thread to ensure zero repetition
     const seenQuestions = new Set();
     if (Array.isArray(previousSteps)) {
         previousSteps.forEach(step => {
@@ -6433,36 +6471,111 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
     }
     const currentStepCount = previousSteps.length;
 
-    // 4. Domain-Specific Dynamic Question Pools
+    // 4. Multi-Domain Intent Learning from Query AND Answer Content
+    const combinedSignals = (qLower + " " + answerLower);
+
+    const isGeologyOrEarthScience = /\b(fault|faulting|earthquake|seismic|volcano|volcanic|tectonic|geology|geologic|tsunami|epicenter|richter|plate boundary|subduction|tremor|crust|geothermal|aftershock)\b/i.test(combinedSignals);
+    const isAIOrML = /\b(ai|llm|gpt|claude|gemini|deepseek|transformer|inference|tokens|reasoning|agent|neural|swe-bench|embedding|rag|fine-tuning|prompt)\b/i.test(combinedSignals);
+    const isSoftwareOrCoding = /\b(python|rust|javascript|typescript|react|vue|angular|docker|kubernetes|api|database|sql|nosql|concurrency|async|compiler|linux|git|caching|http|tcp|endpoint|backend|frontend)\b/i.test(combinedSignals);
+    const isSemiconductorOrHardware = /\b(semiconductor|chip|chips|gpu|gpus|tsmc|nvidia|asml|quantum|qubit|qubits|fusion|wafer|cowos|hbm|dram|lithography|transistor|packaging)\b/i.test(combinedSignals);
+    const isMedicineOrHealth = /\b(disease|syndrome|symptom|symptoms|infection|virus|bacteria|vaccine|treatment|therapy|drug|medication|clinical|cancer|cardiac|neurology|surgery|dosage|physician)\b/i.test(combinedSignals);
+    const isFinanceOrMarkets = focusMode === "finance" || /\b(stock|shares|nasdaq|s&p|treasury|yield|yields|inflation|fed|fomc|interest rate|valuation|margin|earnings|ebitda|pe ratio|crypto|bitcoin|ethereum|bullion|gold spot|dividend)\b/i.test(combinedSignals);
+    const isBiographyOrPerson = /\b(who|born|died|biography|philosopher|marcus|aurelius|caesar|emperor|monarch|ruler|president|prime minister|author|scientist|artist|founder|ceo)\b/i.test(combinedSignals);
+    const isHistoryOrGeopolitics = /\b(war|battle|treaty|election|revolution|empire|dynasty|parliament|constitution|treaty|cold war|historical|century|reign)\b/i.test(combinedSignals);
+    const isHowToOrCooking = /\b(how to|recipe|cook|cooking|bake|baking|sourdough|bread|ingredient|ingredients|repair|fix|install|troubleshoot|diy|step by step)\b/i.test(combinedSignals);
+
     let questionPool = [];
 
-    if (focusMode === "finance") {
+    if (isGeologyOrEarthScience) {
         questionPool = [
-            `What are the projected balance sheet impacts and margin headwinds from ${coreSubject}?`,
-            `How are institutional investors and central banks hedging against ${coreSubject}?`,
-            `What is the consensus analyst price target and EPS forecast adjustment for companies exposed to ${coreSubject}?`,
-            topEntity ? `How will ${topEntity} specifically affect the quarterly guidance and supply chain costs?` : `What are the primary leading economic indicators signaling a pivot in ${coreSubject}?`,
-            `How does the current market response compare to previous inflationary/monetary cycles?`,
-            `What are the downside tail risks and worst-case macroeconomic scenarios over the next 12 months?`
+            `What is the scientific distinction between an active, dormant, and inactive fault?`,
+            `How do seismologists calculate the earthquake recurrence interval and slip rate on an active fault?`,
+            `What are the most historically dangerous or high-risk active fault systems worldwide?`,
+            topEntity ? `How does ${topEntity} influence regional seismic hazard assessments and ground motion?` : `What seismic hazard mapping and early-warning technologies are used along active fault zones?`,
+            `How do strike-slip faults compare with normal and reverse thrust faults in earthquake intensity?`,
+            `What building codes, structural engineering standards, and surface setback zones are enforced near active faults?`
         ];
-    } else if (focusMode === "academic" || focusMode === "code") {
+    } else if (isBiographyOrPerson) {
         questionPool = [
-            `What are the primary architectural bottlenecks and algorithmic trade-offs in ${coreSubject}?`,
-            topEntity ? `How does ${topEntity} benchmark against state-of-the-art alternative implementations in 2026?` : `What do recent peer-reviewed arXiv/IEEE publications conclude about ${coreSubject}?`,
-            `What are the key open research questions and theoretical constraints remaining for ${coreSubject}?`,
-            `How can this approach be optimized for low-latency, distributed production workloads?`,
-            `What empirical reproducibility challenges have researchers identified with ${coreSubject}?`,
-            secondEntity ? `What is the integration pathway between ${coreSubject} and ${secondEntity}?` : `What security vulnerabilities or edge cases exist in ${coreSubject}?`
+            `What are the central philosophical ideas or key contributions associated with ${coreSubject}?`,
+            `What major historical events, political crises, or reforms defined the life of ${coreSubject}?`,
+            `How do modern historians and scholars evaluate the legacy and influence of ${coreSubject}?`,
+            topEntity ? `What was the relationship between ${coreSubject} and ${topEntity}?` : `What key mentors, contemporaries, or rivals shaped the thinking of ${coreSubject}?`,
+            `What primary historical documents, texts, or artifacts record the work of ${coreSubject}?`,
+            `What were the immediate consequences and succession following the era of ${coreSubject}?`
+        ];
+    } else if (isAIOrML) {
+        questionPool = [
+            `How does ${coreSubject} benchmark against competing frontier reasoning models on SWE-bench and MATH-500?`,
+            `What are the inference latency, memory footprint, and token pricing trade-offs for ${coreSubject}?`,
+            topEntity ? `How does ${topEntity} specifically enhance reasoning accuracy in ${coreSubject}?` : `How can developers implement structured outputs, tool use, and agentic workflows with ${coreSubject}?`,
+            `What are the known failure modes, hallucinations, or prompt engineering sensitivities in ${coreSubject}?`,
+            `How does test-time compute scaling and hybrid reasoning function in ${coreSubject}?`,
+            secondEntity ? `How does ${coreSubject} compare directly with ${secondEntity}?` : `What are the recommended fine-tuning and retrieval-augmented generation (RAG) practices for ${coreSubject}?`
+        ];
+    } else if (isSoftwareOrCoding) {
+        questionPool = [
+            `What are the primary architectural bottlenecks and performance trade-offs in ${coreSubject}?`,
+            `What are the most common anti-patterns, memory leaks, or concurrency bugs encountered with ${coreSubject}?`,
+            topEntity ? `How does ${topEntity} integrate into production architectures using ${coreSubject}?` : `Can you provide an idiomatic, production-ready implementation example for ${coreSubject}?`,
+            `How does ${coreSubject} handle state management, error propagation, and distributed scaling?`,
+            secondEntity ? `How does ${coreSubject} compare against ${secondEntity} in real-world benchmarks?` : `What automated testing, linting, and profiling tools are standard for ${coreSubject}?`,
+            `What major breaking changes or architectural shifts were introduced in recent versions of ${coreSubject}?`
+        ];
+    } else if (isSemiconductorOrHardware) {
+        questionPool = [
+            `What are the primary thermal dissipation, packaging, and power density bottlenecks in ${coreSubject}?`,
+            topEntity ? `How does ${topEntity} impact the global manufacturing capacity and delivery lead times?` : `How do advanced packaging methods (like CoWoS or EMIB) influence ${coreSubject}?`,
+            `What is the projected multi-year technology roadmap and wafer yield trajectory for ${coreSubject}?`,
+            `How does ${coreSubject} benchmark against alternative architectural paradigms in compute efficiency?`,
+            `What supply chain dependencies or critical material shortages constrain production of ${coreSubject}?`,
+            `How are hyperscalers and cloud providers adapting their data center infrastructure for ${coreSubject}?`
+        ];
+    } else if (isMedicineOrHealth) {
+        questionPool = [
+            `What are the clinical diagnostic criteria, biomarkers, and differential diagnoses for ${coreSubject}?`,
+            `What do peer-reviewed medical guidelines recommend as first-line evidence-based treatment for ${coreSubject}?`,
+            topEntity ? `What role does ${topEntity} play in the management and clinical outcomes of ${coreSubject}?` : `What are the primary risk factors, contraindications, and lifestyle interventions associated with ${coreSubject}?`,
+            `What recent clinical trials or therapeutic breakthroughs are showing promise for ${coreSubject}?`,
+            `How do healthcare providers monitor progression and long-term prognosis for patients with ${coreSubject}?`,
+            `What are the potential side effects and pharmacological interactions of standard therapies for ${coreSubject}?`
+        ];
+    } else if (isFinanceOrMarkets) {
+        questionPool = [
+            `What are the primary valuation multiples, balance sheet sensitivities, and margin drivers for ${coreSubject}?`,
+            `How are institutional investors and central bank interest rate policies impacting ${coreSubject}?`,
+            topEntity ? `How will ${topEntity} specifically affect earnings forecasts and sector capital allocation?` : `What leading macroeconomic indicators signal a cyclical turning point for ${coreSubject}?`,
+            `What are the worst-case downside tail risks and historical precedent drawdowns for ${coreSubject}?`,
+            `How does current market pricing for ${coreSubject} compare against historical valuation percentiles?`,
+            `What key catalyst dates or corporate disclosures should market participants track for ${coreSubject}?`
+        ];
+    } else if (isHistoryOrGeopolitics) {
+        questionPool = [
+            `What were the primary underlying causes and diplomatic preludes that led to ${coreSubject}?`,
+            `What were the most significant long-term geopolitical and institutional consequences of ${coreSubject}?`,
+            topEntity ? `What specific role did ${topEntity} play in shaping the outcome of ${coreSubject}?` : `How did key leadership decisions alter the trajectory of ${coreSubject}?`,
+            `How do contemporary historians and primary source documents evaluate the legacy of ${coreSubject}?`,
+            `What historical parallels or lessons from ${coreSubject} are most frequently cited today?`,
+            `What were the major social, economic, and demographic ramifications of ${coreSubject}?`
+        ];
+    } else if (isHowToOrCooking) {
+        questionPool = [
+            `What are the most common mistakes people make when ${coreSubject} and how can they be avoided?`,
+            `What essential equipment, ingredients, or prerequisites yield the best results for ${coreSubject}?`,
+            topEntity ? `How does ${topEntity} affect the final outcome or quality of ${coreSubject}?` : `What professional techniques or practical secrets elevate ${coreSubject}?`,
+            `How do you troubleshoot or fix common issues when ${coreSubject}?`,
+            `What are the best variations, substitutions, or advanced modifications for ${coreSubject}?`,
+            `How can ${coreSubject} be prepared ahead of time or stored for optimal longevity?`
         ];
     } else {
-        // Market & Web general
+        // Universal Adaptive Discovery Engine
         questionPool = [
-            `What are the immediate market and consumer ramifications of ${coreSubject}?`,
-            topEntity ? `What regulatory policies or government interventions are being considered for ${topEntity}?` : `What regulatory frameworks and international policy responses are emerging for ${coreSubject}?`,
-            `What are the strongest dissenting arguments and counter-perspectives from industry specialists?`,
-            `How is this expected to reshape competitive dynamics heading into 2027?`,
-            secondEntity ? `What role does ${secondEntity} play in accelerating or mitigating ${coreSubject}?` : `What are the key technological catalysts required to drive widespread adoption?`,
-            `What are the long-term societal and economic ripple effects forecast over the next 3 to 5 years?`
+            `What are the most significant real-world applications and use cases of ${coreSubject}?`,
+            topEntity ? `What is the specific connection between ${topEntity} and ${coreSubject}?` : `What are the most common misconceptions or lesser-known facts regarding ${coreSubject}?`,
+            `How has the scientific and practical understanding of ${coreSubject} evolved in recent years?`,
+            secondEntity ? `How does ${coreSubject} compare with ${secondEntity} in scope and effectiveness?` : `What are the primary challenges or open questions that experts are currently investigating regarding ${coreSubject}?`,
+            `What are the foundational principles or mechanisms that make ${coreSubject} work?`,
+            `What future developments or milestones are expected to shape ${coreSubject} over the next few years?`
         ];
     }
 
@@ -6473,6 +6586,14 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
     const offset = currentStepCount % questionPool.length;
     for (let i = 0; i < questionPool.length && finalQuestions.length < 3; i++) {
         const candidate = questionPool[(offset + i) % questionPool.length];
+        if (!finalQuestions.includes(candidate) && !seenQuestions.has(candidate.toLowerCase())) {
+            finalQuestions.push(candidate);
+        }
+    }
+
+    // If all were seen or pool was small, fallback to guaranteed candidates
+    for (let i = 0; i < questionPool.length && finalQuestions.length < 3; i++) {
+        const candidate = questionPool[i];
         if (!finalQuestions.includes(candidate)) {
             finalQuestions.push(candidate);
         }
