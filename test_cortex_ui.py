@@ -64,12 +64,14 @@ def get_driver():
         opts.add_argument('--headless=new')
         opts.add_argument('--no-sandbox')
         opts.add_argument('--disable-dev-shm-usage')
+        opts.add_argument('--disable-gpu')
         return webdriver.Chrome(options=opts)
     except Exception:
         opts = EdgeOptions()
         opts.add_argument('--headless')
         opts.add_argument('--no-sandbox')
         opts.add_argument('--disable-dev-shm-usage')
+        opts.add_argument('--disable-gpu')
         return webdriver.Edge(options=opts)
 
 def get_free_port():
