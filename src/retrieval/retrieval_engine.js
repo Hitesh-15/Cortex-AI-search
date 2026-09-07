@@ -81,6 +81,16 @@ class CortexRetrievalEngine {
                 return { source: s, score: 0 };
             }
 
+            // Strict Food Service / Restaurant Waiter Homonym Rejection Gate:
+            // If query mentions "servers" or "server" in an IT / software / hosting context (e.g. "Keep Our Servers Running"),
+            // reject restaurant dining staff / waiters / waitresses homonyms unless query explicitly asks about dining / restaurants!
+            const isFoodServiceHomonym = 
+                /\b(?:waiting staff|waiter|waitress|waiters|waitresses|bartender|sommelier|busboy|dining room|restaurant|diner|wine list)\b/i.test(textCorpus) &&
+                !/\b(?:restaurant|food|dining|waiter|waitress|wine|bar|chef|cook)\b/i.test((query || "").toLowerCase());
+            if (isFoodServiceHomonym) {
+                return { source: s, score: 0 };
+            }
+
             // Check how many core terms are matched
             let coreMatches = 0;
             effectiveCoreTerms.forEach(term => {
@@ -117,9 +127,9 @@ class CortexRetrievalEngine {
                 score -= 50;
             }
 
-            // Multi-term coverage penalty: If query has 3+ core terms, a document matching only 1 term is penalized
-            if (effectiveCoreTerms.length >= 3 && coreMatches <= 1 && !textCorpus.includes(query.toLowerCase())) {
-                score = score * 0.3;
+            // Multi-term coverage gate: If query has 3+ core terms, a document matching only 1 term without phrase match or entity match is discarded
+            if (effectiveCoreTerms.length >= 3 && coreMatches <= 1 && !textCorpus.includes(query.toLowerCase()) && sTitleClean !== primaryEntityLower) {
+                score = 0;
             }
 
             // Severe penalty if ZERO core terms or primary entity matched

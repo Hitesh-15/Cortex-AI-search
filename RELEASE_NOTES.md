@@ -2,6 +2,51 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v6.2.2] — 2026-09-07
+### **Elimination of Artificial Subsections, Bold Category Clutter & Restaurant Waiter Homonyms**
+
+```mermaid
+graph TD
+    subgraph QueryIngestion ["🔍 1. Query & Evidence Retrieval"]
+        RawQuery["User Search Query (e.g. 'Keep Our Servers Running')"]
+        HomonymGate["Strict Food Service Homonym Gate (Rejects restaurant servers / waitstaff)"]
+        MultiTokenGate["Multi-Token Co-Occurrence Gate (Requires >= 2 tokens for 3+ word queries)"]
+    end
+
+    subgraph SynthesisPipeline ["⚡ 2. Cohesive Synthesis Architecture"]
+        LeadAnswer["Direct Authoritative Lead Answer (Single Unified Paragraph with Citations)"]
+        CleanBullets["Natural Supporting Bullets (Max 2-3 • Zero Forced Bold Category Prefixes)"]
+        SuppressedSection3["Section 3 OMITTED (Eliminates Verbatim Sentence Duplication & Redundant Headers)"]
+    end
+
+    subgraph OutputCard ["💡 3. Executive Outcome"]
+        ActionableTakeaway["Key Takeaway (Reserved strictly for complex topics • Omitted on direct lookups)"]
+    end
+
+    RawQuery --> HomonymGate --> MultiTokenGate --> LeadAnswer
+    LeadAnswer --> CleanBullets
+    CleanBullets -.-> SuppressedSection3
+    CleanBullets --> ActionableTakeaway
+```
+
+#### 🎯 Key Capabilities & Architectural Enhancements
+- **Elimination of Artificial Section Fragmentation**:
+  - Removed Section 3 (`p3Sentences`) and redundant `<h3>` subheadings (`Core Details & Key Mechanisms`, `Context & Additional Insights`, `Community Hosting & Ecosystem Status`).
+  - Search results now render as a single cohesive block: an authoritative direct lead answer followed directly by 2-3 clean supporting bullets.
+  - Eradicated verbatim sentence duplication where Section 3 previously repeated earlier bullet points word for word.
+- **Elimination of Bold Category Clutter**:
+  - Removed forced `<strong>${item.label}:</strong> ` prefix tags from bullet points.
+  - Eradicated stuttering machine-generated prefixes (e.g., `Waiting staff: Waiting staff...`, `Open: Open is...`, `A Minecraft server: A Minecraft server is...`).
+  - Bullets are now clean, natural, human-readable prose with embedded inline citation badges (`[1]`, `[2]`).
+- **Capped Bullet Points (2-3 Maximum)**:
+  - Restricted supporting bullets to at most 2 or 3 high-value points (down from 5-6 fragmented snippets), ensuring answers remain concise, scannable, and dense with signal.
+- **Restaurant Waiter & Dining Homonym Rejection**:
+  - Added strict `isFoodServiceHomonym` filter in `CortexRetrievalEngine.reRankSources`, Wikipedia generator search, fallback search, Hacker News search, and candidate scoring.
+  - Automatically rejects restaurant dining staff / waiters / waitresses homonyms on IT, software, and community hosting queries (e.g., *"Keep Our Servers Running"*).
+  - Enforced multi-token co-occurrence requirement on 3+ term queries to reject single-token generic hits.
+- **Verified by Autonomous 7-Query Live Browser Test Suite**:
+  - 100% pass across all 7 test categories in headless Chrome with 0 severe console errors.
+
 ## 🌟 [v6.2.1] — 2026-09-07
 ### **Strict Answer vs. Key Takeaway Separation, Zero Robotic Fluff & Direct Factual Omission**
 

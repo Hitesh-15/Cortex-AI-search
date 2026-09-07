@@ -2227,9 +2227,22 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                     continue;
                                 }
 
+                                // Strict Gate: Reject food service / restaurant homonyms (e.g. restaurant servers/waiters) for tech/software queries
+                                const isFoodService = 
+                                    /\b(?:waiting staff|waiter|waitress|waiters|waitresses|bartender|sommelier|busboy|dining room|restaurant|diner|wine list)\b/i.test(combined) &&
+                                    !/\b(?:restaurant|food|dining|waiter|waitress|wine|bar|chef|cook)\b/i.test(qLower);
+                                if (isFoodService) {
+                                    continue;
+                                }
+
+                                const matchingKeyTerms = qKeyTerms.filter(t => t.length > 2 && combined.includes(t));
+                                if (qKeyTerms.length >= 3 && matchingKeyTerms.length < 2 && !combined.includes(cleanQuery.toLowerCase())) {
+                                    continue;
+                                }
+
                                 const isTopical = (wikiTarget && combined.includes(wikiTarget.toLowerCase())) ||
                                                   (primaryEntLower.length >= 2 && combined.includes(primaryEntLower)) ||
-                                                  qKeyTerms.some(t => t.length > 2 && combined.includes(t));
+                                                  matchingKeyTerms.length >= (qKeyTerms.length >= 3 ? 2 : 1);
 
                                 if (!isTopical && !isDigestQuery) {
                                     continue;
@@ -2275,9 +2288,22 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                     continue;
                                 }
 
+                                // Strict Gate: Reject food service / restaurant homonyms for tech/software queries
+                                const isFoodServiceFallback = 
+                                    /\b(?:waiting staff|waiter|waitress|waiters|waitresses|bartender|sommelier|busboy|dining room|restaurant|diner|wine list)\b/i.test(combinedFallback) &&
+                                    !/\b(?:restaurant|food|dining|waiter|waitress|wine|bar|chef|cook)\b/i.test(qLower);
+                                if (isFoodServiceFallback) {
+                                    continue;
+                                }
+
+                                const matchingKeyTermsFallback = qKeyTerms.filter(t => t.length > 2 && combinedFallback.includes(t));
+                                if (qKeyTerms.length >= 3 && matchingKeyTermsFallback.length < 2 && !combinedFallback.includes(cleanQuery.toLowerCase())) {
+                                    continue;
+                                }
+
                                 const isTopicalFallback = (wikiTarget && combinedFallback.includes(wikiTarget.toLowerCase())) ||
                                                           (primaryEntLower.length >= 2 && combinedFallback.includes(primaryEntLower)) ||
-                                                          qKeyTerms.some(t => t.length > 2 && combinedFallback.includes(t));
+                                                          matchingKeyTermsFallback.length >= (qKeyTerms.length >= 3 ? 2 : 1);
 
                                 if (!isTopicalFallback && !isDigestQuery) {
                                     continue;
@@ -2341,8 +2367,12 @@ async function fetchWebSources(query, focusMode, effortLevel) {
 
                                 // Relevance Gate: Story title must match primary entity or core query terms
                                 const titleLower = cleanStoryTitle.toLowerCase();
+                                const matchingHNTerms = qKeyTerms.filter(k => k.length > 2 && titleLower.includes(k));
+                                if (qKeyTerms.length >= 3 && matchingHNTerms.length < 2 && !titleLower.includes(cleanQuery.toLowerCase())) {
+                                    return;
+                                }
                                 const isRelevantStory = (primaryEntLower.length >= 2 && titleLower.includes(primaryEntLower)) ||
-                                                        qKeyTerms.some(k => k.length > 2 && titleLower.includes(k));
+                                                        matchingHNTerms.length >= (qKeyTerms.length >= 3 ? 2 : 1);
                                 if (!isRelevantStory) {
                                     return;
                                 }
@@ -2533,6 +2563,20 @@ function cortexSemanticReRanker(query, rawSources, focusMode) {
             /\b(?:was an?|is an?)\s+(?:[a-z\s]{0,25})(?:physician|politician|businessman|merchant|doctor|nobleman|clergyman|bishop|cricketer|landowner|activist|commentator|journalist)\b/i.test(fullText);
         const isBiographyQuery = /\b(?:who is|who was|biography|born|died|physician|doctor|politician|merchant|ancestry|person|profile|ceo|founder|executive|leader)\b/i.test(qClean) || (sTitleClean === primaryEntityLower && qClean.startsWith('who'));
         if (isHistoricalBiography && !isBiographyQuery) {
+            return { ...s, relevanceScore: -999 };
+        }
+
+        // Strict Gate: Reject food service / restaurant homonyms (e.g. restaurant servers/waiters) for tech/software queries
+        const isFoodServiceHomonym = 
+            /\b(?:waiting staff|waiter|waitress|waiters|waitresses|bartender|sommelier|busboy|dining room|restaurant|diner|wine list)\b/i.test(fullText) &&
+            !/\b(?:restaurant|food|dining|waiter|waitress|wine|bar|chef|cook)\b/i.test(qClean);
+        if (isFoodServiceHomonym) {
+            return { ...s, relevanceScore: -999 };
+        }
+
+        // Multi-term coverage gate: If query has 3+ tokens, reject document matching only 1 token
+        const tokenMatches = qTokens.filter(token => fullText.includes(token));
+        if (qTokens.length >= 3 && tokenMatches.length <= 1 && !fullText.includes(qClean.toLowerCase()) && sTitleClean !== primaryEntityLower) {
             return { ...s, relevanceScore: -999 };
         }
 
@@ -5164,14 +5208,26 @@ async def execute_async_pipeline(payload: PipelineRequest):
             hasStrongKeywordOverlap = true;
         }
 
+        // Discard food service / restaurant homonyms (e.g. restaurant waiters/servers when querying for servers/IT)
+        const isFoodServiceHomonym = /\b(?:waiting staff|waiter|waitress|waiters|waitresses|bartender|sommelier|busboy|dining room|restaurant|diner|wine list)\b/i.test(combinedText) && !/\b(?:restaurant|food|dining|waiter|waitress|wine|bar|chef|cook)\b/i.test(qLower);
+        if (isFoodServiceHomonym) {
+            return;
+        }
+
         // Discard sources that fail token co-occurrence when searching multi-token queries
-        // (e.g. Stephen Harper or Donald Trump on a Great Firewall query)
+        // (e.g. Stephen Harper or Donald Trump on a Great Firewall query, or Minecraft/eDonkey on Keep Our Servers Running)
         const hasCooccurrence = matchingWords.length >= Math.min(2, queryKeywords.length);
         const titleFirstWord = (s.title || "").toLowerCase().replace(/[^a-z0-9]/g, ' ').trim().split(/\s+/)[0];
         const isExactEntityTitle = primaryEntityLower && (titleFirstWord === primaryEntityLower || (s.title || "").toLowerCase().trim() === primaryEntityLower);
+        
+        // Multi-word queries with 3+ words require true co-occurrence or exact title match
+        if (queryKeywords.length >= 3 && !hasCooccurrence && !isExactEntityTitle && idx > 0) {
+            return;
+        }
+
         const hasSemanticRelevance = matchingWords.length >= 1 && (
             isExactEntityTitle ||
-            /\b(?:cpython|interpreter|thread|threads|bytecode|concurrency|mutex|lock|parallel|memory|runtime|operating system|cpu|frontend|proxy|instance|mirror|privacy|client|scraping|service|legal|compliance|api|network)\b/i.test(combinedText)
+            /\b(?:cpython|interpreter|thread|threads|bytecode|concurrency|mutex|lock|parallel|memory|runtime|operating system|cpu|frontend|proxy|instance|mirror|privacy|client|scraping|service|legal|compliance|api)\b/i.test(combinedText)
         );
         if (queryKeywords.length >= 2 && !hasCooccurrence && !hasSemanticRelevance && !isSyntheticSearch) {
             // Protect top authoritative source from fetchWebSources if it has at least 1 match
@@ -5563,147 +5619,22 @@ async def execute_async_pipeline(payload: PipelineRequest):
         const p1FullText = p1Sentences.join(' ');
         narrativeSections.push(`<p class="cortex-lead-answer">${p1FullText}</p>`);
 
-        // Helper: Extract or assign an informative bold concept title for structured scannability
-        const extractConceptLabel = (sentence, source, index, queryLower, subj) => {
-            if (!sentence) return `Core Mechanism`;
+        // Direct factual lookup flag (e.g. who is, capital of, calculate cagr)
+        const isDirectFactualLookup = /^(?:who is|who was|who are|capital of|what is the capital|calculate|cagr|convert|when was|where is|population of)\b/i.test(qLower) ||
+            /\b(?:capital\s+(?:city\s+)?of|cagr\s+from|who\s+is\s+[a-z]+)\b/i.test(qLower);
 
-            const sentLower = (sentence || "").toLowerCase();
-            const sourceTitleLower = (source?.title || "").toLowerCase();
-            const combined = `${sentLower} ${sourceTitleLower}`;
-
-            // 1. Natural grammatical definition pattern
-            const leadMatch = sentence.match(/^([A-Z][\w\s/–-]{2,28}?)(?:\s+(?:is|was|are|were|refers to|serves as|serves|operates|deploys|provides|enforces|features|includes|introduced|manages|synchronizes|utilizes|acts as|allows|restricts|enables)\b|:)/);
-            if (leadMatch && leadMatch[1] && leadMatch[1].trim().length >= 3) {
-                const candidate = leadMatch[1].trim();
-                const isEntitySelf = primaryEntityLower && candidate.toLowerCase() === primaryEntityLower;
-                if (!isEntitySelf && candidate.toLowerCase() !== (subj || "").toLowerCase() && 
-                    !/^(the|this|that|it|these|they|there|one|some|many|several|various|in|on|at|as|for|with)\b/i.test(candidate)) {
-                    return candidate;
-                }
-            }
-
-            // 2. High-signal domain pattern matching
-            if (combined.includes("nitter") || combined.includes("twitter") || combined.includes("instance") || combined.includes("mirror") || combined.includes("xcancel")) {
-                if (combined.includes("legal") || combined.includes("advice") || combined.includes("law") || combined.includes("court") || combined.includes("cease")) {
-                    return "Legal Counsel & Compliance Rationale";
-                }
-                if (combined.includes("resume") || combined.includes("resumed") || combined.includes("service") || combined.includes("restore") || combined.includes("restored")) {
-                    return "Service Resumption & Mirror Network";
-                }
-                if (combined.includes("takedown") || combined.includes("guest") || combined.includes("shut") || combined.includes("break") || combined.includes("halt")) {
-                    return "Takedown Context & Guest Account Deprecation";
-                }
-                if (combined.includes("without tracking") || combined.includes("advertisements") || combined.includes("account") || combined.includes("tracking")) {
-                    return "Ad-Free & Account-Free Privacy Access";
-                }
-                if (combined.includes("browsing") || combined.includes("view user profiles") || combined.includes("cannot be used to sign in")) {
-                    return "Read-Only Browsing & Interaction Scope";
-                }
-                if (combined.includes("working") || combined.includes("active") || combined.includes("directory") || combined.includes("wiki") || combined.includes("codeberg")) {
-                    return "Active Mirror Directory & Self-Hosted Network";
-                }
-                return "Frontend Architecture & Privacy Model";
-            }
-            if (combined.includes("backtrack") || combined.includes("combinatorial") || combined.includes("depth-first") || combined.includes("search tree")) {
-                return "Combinatorial Search & Backtracking";
-            }
-            if (combined.includes("ocaml") || combined.includes("functional") || combined.includes("pattern match")) {
-                return "Functional Implementation in OCaml";
-            }
-            if (combined.includes("constraint") || combined.includes("smt") || combined.includes("z3") || combined.includes("sat solver")) {
-                return "Constraint Satisfaction & SMT Modeling";
-            }
-            if (combined.includes("bytecode") || combined.includes("opcode") || combined.includes("virtual machine") || combined.includes("disassembl")) {
-                return "Instruction Set & VM Disassembly";
-            }
-            if (combined.includes("asic") || combined.includes("fpga") || combined.includes("netlist") || combined.includes("gate")) {
-                return "Gate-Level Logic & Hardware Architecture";
-            }
-            if (combined.includes("exploit") || combined.includes("vulnerability") || combined.includes("security") || combined.includes("ctf")) {
-                return "Vulnerability Analysis & Exploitation";
-            }
-            if (combined.includes("concurrency") || combined.includes("mutex") || combined.includes("thread") || combined.includes("lock")) {
-                return "Concurrency & Process Synchronization";
-            }
-            if (combined.includes("latency") || combined.includes("throughput") || combined.includes("optimiz")) {
-                return "Performance Tuning & Optimization";
-            }
-            if (combined.includes("database") || combined.includes("query") || combined.includes("storage") || combined.includes("sql")) {
-                return "Data Storage & Query Execution";
-            }
-            if (combined.includes("network") || combined.includes("packet") || combined.includes("protocol") || combined.includes("traffic")) {
-                return "Network Protocol & Telemetry";
-            }
-            if (combined.includes("audio") || combined.includes("microphone") || combined.includes("listening") || combined.includes("recording")) {
-                return "Audio Recording & Acoustic Telemetry";
-            }
-            if (combined.includes("snoop") || combined.includes("screen off") || combined.includes("standby") || combined.includes("local device") || combined.includes("lan")) {
-                return "Standby State & LAN Reconnaissance";
-            }
-            if (combined.includes("acr") || combined.includes("automatic content recognition") || combined.includes("telemetry") || combined.includes("tracking")) {
-                return "Automatic Content Recognition & Tracking";
-            }
-            if (combined.includes("smart tv") || combined.includes("webos") || combined.includes("tizen") || combined.includes("firmware")) {
-                return "Smart TV Firmware & webOS Architecture";
-            }
-
-            // 3. High-relevance topic extraction from source title
-            if (source && source.title) {
-                let t = source.title.replace(/\s*[-–—|].*$/, '').trim();
-                t = t.replace(/\s*\([^)]*\)/g, '').trim();
-                if (t.length >= 3 && t.length <= 26 && t.toLowerCase() !== (subj || "").toLowerCase() && !/^(the|wikipedia|home|about)\b/i.test(t)) {
-                    return t;
-                }
-            }
-
-            // 4. Fallback contextual labels based on query intent
-            if (/\b(?:who|ceo|founder|president|leader|person|director|author|minister|born|died)\b/i.test(queryLower)) {
-                const personLabels = [
-                    "Executive Leadership & Role",
-                    "Strategic Vision & Operational Focus",
-                    "Major Milestones & Industry Achievements",
-                    "Organizational Governance & Influence"
-                ];
-                return personLabels[index % personLabels.length];
-            } else if (/\b(?:capital|city|country|where|geography|mountain|river|state|region)\b/i.test(queryLower)) {
-                const geoLabels = [
-                    "Administrative & Governance Seat",
-                    "Geographic & Urban Landscape",
-                    "Historical Planning & Strategic Selection",
-                    "Cultural & National Infrastructure"
-                ];
-                return geoLabels[index % geoLabels.length];
-            } else if (/\b(?:python|rust|code|software|api|framework|architecture|lock|gil|algorithm|compiler|database)\b/i.test(queryLower)) {
-                const techLabels = [
-                    "System Architecture & Runtime Execution",
-                    "Algorithmic Complexity & State Bounds",
-                    "Process Synchronization & Memory Safety",
-                    "Production Integration & Constraints"
-                ];
-                return techLabels[index % techLabels.length];
-            } else {
-                const analyticalLabels = [
-                    "Key Operational Findings",
-                    "Implementation & Methodology",
-                    "Community & Ecosystem Context",
-                    "Practical Implications"
-                ];
-                return analyticalLabels[index % analyticalLabels.length];
-            }
-        };
-
-        // Paragraph 2: Operational Details & Mechanics (Structured Bold Concept Bullets)
+        // Paragraph 2: Operational Details & Key Supporting Facts (Clean Bullets, max 2-3)
         const p2Items = [];
 
         // Check activeSources[0] for any high-value sentence not yet in p1FullText
         for (const sent0 of source0Extras) {
             if (isSentenceDuplicate(sent0, p1FullText)) continue;
-            if (p2Items.length >= 2) break;
-            const label = extractConceptLabel(sent0, activeSources[0], p2Items.length, qLower, subject);
-            p2Items.push({ label, sent: sent0, sNum: s1Num });
+            if (p2Items.length >= 1) break;
+            p2Items.push({ sent: sent0, sNum: s1Num });
         }
 
-        for (let i = 1; i < Math.min(6, activeSources.length); i++) {
+        for (let i = 1; i < Math.min(5, activeSources.length); i++) {
+            if (p2Items.length >= 3) break;
             const s = activeSources[i];
             const sNum = s.num || (i + 1);
 
@@ -5722,21 +5653,15 @@ async def execute_async_pipeline(payload: PipelineRequest):
                 }
                 const alreadyIncluded = p2Items.some(item => isSentenceDuplicate(item.sent, candidateSent));
                 if (!alreadyIncluded) {
-                    const label = extractConceptLabel(candidateSent, s, p2Items.length, qLower, subject);
-                    p2Items.push({ label, sent: candidateSent, sNum });
-                    if (p2Items.length >= 4) break;
-                    // If we have fewer than 3 items, allow a second high-value sentence from the same rich source
-                    if (p2Items.length < 3 && sents.indexOf(candidateSent) === 0 && sents.length > 1) {
-                        continue;
-                    }
+                    p2Items.push({ sent: candidateSent, sNum });
                     break;
                 }
             }
         }
 
-        // Guaranteed fallback: If p2Items is still empty, extract clean snippet text directly from active sources
-        if (p2Items.length === 0) {
-            for (let i = 0; i < Math.min(4, activeSources.length); i++) {
+        // Guaranteed fallback: If p2Items is still empty and query is not a direct factual lookup, extract clean snippet text directly
+        if (p2Items.length === 0 && !isDirectFactualLookup) {
+            for (let i = 1; i < Math.min(3, activeSources.length); i++) {
                 const s = activeSources[i];
                 const sNum = s.num || (i + 1);
                 let rawSnip = s.snippet || s.title || "";
@@ -5750,81 +5675,34 @@ async def execute_async_pipeline(payload: PipelineRequest):
                 if (snip && snip.length >= 20 && !isMetaOrSynthetic && !matchesP1 && !alreadyIncluded) {
                     if (!snip.endsWith('.')) snip += '.';
                     snip = snip.charAt(0).toUpperCase() + snip.slice(1);
-                    const label = extractConceptLabel(snip, s, p2Items.length, qLower, subject);
-                    p2Items.push({ label, sent: snip, sNum });
+                    p2Items.push({ sent: snip, sNum });
+                    if (p2Items.length >= 2) break;
                 }
             }
         }
 
-        let section2Title = "Core Details & Key Mechanisms";
-        let section3Title = "Context & Additional Insights";
-
-        if (/\b(?:snoop|logging|audio|tracking|privacy|telemetry|exploit|breach|vulnerability|camera|microphone|smart tv)\b/i.test(qLower)) {
-            section2Title = "Device Telemetry & Background Operations";
-            section3Title = "Security & Network Implications";
-        } else if (/\b(?:nitter|instance|mirror|takedown)\b/i.test(qLower)) {
-            section2Title = "Architecture, Takedown Background & Mirror Operations";
-            section3Title = "Community Hosting & Ecosystem Status";
-        } else if (/\b(?:who|ceo|founder|president|leader|person|director|author|minister|born|died)\b/i.test(qLower)) {
-            section2Title = "Background & Career Milestones";
-            section3Title = "Leadership, Influence & Impact";
-        } else if (/\b(?:capital|city|country|where|geography|mountain|river|state|region)\b/i.test(qLower)) {
-            section2Title = "Geographic & Administrative Profile";
-            section3Title = "Significance & Modern Development";
-        } else if (/\b(?:reverse|challenge|puzzle|ocaml|solver|smt|z3|ctf|bytecode|exploit|asic)\b/i.test(qLower)) {
-            section2Title = "Algorithmic Mechanics & Deconstruction";
-            section3Title = "Constraint Modeling & Solving Methodology";
-        } else if (/\b(?:python|rust|code|software|api|framework|architecture|lock|gil|algorithm|compiler|database)\b/i.test(qLower)) {
-            section2Title = "Core Mechanics & Architecture";
-            section3Title = "Ecosystem Context & Implementation";
-        } else if (/\b(?:what is|how does|explain|why|how to|meaning)\b/i.test(qLower)) {
-            section2Title = "How It Works & Core Concepts";
-            section3Title = "Context, Applications & Significance";
-        }
-
+        // Render clean, natural supporting bullets without machine-generated bold prefix categories
         if (p2Items.length > 0) {
             const bulletsHtml = p2Items.map(item => `
-                <li style="margin-bottom: 9px;">
-                    <strong>${item.label}:</strong> ${item.sent} <button type="button" class="citation-ref" data-source-num="${item.sNum}" onclick="jumpToSource(${item.sNum}, event)" onmouseenter="showCitationPreview(${item.sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${item.sNum}"><span class="citation-badge-num">${item.sNum}</span></button>
+                <li style="margin-bottom: 8px;">
+                    ${item.sent} <button type="button" class="citation-ref" data-source-num="${item.sNum}" onclick="jumpToSource(${item.sNum}, event)" onmouseenter="showCitationPreview(${item.sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${item.sNum}"><span class="citation-badge-num">${item.sNum}</span></button>
                 </li>
             `).join('');
 
             narrativeSections.push(`
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-layer-group text-cyan"></i> ${section2Title}</h3>
-                <ul class="cortex-search-bullets">
+                <ul class="cortex-search-bullets" style="margin-top: 10px; margin-bottom: 12px;">
                     ${bulletsHtml}
                 </ul>
             `);
         }
 
-        // Paragraph 3: Context & Practical Implications
-        const p3Sentences = [];
-        for (let i = 3; i < Math.min(6, activeSources.length); i++) {
-            const s = activeSources[i];
-            const sNum = s.num || (i + 1);
-            const sents = extractNarrativeSentences(s);
-            if (sents.length > 0) {
-                p3Sentences.push(`${sents[0]} <button type="button" class="citation-ref" data-source-num="${sNum}" onclick="jumpToSource(${sNum}, event)" onmouseenter="showCitationPreview(${sNum}, this)" onmouseleave="hideCitationPreview()" title="Source ${sNum}"><span class="citation-badge-num">${sNum}</span></button>`);
-            }
-        }
-        if (p3Sentences.length > 0) {
-            narrativeSections.push(`
-                <h3 class="cortex-search-subheading"><i class="fa-solid fa-compass text-emerald"></i> ${section3Title}</h3>
-                <p class="cortex-search-paragraph">${p3Sentences.join(' ')}</p>
-            `);
-        }
-
-        // Paragraph 4: Key Takeaway Card (Actionable & High-Level Conclusion)
+        // Paragraph 3: Key Takeaway Card (Actionable & High-Level Conclusion)
         // Strictly reserved for complex, multi-point topics where an executive bottom-line adds DISTINCT value.
         // NEVER repeat the answer or bullet points. NEVER output robotic generic filler.
         // If the query is a direct factual lookup (who is, capital of, calculate CAGR) or short lookup, OMIT THE CARD ENTIRELY.
         let takeawayText = "";
         const cleanSubj = subject.replace(/[?.!]+$/, '').trim();
-
-        const isDirectFactualLookup = /^(?:who is|who was|who are|capital of|what is the capital|calculate|cagr|convert|when was|where is|population of)\b/i.test(qLower) ||
-            /\b(?:capital\s+(?:city\s+)?of|cagr\s+from|who\s+is\s+[a-z]+)\b/i.test(qLower);
-
-        const hasSubstantiveContent = (p2Items.length >= 1 || p3Sentences.length > 0 || isEventOrActionQuery);
+        const hasSubstantiveContent = (p2Items.length >= 1 || isEventOrActionQuery);
 
         if (!isDirectFactualLookup && hasSubstantiveContent) {
             if (/\b(?:snoop|logging|audio|smart tv|camera|microphone|spyware|malware|vulnerability|breach|telemetry|tracking)\b/i.test(qLower) ||
