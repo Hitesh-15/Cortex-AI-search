@@ -29,6 +29,7 @@ Before declaring any task complete:
 
 ## Boundaries / Hard rules
 - **Query Precision & Direct Answer First**: The lead paragraph must directly, concisely, and authoritatively answer the exact question or event queried without any meta-commentary (e.g. "Community reporting on Hacker News..."). The user must receive the bottom-line answer in the very first sentence.
+- **Answer vs. Key Takeaway Differentiation**: The Answer section solves the user query (incident facts, biographical details, math derivation). The Key Takeaway is strictly reserved for distinct, high-signal architectural trade-offs or security mitigations. Never repeat the answer in the takeaway. Direct factual lookups (who is, capital of, calculate CAGR) must omit the Key Takeaway card completely. Zero robotic fallback filler.
 - **Strict Homonym Rejection Invariant**: Never pollute technology, software, web service, or current event queries with unrelated historical biographical figures (e.g. 19th/20th-century physicians, cricketers, noblemen) matching accidental surname homonyms.
 - **UI & Design Invariance**: Modifications to structure, HTML layout, CSS design, themes, or modals must NEVER weaken, bypass, or alter the retrieval ranking, homonym rejection gates, or answer synthesis pipeline. Synthesis logic is completely decoupled from UI styling.
 - **Brand Neutrality**: Never include commercial competitor names, third-party trademarks, or external tool brands in code, comments, or release notes.

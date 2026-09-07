@@ -71,10 +71,11 @@ class CortexRetrievalEngine {
             // reject biographical entries about historical persons (physicians, 18th/19th/early-20th-century figures)
             // that only match an accidental surname homonym!
             const isHistoricalBiography = 
-                /\b(?:physician|oncologist|pediatrician|clergyman|bishop|nobleman|cricketer|landowner)\b/i.test(textCorpus) ||
+                /\b(?:born\s+[A-Za-z]+|\(born\b|\bdied\s+[A-Za-z]+|\(died\b|\bborn\s+(?:in\s+)?[12]\d{3}\b|\bdied\s+(?:in\s+)?[12]\d{3}\b)\b/i.test(textCorpus) ||
+                /\b(?:physician|oncologist|pediatrician|clergyman|bishop|nobleman|cricketer|landowner|activist|actor|actress|author|singer|footballer)\b/i.test(textCorpus) ||
                 (/\b(?:politician|businessman|merchant|general|admiral)\b/i.test(textCorpus) && !/(?:policy|market|economy|business|finance|trade|company|ceo|founder|corporate|government|election)\b/i.test((query || "").toLowerCase())) ||
-                /\([0-9]{1,2}\s+[a-z]+\s+[12]\d{3}\b|\([12]\d{3}\s*[\u2010-\u2015\u2212\-\/]\s*[12]\d{3}\)|\b(?:born|died)\s+(?:in\s+)?[12]\d{3}\b/i.test(textCorpus) ||
-                /\b(?:was an?|is an?)\s+(?:[a-z]+\s+){0,3}(?:physician|politician|businessman|merchant|doctor|nobleman|clergyman|bishop|cricketer|landowner)\b/i.test(textCorpus);
+                /\([0-9]{1,2}\s+[a-z]+\s+[12]\d{3}\b|\([12]\d{3}\s*[\u2010-\u2015\u2212\-\/]\s*[12]\d{3}\)/i.test(textCorpus) ||
+                /\b(?:was an?|is an?)\s+(?:[a-z\s]{0,25})(?:physician|politician|businessman|merchant|doctor|nobleman|clergyman|bishop|cricketer|landowner|activist|commentator|journalist)\b/i.test(textCorpus);
             const isBiographyQuery = /\b(?:who is|who was|biography|born|died|physician|doctor|politician|merchant|ancestry|person|profile|ceo|founder|executive|leader)\b/i.test((query || "").toLowerCase()) || (sTitleClean === primaryEntityLower && (query || "").toLowerCase().startsWith('who'));
             if (isHistoricalBiography && !isBiographyQuery) {
                 return { source: s, score: 0 };
@@ -212,7 +213,7 @@ class CortexRetrievalEngine {
 
         const knownEntities = [
             'OpenAI', 'Google', 'Apple', 'Microsoft', 'Nvidia', 'Meta', 'Amazon', 'Anthropic',
-            'DeepSeek', 'Tesla', 'Nitter', 'Twitter', 'Linux', 'Python', 'Rust', 'Docker',
+            'DeepSeek', 'Tesla', 'LG', 'LG Electronics', 'Samsung', 'Sony', 'Nitter', 'Twitter', 'Linux', 'Python', 'Rust', 'Docker',
             'Kubernetes', 'TypeScript', 'JavaScript', 'FastAPI', 'PyTorch', 'TensorFlow', 'Ethereum',
             'Bitcoin', 'Tim Cook', 'Satya Nadella', 'Sam Altman', 'Jensen Huang', 'Elon Musk',
             'Sycamore', 'OpenRouter'

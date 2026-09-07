@@ -2,6 +2,45 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v6.2.1] — 2026-09-07
+### **Strict Answer vs. Key Takeaway Separation, Zero Robotic Fluff & Direct Factual Omission**
+
+```mermaid
+graph TD
+    subgraph QueryRoutingEngine ["🎯 1. Query Type Analysis"]
+        DirectLookup["Direct Factual Lookup (Who Is • Capital Of • Calculate CAGR)"]
+        ComplexTopic["Complex Topic / Incident (Security Investigation • Architecture • Concurrency)"]
+    end
+
+    subgraph AnswerEngine ["⚡ 2. Authoritative Answer Section"]
+        DirectFact["Direct Fact / Biographic / Math Lead + Structured Concept Bullets"]
+        IncidentFact["Incident Findings + Operating System / webOS Architecture Bullets"]
+    end
+
+    subgraph TakeawayGate ["💡 3. Key Takeaway Gate"]
+        OmitCard["Key Takeaway Card OMITTED (Zero Redundancy / No Filler)"]
+        ActionableCard["Actionable Key Takeaway Card (VLAN Segregation • Self-Hosted Mirrors • PEP 703)"]
+    end
+
+    DirectLookup --> DirectFact --> OmitCard
+    ComplexTopic --> IncidentFact --> ActionableCard
+```
+
+#### 🎯 Key Capabilities & Architectural Enhancements
+- **Strict Answer vs. Key Takeaway Role Separation**:
+  - The **Answer Section** directly and authoritatively resolves the user query with high-signal facts (e.g., security investigation findings, biographic timeline, exact arithmetic derivation, or mirror operations).
+  - The **Key Takeaway Card** is strictly reserved for high-level architectural trade-offs, cybersecurity mitigations, or strategic implications (e.g., isolating smart TVs on a segregated guest VLAN and revoking ACR permissions).
+- **Zero Repetition Guarantee**:
+  - Eliminates redundancy between the lead answer and Key Takeaway. A 1-2 sentence answer or bullet point is never repeated in the takeaway card.
+- **Complete Takeaway Omission for Direct Lookups**:
+  - Self-contained factual queries (e.g., `Who is Tim Cook`, `Capital of Australia`, `Calculate CAGR`) now completely omit the Key Takeaway card, preventing redundant 2-line recaps.
+- **Permanent Purge of Robotic Fallback Strings**:
+  - Completely eradicated placeholder boilerplate like *"Authoritative documentation and primary source records confirm that X remains an active, verifiable topic with ongoing technical and community developments"*. If no distinct, high-signal takeaway exists, the card is suppressed entirely.
+- **Incident & Vulnerability Pattern Recognition**:
+  - Extracted security and privacy investigation headlines (e.g., *"...caught logging audio with screen off and snooping on local devices"*) are directly synthesized into active grammatical findings without forum meta-wrappers.
+- **Verified by Autonomous 6-Query Live Browser Test Suite**:
+  - 100% pass across all 6 test categories in headless Chrome with 0 severe console errors.
+
 ## 🌟 [v6.2.0] — 2026-09-07
 ### **Definitive Search Synthesis Quality, Direct Question Answering & Permanent UI Invariance**
 

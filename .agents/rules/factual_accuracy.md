@@ -34,3 +34,11 @@
 ### 5. Deterministic Math & Quantitative Integrity
 - **Never Guess**: Never estimate CAGR, geometric returns, or statistical metrics. Always compute deterministically via `CortexComputeSandbox`.
 - **Exact Version Fidelity**: Preserve exact version numbers (e.g. 5.1 vs 5.0) and model routing specifications.
+
+### 6. Answer vs. Key Takeaway Separation (Zero Repetition, Zero Robotic Fluff)
+- **Distinct Value Separation**:
+  - The **Answer** section provides the direct factual resolution, incident description, or operational mechanics answering the user's specific query.
+  - The **Key Takeaway** card is strictly reserved for high-level architectural trade-offs, cybersecurity/privacy mitigations, or strategic policy implications.
+- **Never Repeat the Answer**: A 1-2 sentence answer or bullet point must NEVER be repeated inside the Key Takeaway card. If an answer is self-contained, a takeaway card adds zero signal and must not be shown.
+- **Complete Omission on Direct Factual Lookups**: For direct lookups (`who is`, `capital of`, mathematical computations like CAGR, single-fact lookups), the Key Takeaway card must be omitted completely.
+- **Zero Robotic Fluff**: Never emit generic boilerplate like *"Authoritative documentation confirms that X is an active, verifiable topic..."*. If no distinct, high-signal actionable takeaway exists, suppress the card entirely.
