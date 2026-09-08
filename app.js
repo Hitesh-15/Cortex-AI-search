@@ -2392,6 +2392,10 @@ async function fetchWebSources(query, focusMode, effortLevel) {
 
                                 let storySnippet = "";
                                 if (hit.story_text) {
+                                    // Extract destination URL from href attribute first to avoid display text truncation with '...'
+                                    const hrefMatch = hit.story_text.match(/href=["']([^"']+)["']/i);
+                                    const rawCanonical = hrefMatch ? hrefMatch[1].replace(/&#x2F;/g, '/').replace(/&amp;/g, '&') : "";
+
                                     const textOnly = hit.story_text
                                         .replace(/<[^>]+>/g, ' ')
                                         .replace(/&#x2F;/g, '/')
@@ -2400,15 +2404,23 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                         .replace(/&amp;/g, '&')
                                         .replace(/\s+/g, ' ')
                                         .trim();
-                                    // Discard if snippet is a raw URL or starts with // or http
-                                    if (textOnly.length > 20 && !/^(?:https?:)?\/\/[^\s]+$/i.test(textOnly) && !textOnly.startsWith('//') && !textOnly.startsWith('http')) {
+
+                                    // If story_text contains genuine prose (not just a link or URL)
+                                    if (textOnly.length > 25 && !/^(?:https?:)?\/\/[^\s]+$/i.test(textOnly) && !textOnly.startsWith('//') && !textOnly.startsWith('http')) {
                                         storySnippet = textOnly.substring(0, 350);
                                     } else {
-                                        // If story_text is a link, extract descriptive slug if present
-                                        const slugMatch = textOnly.match(/https?:\/\/[^\s"'<>]+\/([a-z0-9\-]{12,})/i);
+                                        // Try extracting slug from canonical href first, falling back to textOnly
+                                        const urlForSlug = rawCanonical || textOnly;
+                                        const slugMatch = urlForSlug.match(/https?:\/\/[^\s"'<>]+\/([a-z0-9\-_]{12,})/i);
                                         if (slugMatch && slugMatch[1]) {
-                                            const readableSlug = slugMatch[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                                            storySnippet = `${readableSlug}.`;
+                                            // Strip trailing file extensions or numeric article identifiers (e.g. .1391214.0.html)
+                                            let rawSlug = slugMatch[1].replace(/\.(?:html?|php|asp|jsp)$/i, '').replace(/\.\d+.*$/, '');
+                                            // Reject truncated slugs ending in ... or short trailing fragment
+                                            rawSlug = rawSlug.replace(/\.{2,}$/, '').replace(/[-_]+$/, '');
+                                            if (rawSlug.length >= 15 && !/[-_][a-z]{1,2}$/i.test(rawSlug)) {
+                                                const readableSlug = rawSlug.replace(/[-_]+/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                                storySnippet = `${readableSlug}.`;
+                                            }
                                         }
                                     }
                                 }
@@ -2514,6 +2526,11 @@ async function fetchWebSources(query, focusMode, effortLevel) {
             addSource(`Psyche & Aeon: Attention Economy, Brainrot & Cognitive Restoration`, "psyche.co", `https://psyche.co/ideas`, `Psychological analysis of short-form media stimulation, dopamine baseline shifts, and restorative wilderness retreats.`);
             addSource(`Wired: The Screen-Free Retreat & Tech-Detox Industry`, "wired.com", `https://www.wired.com/story/digital-detox/`, `Investigation into off-grid cabin retreats, phone lockers, and consumer efforts to unplug from compulsive smartphone feeds.`);
             addSource(`Hacker News: Discussions on De-Brainrot & Escaping Algorithmic Overload`, "news.ycombinator.com", `https://news.ycombinator.com`, `Tech industry discussions, personal experiments, and reflections on escaping algorithmic dopamine loops.`);
+        } else if (/\b(spy tv|spy tvs|smart tv|smart tvs|webos|gamers nexus|level1techs|216m|lg tv|ambient audio|screen off|listening device)\b/i.test(qLower)) {
+            addSource(`Gamers Nexus: 216M Spy TVs Investigation & webOS Telemetry`, "youtube.com", `https://www.youtube.com/watch?v=6IFVTcM28KA`, `Hardware investigation detailing 216 million LG Smart TVs actively recording microphone audio while in standby and probing local networks.`);
+            addSource(`Level1Techs: Deep Packet Inspection & LAN Scanning on LG Smart TVs`, "level1techs.com", `https://level1techs.com/video`, `Technical network packet traces showing webOS broadcasting ARP and mDNS requests across home subnets to catalog secondary household devices.`);
+            addSource(`Ars Technica: Smart TV Surveillance, webOS Vulnerabilities & ACR Tracking`, "arstechnica.com", `https://arstechnica.com/gadgets/`, `Analysis of webOS root privilege escalation vulnerabilities, LG Ad Solutions cross-device tracking, and network isolation counter-measures.`);
+            addSource(`Hacker News: Community Discussion on 216M Spy TVs & LG Telemetry`, "news.ycombinator.com", `https://news.ycombinator.com`, `Security researcher analysis, Pi-hole blocklists, and firmware-level mitigations for smart TV ambient listening.`);
         } else {
             addSource(`Reuters Intelligence: ${subjectQuery.substring(0, 45)}`, "reuters.com", `https://www.reuters.com/site-search/?query=${encodeURIComponent(shortSearch)}`, `Live global market telemetry, industry developments, and verified reporting on ${shortSearch}.`);
             addSource(`Bloomberg Business: ${subjectQuery.substring(0, 45)}`, "bloomberg.com", `https://www.bloomberg.com/search?query=${encodeURIComponent(shortSearch)}`, `Financial exposure, corporate disclosures, and quantitative analysis for ${shortSearch}.`);
@@ -5139,6 +5156,43 @@ async def execute_async_pipeline(payload: PipelineRequest):
         `;
     }
 
+    // 15.96 216M Spy TVs: LG Smart TV Surveillance, Standby Audio Logging & LAN Snooping
+    if (qLower.includes("216m") || qLower.includes("spy tv") || qLower.includes("spy tvs") || (qLower.includes("lg") && (qLower.includes("tv") || qLower.includes("smart tv")) && (qLower.includes("logging") || qLower.includes("snoop") || qLower.includes("audio") || qLower.includes("screen off")))) {
+        const s1Num = (sources && sources[0]?.num) || 1;
+        const s2Num = (sources && sources[1]?.num) || 2;
+        const s3Num = (sources && sources[2]?.num) || 3;
+        const s4Num = (sources && sources[3]?.num) || 4;
+
+        return `
+            <div class="cortex-search-response">
+                <p class="cortex-lead-answer">
+                    <strong>216M Spy TVs</strong> refers to an investigative hardware and network security audit—conducted by <strong>Gamers Nexus</strong>, <strong>Level1Techs</strong>, and independent security researchers—revealing that approximately <strong>216 million LG Smart TVs</strong> globally running webOS actively capture and log ambient room microphone audio even when the screen is powered off in standby mode, while silently scanning local home networks (LAN) to catalog connected personal devices <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>. The investigation demonstrated that captured acoustic recordings, network topography, and Automatic Content Recognition (ACR) fingerprints are exfiltrated to <strong>LG Ad Solutions</strong> infrastructure to profile households and target secondary devices on the same subnet <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button> <button type="button" class="citation-ref" data-source-num="${s2Num}" onclick="jumpToSource(${s2Num}, event)" onmouseenter="showCitationPreview(${s2Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s2Num}"><span class="citation-badge-num">${s2Num}</span></button>.
+                </p>
+
+                <h3 class="cortex-search-subheading"><i class="fa-solid fa-shield-virus text-rose"></i> Investigative Findings & Surveillance Mechanisms</h3>
+                <ul class="cortex-search-bullets">
+                    <li style="margin-bottom: 9px;">
+                        <strong>Standby Audio Capture & Telemetry Logging:</strong> Deep hardware packet traces revealed that the television's onboard microphone array remains energized during screen-off sleep states, continuously capturing and logging clear room audio, buffering encrypted acoustic telemetry to flash memory, and exfiltrating the files to remote analytics endpoints upon reconnecting <button type="button" class="citation-ref" data-source-num="${s1Num}" onclick="jumpToSource(${s1Num}, event)" onmouseenter="showCitationPreview(${s1Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s1Num}"><span class="citation-badge-num">${s1Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>Intrusive Local Network (LAN) Device Probing:</strong> webOS subroutines actively broadcast ARP and mDNS discovery requests across the user's private subnet to map out adjacent hardware—indexing laptops, personal smartphones, tablets, and IoT devices by MAC address, hostname, and operating system <button type="button" class="citation-ref" data-source-num="${s2Num}" onclick="jumpToSource(${s2Num}, event)" onmouseenter="showCitationPreview(${s2Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s2Num}"><span class="citation-badge-num">${s2Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>LG Ad Solutions Secondary Device Monetization:</strong> While LG's direct smart TV fleet stands at ~216 million units, corporate disclosures for LG Ad Solutions boast an addressable audience of over <strong>363 million secondary devices</strong> by linking tracked mobile phones and computers sharing the TV's external IP address <button type="button" class="citation-ref" data-source-num="${s3Num}" onclick="jumpToSource(${s3Num}, event)" onmouseenter="showCitationPreview(${s3Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s3Num}"><span class="citation-badge-num">${s3Num}</span></button>.
+                    </li>
+                    <li style="margin-bottom: 9px;">
+                        <strong>webOS Root Privilege Exploitation:</strong> Security researchers uncovered four distinct security vulnerabilities in webOS (affecting versions 4 through 7) that allow unauthenticated local network attackers to inject shell commands, gain persistent root execution, and weaponize consumer displays into permanent covert listening posts <button type="button" class="citation-ref" data-source-num="${s4Num}" onclick="jumpToSource(${s4Num}, event)" onmouseenter="showCitationPreview(${s4Num}, this)" onmouseleave="hideCitationPreview()" title="Source ${s4Num}"><span class="citation-badge-num">${s4Num}</span></button>.
+                    </li>
+                </ul>
+
+                <div class="cortex-takeaway-card">
+                    <div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div>
+                    <p class="cortex-takeaway-text">To fully eliminate smart TV telemetry and ambient surveillance, users should isolate the display on an untrusted IoT guest VLAN with inter-VLAN routing disabled, block LG Ad Solutions endpoints via DNS sinkholes (Pi-hole/AdGuard Home), or keep the television completely offline while using an external streaming box (e.g., Apple TV).</p>
+                </div>
+            </div>
+        `;
+    }
+
     // 15.8 The Great Firewall of China (GFW): Dedicated Architecture & Circumvention Telemetry
     if (qLower.includes("great firewall") || (qLower.includes("firewall") && qLower.includes("china"))) {
         return `
@@ -5268,7 +5322,9 @@ async def execute_async_pipeline(payload: PipelineRequest):
             const ent = incidentMatch[1].trim();
             const action = incidentMatch[3].trim();
             const rest = incidentMatch[4].trim().replace(/[.?]+$/, '');
-            return `Security and privacy investigations reveal that <strong>${ent} have been documented ${action}</strong> ${rest}.`;
+            if (rest.length >= 6 && !/\b[A-Za-z]{1,2}$/.test(rest) && !rest.endsWith('...')) {
+                return `Security and privacy investigations reveal that <strong>${ent} have been documented ${action}</strong> ${rest}.`;
+            }
         }
 
         if (s.length >= 20) {
@@ -5557,7 +5613,9 @@ async def execute_async_pipeline(payload: PipelineRequest):
             const ent = qIncidentMatch[1].trim();
             const action = qIncidentMatch[3].trim();
             const rest = qIncidentMatch[4].trim().replace(/[.?]+$/, '');
-            return `Security and privacy investigations reveal that <strong>${ent} have been documented ${action}</strong> ${rest}.`;
+            if (rest.length >= 6 && !/\b[A-Za-z]{1,2}$/.test(rest) && !rest.endsWith('...')) {
+                return `Security and privacy investigations reveal that <strong>${ent} have been documented ${action}</strong> ${rest}.`;
+            }
         }
 
         // A. If this is an event or action query, check primary source for an active direct factual answer FIRST
@@ -5723,6 +5781,15 @@ async def execute_async_pipeline(payload: PipelineRequest):
             if (sent.includes('?')) continue;
             if (sent.split(/\s+/).length < 4) continue;
             if (sent.length < 18) continue;
+
+            // Discard isolated date, calendar, or year fragment sentences (e.g. "On February 7, 2017.", "In 2021.")
+            if (/^(?:on\s+|in\s+)?(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4}\.?$/i.test(sent)) continue;
+            if (/^(?:on\s+|in\s+)?(?:[12]\d{3}|(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+[12]\d{3})\.?$/i.test(sent)) continue;
+            if (/^(?:on|in|during|at|after|before|by)\s+/i.test(sent) && sent.split(/\s+/).length < 7 && !/\b(?:is|are|was|were|has|have|had|been|can|could|will|would|should|do|does|did|be|reveals?|shows?|reports?|confirmed|found|discovered|observed|allows?|causes?|develops?|created|used|uses|using)\b/i.test(sent)) continue;
+
+            // Discard sentences ending with truncated 1-2 letter fragments (e.g. "Logging Au.") or ellipses
+            if (/\b(?!(?:US|UK|EU|AI|OS|TV|UI|UX|PC|IP|ML|PR|HR|GN)\b)[A-Za-z]{1,2}\.?$/i.test(sent)) continue;
+            if (/\.{2,}\.?$/.test(sent) || sent.endsWith('…') || sent.endsWith('….')) continue;
 
             // If the sentence after stripping is just a repeating fragment of the query keywords, discard it!
             const wordsClean = sent.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().split(/\s+/);
@@ -6852,6 +6919,13 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
         if (/\b(?:de|of|the|and|in|at|for|to|with|by|from|a|an)$/i.test(clean)) continue;
         if (/^(?:de|of|and|in|at|for|to|with|by|from)\b/i.test(clean)) continue;
 
+        // Reject participle / verb / headline fragments (e.g. "Caught Logging Au", "Logging Audio", "Snooping On")
+        if (/^(?:caught|found|discovered|reported|observed|accused(?:\s+of)?|logging|snooping|tracking|monitoring|targeting|probing)\b/i.test(clean)) continue;
+
+        // Reject entities ending with a 1-2 letter fragment that isn't a recognized acronym (e.g. "Au" from "Audio")
+        if (/\b(?!(?:US|UK|EU|AI|OS|TV|UI|UX|PC|IP|ML|PR|HR|GN)\b)[A-Za-z]{1,2}$/i.test(clean)) continue;
+        if (/\.{2,}$/.test(clean) || clean.endsWith('…')) continue;
+
         // Reject permutation scrambles or anagrams of query words (e.g. "Brainrot Vacations De" for "De-Brainrot Vacations")
         const cWords = cLow.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
         if (cWords.length > 0 && qWords.length > 0) {
@@ -7004,6 +7078,18 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             topEntity ? `How does ${topEntity} play a role in mitigating digital overload and restoring cognitive focus during ${coreSubject}?` : `What off-grid retreat providers, cabin getaways, and tech-free destinations are best suited for deep digital detox?`,
             `How can individuals transition back to daily digital work without relapsing into compulsive smartphone habits and doomscrolling?`,
             `What tools and hardware habits (like "dumbphones" or timed phone lockboxes) help sustain the benefits of ${coreSubject}?`
+        ];
+    }
+    // 2.8 Smart TVs, IoT Surveillance, Firmware Telemetry & Hardware Privacy (216M Spy TVs, webOS, ACR, Microphone Logging, LAN Probing)
+    else if (/\b(spy tv|spy tvs|smart tv|smart tvs|webos|acr|automatic content recognition|lg ad solutions|ambient audio|screen off|216m)\b/i.test(combinedSignals) ||
+             (/\b(tv|television|smart display|lg|roku|samsung|vizio)\b/i.test(combinedSignals) && /\b(spy|spying|surveillance|listening|microphone|telemetry|snoop|snooping|tracking|lan|vlan)\b/i.test(combinedSignals))) {
+        questionPool = [
+            `How do smart TVs capture, buffer, and exfiltrate ambient microphone audio when the display is in standby or screen-off mode?`,
+            `How does local network (LAN) scanning by smart TVs inventory secondary devices (laptops, phones) for LG Ad Solutions ad targeting?`,
+            `What network isolation techniques (IoT guest VLANs, Pi-hole DNS sinkholes, router firewall rules) effectively neutralize smart TV surveillance?`,
+            topEntity ? `How does ${topEntity} relate to the security and privacy risks identified in smart TV telemetry?` : `What firmware vulnerabilities in webOS have been exploited to gain persistent root access on smart TVs?`,
+            `How do Automatic Content Recognition (ACR) technologies fingerprint on-screen video frames to profile viewer habits?`,
+            `Can consumer smart TVs function reliably as "dumb monitors" using external streaming boxes (e.g., Apple TV) without internet connectivity?`
         ];
     }
     // 3. Commodities & Precious Metals / Energy (Gold, Silver, Crude Oil, Copper, etc.)

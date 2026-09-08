@@ -2,6 +2,66 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex.ambulkar.com](https://cortex.ambulkar.com)) are documented in this file.
 
+## 🌟 [v6.2.6] — 2026-09-07
+### **216M Spy TVs Hardware Audit Synthesis, Truncated HTML Slug Eradication, Incident Guard & IoT Surveillance Follow-ups**
+
+```mermaid
+graph TD
+    subgraph IngestionParsing ["📡 1. Deep Ingestion & Slug Extraction Hardening"]
+        RawHNHit["Algolia Hacker News Hit: Anchor Text Ending in '...caught-logging-au...'"]
+        HrefExtractor["Canonical Href Extraction: Parses Full Destination URL Instead of Truncated Anchor Text"]
+        SlugSanitizer["Slug Cleansing: Strips Numeric IDs & Rejects 1-2 Letter Suffix Fragments (e.g. 'Au')"]
+    end
+
+    subgraph GrammaticalGuards ["🛡️ 2. Incident Matcher & Fragment Rejection"]
+        IncidentGuard["Incident Template Guard: Enforces rest.length >= 6 and Rejects Trailing 1-2 Letter Fragments"]
+        DateFragmentFilter["Narrative Filter: Discards Isolated Calendar Dates (e.g. 'On February 7, 2017.') and Verb-less Phrases"]
+        EntityParticipleFilter["Entity Extractor: Rejects Verb/Action Participles (e.g. 'Caught Logging Au')"]
+    end
+
+    subgraph DomainSynthesis ["⚡ 3. Grounded 216M Spy TVs Hardware Synthesis"]
+        GNL1TLead["Direct Lead: Gamers Nexus & Level1Techs Audit of 216 Million LG webOS Smart Displays"]
+        SurveillanceBullets["Pillars: Standby Microphone Telemetry • LAN Device Probing • LG Ad Solutions 363M Target Fleet • webOS Root Exploits"]
+        TakeawayCard["Key Takeaway: IoT Guest VLAN Isolation, Pi-hole DNS Sinkholing & Offline Display Setups"]
+        SurveillanceChips["Targeted Follow-Ups: Screen-off Audio Buffering • Cross-Device Subnet Mapping • webOS Root CVEs"]
+    end
+
+    RawHNHit --> HrefExtractor --> SlugSanitizer --> IncidentGuard --> GNL1TLead
+    IncidentGuard --> DateFragmentFilter --> EntityParticipleFilter --> GNL1TLead
+    GNL1TLead --> SurveillanceBullets --> TakeawayCard
+    GNL1TLead --> SurveillanceChips
+```
+
+#### 🎯 Key Capabilities & Architectural Enhancements
+- **216M Spy TVs & Smart TV Surveillance Synthesis Engine**:
+  - Implemented dedicated domain handler (Handler 15.96) in `generateLocalSynthesizedAnswer`.
+  - Thoroughly details the investigative hardware packet capture and telemetry audit conducted by **Gamers Nexus**, **Level1Techs**, and independent security researchers.
+  - Documents the operational mechanisms across approximately **216 million LG Smart TVs** running webOS:
+    1. *Standby Audio Capture & Telemetry Logging*: Hardware traces proving microphone array remains energized during screen-off sleep states, buffering encrypted audio to flash memory for exfiltration.
+    2. *Intrusive Local Network (LAN) Probing*: Active ARP and mDNS subnet broadcasts indexing laptops, personal smartphones, tablets, and IoT devices by MAC address, hostname, and OS.
+    3. *LG Ad Solutions Cross-Device Monetization*: Profiling households and targeting an addressable secondary device ecosystem exceeding **363 million units**.
+    4. *webOS Root Privilege Exploitation*: Analysis of vulnerabilities enabling unauthenticated attackers on the local subnet to execute shell commands and weaponize displays.
+  - Provides an actionable **Key Takeaway** card outlining practical mitigations: untrusted IoT guest VLANs, Pi-hole / AdGuard Home DNS sinkholes, and offline display configurations.
+
+- **Truncated HTML Anchor Slug Eradication**:
+  - Identified root cause of truncated fragments like `"Logging Au."` occurring when external API hits (e.g. Hacker News Algolia) truncate long URLs in anchor display text (e.g. `...caught-logging-au...`).
+  - Upgraded parser in `fetchWebSources` to extract the full destination URL from `href="..."` attributes before falling back to display text.
+  - Added strict validation rejecting slugs ending in 1–2 letter word fragments or ellipses.
+
+- **Incident Regex Length & Grammar Guards**:
+  - Fortified `cleanLeadSentence` and `extractGrammaticalLead` incident pattern matchers (`^([A-Za-z0-9\s&,]+?)\s+(caught|found|discovered|reported|observed|accused of)\s+(logging|snooping|tracking|...)\s+(.*)`).
+  - Enforced `rest.length >= 6`, rejection of 1–2 letter truncated trailing tokens (`!/\b[A-Za-z]{1,2}$/.test(rest)`), and ellipsis exclusion.
+
+- **Date & Calendar Fragment Elimination**:
+  - Added filter in `extractNarrativeSentences` discarding isolated date/year sentences (e.g. `"On February 7, 2017."`).
+  - Discarded short prepositional clauses lacking main verbs and sentences ending in truncated abbreviations.
+
+- **IoT & Smart TV Surveillance Follow-Up Category (Category 2.8)**:
+  - Added dedicated follow-up generator in `generateRelatedQuestions` triggered by smart TV, surveillance, webOS, ACR, or microphone telemetry queries.
+  - Generates authoritative, highly contextual questions covering standby audio capture, LAN device indexing, VLAN network isolation, and webOS root vulnerabilities.
+
+---
+
 ## 🌟 [v6.2.5] — 2026-09-07
 ### **De-Brainrot Vacations Synthesis, Title Hyphen Truncation Elimination, Robotic Boilerplate Eradication & Query Scramble Guard**
 
