@@ -1011,6 +1011,19 @@ function selectResearchDesk(mode) {
         searchInput.focus();
     }
 
+    // 7. Update Top Header Desk Indicator
+    const deskNameEl = document.getElementById("headerDeskName");
+    if (deskNameEl) {
+        const deskNames = {
+            web: "Market & Web",
+            finance: "Financial Markets",
+            academic: "Academic & Research",
+            code: "Engineering & Code",
+            writing: "Executive Memos"
+        };
+        deskNameEl.textContent = deskNames[currentMode] || "Market & Web";
+    }
+
     closeMobileSidebar();
 }
 window.selectResearchDesk = selectResearchDesk;

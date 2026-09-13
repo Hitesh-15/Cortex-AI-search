@@ -2,6 +2,33 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.3] — 2026-09-13
+### **Top Header Space Optimization: Institutional Market Tickers, Active Desk Indicator & Live Telemetry Clock**
+
+```mermaid
+graph LR
+    subgraph TopHeader ["⚡ High-Density Institutional Top Header"]
+        DeskBadge["Active Desk Indicator: [Cyan Dot] Market & Web"]
+        TickerStrip["Live Market Ticker Strip: GOLD • SILVER • COPPER • OIL • S&P 500 • NASDAQ • US 10Y • VIX"]
+        LiveClock["Institutional Clock: Sun, Sep 13, 2026 • 1:51 PM EDT (Live UTC/Local)"]
+        Actions["Controls: Release Notes • Settings • Free Tier"]
+        DeskBadge --> TickerStrip --> LiveClock --> Actions
+    end
+```
+
+#### Detailed Enhancements in v6.7.3:
+1. **Top Header Space Utilization**:
+   - Transformed the previously empty horizontal top bar area into a high-density institutional telemetry strip.
+2. **Dynamic Research Desk Indicator**:
+   - Added an active research desk pill (`#headerDeskIndicator`) with a cyan live pulsing indicator that dynamically updates when switching desks in the sidebar (`Market & Web`, `Financial Markets`, `Academic & Research`, `Engineering & Code`, `Executive Memos`).
+3. **8-Asset Multi-Commodity & Equity Market Ticker Strip**:
+   - Restored and integrated the 8 institutional market asset pills (`GOLD`, `SILVER`, `COPPER`, `OIL`, `S&P 500`, `NASDAQ`, `US 10Y`, `VIX`) with real-time green/red price percentage changes, direction arrows, and 1-click autonomous research triggers.
+   - Connected directly to `cortexTemporal.broadcastToUI()`, automatically updating prices and market spreads live every second.
+4. **Real-Time Telemetry Clock**:
+   - Integrated `.header-live-clock` with pulsing live dot, calendar date (`cortexLiveClockDate`), and monospace clock counter (`cortexLiveClockTime`) synchronized with the client's local timezone.
+5. **Compact Sleek Header Proportions**:
+   - Compressed top header height to 54px with optimized padding, providing more vertical space for the search workstation hero while ensuring high information density across wide desktop displays.
+
 ## 🌟 [v6.7.2] — 2026-09-13
 ### **Desktop Header De-duplication & Responsive Brand Architecture**
 
