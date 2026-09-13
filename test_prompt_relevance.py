@@ -78,10 +78,15 @@ for query, mode in test_runs:
         assert not ("Posterior Summarization" in q), f"Meta heading leaked into question: '{q}'"
 print("  [PASS] All generated questions are context-aware, crisp, and clean!")
 
-print("\n=== 4. TESTING CHIP STYLING & RENDERING IN DOM ===")
 # Execute a search to see the rendered chips
 driver.execute_script("executeSearch('Executive Daily Intelligence Briefing: AI Frontier, Cloud Scale & Capital Markets', false);")
-time.sleep(3.0)
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+WebDriverWait(driver, 20).until(
+    lambda d: len(d.find_elements(By.CSS_SELECTOR, ".related-chip-btn")) >= 3
+)
 
 chip_buttons = driver.find_elements(By.CSS_SELECTOR, ".related-chip-btn")
 assert len(chip_buttons) >= 3, f"Expected at least 3 chips rendered, got {len(chip_buttons)}"

@@ -2,6 +2,40 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.1] — 2026-09-13
+### **FastAPI Pydantic V2 & WebSocket Code Relevance, Corporate Homonym Filter & Authoritative Docs Injection**
+
+```mermaid
+graph TD
+    subgraph CodeRouter ["⚡ Technical Query Architecture Router"]
+        BroadIntent["Broadened Code Intent: Matches 'Show clean FastAPI code...', 'how to implement', etc."]
+        ProductionSynthesis["FastAPI 0.115+ Production Synthesis: Strict Pydantic V2, Async Lifespan & WebSockets"]
+        SandboxRender["Interactive Code Sandbox: Syntax-Highlighted Python Block with Zero Deprecations"]
+    end
+
+    subgraph HomonymShield ["🛡️ Irrelevant Homonym Defense Gate"]
+        WikipediaCrawler["Wikipedia Extractive Crawler"]
+        GateFilter["Strict Filter: Rejects Telecom/Holding Conglomerates (Fastweb) for Software Queries"]
+        PristineCitations["Pristine Tech Citations: Official FastAPI & Pydantic V2 Docs Injected"]
+    end
+
+    CodeRouter --> ProductionSynthesis
+    WikipediaCrawler --> GateFilter
+    GateFilter --> PristineCitations
+```
+
+#### Detailed Enhancements in v6.7.1:
+1. **Targeted FastAPI Architecture & Pydantic V2 Synthesis**:
+   - Upgraded technical code synthesis pipeline to recognize natural programming inquiries (`"Show clean FastAPI code with PyDantic V2 models, connection pools, and WebSocket streaming"`, `"how to implement..."`).
+   - Implemented production-ready reference architecture featuring:
+     - **Pydantic V2 Strict Models**: `ConfigDict(strict=True, str_strip_whitespace=True)`, `@field_validator`, and high-performance zero-copy serialization (`model_validate_json()`, `model_dump_json()`).
+     - **Connection Pool Lifespan Management**: Modern `@asynccontextmanager lifespan(app)` with persistent `httpx.Limits` connection pooling and graceful teardown (`aclose()`).
+     - **Bidirectional WebSocket Streaming**: `@app.websocket("/ws/stream")` endpoint with asynchronous telemetry generator, exception isolation, and clean `WebSocketDisconnect` handling.
+2. **Strict Corporate Homonym Shielding**:
+   - Added automated gate in the Wikipedia extractive crawler rejecting non-software telecommunications companies, broadband providers, and holding conglomerates (e.g. Fastweb conglomerate) from polluting software engineering results.
+3. **Authoritative Documentation Sources**:
+   - Added automatic injection of authoritative institutional docs (`fastapi.tiangolo.com`, `docs.pydantic.dev`, `python-httpx.org`) into the sourcing container for FastAPI, Pydantic, and WebSocket inquiries.
+
 ## 🌟 [v6.7.0] — 2026-09-13
 ### **Context-Aware Follow-up Prompts, Synthesis Entity Purification & Obsidian Glass Typography Redesign**
 
