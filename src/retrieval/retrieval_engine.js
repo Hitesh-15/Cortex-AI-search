@@ -219,7 +219,9 @@ class CortexRetrievalEngine {
             'discovery', 'overview', 'analysis', 'impact', 'guide', 'review', 'history',
             'future', 'status', 'release', 'announcement', 'development', 'report', 'study',
             'details', 'summary', 'breakdown', 'understanding', 'features', 'role', 'effects',
-            'meaning', 'definition', 'list', 'top', 'best', 'working', 'instances'
+            'meaning', 'definition', 'list', 'top', 'best', 'working', 'instances',
+            'global', 'macro', 'market', 'markets', 'intelligence', 'sector', 'sectors',
+            'momentum', 'forecast', 'forecasts', 'frontier', 'tech', 'technology', 'trends', 'trend'
         ]);
 
         const knownEntities = [

@@ -153,9 +153,6 @@
 
                 <!-- RIGHT ACTION ICONS & TIER CONTROLS -->
                 <div class="header-right-actions">
-                    <button type="button" class="header-icon-action" onclick="generateExecutiveMorningDigest()" title="Executive Daily Digest (Synthesize 24h Intelligence)">
-                        <i class="fa-solid fa-sun" style="color: #fbbf24;"></i>
-                    </button>
                     <button type="button" class="header-icon-action" id="btnOpenReleaseNotes" onclick="openReleaseNotesModal()" title="System Alerts & Continuous Release Notes">
                         <i class="fa-regular fa-bell" style="color: #38bdf8;"></i>
                         <span class="header-alert-indicator"></span>
@@ -298,7 +295,7 @@
                     <div class="search-actions-row">
                         <!-- MODEL & WORKFLOW ROUTING CHIPS -->
                         <div class="search-hints-strip" id="searchHintsStrip">
-                            <button type="button" class="hint-tag-btn" id="btnHeroStartResearch" onclick="executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast')" title="Start Autonomous Research"><i class="fa-solid fa-bolt text-cyan"></i> Auto Research</button>
+                            <button type="button" class="hint-tag-btn" id="btnHeroStartResearch" onclick="handleAutoResearchClick()" title="Start Autonomous Research"><i class="fa-solid fa-bolt text-cyan"></i> Auto Research</button>
                             <button type="button" class="hint-tag-btn" onclick="toggleComparisonMode(true)" title="Launch Side-by-Side Comparison Matrix"><i class="fa-solid fa-scale-balanced text-cyan"></i> Compare</button>
                             <button type="button" class="hint-tag-btn" onclick="insertAtTag('@parallel ')" title="Chained Fast Scraper ➔ Deep Thinker"><i class="fa-solid fa-network-wired text-purple"></i> @parallel</button>
                             <button type="button" class="hint-tag-btn" onclick="insertAtTag('@gemini ')" title="Gemini 3.7 Flash (Sub-Second Search)">@gemini</button>
