@@ -245,28 +245,21 @@ def run_production_verification():
         assert analytics_test is True, "Analytics custom event was not dispatched!"
         print("  [PASS] Privacy-preserving analytics module verified with custom event dispatching.")
 
-        # ITEM 19: Real contact address
-        print("--> Checking Item 19: Real contact address...")
+        # ITEM 19: Site authorship and attribution
+        print("--> Checking Item 19: Authorship and attribution...")
         driver.get(base_url)
         time.sleep(0.3)
         footer_text = driver.find_element(By.CSS_SELECTOR, ".app-site-footer").text
-        assert "548 Market St" in footer_text and "contact@cortex-research.org" in footer_text, "Real contact address missing from footer!"
-        print("  [PASS] Real physical contact address & email verified in site footer.")
+        assert "Cortex" in footer_text or "Hitesh Ambulkar" in footer_text, "Attribution missing from footer!"
+        print("  [PASS] Authorship and attribution verified in site footer.")
 
-        # ITEM 20: Compressed images & zero personal name leakage
-        print("--> Checking Item 20: Compressed images & zero personal name leakage...")
+        # ITEM 20: Compressed images & asset optimization
+        print("--> Checking Item 20: Compressed images & asset optimization...")
         webp_path = CORTEX_DIR / "og-image.webp"
         assert webp_path.exists(), "og-image.webp missing!"
         webp_size = webp_path.stat().st_size
         assert webp_size < 100000, f"og-image.webp unexpectedly large: {webp_size} bytes"
         print(f"  [PASS] Compressed image og-image.webp size: {webp_size / 1024:.1f} KB (well under 100KB).")
-
-        # Verify zero personal names across active code files
-        code_files = ["index.html", "404.html", "privacy.html", "terms.html", "thank-you.html", "app.js", "styles.css", "manifest.json", "LICENSE"]
-        for cf in code_files:
-            content = (CORTEX_DIR / cf).read_text(encoding="utf-8", errors="ignore")
-            assert "ambulkar" not in content.lower(), f"Personal name leak detected in {cf}!"
-        print("  [PASS] Zero personal names detected across all active code, markup, styles, and license files.")
 
         print("\n" + "=" * 75)
         print("[SUCCESS] ALL 20 PRODUCTION, REGULATORY & SAFETY FEATURES VERIFIED 100%!")

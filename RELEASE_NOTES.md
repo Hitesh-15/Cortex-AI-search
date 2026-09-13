@@ -41,7 +41,7 @@ graph TD
    - Removed the misplaced "⚡ Start Autonomous Research" button hanging off the section heading.
    - Positioned the primary CTA button (`#btnHeroStartResearch`) ergonomically within the unified search workstation command bar above the fold ($y \approx 721\text{px} \le 900\text{px}$).
 4. **Resolved Footer Text Clipping**:
-   - Clarified that the "Cortex Open Source Re..." text at the bottom was not an orphaned file, but the site's regulatory and contact footer (`.app-site-footer`).
+   - Replaced all placeholder open-source address text with clean attribution (`Cortex • Hitesh Ambulkar`).
    - Re-engineered footer layout and hero viewport height budgeting so footer metadata is cleanly presented with zero clipping, overflow, or awkward partial line cutoffs.
 5. **Multi-Viewport Compliance & Automated Test Passes**:
    - `test_cortex_production_suite.py`: **20/20 PASS (100%)**
@@ -188,7 +188,7 @@ graph TD
         TermsService["Open Source MIT Terms of Service (terms.html)"]
         ThankYouPage["Confirmation & Action Receipt (thank-you.html)"]
         CookieBanner["Floating Glassmorphic Cookie & Storage Consent Banner"]
-        RealContact["Real Open-Source Foundation Contact Point (548 Market St, SF)"]
+        RealContact["Cortex Authorship & Contact Point (Hitesh Ambulkar)"]
     end
 
     subgraph CrawlingSEO ["🔍 2. Search Engine Optimization & Crawling Infrastructure"]
@@ -257,8 +257,8 @@ graph TD
     - Non-intrusive floating glassmorphic banner offering granular consent ("Necessary Only" vs "Accept All") with persistent `localStorage` memory.
 18. **Privacy-Preserving Analytics**:
     - Client-side event dispatcher respecting the browser's `Do-Not-Track` header and cookie preferences.
-19. **Real Physical Contact Address**:
-    - Integrated standard open-source contact address (`548 Market St, Suite 300, San Francisco, CA 94104, USA`) and electronic contact point across all footers and legal pages.
+19. **Authorship & Project Contact**:
+    - Integrated direct project attribution (`Cortex • Hitesh Ambulkar`) across all footers and legal pages.
 20. **Compressed Assets & Brand Neutrality**:
     - Lossless compression of visual assets (WebP under 60KB) and complete elimination of personal names or trademarks in favor of generic open-source attribution ("The Cortex Project Contributors").
 
