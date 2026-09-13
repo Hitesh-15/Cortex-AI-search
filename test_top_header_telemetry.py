@@ -52,7 +52,7 @@ try:
     hero_top = driver.execute_script("return arguments[0].getBoundingClientRect().top;", hero_title)
     gap = hero_top - header_bottom
     print(f"  Vertical gap between top header and hero title: {gap:.1f}px")
-    assert gap < 90, f"Vertical gap too large ({gap:.1f}px), empty space is getting wasted!"
+    assert gap < 50, f"Vertical gap too large ({gap:.1f}px), empty space is getting wasted!"
     print(f"  [PASS] Vertical spacing is compact and clean ({gap:.1f}px), no wasted empty space!")
 
     # 5. Capture Screenshot for Visual Verification

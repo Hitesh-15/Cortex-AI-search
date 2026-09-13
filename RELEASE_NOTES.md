@@ -3,7 +3,7 @@
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
 ## 🌟 [v6.7.4] — 2026-09-13
-### **Top Header Ticker Expansion & Prompt Section Spacing Optimization**
+### **Top Header Ticker Expansion & Zero-Gap Prompt Section Spacing**
 
 ```mermaid
 graph TD
@@ -14,8 +14,8 @@ graph TD
     end
 
     subgraph VerticalSpacing ["📐 Zero Empty Space Optimization"]
-        PrevVoid["Previous State: justify-content: center -> ~200px Empty Dark Void"]
-        NewProportions["Optimized State: justify-content: flex-start with 14px Padding -> 47px Clean Gap"]
+        PrevVoid["Previous State: justify-content: center & 4vh margin -> ~208px Empty Void"]
+        NewProportions["Optimized State: justify-content: flex-start with 4px Padding -> 4.4px Badge / 37.6px Title Gap"]
         PrevVoid --> NewProportions
     end
 ```
@@ -24,9 +24,10 @@ graph TD
 1. **Top Header Ticker Space Expansion**:
    - Removed the `Market & Web` indicator badge from the top section to eliminate horizontal clutter and maximize room for all 8 live financial market ticker pills.
    - Tickers now start immediately adjacent to the sidebar and span across the top bar with optimal breathing room before the live clock and action controls.
-2. **Elimination of Vertical Empty Space**:
-   - Resolved the large empty space between the ticker bar and the prompt hero section (`Where knowledge begins.`).
-   - Replaced vertical centering (`justify-content: center`) with natural top alignment (`justify-content: flex-start` with 14px padding), reducing the vertical gap from ~208px down to 47px.
+2. **Complete Elimination of Empty Gap**:
+   - Eliminated the empty space between the ticker bar and the prompt hero section (`Where knowledge begins.`).
+   - Removed default `margin-top: 4vh` on `.empty-hero`, set `.view-scroll-area` padding to `4px 16px 4px 16px !important` with `justify-content: flex-start !important`, reducing the vertical gap from the top header to the hero badge to **4.4px** (and only 37.6px to the title text).
+   - Bumped stylesheet query to `styles.css?v=2026.09.13.12` for instant client cache invalidation.
    - Balanced the hero title, badge, trending cards, and bottom search bar so the entire workstation sits cohesively on a single screen with zero wasted space.
 
 ## 🌟 [v6.7.3] — 2026-09-13
