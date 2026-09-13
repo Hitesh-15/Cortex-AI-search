@@ -4232,3 +4232,433 @@ option:active {
     font-size: 12px;
     color: #94a3b8;
 }
+
+/* ==========================================================================
+   PRODUCTION & REGULATORY SUITE (v6.3.0)
+   Above-the-Fold CTA, Sticky Mobile CTA, Loading & Error States,
+   Cookie Consent Banner, Legal Layouts & Contact Information
+   ========================================================================== */
+
+/* 1. Above-The-Fold Hero CTA */
+.hero-cta-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin: 18px 0 24px 0;
+    width: 100%;
+    max-width: 680px;
+}
+
+.hero-cta-btn {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 50%, #818cf8 100%);
+    color: #030712;
+    border: none;
+    padding: 13px 28px;
+    border-radius: 9999px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4), 0 0 40px rgba(56, 189, 248, 0.2);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: -0.01em;
+}
+
+.hero-cta-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(56, 189, 248, 0.6), 0 0 50px rgba(56, 189, 248, 0.3);
+    color: #000;
+}
+
+.hero-cta-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.hero-quick-pills {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.hero-action-pill {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 13px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+}
+
+.hero-action-pill:hover {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    transform: translateY(-1px);
+}
+
+/* 2. Sticky Mobile CTA */
+.sticky-mobile-cta {
+    display: none;
+    position: fixed;
+    bottom: 82px;
+    right: 16px;
+    z-index: 998;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(99, 102, 241, 0.95));
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(12px);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sticky-mobile-cta:hover,
+.sticky-mobile-cta:active {
+    transform: scale(1.04);
+}
+
+@media (max-width: 768px) {
+    .sticky-mobile-cta {
+        display: inline-flex;
+    }
+}
+
+/* 3. Loading States */
+.btn-submit-search.is-loading {
+    pointer-events: none;
+    position: relative;
+    background: rgba(56, 189, 248, 0.2) !important;
+    border-color: rgba(56, 189, 248, 0.5) !important;
+}
+
+.btn-submit-search.is-loading i {
+    opacity: 0;
+}
+
+.btn-submit-search.is-loading::after {
+    content: '';
+    position: absolute;
+    top: calc(50% - 9px);
+    left: calc(50% - 9px);
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(56, 189, 248, 0.3);
+    border-top-color: #38bdf8;
+    border-radius: 50%;
+    animation: spinLoader 0.75s infinite linear;
+}
+
+@keyframes spinLoader {
+    to { transform: rotate(360deg); }
+}
+
+.skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 100%);
+    background-size: 200% 100%;
+    animation: shimmerSlide 1.5s infinite;
+    border-radius: 6px;
+}
+
+@keyframes shimmerSlide {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* 4. Form Error States */
+.search-box-container.has-error,
+.text-input.has-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.35) !important;
+    animation: shakeError 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shakeError {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.form-error-feedback {
+    display: none;
+    color: #f87171;
+    font-size: 0.76rem;
+    font-weight: 500;
+    margin-top: 6px;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-error-feedback.active {
+    display: flex;
+}
+
+/* 5. Cookie Consent Banner */
+.cookie-consent-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    max-width: 620px;
+    width: calc(100% - 32px);
+    background: rgba(13, 19, 32, 0.94);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+    backdrop-filter: blur(20px) saturate(180%);
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cookie-consent-banner.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.cookie-consent-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.cookie-consent-header h4 {
+    font-size: 0.92rem;
+    color: #f1f5f9;
+    margin: 0;
+}
+
+.cookie-consent-text {
+    font-size: 0.80rem;
+    line-height: 1.5;
+    color: #94a3b8;
+    margin: 0 0 14px 0;
+}
+
+.cookie-consent-text a {
+    color: #38bdf8;
+    text-decoration: underline;
+}
+
+.cookie-consent-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-cookie-accept {
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+
+.btn-cookie-accept:hover {
+    background: #0369a1;
+}
+
+.btn-cookie-reject {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-cookie-reject:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+/* 6. Legal & Documentation Pages Styling */
+.legal-page-body {
+    background: #030712;
+    color: #cbd5e1;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.legal-container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 30px 20px 60px 20px;
+}
+
+.legal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.legal-nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.legal-content-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(16px);
+}
+
+.legal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 4px 10px;
+    border-radius: 9999px;
+    margin-bottom: 14px;
+}
+
+.legal-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+}
+
+.legal-subtitle {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin: 0 0 28px 0;
+}
+
+.legal-section {
+    margin-bottom: 28px;
+}
+
+.legal-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0 0 10px 0;
+}
+
+.legal-section p {
+    font-size: 0.90rem;
+    line-height: 1.7;
+    color: #cbd5e1;
+    margin: 0 0 12px 0;
+}
+
+.legal-section ul {
+    margin: 0 0 14px 20px;
+    padding: 0;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #cbd5e1;
+}
+
+.legal-section li {
+    margin-bottom: 6px;
+}
+
+.contact-card {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.contact-card p {
+    margin: 4px 0;
+}
+
+.legal-footer-nav {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.85rem;
+}
+
+.legal-footer-nav a {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.legal-footer-nav a:hover {
+    text-decoration: underline;
+}
+
+/* 7. Application Site Footer */
+.app-site-footer {
+    padding: 18px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    color: #64748b;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: rgba(3, 7, 18, 0.6);
+}
+
+.footer-legal-links {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.footer-legal-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.footer-legal-links a:hover {
+    color: #38bdf8;
+}
+

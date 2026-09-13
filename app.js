@@ -341,7 +341,7 @@ function executeSearch(userQuery, isFollowUp = false) {
 
 // MODEL PRICING MATRIX ($ USD per 1 Million Tokens - Frontier & Reasoning Models)
 const MODEL_PRICING = {
-    "ambulkar-cortex-engine": { input: 0.0, output: 0.0, tier: "free" },
+    "cortex-local-engine": { input: 0.0, output: 0.0, tier: "free" },
     "local": { input: 0.0, output: 0.0, tier: "free" },
     "free": { input: 0.0, output: 0.0, tier: "free" },
     "google/gemini-2.0-flash-001": { input: 0.10, output: 0.40, tier: "fast" },
@@ -383,16 +383,16 @@ let PROVIDER_MODELS = {
         { id: "free", name: "🎁 100% Free Neural Tier (0 Token Spend)" }
     ],
     local: [
-        { id: "ambulkar-cortex-engine", name: "Ambulkar Local Free Engine" }
+        { id: "cortex-local-engine", name: "Cortex Local Neural Engine" }
     ]
 };
 
 // Initialization
 document.addEventListener("DOMContentLoaded", () => {
-    initAmbuApp();
+    initCortexApp();
 });
 
-function initAmbuApp() {
+function initCortexApp() {
     setupNavigationListeners();
     setupSearchForm();
     setupSettingsModal();
@@ -411,6 +411,7 @@ function initAmbuApp() {
     fetchLatestModelsAuto(false);
     fetchDynamicTrendingPrompts(false);
     fetchLiveMarketTickers();
+    initCookieConsent();
 }
 
 // Live Financial Market Ticker Engine
@@ -745,13 +746,13 @@ function setFocusMode(mode) {
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
         const placeholders = {
-            web: "Ask Ambulkar Cortex anything... (All Web Search)",
+            web: "Ask Cortex anything... (All Web Search)",
             academic: "Search arXiv, PubMed, IEEE & Academic Papers...",
             code: "Search GitHub repos, documentation, StackOverflow & code...",
             finance: "Search SEC filings, market data, earnings & finance...",
             writing: "Draft, summarize, brainstorm or write creatively..."
         };
-        searchInput.placeholder = placeholders[mode] || "Ask Ambulkar Cortex anything...";
+        searchInput.placeholder = placeholders[mode] || "Ask Cortex anything...";
     }
 
     appState.isStudioMode = false;
@@ -794,14 +795,14 @@ function toggleDeepResearchStudio(forceState = null) {
             searchInput.focus();
         } else {
             const placeholders = {
-                web: "Ask Ambulkar Cortex anything... (All Web Search)",
+                web: "Ask Cortex anything... (All Web Search)",
                 academic: "Search arXiv, PubMed, IEEE & Academic Papers...",
                 code: "Search GitHub repos, documentation, StackOverflow & code...",
                 finance: "Search SEC filings, market data, earnings & finance...",
                 writing: "Draft, summarize, brainstorm or write creatively...",
                 studio: "Compute research report, document, or presentation deck..."
             };
-            searchInput.placeholder = placeholders[appState.activeFocusMode] || "Ask Ambulkar Cortex anything...";
+            searchInput.placeholder = placeholders[appState.activeFocusMode] || "Ask Cortex anything...";
         }
     }
 }
@@ -966,7 +967,7 @@ function updateHeaderModelLabel() {
     const model = appState.settings.model;
 
     if (provider === "local") {
-        label.textContent = "Ambulkar Engine (Free Neural)";
+        label.textContent = "Cortex Local Engine (Free Neural)";
     } else {
         label.textContent = `${provider.toUpperCase()} (${model})`;
     }
@@ -1289,8 +1290,13 @@ function setupSearchForm() {
         closeSlashCommandsMenu();
         const query = input ? input.value.trim() : "";
         if (query) {
+            if (typeof clearSearchError === "function") clearSearchError();
             if (input) input.value = "";
             executeSearch(query);
+        } else {
+            if (typeof showSearchError === "function") {
+                showSearchError("Please enter a research topic or search query.");
+            }
         }
     };
 
@@ -1358,7 +1364,7 @@ async function testDiscordWebhook() {
 
     try {
         const payload = {
-            content: "🔔 **Ambulkar Cortex Topic Tracker Alert**\nYour background topic tracking pipeline is active! Major news and breakthrough developments will ping here automatically.\n\n🔗 Dashboard: https://cortex.ambulkar.com"
+            content: "🔔 **Cortex Topic Tracker Alert**\nYour background topic tracking pipeline is active! Major news and breakthrough developments will ping here automatically.\n\n🔗 Dashboard: https://cortex-research.org"
         };
 
         const res = await fetch(webhookUrl, {
@@ -1388,7 +1394,7 @@ async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
         const encodedQ = encodeURIComponent(cleanQuery || query);
 
         const payload = {
-            content: `🔔 **Ambulkar Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?q=${encodedQ}`
+            content: `🔔 **Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex-research.org/?q=${encodedQ}`
         };
 
         const res = await fetch(webhookUrl, {
@@ -1543,6 +1549,7 @@ function switchParallelTab(stepId, tabName) {
 async function runAsyncSearchPipeline(userQuery) {
     if (!userQuery) return;
     appState.isSearching = true;
+    if (typeof setSearchLoading === "function") setSearchLoading(true);
 
     // Guarantee search input box is immediately cleared
     const searchInput = document.getElementById("searchInput");
@@ -1991,6 +1998,7 @@ async function runAsyncSearchPipeline(userQuery) {
         }
     } finally {
         appState.isSearching = false;
+        if (typeof setSearchLoading === "function") setSearchLoading(false);
     }
 }
 
@@ -2824,7 +2832,7 @@ function formatSingleModelName(rawId) {
     if (id === "compare") return "Model Comparison Mode";
     if (id === "thinking" || id === "ensemble") return "Ensemble Thinking (Best-of-N)";
     if (id === "free" || id === "local") return "Free Neural Tier";
-    if (id === "ambulkar-cortex-engine" || id === "local" || id.includes("Local Synthesis") || id.includes("Local Engine") || id.includes("Ambulkar Engine") || id.includes("Ambulkar Local")) return "Ambulkar Local Engine";
+    if (id === "cortex-local-engine" || id === "local" || id.includes("Local Synthesis") || id.includes("Local Engine") || id.includes("Cortex Engine")) return "Cortex Local Engine";
 
     // 2. Exact mappings for standard frontier models
     const MAPPINGS = {
@@ -2924,7 +2932,7 @@ function calculateTokenSpend(modelId, promptTokens, completionTokens) {
 
     if (!pricing) {
         const idLower = (modelId || "").toLowerCase();
-        if (idLower.includes("free") || idLower.includes("local") || idLower.includes("ambulkar")) {
+        if (idLower.includes("free") || idLower.includes("local") || idLower.includes("cortex-local")) {
             pricing = { input: 0.0, output: 0.0 };
         } else if (idLower.includes("opus")) {
             pricing = { input: 15.00, output: 75.00 };
@@ -3003,7 +3011,7 @@ function renderUnifiedTelemetryBar(modelDisplay, costUSD, totalTokens, effortCla
 async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effortClass, modelOverride = null, onStreamChunk = null) {
     const provider = appState.settings.provider || "openrouter";
     const apiKey = appState.settings.apiKeys[provider] || "";
-    const modelSelect = provider === "local" ? "ambulkar-cortex-engine" : (appState.settings.model || "openrouter/auto");
+    const modelSelect = provider === "local" ? "cortex-local-engine" : (appState.settings.model || "openrouter/auto");
     const customModel = appState.settings.customModel;
     const activeModel = modelOverride || (modelSelect === "custom" ? (customModel || "openrouter/auto") : modelSelect);
 
@@ -3281,7 +3289,7 @@ class CortexDeepResearchAgent {
                     title: `${capitalizedTopic}`,
                     bullets: [
                         `Strategic research, architectural evaluation, and execution blueprint.`,
-                        `Synthesized autonomously by Ambulkar Cortex AI Deep Compute Studio.`,
+                        `Synthesized autonomously by Cortex AI Deep Compute Studio.`,
                         `Anchor Date: ${cortexTemporal.getTodayFull()} • Multi-Domain Evidence Verified.`,
                         `Target Audience: Executive Leadership, Engineering Architects & Strategy Teams.`
                     ],
@@ -3476,7 +3484,7 @@ class CortexComputeStudio {
                     </div>
                 ` : ''}
                 <div class="slide-footer-bar">
-                    <span>Ambulkar Cortex AI • Executive Compute Studio</span>
+                    <span>Cortex AI • Executive Compute Studio</span>
                     <span>Slide ${index + 1} of ${slides.length}</span>
                 </div>
             </div>
@@ -3548,8 +3556,8 @@ class CortexComputeStudio {
         try {
             const pptx = new PptxGenJS();
             pptx.layout = 'LAYOUT_16x9';
-            pptx.author = 'Ambulkar Cortex AI';
-            pptx.company = 'cortex.ambulkar.com';
+            pptx.author = 'Cortex AI';
+            pptx.company = 'cortex-research.org';
             pptx.title = deckData.title;
 
             deckData.slides.forEach((sData, idx) => {
@@ -3617,7 +3625,7 @@ class CortexComputeStudio {
                 }
 
                 // Footer
-                slide.addText(`Ambulkar Cortex AI • Executive Compute Studio • Slide ${idx + 1} of ${deckData.slides.length}`, {
+                slide.addText(`Cortex AI • Executive Compute Studio • Slide ${idx + 1} of ${deckData.slides.length}`, {
                     x: 0.8,
                     y: 6.9,
                     w: 11.5,
@@ -3668,13 +3676,13 @@ tr:nth-child(even) td { background: #f8fafc; }
 </style></head><body>
 <h1>${reportData.title}</h1>
 <div class="meta-box">
-    <strong>Ambulkar Cortex Autonomous Research & Compute Studio</strong><br/>
+    <strong>Cortex Autonomous Research & Compute Studio</strong><br/>
     <strong>Date:</strong> ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br/>
     <strong>Document Type:</strong> Executive Research Whitepaper & Strategic Brief<br/>
-    <strong>Platform:</strong> cortex.ambulkar.com • Verified Sources Included
+    <strong>Platform:</strong> cortex-research.org • Verified Sources Included
 </div>
 ${reportData.contentHTML}
-<div class="footer">Generated by Ambulkar Cortex AI • Autonomous Compute Engine • cortex.ambulkar.com</div>
+<div class="footer">Generated by Cortex AI • Autonomous Compute Engine • cortex-research.org</div>
 </body></html>`;
 
             const blob = new Blob(['\ufeff', docHTML], { type: 'application/msword' });
@@ -3944,7 +3952,7 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
         const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
         return {
             html: (fallback && fallback.html) ? fallback.html : generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-            modelUsed: fallback?.modelName || "Ambulkar Local Engine"
+            modelUsed: fallback?.modelName || "Cortex Local Engine"
         };
     }
 
@@ -3989,7 +3997,7 @@ async function callOpenRouterProvider(query, sources, model, key, onStreamChunk 
     const todayIso = cortexTemporal.getTodayIso();
     const currentYear = cortexTemporal.getCurrentYear();
 
-    const prompt = `SYSTEM ROLE: You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.
+    const prompt = `SYSTEM ROLE: You are Cortex (cortex-research.org), a high-precision, direct AI search engine.
 ${cortexTemporal.getSystemPromptContext()}
 
 User Search Query: "${query}"
@@ -4021,7 +4029,7 @@ Cortex Structured Answering Guidelines (4-Part Architecture):
             headers: {
                 "Authorization": `Bearer ${cleanKey}`,
                 "Content-Type": "application/json",
-                "HTTP-Referer": "https://cortex.ambulkar.com",
+                "HTTP-Referer": "https://cortex-research.org",
                 "X-Title": "Cortex Market Research Desk"
             },
             body: JSON.stringify({
@@ -4069,7 +4077,7 @@ Cortex Structured Answering Guidelines (4-Part Architecture):
                     if (isRefusalOrDeficient(accumulatedText)) {
                         return {
                             html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-                            modelUsed: "Ambulkar Verified Intelligence Engine"
+                            modelUsed: "Cortex Verified Intelligence Engine"
                         };
                     }
                     return {
@@ -4086,7 +4094,7 @@ Cortex Structured Answering Guidelines (4-Part Architecture):
             if (isRefusalOrDeficient(text)) {
                 return {
                     html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-                    modelUsed: "Ambulkar Verified Intelligence Engine"
+                    modelUsed: "Cortex Verified Intelligence Engine"
                 };
             }
             return {
@@ -4097,14 +4105,14 @@ Cortex Structured Answering Guidelines (4-Part Architecture):
             const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
             return fallback || {
                 html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-                modelUsed: "Ambulkar Local Engine"
+                modelUsed: "Cortex Local Engine"
             };
         }
     } catch (err) {
         const fallback = await callEmbeddedFreeNeuralEngine(query, sources);
         return fallback || {
             html: generateLocalSynthesizedAnswer(query, sources, appState.activeFocusMode, appState.activeEffortLevel),
-            modelUsed: "Ambulkar Local Engine"
+            modelUsed: "Cortex Local Engine"
         };
     }
 }
@@ -6650,7 +6658,7 @@ async function callOpenAIProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 messages: [
-                    { role: "system", content: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nEnforce Structure:\n1. Direct answer first in 1-2 sharp sentences with inline citations like <span class="citation-ref">[1]</span>.\n2. Structured Core Breakdown under an informative subheading (### ...) with bullet points where every bullet begins with a bold concept title (* **Concept:** Explanation [1]).\n3. Ecosystem Context & Implications under a second subheading (### ...) in fluid narrative prose.\n4. Conclude with <div class="cortex-takeaway-card"><div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div><p class="cortex-takeaway-text">Definitive conclusion.</p></div>.\n5. Supply 3 smart, logically progressive follow-up search inquiries based on your answer: <div class="cortex-followups">Question 1? | Question 2? | Question 3?</div>.\nFormat using clean HTML (h3, p, ul, li, strong, code). Zero disclaimers. Always in English.` },
+                    { role: "system", content: `You are Cortex (cortex-research.org), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nEnforce Structure:\n1. Direct answer first in 1-2 sharp sentences with inline citations like <span class="citation-ref">[1]</span>.\n2. Structured Core Breakdown under an informative subheading (### ...) with bullet points where every bullet begins with a bold concept title (* **Concept:** Explanation [1]).\n3. Ecosystem Context & Implications under a second subheading (### ...) in fluid narrative prose.\n4. Conclude with <div class="cortex-takeaway-card"><div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div><p class="cortex-takeaway-text">Definitive conclusion.</p></div>.\n5. Supply 3 smart, logically progressive follow-up search inquiries based on your answer: <div class="cortex-followups">Question 1? | Question 2? | Question 3?</div>.\nFormat using clean HTML (h3, p, ul, li, strong, code). Zero disclaimers. Always in English.` },
                     { role: "user", content: `Query: ${query}\n\nWeb Sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }
                 ]
             })
@@ -6690,7 +6698,7 @@ async function callClaudeProvider(query, sources, model, apiKey) {
             body: JSON.stringify({
                 model: model,
                 max_tokens: 1500,
-                system: `You are Ambulkar Cortex (cortex.ambulkar.com), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nEnforce Structure:\n1. Direct answer first in 1-2 sharp sentences with inline citations like <span class="citation-ref">[1]</span>.\n2. Structured Core Breakdown under an informative subheading (### ...) with bullet points where every bullet begins with a bold concept title (* **Concept:** Explanation [1]).\n3. Ecosystem Context & Implications under a second subheading (### ...) in fluid narrative prose.\n4. Conclude with <div class="cortex-takeaway-card"><div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div><p class="cortex-takeaway-text">Definitive conclusion.</p></div>.\n5. Supply 3 smart, logically progressive follow-up search inquiries based on your answer: <div class="cortex-followups">Question 1? | Question 2? | Question 3?</div>.\nFormat using clean HTML (h3, p, ul, li, strong). Zero disclaimers. Always in English.`,
+                system: `You are Cortex (cortex-research.org), a high-precision, direct AI search engine.\n${cortexTemporal.getSystemPromptContext()}\nEnforce Structure:\n1. Direct answer first in 1-2 sharp sentences with inline citations like <span class="citation-ref">[1]</span>.\n2. Structured Core Breakdown under an informative subheading (### ...) with bullet points where every bullet begins with a bold concept title (* **Concept:** Explanation [1]).\n3. Ecosystem Context & Implications under a second subheading (### ...) in fluid narrative prose.\n4. Conclude with <div class="cortex-takeaway-card"><div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div><p class="cortex-takeaway-text">Definitive conclusion.</p></div>.\n5. Supply 3 smart, logically progressive follow-up search inquiries based on your answer: <div class="cortex-followups">Question 1? | Question 2? | Question 3?</div>.\nFormat using clean HTML (h3, p, ul, li, strong). Zero disclaimers. Always in English.`,
                 messages: [{ role: "user", content: `Synthesize clean HTML answer for query: "${query}" using sources (Crawled ${cortexTemporal.getTodayFull()}):\n${sourceContext}` }]
             })
         });
@@ -7469,11 +7477,11 @@ function clearWorkspaceHistory() {
 
 function switchProviderToLocal() {
     appState.settings.provider = "local";
-    appState.settings.model = "ambulkar-cortex-engine";
+    appState.settings.model = "cortex-local-engine";
     localStorage.setItem("ambu_provider", "local");
-    localStorage.setItem("ambu_model", "ambulkar-cortex-engine");
+    localStorage.setItem("ambu_model", "cortex-local-engine");
     updateHeaderModelLabel();
-    alert("Switched to Ambulkar Engine (100% Free)!");
+    alert("Switched to Cortex Engine (100% Free)!");
 }
 
 // Modal Settings Dialog
@@ -8764,7 +8772,7 @@ function exportMemoMarkdown(btn) {
     const dateStr = cortexTemporal.getTodayIso();
 
     const contentText = clone.innerText.trim();
-    const markdownDoc = `# Executive Research Memo: ${cleanTitle}\n*Date: ${dateStr} | Synthesized by Cortex AI Search (cortex.ambulkar.com)*\n\n---\n\n${contentText}\n\n---\n*Verified web intelligence synthesized via Cortex multi-index research engine.*`;
+    const markdownDoc = `# Executive Research Memo: ${cleanTitle}\n*Date: ${dateStr} | Synthesized by Cortex AI Search (cortex-research.org)*\n\n---\n\n${contentText}\n\n---\n*Verified web intelligence synthesized via Cortex multi-index research engine.*`;
 
     const blob = new Blob([markdownDoc], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -9541,3 +9549,126 @@ setInterval(() => {
 }, 180000); // Auto-refresh every 3 minutes
 
 
+
+/* ==========================================================================
+   PRODUCTION & REGULATORY HELPERS (v6.3.0)
+   Loading States, Form Error Validation, Cookie Consent & Privacy Analytics
+   ========================================================================== */
+
+function setSearchLoading(isLoading) {
+    const btn = document.getElementById("btnSubmitSearch");
+    const form = document.getElementById("searchForm");
+    if (btn) {
+        btn.classList.toggle("is-loading", !!isLoading);
+        btn.disabled = !!isLoading;
+    }
+    if (form) {
+        form.setAttribute("aria-busy", isLoading ? "true" : "false");
+    }
+}
+window.setSearchLoading = setSearchLoading;
+
+function showSearchError(message) {
+    const form = document.getElementById("searchForm");
+    const feedback = document.getElementById("searchErrorFeedback");
+    const textEl = document.getElementById("searchErrorText");
+    const input = document.getElementById("searchInput");
+
+    if (textEl && message) textEl.textContent = message;
+    if (feedback) feedback.classList.add("active");
+    if (form) form.classList.add("has-error");
+    if (input) {
+        input.focus();
+        input.setAttribute("aria-invalid", "true");
+        input.oninput = clearSearchError;
+    }
+
+    setTimeout(() => {
+        if (form) form.classList.remove("has-error");
+    }, 1200);
+}
+window.showSearchError = showSearchError;
+
+function clearSearchError() {
+    const form = document.getElementById("searchForm");
+    const feedback = document.getElementById("searchErrorFeedback");
+    const input = document.getElementById("searchInput");
+    if (feedback) feedback.classList.remove("active");
+    if (form) form.classList.remove("has-error");
+    if (input) {
+        input.removeAttribute("aria-invalid");
+    }
+}
+window.clearSearchError = clearSearchError;
+
+function focusSearchInput() {
+    const input = document.getElementById("searchInput");
+    if (input) {
+        input.focus();
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
+window.focusSearchInput = focusSearchInput;
+
+function initCookieConsent() {
+    const consent = localStorage.getItem("cortex_cookie_consent");
+    const banner = document.getElementById("cookieConsentBanner");
+    if (!consent && banner) {
+        setTimeout(() => {
+            banner.classList.add("show");
+        }, 600);
+    }
+}
+window.initCookieConsent = initCookieConsent;
+
+function handleCookieConsent(choice) {
+    localStorage.setItem("cortex_cookie_consent", choice);
+    localStorage.setItem("cortex_cookie_consent_date", new Date().toISOString());
+    const banner = document.getElementById("cookieConsentBanner");
+    if (banner) {
+        banner.classList.remove("show");
+    }
+    if (typeof trackAnalyticsEvent === "function") {
+        trackAnalyticsEvent("cookie_consent", { choice: choice });
+    }
+}
+window.handleCookieConsent = handleCookieConsent;
+
+function openCookieSettings() {
+    const banner = document.getElementById("cookieConsentBanner");
+    if (banner) {
+        banner.classList.add("show");
+    }
+}
+window.openCookieSettings = openCookieSettings;
+
+function trackAnalyticsEvent(eventName, eventParams = {}) {
+    // Respect Do Not Track header
+    if (navigator.doNotTrack === "1" || window.doNotTrack === "1") {
+        return;
+    }
+    const consent = localStorage.getItem("cortex_cookie_consent");
+    if (consent === "necessary" && eventName !== "cookie_consent") {
+        return;
+    }
+
+    const payload = {
+        event: eventName,
+        timestamp: new Date().toISOString(),
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        path: window.location.pathname,
+        ...eventParams
+    };
+
+    try {
+        const events = JSON.parse(localStorage.getItem("cortex_local_events") || "[]");
+        events.push(payload);
+        if (events.length > 50) events.shift();
+        localStorage.setItem("cortex_local_events", JSON.stringify(events));
+    } catch (e) {}
+
+    window.dispatchEvent(new CustomEvent("cortex_analytics", { detail: payload }));
+}
+window.trackAnalyticsEvent = trackAnalyticsEvent;
+
+// Trigger cookie consent initialization in initCortexApp

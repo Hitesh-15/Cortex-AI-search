@@ -1,0 +1,10 @@
+# Cortex Autonomous AI Market Intelligence
+# https://cortex-research.org
+
+User-agent: *
+Allow: /
+Disallow: /scratch/
+Disallow: /.git/
+Disallow: /.agents/
+
+Sitemap: https://cortex-research.org/sitemap.xml
