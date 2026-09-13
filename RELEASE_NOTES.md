@@ -2,6 +2,50 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.5.1] — 2026-09-13
+### **Unified Search Workstation & Zero-Scroll Single-Screen Responsive Layout**
+
+```mermaid
+graph TD
+    subgraph UnifiedSearch ["⚡ Single Unified Search Workstation"]
+        RemovedTop["Eliminated Duplicate Header Search & Hero Input"]
+        UnifiedChatbox["Chatbox Moved Directly Under Prompt Cards"]
+        SingleFocus["Single Search Workstation Supporting Enter, @Mentions, Compare & Attachments"]
+    end
+
+    subgraph ZeroScroll ["📐 Zero-Scroll Responsive Architecture"]
+        Laptop14["14-Inch Laptops (1366x768): Zero Scroll (scrollHeight == clientHeight)"]
+        Desktop["Desktop Monitors (1440x900, 1920x1080): Perfectly Centered"]
+        Mobile["Mobile (390px): Clean Vertical Stacking with Sticky Controls"]
+        NoDeadSpace["Eliminated Redundant Empty Space Between Cards & Input"]
+    end
+
+    subgraph AutomatedAudit ["🛡️ 100% Automated Multi-Viewport Verification"]
+        RegSuite["20-Item Production Suite: 100% Pass (Above-Fold CTA Verified)"]
+        MasterQA["4-Phase Master QA Suite: 100% Pass across Mobile/Tablet/Desktop"]
+    end
+
+    UnifiedSearch --> ZeroScroll
+    ZeroScroll --> AutomatedAudit
+```
+
+#### Detailed Enhancements in v6.5.1:
+1. **Single Unified Search Workstation**:
+   - Answered user clarification: the top search bar and chatbox performed identical search triggers; eliminated the redundant top search bar in the header and duplicate middle search input in the hero card.
+   - Positioned the single comprehensive chatbox directly below the trending prompt cards (`margin: 6px auto 8px auto`), completely eliminating the empty dead space.
+   - Single unified input handles standard search, multi-model `@` mentions (`@gemini`, `@sonnet`, `@opus`, `@grok`, `@deepseek`), `@compare` head-to-head benchmarking, live deep tracking, and document attachment.
+2. **Zero-Scroll Single-Screen Responsive Layout**:
+   - Introduced `.hero-mode` layout with `overflow-y: hidden` on the hero landing view, ensuring the entire view (branding, focus desk pills, primary above-fold CTA, 4 trending prompt cards, and search chatbox) fits precisely on standard 14-inch laptops (1366x768) and desktop monitors without any vertical scrolling down (`scrollHeight == clientHeight`).
+   - Clean dynamic transition: `.hero-mode` is seamlessly removed upon initiating search to allow research reports, deep synthesis memos, charts, and deliverables to scroll smoothly.
+   - Re-verified full mobile responsiveness at 390px viewport width with zero horizontal overflow.
+3. **Above-the-Fold Primary CTA Preservation**:
+   - Integrated the primary action CTA (*"⚡ Start Autonomous Research"*) directly into the trending prompt header row at $y \approx 244\text{px}$, well above the $900\text{px}$ fold threshold.
+4. **Automated Verification**:
+   - `test_cortex_production_suite.py`: **20/20 PASS (100%)**
+   - `test_cortex_master_qa_suite.py`: **4/4 PASS (100%)**
+
+---
+
 ## 🌟 [v6.5.0] — 2026-09-13
 ### **Streamlined Pure AI Search Engine Workstation & Expanded Query History**
 

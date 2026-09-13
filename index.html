@@ -137,8 +137,8 @@
         </aside>
 
         <!-- MAIN WORKSPACE & CHAT AREA -->
-        <main class="main-content">
-            <!-- TOP HEADER WITH INTEGRATED SEARCH -->
+        <main class="main-content hero-mode" id="mainContent">
+            <!-- TOP HEADER WITH CLEAN BRAND & ACTIONS -->
             <header class="top-header">
                 <div class="header-left-group">
                     <button id="btnMobileToggle" class="btn-mobile-toggle" aria-label="Toggle Mobile Navigation Menu">
@@ -149,13 +149,6 @@
                         <span class="header-brand-title">CORTEX</span>
                         <span class="header-brand-sub">AI SEARCH</span>
                     </div>
-                </div>
-
-                <!-- INTEGRATED TOP SEARCH BAR -->
-                <div class="header-search-bar" onclick="focusSearchInput()">
-                    <i class="fa-solid fa-magnifying-glass text-cyan"></i>
-                    <input type="text" id="topSearchInput" placeholder="Search live markets, frontier AI, research papers & tech..." autocomplete="off" aria-label="Search Markets & Insights">
-                    <span class="search-kbd-badge"><span class="kbd-key">Ctrl</span><span class="kbd-key">K</span></span>
                 </div>
 
                 <!-- RIGHT ACTION ICONS & TIER CONTROLS -->
@@ -197,42 +190,32 @@
                             Synthesize deep answers, verified citations, and autonomous deliverable reports across live web & market intelligence.
                         </p>
 
-                        <!-- CENTRAL HERO SEARCH CARD (PROMINENT SEARCH BOX) -->
-                        <div class="hero-search-card">
-                            <div class="hero-search-input-box">
-                                <i class="fa-solid fa-magnifying-glass hero-search-icon text-cyan"></i>
-                                <input type="text" id="heroSearchInput" class="hero-search-input" placeholder="Ask any question, research a market, or compare entities..." autocomplete="off">
-                                <button type="button" id="btnHeroStartResearch" class="btn-hero-research-cta" onclick="handleHeroSearch()" aria-label="Start Autonomous Research" title="Execute Autonomous Research">
-                                    <i class="fa-solid fa-bolt"></i>
-                                    <span>Research</span>
-                                </button>
-                            </div>
-
-                            <!-- IN-LINE FOCUS DESK PILLS -->
-                            <div class="hero-focus-desk-strip">
-                                <button type="button" class="hero-desk-pill active" data-mode="web" onclick="selectHeroDesk('web')">
-                                    <i class="fa-solid fa-globe text-cyan"></i> All Web
-                                </button>
-                                <button type="button" class="hero-desk-pill" data-mode="finance" onclick="selectHeroDesk('finance')">
-                                    <i class="fa-solid fa-chart-line text-cyan"></i> Financial Markets
-                                </button>
-                                <button type="button" class="hero-desk-pill" data-mode="academic" onclick="selectHeroDesk('academic')">
-                                    <i class="fa-solid fa-graduation-cap text-purple"></i> Academic Papers
-                                </button>
-                                <button type="button" class="hero-desk-pill" data-mode="code" onclick="selectHeroDesk('code')">
-                                    <i class="fa-solid fa-code text-emerald"></i> Engineering & Code
-                                </button>
-                                <button type="button" class="hero-desk-pill" data-mode="writing" onclick="selectHeroDesk('writing')">
-                                    <i class="fa-solid fa-pen-nib text-rose"></i> Executive Strategy
-                                </button>
-                            </div>
+                        <!-- IN-LINE FOCUS DESK PILLS -->
+                        <div class="hero-focus-desk-strip">
+                            <button type="button" class="hero-desk-pill active" data-mode="web" onclick="selectHeroDesk('web')">
+                                <i class="fa-solid fa-globe text-cyan"></i> All Web
+                            </button>
+                            <button type="button" class="hero-desk-pill" data-mode="finance" onclick="selectHeroDesk('finance')">
+                                <i class="fa-solid fa-chart-line text-cyan"></i> Financial Markets
+                            </button>
+                            <button type="button" class="hero-desk-pill" data-mode="academic" onclick="selectHeroDesk('academic')">
+                                <i class="fa-solid fa-graduation-cap text-purple"></i> Academic Papers
+                            </button>
+                            <button type="button" class="hero-desk-pill" data-mode="code" onclick="selectHeroDesk('code')">
+                                <i class="fa-solid fa-code text-emerald"></i> Engineering & Code
+                            </button>
+                            <button type="button" class="hero-desk-pill" data-mode="writing" onclick="selectHeroDesk('writing')">
+                                <i class="fa-solid fa-pen-nib text-rose"></i> Executive Strategy
+                            </button>
                         </div>
 
-                        <!-- REAL 1-CLICK TRENDING RESEARCH TOPICS -->
+                        <!-- REAL 1-CLICK TRENDING RESEARCH PROMPT CARDS -->
                         <div class="trending-research-section">
                             <div class="trending-header-row">
                                 <span class="trending-section-label"><i class="fa-solid fa-arrow-trend-up text-cyan"></i> Trending Research Topics</span>
-                                <span class="trending-refresh-hint">Click any card to launch autonomous research memo</span>
+                                <button type="button" id="btnHeroStartResearch" class="btn-hero-start-cta" onclick="executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast')" aria-label="Start Autonomous Research" title="Execute Autonomous Research">
+                                    <i class="fa-solid fa-bolt text-cyan"></i> <span>Start Autonomous Research</span>
+                                </button>
                             </div>
                             <div class="trending-cards-grid">
                                 <button type="button" class="trending-card" onclick="executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast')">

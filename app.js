@@ -279,7 +279,9 @@ function executeSearch(userQuery, isFollowUp = false) {
 
     const heroView = document.getElementById("emptyHeroView");
     const container = document.getElementById("activeThreadContainer");
+    const mainEl = document.getElementById("mainContent") || document.querySelector(".main-content");
 
+    if (mainEl) mainEl.classList.remove("hero-mode");
     if (heroView) heroView.style.display = "none";
     if (container) container.style.display = "flex";
 
@@ -7364,7 +7366,9 @@ function renderViewport() {
     const thread = appState.threads.find(t => t.id === appState.activeThreadId);
 
     // Fallback to hero view if there is no active thread OR if active thread has no search steps
+    const mainEl = document.getElementById("mainContent") || document.querySelector(".main-content");
     if (!thread || !thread.steps || thread.steps.length === 0) {
+        if (mainEl) mainEl.classList.add("hero-mode");
         if (heroView) heroView.style.display = "flex";
         if (threadContainer) {
             threadContainer.style.display = "none";
@@ -7378,6 +7382,7 @@ function renderViewport() {
         const scrollArea = document.getElementById("viewScrollArea");
         if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
     } else {
+        if (mainEl) mainEl.classList.remove("hero-mode");
         if (heroView) heroView.style.display = "none";
         if (threadContainer) {
             threadContainer.style.display = "flex";
@@ -9675,41 +9680,30 @@ function clearSearchError() {
 window.clearSearchError = clearSearchError;
 
 function focusSearchInput() {
-    const heroInput = document.getElementById("heroSearchInput");
-    const topInput = document.getElementById("topSearchInput");
-    const bottomInput = document.getElementById("searchInput");
-    const emptyHero = document.getElementById("emptyHeroView");
-    const isHeroVisible = emptyHero && window.getComputedStyle(emptyHero).display !== "none";
-
-    if (isHeroVisible && heroInput) {
-        heroInput.focus();
-        heroInput.select();
-    } else if (window.innerWidth > 768 && topInput) {
-        topInput.focus();
-        topInput.select();
-    } else if (bottomInput) {
-        bottomInput.focus();
+    const input = document.getElementById("searchInput");
+    if (input) {
+        input.focus();
+        input.select();
     }
 }
 window.focusSearchInput = focusSearchInput;
 
 function switchToDashboardView() {
+    const mainEl = document.getElementById("mainContent") || document.querySelector(".main-content");
+    if (mainEl) mainEl.classList.add("hero-mode");
     const emptyHero = document.getElementById("emptyHeroView");
     const activeThread = document.getElementById("activeThreadContainer");
-    if (emptyHero) emptyHero.style.display = "block";
+    if (emptyHero) emptyHero.style.display = "flex";
     if (activeThread) activeThread.style.display = "none";
 
     // Smooth scroll back to top of viewport
     const scrollArea = document.getElementById("viewScrollArea");
     if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Focus hero search on return
+    // Focus unified search input
     setTimeout(() => {
-        const heroInput = document.getElementById("heroSearchInput");
-        if (heroInput && window.innerWidth > 768) {
-            heroInput.focus();
-        }
-    }, 120);
+        focusSearchInput();
+    }, 100);
 }
 window.switchToDashboardView = switchToDashboardView;
 
