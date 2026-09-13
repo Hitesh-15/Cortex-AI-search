@@ -1323,6 +1323,38 @@ function setupSearchForm() {
             }
         };
     }
+
+    // Connect Integrated Top Navigation Search Bar
+    const topSearch = document.getElementById("topSearchInput");
+    if (topSearch) {
+        topSearch.onkeydown = (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const q = topSearch.value.trim();
+                if (q) {
+                    if (typeof clearSearchError === "function") clearSearchError();
+                    topSearch.value = "";
+                    executeSearch(q);
+                } else {
+                    if (typeof showSearchError === "function") {
+                        showSearchError("Please enter a research topic or search query.");
+                    }
+                }
+            }
+        };
+    }
+
+    // Global Hotkey (Ctrl+K / Cmd+K) to focus Top Search Bar
+    window.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+            e.preventDefault();
+            const topInput = document.getElementById("topSearchInput");
+            if (topInput) {
+                topInput.focus();
+                topInput.select();
+            }
+        }
+    });
 }
 
 let isWatchdogActive = false;
@@ -1631,7 +1663,20 @@ async function runAsyncSearchPipeline(userQuery) {
     const container = document.getElementById("activeThreadContainer");
 
     if (heroView) heroView.style.display = "none";
-    if (container) container.style.display = "flex";
+    if (container) {
+        container.style.display = "flex";
+        if (!document.getElementById("btnThreadReturnDashboard")) {
+            const returnNav = document.createElement("div");
+            returnNav.id = "btnThreadReturnDashboard";
+            returnNav.innerHTML = `<button type="button" class="btn-return-dashboard" onclick="switchToDashboardView()"><i class="fa-solid fa-arrow-left"></i> Return to Dashboard</button>`;
+            container.prepend(returnNav);
+        }
+    }
+
+    // Update sidebar navigation active state
+    document.querySelectorAll(".sidebar-nav-btn").forEach(btn => btn.classList.remove("active"));
+    const searchNavBtn = document.getElementById("navBtnSearch");
+    if (searchNavBtn) searchNavBtn.classList.add("active");
 
     const stepId = "step_" + Date.now();
     const stepElement = document.createElement("div");
@@ -9602,13 +9647,33 @@ function clearSearchError() {
 window.clearSearchError = clearSearchError;
 
 function focusSearchInput() {
-    const input = document.getElementById("searchInput");
-    if (input) {
-        input.focus();
-        input.scrollIntoView({ behavior: "smooth", block: "center" });
+    const topInput = document.getElementById("topSearchInput");
+    const bottomInput = document.getElementById("searchInput");
+    if (window.innerWidth > 768 && topInput) {
+        topInput.focus();
+        topInput.select();
+    } else if (bottomInput) {
+        bottomInput.focus();
     }
 }
 window.focusSearchInput = focusSearchInput;
+
+function switchToDashboardView() {
+    const emptyHero = document.getElementById("emptyHeroView");
+    const activeThread = document.getElementById("activeThreadContainer");
+    if (emptyHero) emptyHero.style.display = "block";
+    if (activeThread) activeThread.style.display = "none";
+
+    // Update sidebar navigation active state
+    document.querySelectorAll(".sidebar-nav-btn").forEach(btn => btn.classList.remove("active"));
+    const dashBtn = document.getElementById("navBtnDashboard");
+    if (dashBtn) dashBtn.classList.add("active");
+
+    // Smooth scroll back to top of viewport
+    const scrollArea = document.getElementById("viewScrollArea");
+    if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
+}
+window.switchToDashboardView = switchToDashboardView;
 
 function initCookieConsent() {
     const consent = localStorage.getItem("cortex_cookie_consent");

@@ -2,6 +2,48 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.4.0] — 2026-09-13
+### **Executive Bento-Grid Workspace Architecture & Integrated Top Search Engine**
+
+```mermaid
+graph TD
+    subgraph BentoDesign ["⚡ Executive Bento-Grid Architecture"]
+        MarketCard["Market Intelligence Overview Card (Live SVG Line Chart, YoY Forecast, Citations)"]
+        InsightsCard["Top Insights Block (Trending AI, Analytics, Quantum Breakthroughs)"]
+        ProjectsCard["Active Projects Card (Agent Status, Progress Track, Session Pagination)"]
+    end
+
+    subgraph NavigationSearch ["🔍 Integrated Top Navigation & Search Engine"]
+        TopSearchBar["Header Search Bar with Ctrl+K Shortcut & Real-Time Query Dispatch"]
+        StreamlinedSidebar["Executive Nav: Dashboard, Search, Reports, Analytics, Settings"]
+        FluidReturn["Bidirectional Viewport: Toggle between Dashboard & Active Thread"]
+    end
+
+    subgraph ZeroTrackingPrivacy ["🛡️ Zero-Tracking Privacy Standards"]
+        NonIntrusiveNotice["Local-First Privacy Toast with Single 'Got It' Acknowledgment"]
+        ZeroScrollJumping["Smooth Non-Disruptive Focus (Eliminated Scroll Inversion)"]
+    end
+
+    BentoDesign --> NavigationSearch
+    NavigationSearch --> ZeroTrackingPrivacy
+```
+
+#### Detailed Enhancements in v6.4.0:
+1. **Modular Bento Grid Workspace**:
+   - Transformed the home workspace into an executive bento grid featuring glowing glassmorphic blocks for **Market Intelligence Overview**, **Top Insights**, and **Active Projects**.
+   - Engineered an illuminated multi-node SVG line chart with area gradient fills, coordinate axes, and dynamic callout markers (`NASDAQ +2.1%`, `AI Sector +3.8%`).
+   - Integrated verified citation pills ([1] Gartner Research, [2] PitchBook Data, [3] TechCrunch) providing instant one-click deep research exploration.
+2. **Integrated Top Navigation Search Bar**:
+   - Added a top-bar search input (`[ 🔍 Search Markets & Insights...   Ctrl K ]`) with instant hotkey capture (`Ctrl+K` / `⌘K`) and automatic query routing.
+   - Fixed the scroll-jumping UX bug by eliminating viewport repositioning on focus, preserving fluid screen stability.
+3. **Streamlined Executive Sidebar**:
+   - Replaced legacy menus with the 5 core executive functions: `Dashboard`, `Search`, `Reports`, `Analytics`, and `Settings`.
+   - Added active neon glow states and one-click restoration to the Bento Dashboard via `switchToDashboardView()`.
+4. **Zero-Tracking Privacy Refinement**:
+   - Replaced the confusing "Accept All vs. Necessary Only" cookie consent banner with a clean, non-intrusive bottom-right privacy toast informing users of local-first encryption with a single `"Got It"` button.
+
+---
+
 ## 🌟 [v6.3.0] — 2026-09-13
 ### **Production, Regulatory & Safety Engine: 20 Industry Standard Milestones**
 
