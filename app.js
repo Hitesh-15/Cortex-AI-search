@@ -659,7 +659,7 @@ function setupNavigationListeners() {
             e.preventDefault();
             const mode = item.getAttribute("data-mode") || item.dataset.mode;
             if (mode) {
-                setFocusMode(mode);
+                selectResearchDesk(mode);
                 closeMobileSidebar();
             }
         });
