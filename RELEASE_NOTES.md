@@ -2,6 +2,25 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.6] — 2026-09-13
+### **Center Hero Section Alignment to Sidebar Header Baseline**
+
+```mermaid
+graph LR
+    subgraph Alignment ["📐 Baseline Vertical Alignment"]
+        SidebarRedLine["Sidebar Section Header Red Line (y ≈ 154px)"]
+        HeroBaseline["Center Hero Section Start (.view-scroll-area flex-start)"]
+        SidebarRedLine --- HeroBaseline
+    end
+```
+
+#### Detailed Enhancements in v6.7.6:
+1. **Vertical Alignment with Red-Line Baseline**:
+   - Replaced centered vertical flex distribution (`safe center`) with structured top alignment (`flex-start`) calibrated to `clamp(36px, 5.5vh, 58px) 16px 8px 16px`.
+   - The headline (`Where knowledge begins.`) and live pulse pill now begin immediately in alignment with the red line level (the sidebar's `Research Desks` / active desk section header).
+   - Preserves complete zero-scroll viewport visibility on 14" laptops (1366x768), MacBooks (1440x900), and larger desktop displays with all 4 trending prompt cards and bottom search bar floating without clipping.
+   - Cache invalidation: Bumped stylesheet query to `styles.css?v=2026.09.13.14`.
+
 ## 🌟 [v6.7.5] — 2026-09-13
 ### **Executive Board Meeting Deliverable Engine & Film Homonym Rejection**
 

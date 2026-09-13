@@ -6210,9 +6210,9 @@ body.legal-page-body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    justify-content: safe center !important;
+    justify-content: flex-start !important;
     align-items: center;
-    padding: clamp(8px, 2vh, 24px) 16px !important;
+    padding: clamp(36px, 5.5vh, 58px) 16px 8px 16px !important;
     box-sizing: border-box;
 }
 
@@ -6320,8 +6320,8 @@ body.legal-page-body {
     }
     .main-content.hero-mode .view-scroll-area,
     .main-content:has(#emptyHeroView:not([style*="display: none"])) .view-scroll-area {
-        justify-content: safe center !important;
-        padding: 4px 16px !important;
+        justify-content: flex-start !important;
+        padding: 10px 16px 4px 16px !important;
     }
     .pure-search-hero-title {
         font-size: 1.65rem !important;
