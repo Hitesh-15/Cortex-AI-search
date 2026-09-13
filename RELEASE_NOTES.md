@@ -2,6 +2,49 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.5.0] — 2026-09-13
+### **Streamlined Pure AI Search Engine Workstation & Expanded Query History**
+
+```mermaid
+graph TD
+    subgraph PureSearch ["⚡ Pure AI Search Workstation"]
+        HeroCard["Central Search Card with Inline Focus Desk Pills & Above-Fold CTA"]
+        LiveTrending["Real 1-Click Trending Research Cards (Markets, AI, Quantum, Deliverables)"]
+        CleanInterface["Zero Confusing Mock Charts or Non-Functional Controls"]
+    end
+
+    subgraph SidebarRefactor ["📂 Sidebar Refactoring & 14-Inch Screen Optimization"]
+        HistoryExpanded["70%+ Vertical Height Dedicated to Recent Searches / Threads"]
+        CompactFocus["Sleek 5-Item Subject Matter Desk Selector"]
+        ZeroDuplicates["Eliminated Redundant Nav Buttons & Duplicate Release Notes"]
+    end
+
+    subgraph DualSuiteAudit ["🛡️ 100% Automated Verification"]
+        RegSuite["20-Item Production & Safety Suite: 100% Pass"]
+        QASuite["4-Phase Master QA & User Journey Suite: 100% Pass"]
+    end
+
+    PureSearch --> SidebarRefactor
+    SidebarRefactor --> DualSuiteAudit
+```
+
+#### Detailed Enhancements in v6.5.0:
+1. **Streamlined Pure AI Search Engine Layout**:
+   - Replaced confusing static mock dashboard charts ("Market Share 24.5%", dummy "$8n" graph, non-functional carousel dots) with a focused, elegant search hero (*"Where knowledge begins."*).
+   - Embedded in-line focus desk pills directly in the central search hero (`All Web`, `Financial Markets`, `Academic Papers`, `Engineering & Code`, `Executive Strategy`).
+   - Integrated real 1-click trending research query cards that immediately trigger live autonomous research memos upon click.
+2. **Solved 14-Inch Screen Sidebar Cramping**:
+   - Eliminated redundant sidebar navigation items (`Dashboard`, `Search`, `Reports`, `Analytics`, `Settings`) which were duplicating header controls and `+ New Search`.
+   - Dedicated over 70% of the sidebar height to **Recent Searches / Query Threads**, allowing users on standard 1366x768 and 1440x900 screens to view dozens of research threads with smooth scrolling.
+3. **Eliminated Duplicate Controls**:
+   - Consolidated continuous release notes access to the header notification bell, removing the duplicate newspaper icon from the sidebar footer.
+   - Unified search entry points between the central search card, top header search bar (`Ctrl+K`), and bottom docked input.
+4. **Automated Verification & Compliance**:
+   - Verified 100% pass rate on `test_cortex_production_suite.py` (all 20 production, legal, accessibility, and SEO requirements passed).
+   - Verified 100% pass rate on `test_cortex_master_qa_suite.py` (functional end-to-end user journeys, deep research stepper, PowerPoint/Word exports, and responsive layout audits).
+
+---
+
 ## 🌟 [v6.4.0] — 2026-09-13
 ### **Executive Bento-Grid Workspace Architecture & Integrated Top Search Engine**
 

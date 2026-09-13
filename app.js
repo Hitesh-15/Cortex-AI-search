@@ -1324,6 +1324,17 @@ function setupSearchForm() {
         };
     }
 
+    // Connect Hero Search Input
+    const heroSearch = document.getElementById("heroSearchInput");
+    if (heroSearch) {
+        heroSearch.onkeydown = (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                handleHeroSearch();
+            }
+        };
+    }
+
     // Connect Integrated Top Navigation Search Bar
     const topSearch = document.getElementById("topSearchInput");
     if (topSearch) {
@@ -1344,18 +1355,35 @@ function setupSearchForm() {
         };
     }
 
-    // Global Hotkey (Ctrl+K / Cmd+K) to focus Top Search Bar
+    // Global Hotkey (Ctrl+K / Cmd+K) to focus Search Bar
     window.addEventListener("keydown", (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
             e.preventDefault();
-            const topInput = document.getElementById("topSearchInput");
-            if (topInput) {
-                topInput.focus();
-                topInput.select();
-            }
+            focusSearchInput();
         }
     });
 }
+
+function handleHeroSearch() {
+    const heroInput = document.getElementById("heroSearchInput");
+    const q = heroInput ? heroInput.value.trim() : "";
+    if (q) {
+        heroInput.value = "";
+        executeSearch(q);
+    } else {
+        executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast');
+    }
+}
+window.handleHeroSearch = handleHeroSearch;
+
+function selectHeroDesk(mode) {
+    document.querySelectorAll(".hero-desk-pill").forEach(p => p.classList.toggle("active", p.getAttribute("data-mode") === mode));
+    const sidebarDesk = document.querySelector(`.focus-nav-item[data-mode="${mode}"]`);
+    if (sidebarDesk) {
+        sidebarDesk.click();
+    }
+}
+window.selectHeroDesk = selectHeroDesk;
 
 let isWatchdogActive = false;
 
@@ -9647,9 +9675,16 @@ function clearSearchError() {
 window.clearSearchError = clearSearchError;
 
 function focusSearchInput() {
+    const heroInput = document.getElementById("heroSearchInput");
     const topInput = document.getElementById("topSearchInput");
     const bottomInput = document.getElementById("searchInput");
-    if (window.innerWidth > 768 && topInput) {
+    const emptyHero = document.getElementById("emptyHeroView");
+    const isHeroVisible = emptyHero && window.getComputedStyle(emptyHero).display !== "none";
+
+    if (isHeroVisible && heroInput) {
+        heroInput.focus();
+        heroInput.select();
+    } else if (window.innerWidth > 768 && topInput) {
         topInput.focus();
         topInput.select();
     } else if (bottomInput) {
@@ -9664,14 +9699,17 @@ function switchToDashboardView() {
     if (emptyHero) emptyHero.style.display = "block";
     if (activeThread) activeThread.style.display = "none";
 
-    // Update sidebar navigation active state
-    document.querySelectorAll(".sidebar-nav-btn").forEach(btn => btn.classList.remove("active"));
-    const dashBtn = document.getElementById("navBtnDashboard");
-    if (dashBtn) dashBtn.classList.add("active");
-
     // Smooth scroll back to top of viewport
     const scrollArea = document.getElementById("viewScrollArea");
     if (scrollArea) scrollArea.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Focus hero search on return
+    setTimeout(() => {
+        const heroInput = document.getElementById("heroSearchInput");
+        if (heroInput && window.innerWidth > 768) {
+            heroInput.focus();
+        }
+    }, 120);
 }
 window.switchToDashboardView = switchToDashboardView;
 

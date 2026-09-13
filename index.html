@@ -75,67 +75,49 @@
                 </button>
             </div>
 
-            <!-- EXECUTIVE SIDEBAR NAVIGATION -->
-            <div class="sidebar-main-nav">
-                <button type="button" class="sidebar-nav-btn active" id="navBtnDashboard" onclick="switchToDashboardView()">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Dashboard</span>
-                </button>
-                <button type="button" class="sidebar-nav-btn" id="navBtnSearch" onclick="focusSearchInput()">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <span>Search</span>
-                </button>
-                <button type="button" class="sidebar-nav-btn" id="navBtnReports" onclick="openLibraryModal()">
-                    <i class="fa-solid fa-file-lines"></i>
-                    <span>Reports</span>
-                </button>
-                <button type="button" class="sidebar-nav-btn" id="navBtnAnalytics" onclick="executeSearch('Global macroeconomic and market intelligence equity sector analytics')">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    <span>Analytics</span>
-                </button>
-                <button type="button" class="sidebar-nav-btn" id="navBtnSettings" onclick="openSettingsModal()">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Settings</span>
-                </button>
-            </div>
-
-            <button id="btnNewThread" class="btn-new-thread" onclick="switchToDashboardView()">
-                <i class="fa-solid fa-plus"></i> New Search
+            <button id="btnNewThread" class="btn-new-thread" onclick="switchToDashboardView()" title="Start New Search (Ctrl+K)">
+                <i class="fa-solid fa-plus"></i>
+                <span>New Search</span>
+                <span class="sidebar-kbd-hint">Ctrl K</span>
             </button>
 
-            <!-- FOCUS MODE / RESEARCH DESKS SELECTOR -->
-            <span class="sidebar-section-title">Research Desks</span>
-            <div class="focus-nav">
-                <div class="focus-nav-item active" data-mode="web">
-                    <i class="fa-solid fa-globe text-cyan"></i>
-                    <span>Market & Web</span>
-                </div>
-                <div class="focus-nav-item" data-mode="finance">
-                    <i class="fa-solid fa-chart-line text-cyan"></i>
-                    <span>Financial Markets</span>
-                </div>
-                <div class="focus-nav-item" data-mode="academic">
-                    <i class="fa-solid fa-graduation-cap text-purple"></i>
-                    <span>Academic & Research</span>
-                </div>
-                <div class="focus-nav-item" data-mode="code">
-                    <i class="fa-solid fa-code text-emerald"></i>
-                    <span>Engineering & Code</span>
-                </div>
-                <div class="focus-nav-item" data-mode="writing">
-                    <i class="fa-solid fa-pen-nib text-rose"></i>
-                    <span>Executive Memos</span>
+            <!-- PURE RESEARCH DESKS SELECTOR -->
+            <div class="sidebar-focus-section">
+                <span class="sidebar-section-title">Research Desks</span>
+                <div class="focus-nav">
+                    <div class="focus-nav-item active" data-mode="web">
+                        <i class="fa-solid fa-globe text-cyan"></i>
+                        <span>Market & Web</span>
+                    </div>
+                    <div class="focus-nav-item" data-mode="finance">
+                        <i class="fa-solid fa-chart-line text-cyan"></i>
+                        <span>Financial Markets</span>
+                    </div>
+                    <div class="focus-nav-item" data-mode="academic">
+                        <i class="fa-solid fa-graduation-cap text-purple"></i>
+                        <span>Academic & Research</span>
+                    </div>
+                    <div class="focus-nav-item" data-mode="code">
+                        <i class="fa-solid fa-code text-emerald"></i>
+                        <span>Engineering & Code</span>
+                    </div>
+                    <div class="focus-nav-item" data-mode="writing">
+                        <i class="fa-solid fa-pen-nib text-rose"></i>
+                        <span>Executive Memos</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="sidebar-section-header" style="display: flex; align-items: center; justify-content: space-between; margin: 14px 8px 6px 8px;">
+            <!-- EXPANDED SEARCH THREADS HISTORY (70%+ OF SIDEBAR HEIGHT) -->
+            <div class="sidebar-section-header">
                 <span class="sidebar-section-title" style="margin: 0;">Recent Searches</span>
-                <span id="threadCountBadge" style="font-size: 0.68rem; color: #94a3b8; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 10px;">0</span>
+                <span id="threadCountBadge" class="thread-count-badge">0</span>
             </div>
             <div class="thread-history-list" id="threadHistoryList">
                 <!-- Dynamically populated by JS -->
             </div>
 
+            <!-- CLEAN MINIMAL SIDEBAR FOOTER -->
             <div class="sidebar-footer">
                 <button id="btnGenerateMorningDigest" class="btn-sidebar-digest" onclick="generateExecutiveMorningDigest()" title="Synthesize 24-Hour Executive Daily Digest across active topics">
                     <i class="fa-solid fa-sun text-gold"></i> <span>Executive Daily Digest</span>
@@ -146,9 +128,6 @@
                     </button>
                     <button id="btnOpenSettings" class="btn-icon-footer" onclick="openSettingsModal()" title="Cortex Settings & AI Gateway">
                         <i class="fa-solid fa-gear"></i>
-                    </button>
-                    <button id="btnOpenReleaseNotes" class="btn-icon-footer" onclick="openReleaseNotesModal()" title="Release Notes & Continuous Changelog">
-                        <i class="fa-solid fa-newspaper"></i>
                     </button>
                     <button id="btnClearHistory" class="btn-icon-footer text-muted" onclick="clearWorkspaceHistory()" title="Clear Workspace Search History">
                         <i class="fa-solid fa-trash-can"></i>
@@ -165,261 +144,133 @@
                     <button id="btnMobileToggle" class="btn-mobile-toggle" aria-label="Toggle Mobile Navigation Menu">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <div class="header-section-label">SEARCH</div>
+                    <div class="header-brand-badge" onclick="switchToDashboardView()" title="Return to Search Home" style="cursor: pointer;">
+                        <i class="fa-solid fa-brain text-cyan"></i>
+                        <span class="header-brand-title">CORTEX</span>
+                        <span class="header-brand-sub">AI SEARCH</span>
+                    </div>
                 </div>
 
                 <!-- INTEGRATED TOP SEARCH BAR -->
                 <div class="header-search-bar" onclick="focusSearchInput()">
                     <i class="fa-solid fa-magnifying-glass text-cyan"></i>
-                    <input type="text" id="topSearchInput" placeholder="Search Markets & Insights..." autocomplete="off" aria-label="Search Markets & Insights">
+                    <input type="text" id="topSearchInput" placeholder="Search live markets, frontier AI, research papers & tech..." autocomplete="off" aria-label="Search Markets & Insights">
                     <span class="search-kbd-badge"><span class="kbd-key">Ctrl</span><span class="kbd-key">K</span></span>
                 </div>
 
                 <!-- RIGHT ACTION ICONS & TIER CONTROLS -->
                 <div class="header-right-actions">
-                    <button type="button" class="header-icon-action" onclick="generateExecutiveMorningDigest()" title="Executive Morning Digest">
-                        <i class="fa-regular fa-envelope"></i>
+                    <button type="button" class="header-icon-action" onclick="generateExecutiveMorningDigest()" title="Executive Daily Digest (Synthesize 24h Intelligence)">
+                        <i class="fa-solid fa-sun" style="color: #fbbf24;"></i>
                     </button>
-                    <button type="button" class="header-icon-action" onclick="openReleaseNotesModal()" title="System Alerts & Updates">
-                        <i class="fa-regular fa-bell"></i>
+                    <button type="button" class="header-icon-action" id="btnOpenReleaseNotes" onclick="openReleaseNotesModal()" title="System Alerts & Continuous Release Notes">
+                        <i class="fa-regular fa-bell" style="color: #38bdf8;"></i>
                         <span class="header-alert-indicator"></span>
                     </button>
-                    <button type="button" class="header-icon-action" onclick="openSettingsModal()" title="Settings & Key Vault">
-                        <i class="fa-solid fa-gear"></i>
+                    <button type="button" class="header-icon-action" onclick="openSettingsModal()" title="Settings & API Key Vault">
+                        <i class="fa-solid fa-gear" style="color: #94a3b8;"></i>
                     </button>
-                    <button type="button" id="btnHeaderAuth" class="btn-header-auth" onclick="openAuthModal()" title="AI Reasoning Tier • Click to Manage">
-                        <span id="headerAuthBadge"><span class="auth-tier-free"><i class="fa-solid fa-gift text-cyan"></i> Free Tier</span></span>
-                    </button>
+                    <div id="headerAuthContainer">
+                        <button type="button" id="btnHeaderAuth" class="btn-header-auth" onclick="openAuthModal()" title="AI Reasoning Tier • Click to Manage">
+                            <span id="headerAuthBadge"><span class="auth-tier-free"><i class="fa-solid fa-gift text-cyan"></i> Free Tier</span></span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
             <!-- ANSWERS & THREAD VIEWPORT -->
             <div class="view-scroll-area" id="viewScrollArea">
-                <!-- EXECUTIVE BENTO GRID HERO (Default View) -->
-                <div class="empty-hero bento-dashboard-view" id="emptyHeroView">
-                    <!-- BENTO GRID MASTER LAYOUT -->
-                    <div class="bento-grid">
-                        <!-- CARD 1: MARKET INTELLIGENCE OVERVIEW (Main 2-Col Card) -->
-                        <section class="bento-card bento-card-main" aria-label="Market Intelligence Overview">
-                            <div class="bento-card-header">
-                                <div class="bento-card-title-group">
-                                    <h2 class="bento-card-title">Market Intelligence Overview</h2>
-                                </div>
-                                <div class="bento-card-actions">
-                                    <button type="button" id="btnHeroStartResearch" class="btn-bento-scan" onclick="executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast')" aria-label="Start Autonomous Research" title="Run Autonomous Market Scan">
-                                        <i class="fa-solid fa-bolt text-cyan"></i> <span>Start Autonomous Research</span>
-                                    </button>
-                                    <button type="button" class="bento-icon-btn" title="View Options"><i class="fa-solid fa-ellipsis"></i></button>
-                                </div>
+                <!-- PURE AI SEARCH WORKSTATION HERO -->
+                <div class="empty-hero pure-search-hero-view" id="emptyHeroView">
+                    <div class="search-hero-container">
+                        <!-- HERO BADGE & HEADLINE -->
+                        <div class="hero-badge-row">
+                            <span class="hero-live-pill">
+                                <span class="status-pulse-dot"></span>
+                                <span>Frontier Autonomous Research Engine</span>
+                            </span>
+                        </div>
+                        <h2 class="pure-search-hero-title">
+                            Where knowledge begins.
+                        </h2>
+                        <p class="pure-search-hero-subtitle">
+                            Synthesize deep answers, verified citations, and autonomous deliverable reports across live web & market intelligence.
+                        </p>
+
+                        <!-- CENTRAL HERO SEARCH CARD (PROMINENT SEARCH BOX) -->
+                        <div class="hero-search-card">
+                            <div class="hero-search-input-box">
+                                <i class="fa-solid fa-magnifying-glass hero-search-icon text-cyan"></i>
+                                <input type="text" id="heroSearchInput" class="hero-search-input" placeholder="Ask any question, research a market, or compare entities..." autocomplete="off">
+                                <button type="button" id="btnHeroStartResearch" class="btn-hero-research-cta" onclick="handleHeroSearch()" aria-label="Start Autonomous Research" title="Execute Autonomous Research">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span>Research</span>
+                                </button>
                             </div>
 
-                            <!-- KEY STAT METRICS -->
-                            <div class="bento-stats-row">
-                                <div class="bento-stat-chip">
-                                    <div class="bento-stat-icon text-cyan"><i class="fa-solid fa-chart-pie"></i></div>
-                                    <div class="bento-stat-meta">
-                                        <span class="bento-stat-label">Market Share</span>
-                                        <span class="bento-stat-value">24.5%</span>
-                                    </div>
-                                </div>
-                                <div class="bento-stat-chip">
-                                    <div class="bento-stat-icon text-emerald"><i class="fa-solid fa-arrow-trend-up"></i></div>
-                                    <div class="bento-stat-meta">
-                                        <span class="bento-stat-label">Trend</span>
-                                        <span class="bento-stat-value text-emerald">Bullish</span>
-                                    </div>
-                                </div>
-                                <div class="bento-stat-chip">
-                                    <div class="bento-stat-icon text-purple"><i class="fa-solid fa-chart-line"></i></div>
-                                    <div class="bento-stat-meta">
-                                        <span class="bento-stat-label">Forecast</span>
-                                        <span class="bento-stat-value text-cyan">+12% YoY</span>
-                                    </div>
-                                </div>
+                            <!-- IN-LINE FOCUS DESK PILLS -->
+                            <div class="hero-focus-desk-strip">
+                                <button type="button" class="hero-desk-pill active" data-mode="web" onclick="selectHeroDesk('web')">
+                                    <i class="fa-solid fa-globe text-cyan"></i> All Web
+                                </button>
+                                <button type="button" class="hero-desk-pill" data-mode="finance" onclick="selectHeroDesk('finance')">
+                                    <i class="fa-solid fa-chart-line text-cyan"></i> Financial Markets
+                                </button>
+                                <button type="button" class="hero-desk-pill" data-mode="academic" onclick="selectHeroDesk('academic')">
+                                    <i class="fa-solid fa-graduation-cap text-purple"></i> Academic Papers
+                                </button>
+                                <button type="button" class="hero-desk-pill" data-mode="code" onclick="selectHeroDesk('code')">
+                                    <i class="fa-solid fa-code text-emerald"></i> Engineering & Code
+                                </button>
+                                <button type="button" class="hero-desk-pill" data-mode="writing" onclick="selectHeroDesk('writing')">
+                                    <i class="fa-solid fa-pen-nib text-rose"></i> Executive Strategy
+                                </button>
                             </div>
+                        </div>
 
-                            <!-- GLOWING INTERACTIVE SVG LINE CHART -->
-                            <div class="bento-chart-container">
-                                <div class="bento-chart-wrapper">
-                                    <svg viewBox="0 0 760 250" class="bento-svg-chart" preserveAspectRatio="none">
-                                        <defs>
-                                            <linearGradient id="bentoAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35" />
-                                                <stop offset="55%" stop-color="#38bdf8" stop-opacity="0.10" />
-                                                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0" />
-                                            </linearGradient>
-                                            <filter id="bentoNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                                                <feGaussianBlur stdDeviation="3.5" result="blur" />
-                                                <feMerge>
-                                                    <feMergeNode in="blur" />
-                                                    <feMergeNode in="SourceGraphic" />
-                                                </feMerge>
-                                            </filter>
-                                        </defs>
-                                        <!-- Grid lines & Y-Axis Labels -->
-                                        <g class="chart-grid">
-                                            <line x1="55" y1="20" x2="735" y2="20" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/>
-                                            <text x="48" y="24" text-anchor="end" fill="#64748b" font-size="11">$8n</text>
-                                            
-                                            <line x1="55" y1="58" x2="735" y2="58" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/>
-                                            <text x="48" y="62" text-anchor="end" fill="#64748b" font-size="11">$5n</text>
-
-                                            <line x1="55" y1="94" x2="735" y2="94" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/>
-                                            <text x="48" y="98" text-anchor="end" fill="#64748b" font-size="11">$4h</text>
-
-                                            <line x1="55" y1="130" x2="735" y2="130" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/>
-                                            <text x="48" y="134" text-anchor="end" fill="#64748b" font-size="11">$3n</text>
-
-                                            <line x1="55" y1="166" x2="735" y2="166" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/>
-                                            <text x="48" y="170" text-anchor="end" fill="#64748b" font-size="11">$2n</text>
-
-                                            <line x1="55" y1="202" x2="735" y2="202" stroke="rgba(255,255,255,0.08)"/>
-                                            <text x="48" y="206" text-anchor="end" fill="#64748b" font-size="11">$0n</text>
-                                        </g>
-                                        
-                                        <!-- Area Fill Under Curve -->
-                                        <path d="M 85,202 L 85,166 L 145,152 L 205,166 L 265,142 L 325,124 L 385,76 L 445,112 L 505,86 L 565,96 L 625,72 L 685,42 L 685,202 Z" fill="url(#bentoAreaGradient)" />
-
-                                        <!-- Glowing Line Curve -->
-                                        <polyline points="85,166 145,152 205,166 265,142 325,124 385,76 445,112 505,86 565,96 625,72 685,42" fill="none" stroke="#38bdf8" stroke-width="3" filter="url(#bentoNeonGlow)" stroke-linecap="round" stroke-linejoin="round" />
-
-                                        <!-- Nodes -->
-                                        <circle cx="85" cy="166" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="145" cy="152" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="205" cy="166" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="265" cy="142" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="325" cy="124" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="385" cy="76" r="6" fill="#38bdf8" stroke="#ffffff" stroke-width="2.5"/>
-                                        <circle cx="445" cy="112" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="505" cy="86" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="565" cy="96" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="625" cy="72" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="685" cy="42" r="6" fill="#38bdf8" stroke="#ffffff" stroke-width="2.5"/>
-
-                                        <!-- X-Axis Months -->
-                                        <g class="chart-x-labels" fill="#94a3b8" font-size="11" text-anchor="middle">
-                                            <text x="85" y="222">Jan</text>
-                                            <text x="145" y="222">Feb</text>
-                                            <text x="205" y="222">Mar</text>
-                                            <text x="265" y="222">Apr</text>
-                                            <text x="325" y="222">May</text>
-                                            <text x="385" y="222">Jun</text>
-                                            <text x="445" y="222">Aug</text>
-                                            <text x="505" y="222">Sep</text>
-                                            <text x="565" y="222">Oct</text>
-                                            <text x="625" y="222">Nov</text>
-                                            <text x="685" y="222">Dec</text>
-                                        </g>
-                                    </svg>
-                                    
-                                    <!-- Callout Badges -->
-                                    <div class="chart-callout-badge callout-nasdaq">
-                                        <span>NASDAQ</span> <strong class="text-emerald">+2.1%</strong>
-                                    </div>
-                                    <div class="chart-callout-badge callout-ai">
-                                        <span>AI Sector</span> <strong class="text-emerald">+3.8%</strong>
-                                    </div>
-                                </div>
+                        <!-- REAL 1-CLICK TRENDING RESEARCH TOPICS -->
+                        <div class="trending-research-section">
+                            <div class="trending-header-row">
+                                <span class="trending-section-label"><i class="fa-solid fa-arrow-trend-up text-cyan"></i> Trending Research Topics</span>
+                                <span class="trending-refresh-hint">Click any card to launch autonomous research memo</span>
                             </div>
+                            <div class="trending-cards-grid">
+                                <button type="button" class="trending-card" onclick="executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast')">
+                                    <div class="trending-card-top">
+                                        <span class="trending-card-tag tag-finance"><i class="fa-solid fa-chart-line"></i> Markets & Tech</span>
+                                        <i class="fa-solid fa-arrow-right trending-arrow"></i>
+                                    </div>
+                                    <div class="trending-card-title">Global macro market intelligence, tech sector momentum, and frontier AI forecast</div>
+                                    <div class="trending-card-meta">Live equity analysis • Inflation data • Semis & hyperscalers</div>
+                                </button>
 
-                            <!-- VERIFIED CITATIONS FOOTER STRIP -->
-                            <div class="bento-citations-strip">
-                                <div class="bento-citations-label">
-                                    <span>Verified Citations (14)</span>
-                                    <i class="fa-solid fa-circle-check text-emerald"></i>
-                                </div>
-                                <div class="bento-citation-pills">
-                                    <button type="button" class="bento-citation-pill" onclick="executeSearch('Gartner Research enterprise AI adoption and cloud market analysis')">
-                                        <span class="citation-num">[1]</span> Gartner Research
-                                    </button>
-                                    <button type="button" class="bento-citation-pill" onclick="executeSearch('PitchBook Data venture funding, AI startup capital, and valuation benchmarks')">
-                                        <span class="citation-num">[2]</span> PitchBook Data
-                                    </button>
-                                    <button type="button" class="bento-citation-pill" onclick="executeSearch('TechCrunch frontier AI startup developments and foundation model breakthroughs')">
-                                        <span class="citation-num">[3]</span> TechCrunch
-                                    </button>
-                                </div>
+                                <button type="button" class="trending-card" onclick="executeSearch('Generative AI enterprise deployment architectures, reasoning models, and agent workflows')">
+                                    <div class="trending-card-top">
+                                        <span class="trending-card-tag tag-ai"><i class="fa-solid fa-brain"></i> Frontier AI</span>
+                                        <i class="fa-solid fa-arrow-right trending-arrow"></i>
+                                    </div>
+                                    <div class="trending-card-title">Generative AI enterprise deployment architectures, reasoning models, and agent workflows</div>
+                                    <div class="trending-card-meta">Test-time compute • Agent swarms • RAG vs Fine-tuning</div>
+                                </button>
+
+                                <button type="button" class="trending-card" onclick="executeSearch('Quantum computing commercial breakthroughs, qubit scaling, and quantum encryption')">
+                                    <div class="trending-card-top">
+                                        <span class="trending-card-tag tag-tech"><i class="fa-solid fa-atom"></i> Deep Tech</span>
+                                        <i class="fa-solid fa-arrow-right trending-arrow"></i>
+                                    </div>
+                                    <div class="trending-card-title">Quantum computing commercial breakthroughs, qubit scaling, and quantum encryption</div>
+                                    <div class="trending-card-meta">Topological qubits • Post-quantum crypto • Commercial timelines</div>
+                                </button>
+
+                                <button type="button" class="trending-card" onclick="executeSearch('Compute an executive whitepaper and 5-slide presentation deck on Autonomous AI Agent Architectures in Enterprise')">
+                                    <div class="trending-card-top">
+                                        <span class="trending-card-tag tag-strategy"><i class="fa-solid fa-file-powerpoint"></i> Deliverable Studio</span>
+                                        <i class="fa-solid fa-arrow-right trending-arrow"></i>
+                                    </div>
+                                    <div class="trending-card-title">Executive whitepaper and 5-slide presentation deck on Autonomous AI Agent Architectures</div>
+                                    <div class="trending-card-meta">Multi-modal synthesis • Word & PowerPoint exports</div>
+                                </button>
                             </div>
-                        </section>
-
-                        <!-- RIGHT COLUMN CONTAINER (2 Stacked Cards) -->
-                        <div class="bento-right-column">
-                            <!-- CARD 2: TOP INSIGHTS (Right Top Card) -->
-                            <section class="bento-card bento-card-insights" aria-label="Top Insights">
-                                <div class="bento-card-header">
-                                    <div>
-                                        <h3 class="bento-card-title">Top Insights</h3>
-                                        <p class="bento-card-subtitle">Trending topics in market insights</p>
-                                    </div>
-                                    <button type="button" class="bento-icon-btn" onclick="executeSearch('Trending frontier research breakthroughs across AI and markets')" title="Scan Trends"><i class="fa-solid fa-arrows-rotate"></i></button>
-                                </div>
-
-                                <div class="bento-insights-list">
-                                    <button type="button" class="bento-insight-item" onclick="executeSearch('Generative AI enterprise deployment architectures, reasoning models, and agent workflows')">
-                                        <div class="bento-insight-left">
-                                            <div class="insight-icon-box text-purple"><i class="fa-solid fa-brain"></i></div>
-                                            <span class="insight-name">Generative AI</span>
-                                        </div>
-                                        <i class="fa-solid fa-arrow-trend-up text-cyan insight-trend-icon"></i>
-                                    </button>
-                                    <button type="button" class="bento-insight-item" onclick="executeSearch('Enterprise data analytics platforms, modern lakehouses, and real-time streaming')">
-                                        <div class="bento-insight-left">
-                                            <div class="insight-icon-box text-cyan"><i class="fa-solid fa-chart-column"></i></div>
-                                            <span class="insight-name">Data Analytics</span>
-                                        </div>
-                                        <i class="fa-solid fa-arrow-trend-up text-cyan insight-trend-icon"></i>
-                                    </button>
-                                    <button type="button" class="bento-insight-item" onclick="executeSearch('Quantum computing commercial breakthroughs, qubit scaling, and quantum encryption')">
-                                        <div class="bento-insight-left">
-                                            <div class="insight-icon-box text-teal"><i class="fa-solid fa-atom"></i></div>
-                                            <span class="insight-name">Quantum Computing</span>
-                                        </div>
-                                        <i class="fa-solid fa-arrow-trend-up text-cyan insight-trend-icon"></i>
-                                    </button>
-                                </div>
-                            </section>
-
-                            <!-- CARD 3: ACTIVE PROJECTS / WORKSPACES (Right Bottom Card) -->
-                            <section class="bento-card bento-card-projects" aria-label="Active Projects">
-                                <div class="bento-card-header">
-                                    <div>
-                                        <h3 class="bento-card-title">Active Projects</h3>
-                                    </div>
-                                    <button type="button" class="bento-icon-btn" onclick="openLibraryModal()" title="View Workspaces"><i class="fa-solid fa-ellipsis"></i></button>
-                                </div>
-
-                                <!-- PROGRESS TRACK -->
-                                <div class="bento-project-progress">
-                                    <div class="project-progress-bar">
-                                        <div class="project-progress-fill" style="width: 76%;"></div>
-                                    </div>
-                                </div>
-
-                                <!-- ANALYST / AGENT STATUS BOX -->
-                                <div class="bento-agent-profile">
-                                    <div class="agent-avatar">
-                                        <i class="fa-solid fa-user-tie"></i>
-                                    </div>
-                                    <div class="agent-info">
-                                        <div class="agent-name-role">
-                                            <strong class="agent-name">Autonomous Agent</strong>
-                                            <span class="agent-role-sep">|</span>
-                                            <span class="agent-role">Lead Analyst</span>
-                                        </div>
-                                        <div class="agent-status-line">
-                                            <span class="status-pulse-dot"></span>
-                                            <span class="agent-status-text">Status: Online</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- CAROUSEL DOTS -->
-                                <div class="bento-carousel-dots">
-                                    <span class="bento-dot active"></span>
-                                    <span class="bento-dot"></span>
-                                    <span class="bento-dot"></span>
-                                </div>
-                            </section>
                         </div>
                     </div>
                 </div>
