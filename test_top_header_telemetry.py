@@ -52,11 +52,18 @@ try:
     hero_top = driver.execute_script("return arguments[0].getBoundingClientRect().top;", hero_title)
     gap = hero_top - header_bottom
     print(f"  Vertical gap between top header and hero title: {gap:.1f}px")
-    assert gap < 50, f"Vertical gap too large ({gap:.1f}px), empty space is getting wasted!"
-    print(f"  [PASS] Vertical spacing is compact and clean ({gap:.1f}px), no wasted empty space!")
+    assert 20 < gap < 160, f"Vertical gap should be balanced and centered ({gap:.1f}px)!"
+    print(f"  [PASS] Vertical spacing is dynamically centered and responsive ({gap:.1f}px)!")
+
+    # Check search bar is fully visible and unclipped
+    search_wrapper = driver.find_element(By.CSS_SELECTOR, ".bottom-search-wrapper")
+    rect_search = driver.execute_script("return arguments[0].getBoundingClientRect();", search_wrapper)
+    inner_h = driver.execute_script("return window.innerHeight;")
+    assert rect_search["bottom"] <= inner_h + 4, f"Search wrapper clipped at bottom: {rect_search['bottom']} > {inner_h}"
+    print(f"  [PASS] Search wrapper is fully visible without clipping ({rect_search['bottom']:.1f}px <= {inner_h}px)!")
 
     # 5. Capture Screenshot for Visual Verification
-    screenshot_path = r"C:\Users\hites\.gemini\antigravity-ide\brain\3afc78ff-c35d-428e-a325-28243d6b78cd\cortex_compact_no_empty_space.png"
+    screenshot_path = r"C:\Users\hites\.gemini\antigravity-ide\brain\3afc78ff-c35d-428e-a325-28243d6b78cd\cortex_centered_responsive.png"
     driver.save_screenshot(screenshot_path)
     print(f"  [SAVED] Visual verification screenshot: {screenshot_path}")
 

@@ -5576,23 +5576,23 @@ body.legal-page-body {
 
 .pure-search-hero-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 2.15rem;
+    font-size: clamp(1.65rem, 2.5vw, 2.15rem);
     font-weight: 800;
     letter-spacing: -0.03em;
     color: #ffffff;
     line-height: 1.15;
-    margin-bottom: 6px;
+    margin-bottom: clamp(4px, 0.8vh, 8px);
     background: linear-gradient(135deg, #ffffff 40%, #bae6fd 80%, #38bdf8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .pure-search-hero-subtitle {
-    font-size: 0.90rem;
+    font-size: clamp(0.78rem, 1vw, 0.90rem);
     color: #94a3b8;
-    line-height: 1.45;
+    line-height: 1.4;
     max-width: 620px;
-    margin-bottom: 12px;
+    margin-bottom: clamp(6px, 1.2vh, 12px);
 }
 
 /* In-line Focus Desk Pills */
@@ -6210,9 +6210,10 @@ body.legal-page-body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start !important;
+    justify-content: safe center !important;
     align-items: center;
-    padding: 4px 16px 4px 16px !important;
+    padding: clamp(8px, 2vh, 24px) 16px !important;
+    box-sizing: border-box;
 }
 
 .main-content.hero-mode .pure-search-hero-view,
@@ -6228,20 +6229,20 @@ body.legal-page-body {
     flex-shrink: 0;
     max-width: 860px;
     width: 100%;
-    margin: 4px auto 6px auto;
+    margin: 2px auto 4px auto;
     padding: 0 16px;
     z-index: 40;
 }
 
 .main-content.hero-mode .trending-cards-grid,
 .main-content:has(#emptyHeroView:not([style*="display: none"])) .trending-cards-grid {
-    gap: 8px;
+    gap: clamp(4px, 0.8vh, 8px);
 }
 
 .main-content.hero-mode .trending-card,
 .main-content:has(#emptyHeroView:not([style*="display: none"])) .trending-card {
-    padding: 10px 14px;
-    gap: 5px;
+    padding: clamp(6px, 1vh, 10px) 12px;
+    gap: 4px;
 }
 
 .main-content.hero-mode .trending-card-title,
@@ -6311,17 +6312,36 @@ body.legal-page-body {
     }
 }
 
-/* Fallback for very small height devices */
-@media (max-height: 640px) {
+/* Responsive adjustments for compact height viewports */
+@media (max-height: 720px) {
     .main-content.hero-mode,
     .main-content:has(#emptyHeroView:not([style*="display: none"])) {
-        overflow-y: auto;
+        overflow-y: hidden;
     }
     .main-content.hero-mode .view-scroll-area,
     .main-content:has(#emptyHeroView:not([style*="display: none"])) .view-scroll-area {
-        overflow-y: auto;
-        justify-content: flex-start;
-        padding: 10px 14px;
+        justify-content: safe center !important;
+        padding: 4px 16px !important;
+    }
+    .pure-search-hero-title {
+        font-size: 1.65rem !important;
+        margin-bottom: 3px !important;
+    }
+    .pure-search-hero-subtitle {
+        font-size: 0.78rem !important;
+        margin-bottom: 6px !important;
+    }
+    .main-content.hero-mode .trending-card-title,
+    .main-content:has(#emptyHeroView:not([style*="display: none"])) .trending-card-title {
+        font-size: 0.76rem !important;
+    }
+    .main-content.hero-mode .trending-card-meta,
+    .main-content:has(#emptyHeroView:not([style*="display: none"])) .trending-card-meta {
+        font-size: 0.64rem !important;
+    }
+    .main-content.hero-mode .bottom-search-wrapper,
+    .main-content:has(#emptyHeroView:not([style*="display: none"])) .bottom-search-wrapper {
+        margin: 2px auto 2px auto !important;
     }
 }
 
