@@ -733,50 +733,288 @@ function setupNavigationListeners() {
     });
 }
 
-function setFocusMode(mode) {
-    appState.activeFocusMode = mode;
-    document.querySelectorAll(".focus-nav-item").forEach(el => {
-        const elMode = el.getAttribute("data-mode") || el.dataset.mode;
-        el.classList.toggle("active", elMode === mode);
+const RESEARCH_DESK_CONFIG = {
+    web: {
+        mode: "web",
+        badge: "Frontier Autonomous Research Engine",
+        title: "Where knowledge begins.",
+        subtitle: "Synthesize deep answers, verified citations, and autonomous deliverable reports across live web & market intelligence.",
+        sectionLabel: '<i class="fa-solid fa-arrow-trend-up text-cyan"></i> Trending Research Topics',
+        placeholder: "Ask Cortex anything... (All Web Search)",
+        cards: [
+            {
+                tagClass: "tag-finance",
+                icon: "fa-chart-line",
+                tagText: "Markets & Tech",
+                title: "Global macro market intelligence, tech sector momentum, and frontier AI forecast",
+                meta: "Live equity analysis • Inflation data • Semis & hyperscalers",
+                query: "Global macro market intelligence, tech sector momentum, and frontier AI forecast"
+            },
+            {
+                tagClass: "tag-ai",
+                icon: "fa-brain",
+                tagText: "Frontier AI",
+                title: "Generative AI enterprise deployment architectures, reasoning models, and agent workflows",
+                meta: "Test-time compute • Agent swarms • RAG vs Fine-tuning",
+                query: "Generative AI enterprise deployment architectures, reasoning models, and agent workflows"
+            },
+            {
+                tagClass: "tag-tech",
+                icon: "fa-atom",
+                tagText: "Deep Tech",
+                title: "Quantum computing commercial breakthroughs, qubit scaling, and quantum encryption",
+                meta: "Topological qubits • Post-quantum crypto • Commercial timelines",
+                query: "Quantum computing commercial breakthroughs, qubit scaling, and quantum encryption"
+            },
+            {
+                tagClass: "tag-strategy",
+                icon: "fa-file-powerpoint",
+                tagText: "Deliverable Studio",
+                title: "Executive whitepaper and 5-slide presentation deck on Autonomous AI Agent Architectures",
+                meta: "Multi-modal synthesis • Word & PowerPoint exports",
+                query: "Compute an executive whitepaper and 5-slide presentation deck on Autonomous AI Agent Architectures in Enterprise"
+            }
+        ]
+    },
+    finance: {
+        mode: "finance",
+        badge: "Institutional Financial & Macro Intelligence",
+        title: "Financial Markets Intelligence.",
+        subtitle: "Institutional SEC 10-K filings, earnings telemetry, Treasury yield curves, and macroeconomic forecasts.",
+        sectionLabel: '<i class="fa-solid fa-chart-line text-cyan"></i> Financial Markets & Macro Intelligence',
+        placeholder: "Search SEC filings, market data, earnings & finance...",
+        cards: [
+            {
+                tagClass: "tag-finance",
+                icon: "fa-file-invoice-dollar",
+                tagText: "Corporate 10-K",
+                title: "Corporate 10-K Disclosures & Free Cash Flow Margins",
+                meta: "Cloud revenue breakdown • CapEx outlays • Disclosures",
+                query: "Analyze enterprise cloud revenue breakdown, free cash flow margins, and capital expenditure disclosures"
+            },
+            {
+                tagClass: "tag-finance",
+                icon: "fa-landmark",
+                tagText: "Fixed Income",
+                title: "Treasury Yields, FOMC Interest Rate Path & Inflation Prints",
+                meta: "Yield curve telemetry • 2Y/10Y inversion • Rate cuts",
+                query: "Summarize current FOMC interest rate trajectory, 2Y/10Y yield curve inversion, and inflation prints"
+            },
+            {
+                tagClass: "tag-strategy",
+                icon: "fa-scale-balanced",
+                tagText: "Asset Allocation",
+                title: "Fixed Income Yields vs S&P 500 Equity Risk Premia",
+                meta: "Earnings yield • Benchmark spread • Multiples",
+                query: "Compare fixed income yields vs S&P 500 earnings yields and historic equity risk premia"
+            },
+            {
+                tagClass: "tag-tech",
+                icon: "fa-chart-line",
+                tagText: "Semiconductors",
+                title: "Semiconductor Foundry Margins & CoWoS Packaging Backlogs",
+                meta: "Advanced packaging • GPU ASPs • Fab utilization",
+                query: "Analyze global semiconductor foundry margins, advanced packaging capacity backlogs, and GPU ASPs"
+            }
+        ]
+    },
+    academic: {
+        mode: "academic",
+        badge: "Peer-Reviewed Papers & Frontier Preprints",
+        title: "Academic & Frontier Research.",
+        subtitle: "Peer-reviewed arXiv preprints, IEEE computer science papers, biomedical trials, and physical sciences.",
+        sectionLabel: '<i class="fa-solid fa-graduation-cap text-purple"></i> Academic Papers & Frontier Preprints',
+        placeholder: "Search arXiv, PubMed, IEEE & Academic Papers...",
+        cards: [
+            {
+                tagClass: "tag-ai",
+                icon: "fa-graduation-cap",
+                tagText: "Computer Science",
+                title: "Frontier arXiv Preprints: Sparse Attention & LLM Efficiency",
+                meta: "Linear RNNs • FlashAttention • Context scaling",
+                query: "Find recent arXiv papers on sparse attention transformers, linear RNNs, and model efficiency"
+            },
+            {
+                tagClass: "tag-tech",
+                icon: "fa-dna",
+                tagText: "Biomedical",
+                title: "Clinical Targeted CRISPR Gene Editing & mRNA Therapies",
+                meta: "Peer-reviewed trials • Delivery vectors • Oncology",
+                query: "Summarize latest clinical trials on targeted CRISPR gene editing and customized mRNA therapies"
+            },
+            {
+                tagClass: "tag-tech",
+                icon: "fa-microchip",
+                tagText: "Quantum Physics",
+                title: "Fault-Tolerant Quantum Surface Codes & Logical Qubits",
+                meta: "Error correction • Physical error thresholds • IEEE",
+                query: "What are recent peer-reviewed paper findings on error-corrected logical qubits and surface codes?"
+            },
+            {
+                tagClass: "tag-ai",
+                icon: "fa-network-wired",
+                tagText: "Neural Systems",
+                title: "Automated Neural Architecture Search & Distillation",
+                meta: "Model distillation • Pruning • Quantization papers",
+                query: "Search IEEE & arXiv research on automated neural architecture search and distillation"
+            }
+        ]
+    },
+    code: {
+        mode: "code",
+        badge: "Systems Engineering & Production Code",
+        title: "Engineering & Code Solutions.",
+        subtitle: "Full-stack architecture, systems programming, containerization, and production code synthesis.",
+        sectionLabel: '<i class="fa-solid fa-code text-emerald"></i> Engineering & Code Solutions',
+        placeholder: "Search GitHub repos, documentation, StackOverflow & code...",
+        cards: [
+            {
+                tagClass: "tag-tech",
+                icon: "fa-cubes",
+                tagText: "Full-Stack Web",
+                title: "Full-Stack Server Actions & TypeScript Validation Patterns",
+                meta: "Optimistic updates • Error boundaries • Type safety",
+                query: "Write a production Server Action with TypeScript validation, optimistic updates, and error boundaries"
+            },
+            {
+                tagClass: "tag-tech",
+                icon: "fa-python",
+                tagText: "Backend Services",
+                title: "FastAPI + PyDantic V2 Async Microservice with WebSockets",
+                meta: "Connection pooling • Structured responses • Async I/O",
+                query: "Show clean FastAPI code with PyDantic V2 models, connection pools, and WebSocket streaming"
+            },
+            {
+                tagClass: "tag-strategy",
+                icon: "fa-gear",
+                tagText: "Systems Rust",
+                title: "Rust Tokio Async TCP Stream Pipeline with Zero-Copy",
+                meta: "Buffer parsing • Backpressure • High throughput",
+                query: "Provide Rust tokio async TCP stream example with zero-copy buffer parsing and backpressure handling"
+            },
+            {
+                tagClass: "tag-tech",
+                icon: "fa-docker",
+                tagText: "Cloud & DevOps",
+                title: "Multi-Stage Dockerfile Optimization for Microservices under 30MB",
+                meta: "Scratch & distroless • Layer caching • Security",
+                query: "How to write an ultra-compact multi-stage Dockerfile for Node.js/Go microservices under 30MB"
+            }
+        ]
+    },
+    writing: {
+        mode: "writing",
+        badge: "Executive Strategy & C-Suite Deliverables",
+        title: "Executive Strategy & Memos.",
+        subtitle: "Structured executive intelligence memos, board presentation outlines, strategic RFCs, and C-suite deliverables.",
+        sectionLabel: '<i class="fa-solid fa-pen-nib text-rose"></i> Executive Strategy & Memos',
+        placeholder: "Draft, summarize, brainstorm or write creatively...",
+        cards: [
+            {
+                tagClass: "tag-strategy",
+                icon: "fa-pen-nib",
+                tagText: "Executive Briefing",
+                title: "Executive Research Briefing Memo on Enterprise AI Adoption",
+                meta: "Strategic ROI • Risk mitigation • Infrastructure roadmap",
+                query: "Write a structured, concise executive intelligence memo analyzing enterprise AI adoption strategies"
+            },
+            {
+                tagClass: "tag-finance",
+                icon: "fa-paper-plane",
+                tagText: "Sales Outreach",
+                title: "Enterprise Technical Outreach & Executive Value Proposition",
+                meta: "CIO & VP Engineering outreach • Value articulation",
+                query: "Draft a concise, high-value outreach email to enterprise engineering leaders and CIOs"
+            },
+            {
+                tagClass: "tag-tech",
+                icon: "fa-file-code",
+                tagText: "Architecture RFC",
+                title: "System Architecture RFC Specification for Event Streaming",
+                meta: "RFC template • Non-functional requirements • Schema",
+                query: "Write a clear RFC specification document for a distributed event-driven data streaming platform"
+            },
+            {
+                tagClass: "tag-strategy",
+                icon: "fa-table-columns",
+                tagText: "Board Deliverable",
+                title: "Board of Directors Quarterly Meeting Presentation Outline",
+                meta: "KPI dashboard • Runway • Unit economics • 5 slides",
+                query: "Draft an executive board meeting slide outline covering key KPIs, runway, unit economics, and roadmap"
+            }
+        ]
+    }
+};
+
+function selectResearchDesk(mode) {
+    const currentMode = mode || "web";
+    const config = RESEARCH_DESK_CONFIG[currentMode] || RESEARCH_DESK_CONFIG.web;
+    appState.activeFocusMode = currentMode;
+
+    // 1. Update active styling in sidebar
+    document.querySelectorAll(".focus-nav-item").forEach(item => {
+        const itemMode = item.getAttribute("data-mode") || item.dataset.mode;
+        item.classList.toggle("active", itemMode === currentMode);
     });
-    document.querySelectorAll(".focus-pill").forEach(el => {
-        const elMode = el.getAttribute("data-pill") || el.dataset.pill;
-        el.classList.toggle("active", elMode === mode);
+    document.querySelectorAll(".focus-pill").forEach(pill => {
+        const pillMode = pill.getAttribute("data-pill") || pill.dataset.pill;
+        pill.classList.toggle("active", pillMode === currentMode);
     });
 
-    // Dynamic Search Input Placeholder according to active Focus Mode
+    // 2. Restore clean hero view
+    appState.activeThreadId = null;
+    appState.isSearching = false;
+    appState.isStudioMode = false;
+    const heroView = document.getElementById("emptyHeroView");
+    const activeThread = document.getElementById("activeThreadContainer");
+    const mainEl = document.getElementById("mainContent") || document.querySelector(".main-content");
+    if (mainEl) mainEl.classList.add("hero-mode");
+    if (heroView) heroView.style.display = "flex";
+    if (activeThread) {
+        activeThread.style.display = "none";
+        activeThread.innerHTML = "";
+    }
+
+    // 3. Update Hero Badge, Title, and Subtitle
+    const badgeText = document.getElementById("heroBadgeText");
+    if (badgeText) badgeText.textContent = config.badge;
+
+    const heroTitle = document.getElementById("heroTitle");
+    if (heroTitle) heroTitle.textContent = config.title;
+
+    const heroSubtitle = document.getElementById("heroSubtitle");
+    if (heroSubtitle) heroSubtitle.textContent = config.subtitle;
+
+    // 4. Update Trending Section Label
+    const labelEl = document.getElementById("trendingSectionLabel");
+    if (labelEl) labelEl.innerHTML = config.sectionLabel;
+
+    // 5. Update Topic Cards
+    const grid = document.getElementById("trendingCardsGrid");
+    if (grid) {
+        grid.innerHTML = config.cards.map(c => `
+            <button type="button" class="trending-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
+                <div class="trending-card-top">
+                    <span class="trending-card-tag ${c.tagClass}"><i class="fa-solid ${c.icon}"></i> ${c.tagText}</span>
+                    <i class="fa-solid fa-arrow-right trending-arrow"></i>
+                </div>
+                <div class="trending-card-title">${c.title}</div>
+                <div class="trending-card-meta">${c.meta}</div>
+            </button>
+        `).join('');
+    }
+
+    // 6. Update Search Input Placeholder & focus
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
-        const placeholders = {
-            web: "Ask Cortex anything... (All Web Search)",
-            academic: "Search arXiv, PubMed, IEEE & Academic Papers...",
-            code: "Search GitHub repos, documentation, StackOverflow & code...",
-            finance: "Search SEC filings, market data, earnings & finance...",
-            writing: "Draft, summarize, brainstorm or write creatively..."
-        };
-        searchInput.placeholder = placeholders[mode] || "Ask Cortex anything...";
+        searchInput.placeholder = config.placeholder;
+        searchInput.focus();
     }
 
-    appState.isStudioMode = false;
-    const studioBtn = document.getElementById("btnStudioToggle");
-    if (studioBtn) {
-        studioBtn.classList.remove("active");
-    }
-
-    // Render immediately from cache and auto-fetch fresh live breakthroughs for this category
-    renderSuggestedCards(mode);
-    fetchDynamicTrendingPrompts(mode);
-
-    // If not actively searching, switch to clean Hero view so user sees new category prompt cards
-    if (!appState.isSearching) {
-        appState.activeThreadId = null;
-        renderThreadHistory();
-        renderViewport();
-        if (searchInput) {
-            searchInput.focus();
-        }
-    }
+    closeMobileSidebar();
 }
+window.selectResearchDesk = selectResearchDesk;
+window.setFocusMode = selectResearchDesk;
 
 function toggleDeepResearchStudio(forceState = null) {
     if (typeof forceState === "boolean") {
@@ -796,57 +1034,35 @@ function toggleDeepResearchStudio(forceState = null) {
             searchInput.placeholder = "Compute research report, executive document, or presentation deck... (e.g. 'Generate 5-slide deck on AI agent frameworks')";
             searchInput.focus();
         } else {
-            const placeholders = {
-                web: "Ask Cortex anything... (All Web Search)",
-                academic: "Search arXiv, PubMed, IEEE & Academic Papers...",
-                code: "Search GitHub repos, documentation, StackOverflow & code...",
-                finance: "Search SEC filings, market data, earnings & finance...",
-                writing: "Draft, summarize, brainstorm or write creatively...",
-                studio: "Compute research report, document, or presentation deck..."
-            };
-            searchInput.placeholder = placeholders[appState.activeFocusMode] || "Ask Cortex anything...";
+            const config = RESEARCH_DESK_CONFIG[appState.activeFocusMode] || RESEARCH_DESK_CONFIG.web;
+            searchInput.placeholder = config.placeholder;
         }
     }
 }
 window.toggleDeepResearchStudio = toggleDeepResearchStudio;
 
-
 function renderSuggestedCards(mode) {
-    const grid = document.querySelector(".suggested-cards-grid");
-    if (!grid) return;
-
     const currentMode = mode || appState.activeFocusMode || "web";
-    let list = (appState.dynamicSuggestions && appState.dynamicSuggestions[currentMode] && appState.dynamicSuggestions[currentMode].length > 0) 
-        ? [...appState.dynamicSuggestions[currentMode]] 
-        : [];
+    const config = RESEARCH_DESK_CONFIG[currentMode] || RESEARCH_DESK_CONFIG.web;
 
-    // Automatically heal any legacy cached titles ending with "..."
-    list = list.map(c => {
-        if (c.title && c.title.endsWith("...") && c.query && !c.query.endsWith("...")) {
-            return { ...c, title: c.query };
-        }
-        return c;
-    });
+    const labelEl = document.getElementById("trendingSectionLabel");
+    if (labelEl) labelEl.innerHTML = config.sectionLabel;
 
-    // Guarantee the 3x2 grid always has exactly 6 rich, verified cards
-    if (list.length < 6) {
-        const fallbacks = FALLBACK_DESK_SUGGESTIONS[currentMode] || FALLBACK_DESK_SUGGESTIONS.web;
-        for (const fb of fallbacks) {
-            if (list.length >= 6) break;
-            if (!list.some(c => c.title.toLowerCase() === fb.title.toLowerCase())) {
-                list.push(fb);
-            }
-        }
+    const grid = document.getElementById("trendingCardsGrid") || document.querySelector(".trending-cards-grid, .suggested-cards-grid");
+    if (grid) {
+        grid.innerHTML = config.cards.map(c => `
+            <button type="button" class="trending-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
+                <div class="trending-card-top">
+                    <span class="trending-card-tag ${c.tagClass}"><i class="fa-solid ${c.icon}"></i> ${c.tagText}</span>
+                    <i class="fa-solid fa-arrow-right trending-arrow"></i>
+                </div>
+                <div class="trending-card-title">${c.title}</div>
+                <div class="trending-card-meta">${c.meta}</div>
+            </button>
+        `).join('');
     }
-
-    grid.innerHTML = list.slice(0, 6).map(c => `
-        <div class="suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
-            <i class="fa-solid ${c.icon} suggested-card-icon"></i>
-            <div class="suggested-card-text">${c.title}</div>
-            <div class="suggested-card-sub">${c.sub}</div>
-        </div>
-    `).join('');
 }
+window.renderSuggestedCards = renderSuggestedCards;
 
 // Autonomous Multi-Category Real-Time Trends Ingestion Engine (Always 6 Guaranteed Cards)
 async function fetchDynamicTrendingPrompts(targetMode = null) {
@@ -2084,14 +2300,15 @@ function resetToNewSearch() {
     appState.threads = appState.threads.filter(t => t.steps && t.steps.length > 0);
     saveThreadsToLocalStorage();
     renderThreadHistory();
-    renderViewport();
     closeMobileSidebar();
+    selectResearchDesk(appState.activeFocusMode || "web");
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
         searchInput.value = "";
         searchInput.focus();
     }
 }
+window.resetToNewSearch = resetToNewSearch;
 
 function createNewThread(initialQuery = "") {
     const threadId = "thread_" + Date.now();
@@ -9735,12 +9952,7 @@ function focusSearchInput() {
 window.focusSearchInput = focusSearchInput;
 
 function switchToDashboardView() {
-    const mainEl = document.getElementById("mainContent") || document.querySelector(".main-content");
-    if (mainEl) mainEl.classList.add("hero-mode");
-    const emptyHero = document.getElementById("emptyHeroView");
-    const activeThread = document.getElementById("activeThreadContainer");
-    if (emptyHero) emptyHero.style.display = "flex";
-    if (activeThread) activeThread.style.display = "none";
+    selectResearchDesk(appState.activeFocusMode || "web");
 
     // Smooth scroll back to top of viewport
     const scrollArea = document.getElementById("viewScrollArea");

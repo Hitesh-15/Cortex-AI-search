@@ -49,7 +49,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=2026.09.13.03">
+    <link rel="stylesheet" href="styles.css?v=2026.09.13.06">
 </head>
 
 <body>
@@ -75,7 +75,7 @@
                 </button>
             </div>
 
-            <button id="btnNewThread" class="btn-new-thread" onclick="switchToDashboardView()" title="Start New Search (Ctrl+K)">
+            <button id="btnNewThread" class="btn-new-thread" onclick="resetToNewSearch()" title="Start New Search (Ctrl+K)">
                 <i class="fa-solid fa-plus"></i>
                 <span>New Search</span>
                 <span class="sidebar-kbd-hint">Ctrl K</span>
@@ -85,23 +85,23 @@
             <div class="sidebar-focus-section">
                 <span class="sidebar-section-title">Research Desks</span>
                 <div class="focus-nav">
-                    <div class="focus-nav-item active" data-mode="web">
+                    <div class="focus-nav-item active" data-mode="web" onclick="selectResearchDesk('web')" role="button" tabindex="0">
                         <i class="fa-solid fa-globe text-cyan"></i>
                         <span>Market & Web</span>
                     </div>
-                    <div class="focus-nav-item" data-mode="finance">
+                    <div class="focus-nav-item" data-mode="finance" onclick="selectResearchDesk('finance')" role="button" tabindex="0">
                         <i class="fa-solid fa-chart-line text-cyan"></i>
                         <span>Financial Markets</span>
                     </div>
-                    <div class="focus-nav-item" data-mode="academic">
+                    <div class="focus-nav-item" data-mode="academic" onclick="selectResearchDesk('academic')" role="button" tabindex="0">
                         <i class="fa-solid fa-graduation-cap text-purple"></i>
                         <span>Academic & Research</span>
                     </div>
-                    <div class="focus-nav-item" data-mode="code">
+                    <div class="focus-nav-item" data-mode="code" onclick="selectResearchDesk('code')" role="button" tabindex="0">
                         <i class="fa-solid fa-code text-emerald"></i>
                         <span>Engineering & Code</span>
                     </div>
-                    <div class="focus-nav-item" data-mode="writing">
+                    <div class="focus-nav-item" data-mode="writing" onclick="selectResearchDesk('writing')" role="button" tabindex="0">
                         <i class="fa-solid fa-pen-nib text-rose"></i>
                         <span>Executive Memos</span>
                     </div>
@@ -175,24 +175,24 @@
                     <div class="search-hero-container">
                         <!-- HERO BADGE & HEADLINE -->
                         <div class="hero-badge-row">
-                            <span class="hero-live-pill">
+                            <span class="hero-live-pill" id="heroBadge">
                                 <span class="status-pulse-dot"></span>
-                                <span>Frontier Autonomous Research Engine</span>
+                                <span id="heroBadgeText">Frontier Autonomous Research Engine</span>
                             </span>
                         </div>
-                        <h2 class="pure-search-hero-title">
+                        <h2 class="pure-search-hero-title" id="heroTitle">
                             Where knowledge begins.
                         </h2>
-                        <p class="pure-search-hero-subtitle">
+                        <p class="pure-search-hero-subtitle" id="heroSubtitle">
                             Synthesize deep answers, verified citations, and autonomous deliverable reports across live web & market intelligence.
                         </p>
 
                         <!-- CLEAN BLOCK SECTION: TRENDING RESEARCH PROMPT CARDS -->
                         <div class="trending-research-section">
                             <div class="trending-header-row">
-                                <span class="trending-section-label"><i class="fa-solid fa-arrow-trend-up text-cyan"></i> Trending Research Topics</span>
+                                <span class="trending-section-label" id="trendingSectionLabel"><i class="fa-solid fa-arrow-trend-up text-cyan"></i> Trending Research Topics</span>
                             </div>
-                            <div class="trending-cards-grid">
+                            <div class="trending-cards-grid suggested-cards-grid" id="trendingCardsGrid">
                                 <button type="button" class="trending-card" onclick="executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast')">
                                     <div class="trending-card-top">
                                         <span class="trending-card-tag tag-finance"><i class="fa-solid fa-chart-line"></i> Markets & Tech</span>
@@ -748,7 +748,7 @@
     <script src="src/retrieval/retrieval_engine.js?v=2026.09.07.04"></script>
     <script src="src/core/agent_harness.js"></script>
     <!-- Application Script -->
-    <script src="app.js?v=2026.09.13.03"></script>
+    <script src="app.js?v=2026.09.13.06"></script>
 </body>
 
 </html>
