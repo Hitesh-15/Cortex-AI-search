@@ -92,6 +92,17 @@ class CortexRetrievalEngine {
                 return { source: s, score: 0 };
             }
 
+            // Strict Entertainment / Film / Sports Homonym Rejection Gate:
+            // If query is about business, governance, finance, technology, architecture, executive deliverables, or general knowledge,
+            // reject movies, sports drafts, films, albums, actors, and entertainment trivia!
+            const isMediaOrSports = 
+                /\b(?:sports drama|drama film|comedy film|action film|feature film|directed by|starring|box office|premiere|premiered|soundtrack|studio album|television series|sitcom|nfl draft|nba draft|nhl draft|mlb draft)\b/i.test(textCorpus) ||
+                /\((?:film|movie|album|song|soundtrack|tv series|band)\)/i.test(s.title || "");
+            const queryWantsMedia = /\b(?:film|movie|cinema|actor|actress|director|box office|album|song|music|band|hollywood|nfl|football draft|sports draft)\b/i.test((query || "").toLowerCase());
+            if (isMediaOrSports && !queryWantsMedia) {
+                return { source: s, score: 0 };
+            }
+
             // Check how many core terms are matched
             let coreMatches = 0;
             effectiveCoreTerms.forEach(term => {
@@ -212,7 +223,8 @@ class CortexRetrievalEngine {
             'what', 'is', 'the', 'of', 'in', 'and', 'for', 'to', 'how', 'does', 'why',
             'who', 'are', 'a', 'an', 'on', 'with', 'at', 'by', 'from', 'about', 'as', 'into',
             'has', 'more', 'than', 'before', 'after', 'that', 'this', 'tell', 'me', 'explain', 'show',
-            'search', 'find', 'provide', 'compare', 'difference', 'between', 'new', 'latest', 'recent'
+            'search', 'find', 'provide', 'compare', 'difference', 'between', 'new', 'latest', 'recent',
+            'draft', 'outline', 'prepare', 'synthesize', 'generate', 'compose', 'write', 'create', 'build'
         ]);
 
         const genericWords = new Set([
@@ -221,7 +233,8 @@ class CortexRetrievalEngine {
             'details', 'summary', 'breakdown', 'understanding', 'features', 'role', 'effects',
             'meaning', 'definition', 'list', 'top', 'best', 'working', 'instances',
             'global', 'macro', 'market', 'markets', 'intelligence', 'sector', 'sectors',
-            'momentum', 'forecast', 'forecasts', 'frontier', 'tech', 'technology', 'trends', 'trend'
+            'momentum', 'forecast', 'forecasts', 'frontier', 'tech', 'technology', 'trends', 'trend',
+            'deck', 'slide', 'slides', 'outline', 'template', 'draft', 'presentation', 'memo', 'meeting'
         ]);
 
         const knownEntities = [
@@ -247,7 +260,16 @@ class CortexRetrievalEngine {
             'ban', 'bans', 'banned', 'sue', 'sues', 'sued',
             'make', 'makes', 'making', 'made', 'build', 'builds', 'building', 'built',
             'create', 'creates', 'creating', 'created', 'implement', 'implements', 'implementing',
-            'write', 'writes', 'writing', 'wrote'
+            'write', 'writes', 'writing', 'wrote',
+            'draft', 'drafts', 'drafting', 'drafted',
+            'outline', 'outlines', 'outlining', 'outlined',
+            'prepare', 'prepares', 'preparing', 'prepared',
+            'synthesize', 'synthesizes', 'synthesizing', 'synthesized',
+            'generate', 'generates', 'generating', 'generated',
+            'compose', 'composes', 'composing', 'composed',
+            'summarize', 'summarizes', 'summarizing', 'summarized',
+            'compute', 'computes', 'computing', 'computed',
+            'design', 'designs', 'designing', 'designed'
         ]);
 
         // 1. Check for recognized high-priority knowledge entities
@@ -263,7 +285,7 @@ class CortexRetrievalEngine {
         const words = query.trim().split(/\s+/);
         const keyTerms = words
             .map(w => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ''))
-            .filter(w => w.length > 1 && !stopWords.has(w.toLowerCase()));
+            .filter(w => w.length > 1 && !stopWords.has(w.toLowerCase()) && !actionVerbs.has(w.toLowerCase()));
 
         // 2. Extract named entity candidates, excluding generic words and action verbs
         const namedEntities = [];
@@ -273,7 +295,7 @@ class CortexRetrievalEngine {
             if (!cleanW) continue;
 
             const cleanWLower = cleanW.toLowerCase();
-            if (actionVerbs.has(cleanWLower)) {
+            if (actionVerbs.has(cleanWLower) || stopWords.has(cleanWLower)) {
                 if (currentGroup.length > 0) {
                     namedEntities.push(currentGroup.join(' '));
                     currentGroup = [];
@@ -299,7 +321,13 @@ class CortexRetrievalEngine {
             namedEntities.push(currentGroup.join(' '));
         }
 
-        const primaryEntity = detectedPrimary || namedEntities[0] || keyTerms[0] || query.trim();
+        // Filter out single-word generic actions from named entities
+        const validNamedEntities = namedEntities.filter(ne => {
+            const neLower = ne.toLowerCase();
+            return !actionVerbs.has(neLower) && !genericWords.has(neLower) && !stopWords.has(neLower);
+        });
+
+        const primaryEntity = detectedPrimary || validNamedEntities[0] || keyTerms[0] || query.trim();
 
         // 3. Form targeted search query by removing introductory fluff and stopwords
         const meaningfulTerms = words
@@ -308,6 +336,7 @@ class CortexRetrievalEngine {
                 if (!w || w.length <= 1) return false;
                 const lower = w.toLowerCase();
                 if (stopWords.has(lower)) return false;
+                if (actionVerbs.has(lower)) return false;
                 if (idx === 0 && genericWords.has(lower)) return false;
                 return true;
             });

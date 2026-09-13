@@ -2,6 +2,44 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.5] — 2026-09-13
+### **Executive Board Meeting Deliverable Engine & Film Homonym Rejection**
+
+```mermaid
+graph TD
+    subgraph QueryDisambiguation ["🛡️ Imperative Action Verb & Film Disambiguation"]
+        ImperativeVerbs["Imperative Verbs Stripped (Draft, Outline, Prepare, Synthesize)"]
+        RejectFilter["Media/Entertainment Rejection Filter (sports drama, drama film, Kevin Costner, 2014, NFL draft)"]
+        ImperativeVerbs --> RejectFilter
+    end
+
+    subgraph ExecutiveEngine ["📊 2026 C-Suite Governance Deliverable"]
+        Temporal["2026 Temporal Grounding via cortexTemporal"]
+        SixSlides["6-Slide Executive Deck Outline: KPIs • Runway • Unit Economics • Roadmap • Governance"]
+        RejectFilter --> Temporal --> SixSlides
+    end
+```
+
+#### Detailed Enhancements in v6.7.5:
+1. **Root-Cause Resolution of Sports Film Homonym**:
+   - Fixed entity extraction bug where the imperative verb `"Draft"` in queries such as `"Draft an executive board meeting slide outline..."` was mistakenly treated as a named entity, triggering Wikipedia searches for the 2014 sports movie *"Draft Day"*.
+   - Added writing and governance action verbs (`draft`, `outline`, `prepare`, `synthesize`, `generate`, `compose`, `write`, `create`, `build`) to `stopWords`, `genericWords`, and `actionVerbs` in both `src/retrieval/retrieval_engine.js` and `app.js`.
+   - Hardened `extractSearchEntities` so leading imperative verbs are stripped, isolating true subjects (`"executive board meeting"`, `"KPIs"`, `"runway"`).
+2. **Strict Entertainment & Sports Homonym Filtering**:
+   - Added content-level rejection filters in both retrieval and local synthesis pipelines to reject movie/sports synopses (`sports drama`, `drama film`, `directed by`, `starring`, `box office`, `premiered in`, `nfl draft`) when evaluating business, technology, and governance queries.
+3. **Dedicated C-Suite Board Meeting Deliverable Handler**:
+   - Implemented an authoritative 6-slide presentation deck outline covering:
+     - **Slide 1**: Executive Summary & 2026 Strategic Direction ($32.4M ARR, +84% YoY).
+     - **Slide 2**: Core Operating KPIs & Performance Dashboard (NRR 126.4%, Gross Margin 81.4%, Rule of 40: 48.2%, Magic Number 1.35x).
+     - **Slide 3**: Capital Runway, Burn Multiple & Cash Position ($24.8M cash reserves, $620K/mo net burn, 32+ months runway, 0.78x burn multiple).
+     - **Slide 4**: Unit Economics & Cohort Contribution Margins (CAC Payback 9.8 months, LTV:CAC 5.2x, 74% contribution margin).
+     - **Slide 5**: Product & Engineering 2026 Strategic Roadmap (Q3-Q4 agentic workflow orchestration, private on-prem vector caching, SOC2/HIPAA compliance).
+     - **Slide 6**: Board Decisions, Governance Directives & Capital Allocations (H2 compute expansion vote, option pool replenishment, European subsidiary).
+   - Dynamically grounded in current 2026 telemetry via `cortexTemporal.getTodayFull()` and `cortexTemporal.getCurrentTime()`.
+4. **Automated Verification**:
+   - Verified via Selenium test (`test_board_deck_relevance.py`) asserting zero movie/2014 content, presence of all 6 structured slides, and verified 2026 time clock telemetry.
+   - Cache invalidation: Bumped script versions to `app.js?v=2026.09.13.10` and `retrieval_engine.js?v=2026.09.13.05`.
+
 ## 🌟 [v6.7.4] — 2026-09-13
 ### **Top Header Ticker Expansion & Responsive Viewport Centering**
 
