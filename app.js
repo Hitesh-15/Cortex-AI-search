@@ -7062,7 +7062,7 @@ function extractCoreSubject(rawQuery) {
     if (!rawQuery) return "this topic";
     let q = rawQuery.trim();
 
-    // Strip common AI prompt wrappers & conversational prefix phrases
+    // Strip common AI prompt wrappers, briefing headers & conversational prefix phrases
     const prefixPatterns = [
         /^financial analysis,\s*corporate disclosures,\s*and earnings impact of:\s*/i,
         /^detailed technical analysis and market implications of:\s*/i,
@@ -7070,6 +7070,22 @@ function extractCoreSubject(rawQuery) {
         /^analyze developer consensus and technical breakthroughs regarding:\s*/i,
         /^search for recent research,\s*breakthroughs,\s*and analysis on:\s*/i,
         /^what are the top 2026 ai breakthroughs and\s*/i,
+        /^executive daily intelligence briefing\s*[:\-\s]*/i,
+        /^daily intelligence briefing\s*[:\-\s]*/i,
+        /^executive briefing\s*[:\-\s]*/i,
+        /^market intelligence briefing\s*[:\-\s]*/i,
+        /^market intelligence\s*[:\-\s]*/i,
+        /^latest clinical trials on\s*/i,
+        /^latest clinical research on\s*/i,
+        /^recent clinical trials on\s*/i,
+        /^clinical trials on\s*/i,
+        /^latest research on\s*/i,
+        /^recent research on\s*/i,
+        /^latest breakthroughs in\s*/i,
+        /^recent developments in\s*/i,
+        /^deep dive into\s*/i,
+        /^deep dive on\s*/i,
+        /^state of the art in\s*/i,
         /^who (?:was|is|were|are)\s+/i,
         /^what (?:is|are|was|were)\s+(?:the\s+)?/i,
         /^what (?:causes|caused|triggers|triggered|led to)\s+(?:the\s+)?/i,
@@ -7091,6 +7107,15 @@ function extractCoreSubject(rawQuery) {
     const eventSubjectMatch = q.match(/^([A-Z][\w\s&]{2,25}?)\s+(?:overhauls?|overhauled|revamps?|revamped|introduces?|introduced|releases?|released|launches?|launched|updates?|updated|patches?|patched|deploys?|deployed)\b/i);
     if (eventSubjectMatch && eventSubjectMatch[1]) {
         q = eventSubjectMatch[1].trim();
+    }
+
+    // High-signal topic mapping for common composite queries
+    const qLower = q.toLowerCase();
+    if (/\bcrispr\b/i.test(qLower) && /\bmrna\b/i.test(qLower)) {
+        return "CRISPR & mRNA Therapies";
+    }
+    if (/\bai frontier\b/i.test(qLower) && /\bcloud\b/i.test(qLower)) {
+        return "AI Frontier & Cloud Infrastructure";
     }
 
     // Strip trailing functional verbs ("work", "function", "operate", "occur", "happen", "mean", "stand for")
@@ -7116,11 +7141,19 @@ function extractCoreSubject(rawQuery) {
     q = q.replace(/\s+(?:quarterly\s+)?(?:earnings(?:\s+report|\s+call)?|financial\s+results|disclosures?|earnings\s+forecast)\b/i, '');
     q = q.replace(/\s+price(?:\s+today)?$/i, '');
 
-    // If query is still long, take the most salient clause
-    if (q.length > 80) {
-        const parts = q.split(/[,:;–—]|\s+-\s+/);
-        if (parts[0] && parts[0].trim().length > 15) {
+    // If query has multiple clauses (split by colon, semicolon, dash, or comma), isolate primary topic
+    if (/[:;–—]|\s+-\s+/.test(q)) {
+        const parts = q.split(/[:;–—]|\s+-\s+/);
+        if (parts[0] && parts[0].trim().length >= 4) {
             q = parts[0].trim();
+        }
+    }
+
+    // Enforce concise subject length (<= 36 chars) so follow-ups are crisp without run-on sentences
+    if (q.length > 36) {
+        const truncated = q.substring(0, 36).replace(/\s+[^\s]*$/, '').trim();
+        if (truncated.length >= 8) {
+            q = truncated;
         }
     }
 
@@ -7218,6 +7251,13 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
         "concept title", "clear explanation", "high-level summary", "clean semantic html",
         "roman emperor", "prime minister", "president", "chief executive", "founder", "author",
         "frontier ai & computing", "semiconductor supply chain", "global macro & capital markets",
+        "macro framework", "posterior summarization", "advanced packaging surge", "executive briefing",
+        "executive intelligence", "daily briefing", "intelligence briefing", "synthesis artifact",
+        "posterior", "summarization", "framework", "synthesis", "takeaway", "takeaways",
+        "clinical trials", "clinical trial", "phase 1", "phase 2", "phase 3", "key developments",
+        "regulatory horizon", "market implications", "intelligence confirmation", "operational overview",
+        "system architecture", "methodology", "core takeaways", "ecosystem context", "practical implications",
+        "macro overview", "market context", "advanced packaging", "briefing summary", "executive review",
         "global macro", "capital markets", "frontier ai", "supply chain", "loss prevention",
         "official sector buying", "real yield & currency dynamics", "institutional etf flows",
         "time date", "real-time date", "real time", "real-time",
@@ -7253,6 +7293,11 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
         if (cLow === qLower || qLower.includes(cLow) || (clean.length > 5 && cLow.includes(qLower))) continue;
         if (Array.from(blacklist).some(b => cLow.includes(b))) continue;
 
+        // Discard meta-headings, synthesis artifacts, and sectional terms
+        if (/^(?:macro|micro|posterior|anterior|prior|synthesis|summarization|framework|briefing|takeaway|takeaways|outlook|overview|horizon|breakdown|perspective|methodology|context)\b/i.test(cLow)) continue;
+        if (/\b(?:framework|summarization|briefing|takeaway|takeaways|outlook|overview|horizon|breakdown|perspective|methodology|context|synthesis)$/i.test(cLow)) continue;
+        if (/\b(?:clinical trial|clinical trials|phase [1-4]|study cohort)\b/i.test(cLow)) continue;
+
         // Discard entities starting or ending with dangling prepositions / articles (e.g. "Brainrot Vacations De")
         if (/\b(?:de|of|the|and|in|at|for|to|with|by|from|a|an)$/i.test(clean)) continue;
         if (/^(?:de|of|and|in|at|for|to|with|by|from)\b/i.test(clean)) continue;
@@ -7264,7 +7309,7 @@ function extractLearnedEntities(query, answerHTML = "", sources = []) {
         if (/\b(?!(?:US|UK|EU|AI|OS|TV|UI|UX|PC|IP|ML|PR|HR|GN)\b)[A-Za-z]{1,2}$/i.test(clean)) continue;
         if (/\.{2,}$/.test(clean) || clean.endsWith('…')) continue;
 
-        // Reject permutation scrambles or anagrams of query words (e.g. "Brainrot Vacations De" for "De-Brainrot Vacations")
+        // Reject permutation scrambles or anagrams of query words
         const cWords = cLow.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
         if (cWords.length > 0 && qWords.length > 0) {
             const cWordsSorted = [...cWords].sort().join(' ');
@@ -7376,13 +7421,36 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
         questionPool = [
             `What are the primary architectural and performance trade-offs between ${itemA} and ${itemB}?`,
             `In what specific production scenarios should a team choose ${itemA} over ${itemB}?`,
-            `How do the developer tooling, learning curves, and ecosystem libraries compare between ${itemA} and ${itemB}?`,
+            `How do developer tooling, learning curves, and ecosystem libraries compare between ${itemA} and ${itemB}?`,
             topEntity ? `How does ${topEntity} specifically differ in implementation between ${itemA} and ${itemB}?` : `How do benchmarks in memory efficiency and execution speed compare for ${itemA} vs ${itemB}?`,
             `What are the most common migration hurdles when transitioning from ${itemA} to ${itemB}?`,
             `How do the long-term community support and enterprise adoption trends compare between ${itemA} and ${itemB}?`
         ];
     }
-    // 2. Mobile Operating Systems, Device Hardening & Privacy (GrapheneOS, CalyxOS, LineageOS, Android, iOS, Secure Clipboard, Vanadium, AOSP)
+    // 2. Executive Intelligence Briefing, Cross-Asset Macro & Cloud CapEx
+    else if (/\b(executive daily intelligence briefing|daily intelligence briefing|cloud scale & capital markets|hyperscaler capex|ai frontier, cloud scale|frontier ai & computing)\b/i.test(qLower) ||
+             (/\b(executive|briefing)\b/i.test(qLower) && /\b(ai|cloud|capital|markets|macro)\b/i.test(qLower))) {
+        questionPool = [
+            `What are the projected 2026 hyperscaler CapEx budgets allocated to AI data centers?`,
+            `How are sovereign AI initiatives and export controls impacting global semiconductor shipments?`,
+            `What macroeconomic indicators signal potential valuation risks for large-cap tech equities?`,
+            `How are enterprise CIOs balancing on-prem sovereign AI clusters versus public cloud infrastructure?`,
+            `What are the latest yield curve dynamics and liquidity trends affecting corporate bond spreads?`,
+            `How do recent regulatory antitrust investigations affect cloud software bundling strategies?`
+        ];
+    }
+    // 3. CRISPR, Targeted Gene Editing & Customized mRNA Therapies
+    else if (/\b(crispr|gene editing|mrna|cas9|prime editing|base editing|car-t|oligonucleotide|lnp|lipid nanoparticle)\b/i.test(combinedSignals)) {
+        questionPool = [
+            `What are the primary in-vivo delivery hurdles (LNP vs viral vectors) in current CRISPR clinical trials?`,
+            `How do off-target cleavages and immunogenicity rates compare across Cas9, base, and prime editing?`,
+            `What are the latest Phase 2 and 3 clinical endpoints for personalized mRNA cancer vaccines?`,
+            `How are manufacturing scalability and cold-chain distribution being resolved for customized therapies?`,
+            `What accelerated FDA and EMA regulatory pathways exist for patient-specific gene therapies?`,
+            `How do durability of response and long-term safety data compare between in-vivo and ex-vivo editing?`
+        ];
+    }
+    // 4. Mobile Operating Systems, Device Hardening & Privacy (GrapheneOS, CalyxOS, LineageOS, Android, iOS, Secure Clipboard, Vanadium, AOSP)
     else if (/\b(grapheneos|calyxos|lineageos|vanadium|aosp)\b/i.test(combinedSignals) ||
              /\b(secure clipboard|clipboard isolation|secure paste)\b/i.test(combinedSignals) ||
              (/\b(android|ios|mobile os|pixel device)\b/i.test(combinedSignals) && /\b(security|hardening|privacy|sandbox|sandboxed|clipboard|permission|permissions)\b/i.test(combinedSignals))) {
@@ -7395,7 +7463,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `How does memory tagging (MTE), hardened malloc, and exploit mitigation protect users running ${coreSubject}?`
         ];
     }
-    // 2.5 Compilers, Interpreters, Language Runtimes & Code Golf (Python Interpreter in 1024 bytes, AST, Bytecode, Lexer, Parser)
+    // 5. Compilers, Interpreters, Language Runtimes & Code Golf (Python Interpreter in 1024 bytes, AST, Bytecode, Lexer, Parser)
     else if (/\b(interpreter|compiler|code golf|bytecode|ast|lexer|parser|evaluator|austin henley|1024 bytes?|1kb|language runtime)\b/i.test(combinedSignals) ||
              (/\b(python|rust|c code)\b/i.test(combinedSignals) && /\b(interpreter|compiler|1024|bytes)\b/i.test(combinedSignals))) {
         questionPool = [
@@ -7407,7 +7475,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What educational compiler design insights can developers learn from building an interpreter in 1024 bytes?`
         ];
     }
-    // 2.7 Digital Detox, Dopamine Reset, Attention Economy & Mental Wellness
+    // 6. Digital Detox, Dopamine Reset, Attention Economy & Mental Wellness
     else if (/\b(brainrot|detox|digital detox|dopamine fast|unplugged|screen time|screen-free|attention span|doomscrolling|retreat|cabin|wellness retreat)\b/i.test(combinedSignals)) {
         questionPool = [
             `What are the most effective psychological strategies and ground rules for planning and executing ${coreSubject}?`,
@@ -7418,7 +7486,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What tools and hardware habits (like "dumbphones" or timed phone lockboxes) help sustain the benefits of ${coreSubject}?`
         ];
     }
-    // 2.8 Smart TVs, IoT Surveillance, Firmware Telemetry & Hardware Privacy (216M Spy TVs, webOS, ACR, Microphone Logging, LAN Probing)
+    // 7. Smart TVs, IoT Surveillance, Firmware Telemetry & Hardware Privacy (216M Spy TVs, webOS, ACR, Microphone Logging, LAN Probing)
     else if (/\b(spy tv|spy tvs|smart tv|smart tvs|webos|acr|automatic content recognition|lg ad solutions|ambient audio|screen off|216m)\b/i.test(combinedSignals) ||
              (/\b(tv|television|smart display|lg|roku|samsung|vizio)\b/i.test(combinedSignals) && /\b(spy|spying|surveillance|listening|microphone|telemetry|snoop|snooping|tracking|lan|vlan)\b/i.test(combinedSignals))) {
         questionPool = [
@@ -7430,7 +7498,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `Can consumer smart TVs function reliably as "dumb monitors" using external streaming boxes (e.g., Apple TV) without internet connectivity?`
         ];
     }
-    // 3. Commodities & Precious Metals / Energy (Gold, Silver, Crude Oil, Copper, etc.)
+    // 8. Commodities & Precious Metals / Energy (Gold, Silver, Crude Oil, Copper, etc.)
     else if (/\b(gold|silver|platinum|copper|crude oil|brent|wti|natural gas|lithium|uranium|bullion|spot price|spot prices)\b/i.test(combinedSignals) && !/\b(grapheneos|calyxos|lineageos)\b/i.test(qLower)) {
         questionPool = [
             `What macroeconomic catalysts (Federal Reserve interest rates, US Dollar DXY, inflation) are driving ${coreSubject} today?`,
@@ -7441,7 +7509,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             secondEntity ? `How does ${coreSubject} correlate with ${secondEntity} across different market cycles?` : `What key technical support and resistance levels define the current trading channel for ${coreSubject}?`
         ];
     }
-    // 4. Cryptocurrencies & Digital Assets (Bitcoin, Ethereum, Solana, etc.)
+    // 9. Cryptocurrencies & Digital Assets (Bitcoin, Ethereum, Solana, etc.)
     else if (/\b(bitcoin|btc|ethereum|eth|solana|crypto|cryptocurrency|blockchain|stablecoin)\b/i.test(combinedSignals) && !/\b(grapheneos|calyxos|lineageos|operating system|os|android|ios|windows|linux|macos)\b/i.test(qLower)) {
         questionPool = [
             `What are the latest institutional ETF inflows, regulatory catalysts, and adoption trends for ${coreSubject}?`,
@@ -7451,17 +7519,18 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What are the major technological upgrades or governance milestones on the roadmap for ${coreSubject}?`
         ];
     }
-    // 4. Macroeconomics & Monetary Policy (Fed, Interest Rates, Inflation, CPI, Yields)
-    else if (/\b(fed|fomc|interest rate|interest rates|rate cut|rate hike|treasury|yield|yields|inflation|cpi|pce|recession|gdp|unemployment|dxy)\b/i.test(combinedSignals)) {
+    // 10. Macroeconomics & Monetary Policy (Fed, Interest Rates, Inflation, CPI, Yields)
+    else if (/\b(fed|fomc|interest rate|interest rates|rate cut|rate hike|treasury|yield|yields|inflation|cpi|pce|recession|gdp|unemployment|dxy|monetary policy)\b/i.test(combinedSignals)) {
         questionPool = [
-            `What are the expected timing and magnitude of future central bank interest rate decisions?`,
-            `How are current inflation and labor market readings influencing sovereign bond yields?`,
-            topEntity ? `How does ${topEntity} factor into monetary policy deliberations and market expectations?` : `What leading macroeconomic indicators signal a potential shift in monetary policy?`,
-            `What are the historical precedents for economic growth and asset valuations during similar policy cycles?`,
-            `How are global central banks coordinating or diverging on monetary easing and liquidity?`
+            `What are the expected timing and magnitude of future Federal Reserve interest rate adjustments?`,
+            `How are current inflation and labor market readings influencing 10-year Treasury yields?`,
+            `What leading macroeconomic indicators signal an upcoming shift in central bank policy?`,
+            `How are global central banks coordinating or diverging on monetary easing and liquidity?`,
+            `What are the historical market precedents for equity valuations during similar rate-cutting cycles?`,
+            `How do quantitative tightening (QT) runoff and bank reserve levels affect short-term repo rates?`
         ];
     }
-    // 5. Geology & Earth Sciences
+    // 11. Geology & Earth Sciences
     else if (/\b(faults?|faulting|earthquakes?|seismic|volcano(?:es|s)?|volcanic|tectonics?|geology|geologic|tsunamis?|epicenters?|richter|plate boundar(?:y|ies)|subduction|tremors?|crust|geothermal|aftershocks?)\b/i.test(combinedSignals)) {
         questionPool = [
             `What is the scientific distinction between an active, dormant, and inactive fault?`,
@@ -7472,7 +7541,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What building codes, structural engineering standards, and surface setback zones are enforced near active faults?`
         ];
     }
-    // 6. Biography & Historical Figures
+    // 12. Biography & Historical Figures
     else if ((qLower.startsWith("who is") || qLower.startsWith("who was") || /\b(biography|born in|died in|philosopher|marcus aurelius|julius caesar|roman emperor|monarch|ruler)\b/i.test(combinedSignals) || (/\b(who|born|died|biography)\b/i.test(qLower))) && !/\b(interpreter|compiler|code|programming|algorithm|software|bytes|python|rust)\b/i.test(qLower)) {
         questionPool = [
             `What are the central philosophical ideas or key contributions associated with ${coreSubject}?`,
@@ -7483,20 +7552,20 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What were the immediate consequences and succession following the era of ${coreSubject}?`
         ];
     }
-    // 7. Frontier AI & Machine Learning
+    // 13. Frontier AI & Machine Learning
     else if (!/\b(grapheneos|calyxos|lineageos|android|ios|operating system|firmware|linux|kernel|clipboard)\b/i.test(qLower) &&
-             (/\b(llm|gpt|claude|gemini|deepseek|transformer|swe-bench|embedding|rag|fine-tuning|prompt engineering|reasoning model|frontier model)\b/i.test(combinedSignals) ||
+             (/\b(llm|gpt|claude|gemini|deepseek|transformer|swe-bench|embedding|rag|fine-tuning|prompt engineering|reasoning model|frontier model|chain of thought|rlhf)\b/i.test(combinedSignals) ||
               (/\b(ai|inference|reasoning|agent|neural)\b/i.test(combinedSignals) && /\b(ai|model|llm|agent|prompt|reasoning|benchmark)\b/i.test(qLower)))) {
         questionPool = [
-            `How does ${coreSubject} benchmark against competing frontier reasoning models on SWE-bench and MATH-500?`,
-            `What are the inference latency, memory footprint, and token pricing trade-offs for ${coreSubject}?`,
-            topEntity ? `How does ${topEntity} specifically enhance reasoning accuracy in ${coreSubject}?` : `How can developers implement structured outputs, tool use, and agentic workflows with ${coreSubject}?`,
+            `How does ${coreSubject} benchmark against competing frontier reasoning models on SWE-bench Verified?`,
+            `What are the inference latency, memory bandwidth, and token cost trade-offs for ${coreSubject}?`,
+            `How do test-time compute scaling and chain-of-thought verification enhance reasoning accuracy in ${coreSubject}?`,
+            `What architectural best practices enable robust tool use and structured output generation in ${coreSubject}?`,
             `What are the known failure modes, hallucinations, or prompt engineering sensitivities in ${coreSubject}?`,
-            `How does test-time compute scaling and hybrid reasoning function in ${coreSubject}?`,
-            secondEntity ? `How does ${coreSubject} compare directly with ${secondEntity}?` : `What are the recommended fine-tuning and retrieval-augmented generation (RAG) practices for ${coreSubject}?`
+            `How are agentic workflows implementing multi-turn verification and self-correction with ${coreSubject}?`
         ];
     }
-    // 8. Software Architecture & Programming
+    // 14. Software Architecture & Systems Programming
     else if (/\b(python|rust|javascript|typescript|react|vue|angular|docker|kubernetes|api|database|sql|nosql|concurrency|async|compiler|linux|git|caching|http|tcp|endpoint|backend|frontend)\b/i.test(combinedSignals)) {
         questionPool = [
             `What are the primary architectural bottlenecks and performance trade-offs in ${coreSubject}?`,
@@ -7507,18 +7576,18 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What major breaking changes or architectural shifts were introduced in recent versions of ${coreSubject}?`
         ];
     }
-    // 9. Semiconductors & Hardware
+    // 15. Semiconductors & Hardware
     else if (/\b(semiconductor|chip|chips|gpu|gpus|tsmc|nvidia|asml|quantum|qubit|qubits|fusion|wafer|cowos|hbm|dram|lithography|transistor|packaging)\b/i.test(combinedSignals)) {
         questionPool = [
             `What are the primary thermal dissipation, packaging, and power density bottlenecks in ${coreSubject}?`,
-            topEntity ? `How does ${topEntity} impact the global manufacturing capacity and delivery lead times?` : `How do advanced packaging methods (like CoWoS or EMIB) influence ${coreSubject}?`,
+            topEntity ? `How does ${topEntity} impact global manufacturing capacity and delivery lead times?` : `How do advanced packaging methods (like CoWoS or EMIB) influence ${coreSubject}?`,
             `What is the projected multi-year technology roadmap and wafer yield trajectory for ${coreSubject}?`,
             `How does ${coreSubject} benchmark against alternative architectural paradigms in compute efficiency?`,
             `What supply chain dependencies or critical material shortages constrain production of ${coreSubject}?`,
-            `How are hyperscalers and cloud providers adapting their data center infrastructure for ${coreSubject}?`
+            `How are hyperscalers adapting datacenter power infrastructure for ${coreSubject}?`
         ];
     }
-    // 10. Medicine & Healthcare
+    // 16. Medicine & Healthcare
     else if (/\b(disease|syndrome|symptom|symptoms|infection|virus|bacteria|vaccine|treatment|therapy|drug|medication|clinical|cancer|cardiac|neurology|surgery|dosage|physician)\b/i.test(combinedSignals)) {
         questionPool = [
             `What are the clinical diagnostic criteria, biomarkers, and differential diagnoses for ${coreSubject}?`,
@@ -7529,7 +7598,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `What are the potential side effects and pharmacological interactions of standard therapies for ${coreSubject}?`
         ];
     }
-    // 11. Practical How-To & Culinary / DIY
+    // 17. Practical How-To & Culinary / DIY
     else if (/\b(how to|recipe|recipes|cook|cooking|bake|baking|sourdough|bread|ingredient|ingredients|repair|fix|install|troubleshoot|diy|step by step)\b/i.test(qLower) ||
              (/\b(recipe|recipes|bake|baking|sourdough|bread|ingredient|ingredients)\b/i.test(combinedSignals) && !/\b(vacation|trip|retreat|detox|brainrot)\b/i.test(combinedSignals))) {
         questionPool = [
@@ -7541,8 +7610,8 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             `How can ${coreSubject} be prepared ahead of time or stored for optimal longevity?`
         ];
     }
-    // 12. Science & Physical Phenomena (Photosynthesis, Quantum Mechanics, Relativity, Optics)
-    else if (/\b(photosynthesis|quantum|gravity|relativity|atom|molecule|cellular|dna|rna|evolution|optics|thermodynamic|photon|fusion|fission|solar|magnetism)\b/i.test(combinedSignals)) {
+    // 18. Science & Physical Phenomena
+    else if (/\b(photosynthesis|gravity|relativity|atom|molecule|cellular|dna|rna|evolution|optics|thermodynamic|photon|fusion|fission|solar|magnetism)\b/i.test(combinedSignals)) {
         questionPool = [
             `What are the foundational chemical and physical mechanisms that drive ${coreSubject}?`,
             topEntity ? `What specific function does ${topEntity} serve in ${coreSubject}?` : `How do environmental factors or external stimuli affect the rate of ${coreSubject}?`,
@@ -7551,7 +7620,7 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             secondEntity ? `What is the relationship between ${coreSubject} and ${secondEntity}?` : `What open questions or active areas of research surround ${coreSubject} today?`
         ];
     }
-    // 13. Corporate Equities & Financial Markets
+    // 19. Corporate Equities & Financial Markets
     else if (focusMode === "finance" || /\b(stock|shares|nasdaq|s&p|valuation|margin|earnings|ebitda|pe ratio|dividend|market cap|guidance|quarterly)\b/i.test(combinedSignals)) {
         questionPool = [
             `What were the key takeaways, revenue growth, and guidance from ${coreSubject}'s latest earnings report?`,
@@ -7562,15 +7631,15 @@ function generateRelatedQuestions(query, focusMode, answerHTML = "", sources = [
             secondEntity ? `How does ${coreSubject} compare against ${secondEntity} in market share and profitability?` : `What upcoming catalyst dates or corporate disclosures should investors monitor for ${coreSubject}?`
         ];
     }
-    // 14. Universal Adaptive Discovery Engine
+    // 20. Universal Adaptive Discovery Engine
     else {
         questionPool = [
-            `What are the most significant real-world applications and use cases of ${coreSubject}?`,
-            topEntity ? `What is the specific connection between ${topEntity} and ${coreSubject}?` : `What are the most common misconceptions or lesser-known facts regarding ${coreSubject}?`,
-            `How has the scientific and practical understanding of ${coreSubject} evolved in recent years?`,
-            secondEntity ? `How does ${coreSubject} compare with ${secondEntity} in scope and effectiveness?` : `What are the primary challenges or open questions that experts are currently investigating regarding ${coreSubject}?`,
-            `What are the foundational principles or mechanisms that make ${coreSubject} work?`,
-            `What future developments or milestones are expected to shape ${coreSubject} over the next few years?`
+            `What are the primary real-world applications and production use cases of ${coreSubject}?`,
+            `What are the most critical architectural trade-offs and performance bottlenecks in ${coreSubject}?`,
+            `How do recent 2026 technological breakthroughs alter the roadmap for ${coreSubject}?`,
+            `What are the common implementation pitfalls or misconceptions regarding ${coreSubject}?`,
+            `How do industry leaders approach security, scaling, and cost optimization with ${coreSubject}?`,
+            `What regulatory, compliance, or ecosystem trends are shaping the future of ${coreSubject}?`
         ];
     }
 
@@ -7604,9 +7673,9 @@ function renderRelatedQuestions(parentContainer, questions) {
         <span class="related-label"><i class="fa-solid fa-lightbulb text-cyan"></i> Cortex Suggested Follow-up Searches:</span>
         <div class="related-chips">
             ${questions.map(q => `
-                <button class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}', true)">
-                    <span>${q}</span>
-                    <i class="fa-solid fa-arrow-right text-muted"></i>
+                <button type="button" class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}', true)">
+                    <span class="related-chip-text">${q}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </button>
             `).join('')}
         </div>
@@ -7664,8 +7733,8 @@ function renderViewport() {
                         <div class="related-chips">
                             ${step.related.map(q => `
                                 <button type="button" class="related-chip-btn" onclick="executeSearch('${q.replace(/'/g, "\\'")}', true)">
-                                    <span>${q}</span>
-                                    <i class="fa-solid fa-arrow-right text-muted"></i>
+                                    <span class="related-chip-text">${q}</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
                                 </button>
                             `).join('')}
                         </div>

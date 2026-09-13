@@ -707,13 +707,21 @@ html, body {
 }
 
 .related-label {
-    font-size: 0.82rem;
+    font-family: var(--font-heading);
+    font-size: 0.84rem;
     font-weight: 700;
-    color: #e2e8f0;
+    color: #cbd5e1;
     display: flex;
     align-items: center;
-    gap: 6px;
-    letter-spacing: -0.1px;
+    gap: 8px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
+.related-label i {
+    color: var(--accent-cyan);
+    font-size: 0.9rem;
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
 }
 
 .related-chips {
@@ -728,39 +736,51 @@ html, body {
 }
 
 .related-chip-btn {
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid var(--border-glass);
-    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: 10px;
     padding: 11px 16px;
-    color: var(--text-primary);
-    font-size: 0.84rem;
+    color: #e2e8f0;
+    font-size: 14px;
     font-weight: 500;
+    line-height: 1.45;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    transition: var(--transition);
+    gap: 14px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     text-align: left;
     width: 100%;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .related-chip-btn:hover {
-    background: rgba(56, 189, 248, 0.09);
-    border-color: rgba(56, 189, 248, 0.35);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border-color: rgba(56, 189, 248, 0.45);
     color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 16px rgba(56, 189, 248, 0.18);
+}
+
+.related-chip-btn .related-chip-text {
+    flex: 1;
 }
 
 .related-chip-btn i {
     color: var(--accent-cyan);
     font-size: 0.8rem;
-    transition: var(--transition);
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .related-chip-btn:hover i {
-    transform: translateX(4px);
+    opacity: 1;
+    transform: translateX(3px);
+    filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6));
 }
 
 .empty-hero {
@@ -2072,7 +2092,7 @@ option:active {
     gap: 8px;
 }
 
-.dynamic-followup-chip, .related-chip-btn {
+.dynamic-followup-chip {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-glass);
     padding: 8px 12px;
@@ -2087,7 +2107,7 @@ option:active {
     gap: 8px;
 }
 
-.dynamic-followup-chip:hover, .related-chip-btn:hover {
+.dynamic-followup-chip:hover {
     background: rgba(56, 189, 248, 0.1);
     border-color: rgba(56, 189, 248, 0.35);
     color: var(--text-primary);

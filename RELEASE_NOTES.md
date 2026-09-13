@@ -2,6 +2,55 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.0] — 2026-09-13
+### **Context-Aware Follow-up Prompts, Synthesis Entity Purification & Obsidian Glass Typography Redesign**
+
+```mermaid
+graph TD
+    subgraph PromptEngine ["🎯 Contextual Follow-Up Engine"]
+        SubjectDistillation["Core Subject Distillation: Strips Verbose Prefixes, Briefing Headers & Long Run-ons"]
+        DomainPools["Dedicated Domain Pools: CapEx, CRISPR/mRNA, Macroeconomics, Frontier AI & Compilers"]
+        CrispTemplates["Crisp, High-Relevance Prompts (Guaranteed <= 110 Chars with Zero Repetition)"]
+    end
+
+    subgraph EntityPurification ["🛡️ Synthesis Heading Blacklist"]
+        BlacklistHeadings["Strict Blacklist: Rejects 'Macro Framework', 'Posterior Summarization', etc."]
+        MetaFilter["Prefix/Suffix Regex: Blocks Meta Vocabulary (framework, briefing, outlook, breakdown)"]
+        CleanInsertion["Clean Natural Insertion into Relevant Follow-Up Questions"]
+    end
+
+    subgraph TypographyRedesign ["💎 Obsidian Glass Typography"]
+        FontMatching["Font Matching: 14px Inter (--font-body) & Plus Jakarta Sans (--font-heading)"]
+        GlassChips["Specular Glass Background with Cyan Radiant Glow & Animated Arrow Pill"]
+        OverrideFix["Eliminated Degraded 0.8rem CSS Selector Conflicts"]
+    end
+
+    PromptEngine --> EntityPurification
+    EntityPurification --> TypographyRedesign
+```
+
+#### Detailed Enhancements in v6.7.0:
+1. **Context-Aware Follow-up Prompts**:
+   - Replaced fragile generic question templates with dedicated, domain-specialized prompt pools:
+     - **Executive Daily Intelligence Briefing & Hyperscaler CapEx**: Focuses on hyperscaler data center CapEx budgets, sovereign AI infrastructure, semiconductor shipment dynamics, and valuation risks.
+     - **CRISPR & mRNA Therapies**: Queries on in-vivo delivery barriers (LNP vs viral vectors), off-target cleavage benchmarks (Cas9 vs base/prime editing), Phase 2/3 clinical endpoints for personalized mRNA vaccines, and accelerated FDA/EMA pathways.
+     - **Macroeconomics & Monetary Policy**: Questions tailored to FOMC rate expectations, 10-year Treasury yield reactions, quantitative tightening (QT) balance sheet runoff, and historical equity cycle precedents.
+     - **Frontier AI & Reasoning Models**: Deep prompts targeting SWE-bench Verified benchmarks, inference latency vs memory bandwidth, test-time compute scaling, and multi-turn verification.
+   - Built `extractCoreSubject()` distillation engine that isolates primary topic clauses (e.g. `Executive Daily Intelligence Briefing: AI Frontier...` $\rightarrow$ `AI Frontier & Cloud Infrastructure`; `latest clinical trials on targeted CRISPR...` $\rightarrow$ `CRISPR & mRNA Therapies`), strictly enforcing concise topic lengths ($\le 36$ chars).
+2. **Synthesis Heading & Meta Artifact Blacklist**:
+   - Expanded entity extraction blacklist to reject all synthesis headings and section titles (e.g., `Macro Framework`, `Posterior Summarization`, `Advanced Packaging Surge`, `Strategic Outlook`, `Ecosystem Overview`, `Clinical Trials`).
+   - Implemented boundary regex checking to block any candidate containing or ending in meta-vocabulary (`framework`, `summarization`, `overview`, `breakdown`, `horizon`, `perspective`, `methodology`, `briefing`).
+3. **Obsidian Glassmorphism & Typography Redesign**:
+   - Redesigned `.related-chip-btn` with 14px typography (`--font-body: Inter`), high-contrast slate text (`#e2e8f0`), specular 1px cyan borders (`rgba(56, 189, 248, 0.16)`), and glass gradient backdrops (`rgba(15, 23, 42, 0.6)`).
+   - Removed conflicting selector at line 2075 in `styles.css` that previously downgraded follow-up chips to 0.8rem (12.8px) and muted text colors.
+   - Enhanced micro-interactions: smooth hover translation (`translateX(4px)`), cyan arrow glow, and seamless click-to-search dispatch.
+4. **Automated Verification**:
+   - `test_prompt_relevance.py`: **100% PASS** (Validated crisp subjects, entity blacklist, domain questions, and DOM 14px font styling).
+   - `test_sidebar_desks.py`: **100% PASS** (All 5 research desks, card triggers, and navigation intact).
+   - `test_cortex_production_suite.py`: **20/20 PASS (100%)**.
+
+---
+
 ## 🌟 [v6.6.0] — 2026-09-13
 ### **Executive Bento-Grid Block Design Restoration, De-Duplication & Seamless Footer Integration**
 
