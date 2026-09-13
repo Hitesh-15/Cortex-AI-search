@@ -2,6 +2,31 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.2] — 2026-09-13
+### **Desktop Header De-duplication & Responsive Brand Architecture**
+
+```mermaid
+graph TD
+    subgraph DesktopLayout ["🖥️ Desktop Viewport (>= 769px)"]
+        SidebarBrand["Primary Brand Anchor: Left Sidebar ([Brain] CORTEX)"]
+        HeaderClean["Top Header: Clean Space, Actions Right-Aligned (No Duplicate Logo)"]
+        SidebarBrand --> HeaderClean
+    end
+
+    subgraph MobileLayout ["📱 Mobile Viewport (< 768px)"]
+        SidebarOffCanvas["Sidebar Hidden Off-Canvas"]
+        MobileHeader["Header: Hamburger Menu + [Brain] CORTEX AI SEARCH Badge"]
+        SidebarOffCanvas --> MobileHeader
+    end
+```
+
+#### Detailed Enhancements in v6.7.2:
+1. **Redundant Desktop Brand Elimination**:
+   - Resolved visual redundancy on desktop screens where `[brain icon] CORTEX` in the left sidebar was immediately repeated by `[brain icon] CORTEX AI SEARCH` in the top header navbar just 20px away.
+   - Set `.header-brand-badge` to `display: none` on desktop viewports, preserving a single authoritative brand anchor in the persistent sidebar.
+2. **Mobile Brand Continuity**:
+   - Retained `.header-brand-badge` as `display: flex` exclusively on mobile viewports (`max-width: 768px`), ensuring mobile users have prominent brand identity while the sidebar remains off-canvas.
+
 ## 🌟 [v6.7.1] — 2026-09-13
 ### **FastAPI Pydantic V2 & WebSocket Code Relevance, Corporate Homonym Filter & Authoritative Docs Injection**
 

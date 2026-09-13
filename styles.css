@@ -4859,9 +4859,9 @@ body.legal-page-body {
     margin: 0;
 }
 
-/* Header Brand Badge */
+/* Header Brand Badge - Hidden on Desktop to eliminate redundant brand logo beside sidebar */
 .header-brand-badge {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 8px;
     padding: 6px 10px;
@@ -4869,6 +4869,12 @@ body.legal-page-body {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
     transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .header-brand-badge {
+        display: flex;
+    }
 }
 
 .header-brand-badge:hover {
