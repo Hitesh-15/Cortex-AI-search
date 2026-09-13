@@ -24,12 +24,10 @@ try:
 
     print("=== TESTING DESKTOP TOP HEADER TELEMETRY STRIP ===")
 
-    # 1. Check Desk Indicator
-    desk_indicator = driver.find_element(By.ID, "headerDeskIndicator")
-    desk_name = driver.find_element(By.ID, "headerDeskName")
-    print(f"  Desk indicator: '{desk_name.text}' (displayed: {desk_indicator.is_displayed()})")
-    assert desk_indicator.is_displayed(), "Header desk indicator should be visible on desktop!"
-    assert "Market & Web" in desk_name.text, f"Expected 'Market & Web', got '{desk_name.text}'"
+    # 1. Check Desk Indicator is Removed from Top Header
+    desk_indicators = driver.find_elements(By.ID, "headerDeskIndicator")
+    assert len(desk_indicators) == 0, "FAIL: headerDeskIndicator should be removed from top section!"
+    print("  [PASS] 'Market & Web' badge removed from top section, leaving full space for tickers!")
 
     # 2. Check All 8 Ticker Pills
     ticker_pills = driver.find_elements(By.CSS_SELECTOR, ".ticker-pill")
@@ -47,21 +45,18 @@ try:
     assert len(clock_time.text.strip()) > 3, "Clock time should have live ticking value!"
     print("  [PASS] Real-time live clock is ticking!")
 
-    # 4. Check Dynamic Desk Switch
-    print("  -> Testing dynamic desk switch to 'finance'...")
-    finance_desk = driver.find_element(By.CSS_SELECTOR, ".focus-nav-item[data-mode='finance']")
-    finance_desk.click()
-    time.sleep(0.3)
-    assert "Financial Markets" in desk_name.text, f"Expected 'Financial Markets', got '{desk_name.text}'"
-    print(f"  [PASS] Header desk indicator dynamically updated to '{desk_name.text}'!")
-
-    # Switch back to web desk
-    web_desk = driver.find_element(By.CSS_SELECTOR, ".focus-nav-item[data-mode='web']")
-    web_desk.click()
-    time.sleep(0.3)
+    # 4. Check Vertical Spacing between Top Header and Hero
+    top_header = driver.find_element(By.CSS_SELECTOR, ".top-header")
+    hero_title = driver.find_element(By.ID, "heroTitle")
+    header_bottom = driver.execute_script("return arguments[0].getBoundingClientRect().bottom;", top_header)
+    hero_top = driver.execute_script("return arguments[0].getBoundingClientRect().top;", hero_title)
+    gap = hero_top - header_bottom
+    print(f"  Vertical gap between top header and hero title: {gap:.1f}px")
+    assert gap < 90, f"Vertical gap too large ({gap:.1f}px), empty space is getting wasted!"
+    print(f"  [PASS] Vertical spacing is compact and clean ({gap:.1f}px), no wasted empty space!")
 
     # 5. Capture Screenshot for Visual Verification
-    screenshot_path = r"C:\Users\hites\.gemini\antigravity-ide\brain\3afc78ff-c35d-428e-a325-28243d6b78cd\cortex_desktop_market_ticker_strip.png"
+    screenshot_path = r"C:\Users\hites\.gemini\antigravity-ide\brain\3afc78ff-c35d-428e-a325-28243d6b78cd\cortex_compact_no_empty_space.png"
     driver.save_screenshot(screenshot_path)
     print(f"  [SAVED] Visual verification screenshot: {screenshot_path}")
 

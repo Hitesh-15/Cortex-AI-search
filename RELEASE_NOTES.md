@@ -2,6 +2,33 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.4] — 2026-09-13
+### **Top Header Ticker Expansion & Prompt Section Spacing Optimization**
+
+```mermaid
+graph TD
+    subgraph TopHeader ["⚡ Ticker Space Expansion"]
+        DeskRemoved["Removed 'Market & Web' Badge from Top Header"]
+        FullWidthTickers["100% Horizontal Space Dedicated to Live Ticker Pills (GOLD • SILVER • COPPER • OIL • S&P 500 • NASDAQ • US 10Y • VIX)"]
+        DeskRemoved --> FullWidthTickers
+    end
+
+    subgraph VerticalSpacing ["📐 Zero Empty Space Optimization"]
+        PrevVoid["Previous State: justify-content: center -> ~200px Empty Dark Void"]
+        NewProportions["Optimized State: justify-content: flex-start with 14px Padding -> 47px Clean Gap"]
+        PrevVoid --> NewProportions
+    end
+```
+
+#### Detailed Enhancements in v6.7.4:
+1. **Top Header Ticker Space Expansion**:
+   - Removed the `Market & Web` indicator badge from the top section to eliminate horizontal clutter and maximize room for all 8 live financial market ticker pills.
+   - Tickers now start immediately adjacent to the sidebar and span across the top bar with optimal breathing room before the live clock and action controls.
+2. **Elimination of Vertical Empty Space**:
+   - Resolved the large empty space between the ticker bar and the prompt hero section (`Where knowledge begins.`).
+   - Replaced vertical centering (`justify-content: center`) with natural top alignment (`justify-content: flex-start` with 14px padding), reducing the vertical gap from ~208px down to 47px.
+   - Balanced the hero title, badge, trending cards, and bottom search bar so the entire workstation sits cohesively on a single screen with zero wasted space.
+
 ## 🌟 [v6.7.3] — 2026-09-13
 ### **Top Header Space Optimization: Institutional Market Tickers, Active Desk Indicator & Live Telemetry Clock**
 
