@@ -9707,6 +9707,11 @@ function switchToDashboardView() {
 }
 window.switchToDashboardView = switchToDashboardView;
 
+function openMarketOptionsModal() {
+    executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast');
+}
+window.openMarketOptionsModal = openMarketOptionsModal;
+
 function initCookieConsent() {
     const consent = localStorage.getItem("cortex_cookie_consent");
     const banner = document.getElementById("cookieConsentBanner");
