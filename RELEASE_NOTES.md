@@ -2,6 +2,45 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.7] — 2026-10-22
+### **Fluid Responsive Scaling, Welcoming Velvet Dark Mode & Real-Time Trend Refresh Engine**
+
+```mermaid
+graph TD
+    subgraph ResponsiveUI ["🖥️ Proportional Fluid Typography & Viewport Scaling"]
+        RootScale["Root Scale: clamp(15px, min(0.5vw, 1.05vh) + 8.15px, 26px)"]
+        FluidLayout["Desktop Fluid Chrome: Center Stage 860px -> 1560px (Ultra-wide & 4K)"]
+        RootScale --> FluidLayout
+    end
+
+    subgraph WelcomingTheme ["🌙 Welcoming Velvet Dark Mode System"]
+        VoidSlate["Deep Velvet Slate (#0a0e17) & Elevated Surface (#151d30)"]
+        HarmoniousText["High-Contrast Soft Readability (#f1f5f9 / #9cb0c9)"]
+        VoidSlate --> HarmoniousText
+    end
+
+    subgraph LiveRefreshEngine ["⚡ Continuous Real-Time Suggestion Streaming"]
+        AlgoliaStream["Algolia HN / arXiv Live API Stream"]
+        LiveTimer["60s Live Auto-Refresh + Window Focus Trigger"]
+        ManualRefresh["Interactive Refresh Action (#btnRefreshTrends) with Pulse Indicator"]
+        AlgoliaStream --> LiveTimer --> ManualRefresh
+    end
+```
+
+#### Detailed Enhancements in v6.7.7:
+1. **Fluid Responsive Typography & Screen-Size Proportionality**:
+   - Replaced static fixed-pixel root scaling with a mathematically balanced fluid clamp: `html { font-size: clamp(15px, calc(min(0.5vw, 1.05vh) + 8.15px), 26px); }`.
+   - Converted fixed-pixel layout tokens (`--content-max-width`, `--hero-max-width`, `--sidebar-width`, radii) into responsive `rem` equivalents (`57.333rem`, `54.667rem`, `18rem`).
+   - Center research stage now seamlessly scales from `860px` on compact laptops up to `1560px` on 1440p and 4K monitors without clipping, awkward letterboxing, or tiny unreadable text.
+2. **Warm, Welcoming & Intuitive Dark Mode Redesign**:
+   - Replaced harsh pitch-black void (`#030712`) with an ultra-clean velvet midnight palette (`--bg-void: #0a0e17;`, `--bg-surface: #0f1523;`, `--bg-surface-elevated: #151d30;`).
+   - Tuned font weights and contrast ratios (`--text-secondary: #9cb0c9;`, `--text-muted: #72849c;`) to eliminate visual fatigue while ensuring crisp information hierarchy.
+   - Refined card glassmorphism with subtle 1px specular gradient borders, soft ambient glows, and clean category pill tags.
+3. **Autonomous Real-Time Suggestion Refresh Engine**:
+   - Wired `renderSuggestedCards()` to dynamically consume active Algolia and arXiv live data streams across all 5 topic desks.
+   - Added pulsing emerald live status indicator and interactive `#btnRefreshTrends` trigger with smooth micro-animation.
+   - Configured background continuous polling every 60 seconds and instant re-fetching on tab focus.
+
 ## 🌟 [v6.7.6] — 2026-09-13
 ### **Center Hero Section Alignment to Sidebar Header Baseline**
 

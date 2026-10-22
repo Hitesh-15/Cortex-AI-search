@@ -990,19 +990,7 @@ function selectResearchDesk(mode) {
     if (labelEl) labelEl.innerHTML = config.sectionLabel;
 
     // 5. Update Topic Cards
-    const grid = document.getElementById("trendingCardsGrid");
-    if (grid) {
-        grid.innerHTML = config.cards.map(c => `
-            <button type="button" class="trending-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
-                <div class="trending-card-top">
-                    <span class="trending-card-tag ${c.tagClass}"><i class="fa-solid ${c.icon}"></i> ${c.tagText}</span>
-                    <i class="fa-solid fa-arrow-right trending-arrow"></i>
-                </div>
-                <div class="trending-card-title">${c.title}</div>
-                <div class="trending-card-meta">${c.meta}</div>
-            </button>
-        `).join('');
-    }
+    renderSuggestedCards(currentMode);
 
     // 6. Update Search Input Placeholder & focus
     const searchInput = document.getElementById("searchInput");
@@ -1063,21 +1051,44 @@ function renderSuggestedCards(mode) {
 
     const grid = document.getElementById("trendingCardsGrid") || document.querySelector(".trending-cards-grid, .suggested-cards-grid");
     if (grid) {
-        grid.innerHTML = config.cards.map(c => `
-            <button type="button" class="trending-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${c.query.replace(/"/g, '&quot;')}">
+        let displayCards = [...config.cards];
+        if (appState.dynamicSuggestions && Array.isArray(appState.dynamicSuggestions[currentMode]) && appState.dynamicSuggestions[currentMode].length > 0) {
+            const live = appState.dynamicSuggestions[currentMode];
+            const newCards = [config.cards[0]];
+            for (let i = 0; i < live.length && newCards.length < 4; i++) {
+                const item = live[i];
+                if (item.title !== config.cards[0].title) {
+                    newCards.push({
+                        tagClass: item.tagClass || "tag-tech",
+                        icon: item.icon || "fa-bolt",
+                        tagText: item.tagText || "Live Trend",
+                        title: item.title,
+                        meta: item.meta || item.sub || "Live breaking research • Just updated",
+                        query: item.query || item.title
+                    });
+                }
+            }
+            while (newCards.length < 4 && newCards.length < config.cards.length) {
+                newCards.push(config.cards[newCards.length]);
+            }
+            displayCards = newCards.slice(0, 4);
+        }
+
+        grid.innerHTML = displayCards.map(c => `
+            <button type="button" class="trending-card suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${(c.query || c.title).replace(/"/g, '&quot;')}">
                 <div class="trending-card-top">
-                    <span class="trending-card-tag ${c.tagClass}"><i class="fa-solid ${c.icon}"></i> ${c.tagText}</span>
+                    <span class="trending-card-tag ${c.tagClass || 'tag-tech'}"><i class="fa-solid ${c.icon || 'fa-bolt'}"></i> ${c.tagText || 'Trending'}</span>
                     <i class="fa-solid fa-arrow-right trending-arrow"></i>
                 </div>
-                <div class="trending-card-title">${c.title}</div>
-                <div class="trending-card-meta">${c.meta}</div>
+                <div class="trending-card-title suggested-card-text suggested-card-title">${c.title}</div>
+                <div class="trending-card-meta suggested-card-sub">${c.meta || c.sub || 'Real-time Web Intelligence'}</div>
             </button>
         `).join('');
     }
 }
 window.renderSuggestedCards = renderSuggestedCards;
 
-// Autonomous Multi-Category Real-Time Trends Ingestion Engine (Always 6 Guaranteed Cards)
+// Autonomous Multi-Category Real-Time Trends Ingestion Engine
 async function fetchDynamicTrendingPrompts(targetMode = null) {
     const activeMode = targetMode || appState.activeFocusMode || "web";
 
@@ -1085,10 +1096,8 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
         appState.dynamicSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
     }
 
-    // Always render immediate cards instantly with zero delay
     renderSuggestedCards(activeMode);
 
-    // Dynamic high-signal endpoints mapped by research desk category (ingesting from 100,000+ sources)
     const categoryEndpoints = {
         web: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30",
         academic: "https://hn.algolia.com/api/v1/search?tags=story&query=arxiv+OR+paper+OR+physics+OR+research+OR+biology&hitsPerPage=35",
@@ -1101,7 +1110,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
 
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5s network timeout to guarantee zero hang
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
 
         const res = await fetch(targetUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
@@ -1113,34 +1122,43 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                 for (const hit of data.hits) {
                     if (!hit.title) continue;
                     const rawTitle = hit.title.trim();
-                    // Filter out forum meta, job posts, and incidents
                     if (/^(ask hn|tell hn|hiring|incident|outage|down|show hn:\s*my)/i.test(rawTitle)) continue;
-                    if (rawTitle.length < 10 || rawTitle.length > 90) continue;
+                    if (rawTitle.length < 10 || rawTitle.length > 95) continue;
 
-                    // Clean title for display
                     let cleanTitle = rawTitle.replace(/^show hn:\s*/i, '').replace(/\s+[-|–—].*$/, '').trim();
                     let icon = "fa-bolt";
                     let sub = "Live Trending Breakthrough";
+                    let tagClass = "tag-tech";
+                    let tagText = "Deep Tech";
 
                     const titleLower = cleanTitle.toLowerCase();
                     if (activeMode === "academic" || titleLower.includes("quantum") || titleLower.includes("physics") || titleLower.includes("paper") || titleLower.includes("arxiv") || titleLower.includes("fusion") || titleLower.includes("biology") || titleLower.includes("cell")) {
                         icon = "fa-atom";
                         sub = "Scientific Preprint & Theory";
+                        tagClass = "tag-tech";
+                        tagText = "arXiv & Science";
                     } else if (activeMode === "code" || titleLower.includes("rust") || titleLower.includes("python") || titleLower.includes("database") || titleLower.includes("compiler") || titleLower.includes("duckdb") || titleLower.includes("kernel") || titleLower.includes("wasm")) {
                         icon = "fa-code";
                         sub = "Systems & Software Engineering";
+                        tagClass = "tag-tech";
+                        tagText = "Engineering";
                     } else if (activeMode === "finance" || titleLower.includes("market") || titleLower.includes("revenue") || titleLower.includes("acquisition") || titleLower.includes("earnings") || titleLower.includes("fed") || titleLower.includes("valuation")) {
                         icon = "fa-chart-line";
                         sub = "Institutional Market Intelligence";
+                        tagClass = "tag-finance";
+                        tagText = "Markets & Tech";
                     } else if (activeMode === "writing" || titleLower.includes("strategy") || titleLower.includes("policy") || titleLower.includes("enterprise") || titleLower.includes("memo")) {
                         icon = "fa-feather-pointed";
                         sub = "Strategic Analysis & Memo";
+                        tagClass = "tag-strategy";
+                        tagText = "Deliverable Studio";
                     } else if (titleLower.includes("ai") || titleLower.includes("llm") || titleLower.includes("model") || titleLower.includes("gpt") || titleLower.includes("claude") || titleLower.includes("deepseek") || titleLower.includes("agent")) {
                         icon = "fa-brain";
                         sub = "Frontier AI & Neural Models";
+                        tagClass = "tag-ai";
+                        tagText = "Frontier AI";
                     }
 
-                    // Preserve full complete sentence up to 85 chars without chopping words in half
                     let displayTitle = cleanTitle;
                     if (displayTitle.length > 85) {
                         displayTitle = displayTitle.substring(0, 82).replace(/\s+\S*$/, '') + '...';
@@ -1150,13 +1168,15 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                         icon: icon,
                         title: displayTitle,
                         sub: sub,
+                        meta: sub,
+                        tagClass: tagClass,
+                        tagText: tagText,
                         query: cleanTitle
                     });
 
                     if (liveCards.length >= 6) break;
                 }
 
-                // Backfill from curated categories if live results < 6 to guarantee exact 6 cards always
                 const baseCategoryCards = FALLBACK_DESK_SUGGESTIONS[activeMode] || FALLBACK_DESK_SUGGESTIONS.web;
                 const fullSet = [...liveCards];
 
@@ -1173,9 +1193,26 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
             }
         }
     } catch (e) {
-        // Graceful fallback to rich baseline cards with zero disruption
+        // Fallback gracefully
     }
 }
+
+async function refreshLiveTrendingCards(interactive = false) {
+    const icon = document.getElementById("refreshTrendsIcon");
+    if (icon) icon.classList.add("spinning");
+
+    try {
+        await fetchDynamicTrendingPrompts(appState.activeFocusMode || "web");
+        if (typeof fetchLiveMarketTickers === "function") {
+            await fetchLiveMarketTickers();
+        }
+    } finally {
+        if (icon) {
+            setTimeout(() => icon.classList.remove("spinning"), 600);
+        }
+    }
+}
+window.refreshLiveTrendingCards = refreshLiveTrendingCards;
 
 function setEffortLevel(effort) {
     appState.activeEffortLevel = effort;
@@ -10240,18 +10277,18 @@ if (typeof CortexAuthVault !== "undefined" && CortexAuthVault.init) {
     window.addEventListener("hashchange", () => CortexAuthVault.init());
 }
 
-// Autonomous Continuous Ingestion Listeners: Tab Focus & 3-Minute Interval
+// Autonomous Continuous Ingestion Listeners: Tab Focus & 60-Second Auto-Refresh
 window.addEventListener("focus", () => {
     if (!appState.isSearching) {
-        fetchDynamicTrendingPrompts(appState.activeFocusMode || "web");
+        refreshLiveTrendingCards(false);
     }
 });
 
 setInterval(() => {
     if (!appState.isSearching) {
-        fetchDynamicTrendingPrompts(appState.activeFocusMode || "web");
+        refreshLiveTrendingCards(false);
     }
-}, 180000); // Auto-refresh every 3 minutes
+}, 60000); // Live refresh every 60 seconds
 
 
 

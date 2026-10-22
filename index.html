@@ -235,7 +235,13 @@
                         <!-- CLEAN BLOCK SECTION: TRENDING RESEARCH PROMPT CARDS -->
                         <div class="trending-research-section">
                             <div class="trending-header-row">
-                                <span class="trending-section-label" id="trendingSectionLabel"><i class="fa-solid fa-arrow-trend-up text-cyan"></i> Trending Research Topics</span>
+                                <div class="trending-header-left">
+                                    <span class="trending-section-label" id="trendingSectionLabel"><i class="fa-solid fa-arrow-trend-up text-cyan"></i> Trending Research Topics</span>
+                                    <span class="trending-live-indicator" id="trendingLiveIndicator" title="Live stream active • Continuous verified ingest"><span class="pulse-indicator-dot"></span> Live</span>
+                                </div>
+                                <button type="button" class="btn-refresh-trends" id="btnRefreshTrends" onclick="refreshLiveTrendingCards(true)" title="Fetch latest breaking topics, news & market trends">
+                                    <i class="fa-solid fa-arrows-rotate" id="refreshTrendsIcon"></i> <span>Refresh</span>
+                                </button>
                             </div>
                             <div class="trending-cards-grid suggested-cards-grid" id="trendingCardsGrid">
                                 <button type="button" class="trending-card" onclick="executeSearch('Global macro market intelligence, tech sector momentum, and frontier AI forecast')">
