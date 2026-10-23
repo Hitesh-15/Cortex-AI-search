@@ -2,6 +2,43 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.8.0] — 2026-10-22
+### **Prompt Title-to-Query Absolute Parity, Double-Click Debounce & Live Cache v10 Sanitization**
+
+```mermaid
+graph TD
+    subgraph ParityEngine ["🎯 Card Title-to-Query Absolute Parity"]
+        SourceTruth["Card Title: Primary Source of Truth"]
+        PromptVar["Unified cardPrompt = (title || query).trim()"]
+        DOMAttr["btn.setAttribute('data-query', cardPrompt)"]
+        OnclickBind["onclick = executeSearch(this.getAttribute('data-query'))"]
+        SearchDebounce["executeSearch Debounce: 500ms Rapid Duplicate Suppressor"]
+        SourceTruth --> PromptVar --> DOMAttr --> OnclickBind --> SearchDebounce
+    end
+
+    subgraph CachePurge ["🧹 Cache v10 Auto-Sanitization"]
+        Ver["CURRENT_VERSION = '10.0'"]
+        PurgeOld["localStorage.removeItem('cortex_live_trends_v5..v9')"]
+        PurgeLegacy["localStorage.removeItem('cortex_dynamic_prompts_v2')"]
+        FreshTrends["localStorage.setItem('cortex_live_trends_v10')"]
+        Ver --> PurgeOld --> PurgeLegacy --> FreshTrends
+    end
+```
+
+#### Detailed Enhancements in v6.8.0:
+1. **Absolute Title-to-Query Parity Across All Topic Desks**:
+   - Guaranteed that every prompt card displayed on the interface (including Financial Markets, Market & Web, Academic, Code, and Executive Memos) derives both its visible title and executed query from the exact same unified variable `cardPrompt = (item.title || item.query || "").trim()`.
+   - Card click actions, input bar population, and thread headings are 100% synchronized with identical wording.
+2. **Double-Click & Rapid Re-trigger Debounce**:
+   - Enhanced `executeSearch` with an intelligent 500ms timestamp and query string deduplication guard (`_lastSearchTimestamp` & `_lastSearchQueryStr`) to suppress duplicate rapid executions from rapid multi-clicks or duplicate event listeners.
+   - Removed redundant `.suggested-card` event listeners from `setupNavigationListeners` in favor of declarative, debounced inline invocation.
+3. **Cache Version 10.0 Auto-Sanitization**:
+   - Bumped cache schema to `cortex_live_trends_v10` and upgraded `sanitizeLegacyBrowserCache()` to automatically detect, evict, and sanitize stale browser storage from older releases (`v5` through `v9`).
+4. **Live Telemetry & Real-Time Ingest Sync**:
+   - Preserved live feed updates so trending research items refresh in real time with points and comments while keeping title and query strictly identical.
+
+---
+
 ## 🌟 [v6.7.9] — 2026-10-22
 ### **Prompt-to-Query Parity, Action Verb Stripping, Homonym Rejection & SEC 10-K Cloud Intelligence**
 
