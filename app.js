@@ -411,7 +411,7 @@ function initCortexApp() {
     syncEffortPillUI();
     renderSuggestedCards(appState.activeFocusMode || "web");
     fetchLatestModelsAuto(false);
-    fetchDynamicTrendingPrompts(false);
+    prefetchAllResearchDesks();
     fetchLiveMarketTickers();
     initCookieConsent();
 }
@@ -991,6 +991,7 @@ function selectResearchDesk(mode) {
 
     // 5. Update Topic Cards
     renderSuggestedCards(currentMode);
+    fetchDynamicTrendingPrompts(currentMode);
 
     // 6. Update Search Input Placeholder & focus
     const searchInput = document.getElementById("searchInput");
@@ -1074,7 +1075,37 @@ function renderSuggestedCards(mode) {
             displayCards = newCards.slice(0, 4);
         }
 
-        grid.innerHTML = displayCards.map(c => `
+        const existingButtons = grid.querySelectorAll(".trending-card");
+        if (existingButtons.length === displayCards.length && existingButtons.length === 4) {
+            displayCards.forEach((c, idx) => {
+                const btn = existingButtons[idx];
+                btn.setAttribute("data-query", c.query || c.title);
+                btn.classList.add("suggested-card");
+                const tagEl = btn.querySelector(".trending-card-tag");
+                if (tagEl) {
+                    tagEl.className = `trending-card-tag ${c.tagClass || 'tag-tech'}`;
+                    tagEl.innerHTML = `<i class="fa-solid ${c.icon || 'fa-bolt'}"></i> ${c.tagText || 'Trending'}`;
+                }
+                const titleEl = btn.querySelector(".trending-card-title, .suggested-card-title");
+                if (titleEl) {
+                    titleEl.className = "trending-card-title suggested-card-text suggested-card-title";
+                    if (titleEl.textContent !== c.title) {
+                        titleEl.textContent = c.title;
+                    }
+                }
+                const metaEl = btn.querySelector(".trending-card-meta, .suggested-card-sub");
+                const targetMeta = c.meta || c.sub || 'Real-time Web Intelligence';
+                if (metaEl) {
+                    metaEl.className = "trending-card-meta suggested-card-sub";
+                    if (metaEl.textContent !== targetMeta) {
+                        metaEl.textContent = targetMeta;
+                    }
+                }
+            });
+            return;
+        }
+
+        const newHtml = displayCards.map(c => `
             <button type="button" class="trending-card suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${(c.query || c.title).replace(/"/g, '&quot;')}">
                 <div class="trending-card-top">
                     <span class="trending-card-tag ${c.tagClass || 'tag-tech'}"><i class="fa-solid ${c.icon || 'fa-bolt'}"></i> ${c.tagText || 'Trending'}</span>
@@ -1084,6 +1115,9 @@ function renderSuggestedCards(mode) {
                 <div class="trending-card-meta suggested-card-sub">${c.meta || c.sub || 'Real-time Web Intelligence'}</div>
             </button>
         `).join('');
+        if (grid.innerHTML.trim() !== newHtml.trim()) {
+            grid.innerHTML = newHtml;
+        }
     }
 }
 window.renderSuggestedCards = renderSuggestedCards;
@@ -1096,14 +1130,12 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
         appState.dynamicSuggestions = JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS));
     }
 
-    renderSuggestedCards(activeMode);
-
     const categoryEndpoints = {
         web: "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30",
-        academic: "https://hn.algolia.com/api/v1/search?tags=story&query=arxiv+OR+paper+OR+physics+OR+research+OR+biology&hitsPerPage=35",
-        code: "https://hn.algolia.com/api/v1/search?tags=story&query=github+OR+release+OR+rust+OR+database+OR+compiler+OR+kernel&hitsPerPage=35",
-        finance: "https://hn.algolia.com/api/v1/search?tags=story&query=market+OR+stock+OR+startup+OR+revenue+OR+economy+OR+fed&hitsPerPage=35",
-        writing: "https://hn.algolia.com/api/v1/search?tags=story&query=strategy+OR+enterprise+OR+policy+OR+management+OR+governance&hitsPerPage=35"
+        academic: "https://hn.algolia.com/api/v1/search_by_date?tags=story&query=paper&optionalWords=arxiv+research+physics+biology+quantum&hitsPerPage=30",
+        code: "https://hn.algolia.com/api/v1/search_by_date?tags=story&query=release&optionalWords=github+rust+compiler+kernel+database&hitsPerPage=30",
+        finance: "https://hn.algolia.com/api/v1/search_by_date?tags=story&query=market&optionalWords=stock+revenue+earnings+valuation+fed&hitsPerPage=30",
+        writing: "https://hn.algolia.com/api/v1/search_by_date?tags=story&query=enterprise&optionalWords=strategy+policy+management+governance&hitsPerPage=30"
     };
 
     const targetUrl = categoryEndpoints[activeMode] || categoryEndpoints.web;
@@ -1189,7 +1221,9 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
 
                 appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 6);
                 localStorage.setItem("cortex_live_trends_v7", JSON.stringify(appState.dynamicSuggestions));
-                renderSuggestedCards(activeMode);
+                if ((appState.activeFocusMode || "web") === activeMode) {
+                    renderSuggestedCards(activeMode);
+                }
             }
         }
     } catch (e) {
@@ -1197,14 +1231,32 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
     }
 }
 
+async function prefetchAllResearchDesks() {
+    const desks = ["web", "finance", "academic", "code", "writing"];
+    for (const d of desks) {
+        try {
+            await fetchDynamicTrendingPrompts(d);
+        } catch (e) {
+            // graceful fallback
+        }
+    }
+}
+window.prefetchAllResearchDesks = prefetchAllResearchDesks;
+
 async function refreshLiveTrendingCards(interactive = false) {
     const icon = document.getElementById("refreshTrendsIcon");
     if (icon) icon.classList.add("spinning");
 
     try {
-        await fetchDynamicTrendingPrompts(appState.activeFocusMode || "web");
+        const activeDesk = appState.activeFocusMode || "web";
+        await fetchDynamicTrendingPrompts(activeDesk);
         if (typeof fetchLiveMarketTickers === "function") {
             await fetchLiveMarketTickers();
+        }
+        // Background refresh other desks asynchronously
+        const otherDesks = ["web", "finance", "academic", "code", "writing"].filter(d => d !== activeDesk);
+        for (const d of otherDesks) {
+            fetchDynamicTrendingPrompts(d);
         }
     } finally {
         if (icon) {
