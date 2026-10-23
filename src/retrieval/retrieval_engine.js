@@ -103,6 +103,17 @@ class CortexRetrievalEngine {
                 return { source: s, score: 0 };
             }
 
+            // Strict Biomedical Tool / Medical Imaging Software Homonym Rejection Gate:
+            // If query is about business, finance, markets, cloud, tech, architecture, or economics,
+            // reject medical imaging software ("Analyze" by Mayo Clinic) or clinical neuroimaging suites.
+            const isMedicalImagingSoftware = 
+                /\b(?:biomedical imaging resource|mayo clinic|tomographic scans|functional neuroimaging|mricro|freesurfer|biomedical images)\b/i.test(textCorpus) ||
+                /\(imaging software\)/i.test(s.title || "");
+            const queryWantsMedicalImaging = /\b(?:biomedical|mri|tomography|neuroimaging|mayo clinic|radiology|pet scan)\b/i.test((query || "").toLowerCase());
+            if (isMedicalImagingSoftware && !queryWantsMedicalImaging) {
+                return { source: s, score: 0 };
+            }
+
             // Check how many core terms are matched
             let coreMatches = 0;
             effectiveCoreTerms.forEach(term => {
@@ -269,7 +280,21 @@ class CortexRetrievalEngine {
             'compose', 'composes', 'composing', 'composed',
             'summarize', 'summarizes', 'summarizing', 'summarized',
             'compute', 'computes', 'computing', 'computed',
-            'design', 'designs', 'designing', 'designed'
+            'design', 'designs', 'designing', 'designed',
+            'analyze', 'analyzes', 'analyzing', 'analyzed',
+            'evaluate', 'evaluates', 'evaluating', 'evaluated',
+            'assess', 'assesses', 'assessing', 'assessed',
+            'investigate', 'investigates', 'investigating', 'investigated',
+            'review', 'reviews', 'reviewing', 'reviewed',
+            'examine', 'examines', 'examining', 'examined',
+            'explore', 'explores', 'exploring', 'explored',
+            'compare', 'compares', 'comparing', 'compared',
+            'calculate', 'calculates', 'calculating', 'calculated',
+            'show', 'shows', 'showing', 'showed',
+            'find', 'finds', 'finding', 'found',
+            'detail', 'details', 'detailing', 'detailed',
+            'explain', 'explains', 'explaining', 'explained',
+            'describe', 'describes', 'describing', 'described'
         ]);
 
         // 1. Check for recognized high-priority knowledge entities

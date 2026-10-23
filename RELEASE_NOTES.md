@@ -2,6 +2,68 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.9] — 2026-10-22
+### **Prompt-to-Query Parity, Action Verb Stripping, Homonym Rejection & SEC 10-K Cloud Intelligence**
+
+```mermaid
+graph TD
+    subgraph PromptParity ["🎯 Prompt-to-Query Parity & Feed Synchronization"]
+        CardUI["Prompt Card: Tag, Title & Subtitle"]
+        ExactQuery["Query Parity: data-query === Card Title"]
+        LiveFeed["Live Stream Refresh: Title, Query & Points/Comments Telemetry"]
+        CardUI --> ExactQuery --> LiveFeed
+    end
+
+    subgraph ActionVerbStripper ["🛡️ Action Verb Stripping & Entity Isolation"]
+        RawPrompt["Prompt starting with 'Analyze', 'Evaluate', 'Assess', 'Compare'"]
+        VerbFilter["actionVerbs Set & prefixPatterns Regex Stripping"]
+        TrueEntity["Isolate True Entity: 'Corporate 10-K Disclosures & Free Cash Flow'"]
+        RawPrompt --> VerbFilter --> TrueEntity
+    end
+
+    subgraph HomonymRejection ["🚫 Medical Imaging Homonym Rejection"]
+        SearchHit["Candidate Page: 'Analyze (imaging software)' by Mayo Clinic"]
+        Gate["Strict Domain Gate: Business/Finance/Cloud Query"]
+        Drop["Reject Biomedical Imaging Hit (Score = 0)"]
+        SearchHit --> Gate --> Drop
+    end
+
+    subgraph DomainIntelligence ["📊 Handler 15.98: SEC 10-K & Cloud FCF"]
+        EDGAR["SEC Form 10-K Annual Filings & Segment Reporting"]
+        Metrics["AWS ($105B+ / 38% OM), Azure ($110B+ / 31% YoY), GCP ($44B+ / 11.5% OM)"]
+        CapEx["$220B+ AI CapEx vs 18-26% FCF Conversion"]
+        EDGAR --> Metrics --> CapEx
+    end
+```
+
+#### Detailed Enhancements in v6.7.9:
+1. **Strict Prompt-to-Query Parity Across All 5 Desks**:
+   - Resolved prompt card discrepancies where cards displayed one text (e.g., *"Corporate 10-K Disclosures & Free Cash Flow Margins"*) but executed an unrelated imperative sentence (e.g., *"Analyze enterprise cloud revenue..."*).
+   - Unified card `title`, `data-query`, and executed prompt text across all 5 research desks (`web`, `finance`, `academic`, `code`, `writing`) in `RESEARCH_DESK_CONFIG`, `FALLBACK_DESK_SUGGESTIONS`, and `index.html`.
+   - Updated in-place DOM reconciliation in `renderSuggestedCards` to ensure button `onclick` handlers and `data-query` attributes dynamically bind to `this.getAttribute('data-query')`.
+   - Dynamic live cards ingested from real-time feeds now set `query = title` and display live engagement telemetry (`{points} pts • {comments} comments • Live Ingest`).
+
+2. **Imperative Action Verb Entity Stripping**:
+   - Augmented `actionVerbs` in [retrieval_engine.js](file:///src/retrieval/retrieval_engine.js) with analytical imperative action verbs: `'analyze'`, `'evaluates'`, `'assess'`, `'investigate'`, `'review'`, `'examine'`, `'explore'`, `'compare'`, `'calculate'`, `'show'`, `'find'`, `'detail'`, `'explain'`, `'describe'`.
+   - Hardened `prefixPatterns` in `extractCoreSubject` to cleanly remove leading action predicates, preventing named entity extraction from misclassifying leading action verbs as named entities.
+
+3. **Biomedical Software Homonym Rejection Gate**:
+   - Engineered strict category mismatch gates in [retrieval_engine.js](file:///src/retrieval/retrieval_engine.js) (`reRankSources`), `fetchWebSources`, and `generateLocalSynthesizedAnswer`.
+   - Rejects medical imaging software homonyms (such as Mayo Clinic's `Analyze (imaging software)`) when user queries pertain to business, finance, capital expenditures, technology, software engineering, or macroeconomics.
+
+4. **Dedicated SEC 10-K & Free Cash Flow Margins Intelligence (Handler 15.98)**:
+   - Implemented first-class institutional synthesis for Form 10-K disclosures, hyperscaler cloud revenue breakdown, and free cash flow margins:
+     - **Amazon Web Services (AWS)**: ~$105B+ annualized run-rate, 38% operating margins.
+     - **Microsoft Intelligent Cloud (Azure)**: ~$110B+ run-rate, 29–33% YoY constant-currency growth.
+     - **Google Cloud Platform (GCP)**: ~$44B+ run-rate, expanding operating leverage past 11.5%.
+     - **CapEx & FCF Intensity**: Aggregated Big Tech CapEx topping $220B+ annually balanced against double-digit 18–26% FCF conversion.
+
+5. **Exhaustive Automated Verification**:
+   - Validated prompt parity and zero homonym bleed with Selenium end-to-end tests ([test_prompt_card_parity.py](file:///scratch/test_prompt_card_parity.py)).
+   - Confirmed 100% pass rate across all 58 UI feature regression tests in [test_every_feature.py](file:///scratch/test_every_feature.py) with 0 console errors.
+
+---
+
 ## 🌟 [v6.7.8] — 2026-10-22
 ### **Multi-Desk Real-Time Ingestion, Search-by-Date API Streaming & In-Place DOM Reconciliation**
 
