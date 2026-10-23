@@ -236,7 +236,7 @@ var appState = {
     activeThreadId: null,
     activeFocusMode: "web",
     activeEffortLevel: localStorage.getItem("ambu_effort_level") || "auto",
-    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v7") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
+    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v10") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
     attachedDocuments: [],
     isProSearch: false,
     isSearching: false,
@@ -257,10 +257,19 @@ var appState = {
     }
 };
 
+let _lastSearchTimestamp = 0;
+let _lastSearchQueryStr = "";
+
 function executeSearch(userQuery, isFollowUp = false) {
     if (!userQuery || !userQuery.trim()) return;
 
     const cleanQuery = userQuery.trim();
+    const now = Date.now();
+    if (!isFollowUp && cleanQuery.toLowerCase() === _lastSearchQueryStr.toLowerCase() && (now - _lastSearchTimestamp < 500)) {
+        return; // Debounce rapid duplicate event triggers
+    }
+    _lastSearchTimestamp = now;
+    _lastSearchQueryStr = cleanQuery;
 
     // If query is an institutional market ticker, guarantee finance focus mode
     if (cleanQuery.includes("spot price") || cleanQuery.includes("benchmark performance") || cleanQuery.includes("Treasury Yield") || cleanQuery.includes("volatility index") || cleanQuery.includes("Comex futures")) {
@@ -303,11 +312,17 @@ function executeSearch(userQuery, isFollowUp = false) {
 
 // Auto-Sanitize & Clear Stale Legacy Cache
 (function sanitizeLegacyBrowserCache() {
-    const CURRENT_VERSION = "9.0";
+    const CURRENT_VERSION = "10.0";
     const lastVersion = localStorage.getItem("ambu_build_v");
     if (lastVersion !== CURRENT_VERSION) {
         localStorage.setItem("ambu_build_v", CURRENT_VERSION);
         // Purge old dynamic prompt caches
+        localStorage.removeItem("cortex_live_trends_v7");
+        localStorage.removeItem("cortex_live_trends_v8");
+        localStorage.removeItem("cortex_live_trends_v9");
+        localStorage.removeItem("cortex_live_trends_v6");
+        localStorage.removeItem("cortex_live_trends_v5");
+        localStorage.removeItem("cortex_live_trends");
         localStorage.removeItem("cortex_dynamic_prompts_v2");
         localStorage.removeItem("cortex_dynamic_prompts_ts");
 
@@ -696,20 +711,6 @@ function setupNavigationListeners() {
     // Initialize Gateway Connection Status Badge
     updateGatewayStatusBadge();
 
-    // Suggested Cards Click Event Listener
-    document.querySelectorAll(".suggested-card").forEach(card => {
-        card.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const q = card.getAttribute("data-query") || card.dataset.query;
-            if (q) {
-                const searchInput = document.getElementById("searchInput");
-                if (searchInput) searchInput.value = "";
-                executeSearch(q);
-            }
-        });
-    });
-
     // Keyboard Shortcuts (Cmd/Ctrl + K or / to trigger spotlight search)
     document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -1055,11 +1056,17 @@ function renderSuggestedCards(mode) {
         let displayCards = [...config.cards];
         if (appState.dynamicSuggestions && Array.isArray(appState.dynamicSuggestions[currentMode]) && appState.dynamicSuggestions[currentMode].length > 0) {
             const live = appState.dynamicSuggestions[currentMode];
-            const newCards = [config.cards[0]];
+            const anchorCard = config.cards[0];
+            const anchorPrompt = (anchorCard.title || anchorCard.query || "").trim();
+            const newCards = [{
+                ...anchorCard,
+                title: anchorPrompt,
+                query: anchorPrompt
+            }];
             for (let i = 0; i < live.length && newCards.length < 4; i++) {
                 const item = live[i];
-                if (item.title !== config.cards[0].title) {
-                    const cardPrompt = item.query || item.title;
+                const cardPrompt = (item.title || item.query || "").trim();
+                if (cardPrompt && cardPrompt.toLowerCase() !== anchorPrompt.toLowerCase()) {
                     newCards.push({
                         tagClass: item.tagClass || "tag-tech",
                         icon: item.icon || "fa-bolt",
@@ -1071,7 +1078,13 @@ function renderSuggestedCards(mode) {
                 }
             }
             while (newCards.length < 4 && newCards.length < config.cards.length) {
-                newCards.push(config.cards[newCards.length]);
+                const fallbackCard = config.cards[newCards.length];
+                const fallbackPrompt = (fallbackCard.title || fallbackCard.query || "").trim();
+                newCards.push({
+                    ...fallbackCard,
+                    title: fallbackPrompt,
+                    query: fallbackPrompt
+                });
             }
             displayCards = newCards.slice(0, 4);
         }
@@ -1080,7 +1093,7 @@ function renderSuggestedCards(mode) {
         if (existingButtons.length === displayCards.length && existingButtons.length === 4) {
             displayCards.forEach((c, idx) => {
                 const btn = existingButtons[idx];
-                const cardPrompt = c.query || c.title;
+                const cardPrompt = (c.title || c.query || "").trim();
                 btn.setAttribute("data-query", cardPrompt);
                 btn.setAttribute("onclick", "executeSearch(this.getAttribute('data-query'))");
                 btn.classList.add("suggested-card");
@@ -1109,7 +1122,7 @@ function renderSuggestedCards(mode) {
         }
 
         const newHtml = displayCards.map(c => {
-            const cardPrompt = c.query || c.title;
+            const cardPrompt = (c.title || c.query || "").trim();
             return `
             <button type="button" class="trending-card suggested-card" onclick="executeSearch(this.getAttribute('data-query'))" data-query="${cardPrompt.replace(/"/g, '&quot;')}">
                 <div class="trending-card-top">
@@ -1229,7 +1242,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                 }
 
                 appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 6);
-                localStorage.setItem("cortex_live_trends_v8", JSON.stringify(appState.dynamicSuggestions));
+                localStorage.setItem("cortex_live_trends_v10", JSON.stringify(appState.dynamicSuggestions));
                 if ((appState.activeFocusMode || "web") === activeMode) {
                     renderSuggestedCards(activeMode);
                 }
@@ -2733,6 +2746,13 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                                     /\b(?:waiting staff|waiter|waitress|waiters|waitresses|bartender|sommelier|busboy|dining room|restaurant|diner|wine list)\b/i.test(combinedFallback) &&
                                     !/\b(?:restaurant|food|dining|waiter|waitress|wine|bar|chef|cook)\b/i.test(qLower);
                                 if (isFoodServiceFallback) {
+                                    continue;
+                                }
+
+                                // Strict Gate: Reject medical imaging software / biomedical tools for business, finance, cloud, or tech queries
+                                const isMedicalImagingFallback = /\b(?:biomedical imaging resource|mayo clinic|tomographic scans|functional neuroimaging|mricro|freesurfer|biomedical images)\b/i.test(combinedFallback) || /\(imaging software\)/i.test(hit.title || "");
+                                const wantsMedicalImagingFallback = /\b(?:biomedical|mri|tomography|neuroimaging|mayo clinic|radiology|pet scan)\b/i.test(qLower);
+                                if (isMedicalImagingFallback && !wantsMedicalImagingFallback) {
                                     continue;
                                 }
 
