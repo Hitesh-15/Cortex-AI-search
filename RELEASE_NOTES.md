@@ -2,6 +2,50 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.7.8] — 2026-10-22
+### **Multi-Desk Real-Time Ingestion, Search-by-Date API Streaming & In-Place DOM Reconciliation**
+
+```mermaid
+graph TD
+    subgraph MultiDeskPipeline ["🌐 Multi-Desk Chronological Ingestion Engine"]
+        Desks["5 Research Desks (Web, Finance, Academic, Code, Memos)"]
+        DateStream["search_by_date Stream: Breaking 2026 News, Trials, Releases & Strategy"]
+        Prefetch["Proactive Prefetch on Boot: prefetchAllResearchDesks()"]
+        Desks --> DateStream --> Prefetch
+    end
+
+    subgraph DOMReconciliation ["⚡ In-Place Element Reconciliation"]
+        ExistingBtns["Inspect Existing 4 Cards in #trendingCardsGrid"]
+        InPlacePatch["In-Place Patch: data-query, title, metadata & tag pills"]
+        ZeroChurn["Zero DOM Re-creation & StaleElement Reference Immunity"]
+        ExistingBtns --> InPlacePatch --> ZeroChurn
+    end
+
+    subgraph DeskSwitchSync ["🔄 Instant Context Synchronization"]
+        SwitchTrigger["User Selects Topic Desk in Sidebar"]
+        AnchorPreserve["Card 0 Topic Identity Anchor Preserved"]
+        LiveCardsInject["Cards 1–3 Injected with Category-Filtered Live Stream"]
+        SwitchTrigger --> AnchorPreserve --> LiveCardsInject
+    end
+```
+
+#### Detailed Enhancements in v6.7.8:
+1. **Multi-Desk Chronological API Streaming**:
+   - Upgraded Algolia ingestion endpoints across all 5 research desks from generic keyword matching to real-time chronological streams using `search_by_date` with `optionalWords`:
+     - **Market & Web**: Active front-page news and tech sector momentum.
+     - **Financial Markets**: `query=market` with `optionalWords=stock+revenue+earnings+valuation+fed`.
+     - **Academic & Research**: `query=paper` with `optionalWords=arxiv+research+physics+biology+quantum`.
+     - **Engineering & Code**: `query=release` with `optionalWords=github+rust+compiler+kernel+database`.
+     - **Executive Memos**: `query=enterprise` with `optionalWords=strategy+policy+management+governance`.
+2. **Proactive Multi-Desk Boot Prefetching**:
+   - Added `prefetchAllResearchDesks()` on application initialization to pre-warm all 5 research desks with live data in the background without blocking the UI thread.
+   - Synchronized desk switching in `selectResearchDesk(mode)` to trigger immediate category-specific refresh when navigating across sidebar items.
+3. **In-Place DOM Element Reconciliation**:
+   - Refactored `renderSuggestedCards(mode)` to patch existing `.trending-card` button elements in-place (`setAttribute("data-query")`, `titleEl.textContent`, `metaEl.textContent`, `tagEl.className`) rather than tearing down and recreating `.innerHTML`.
+   - Prevents DOM thrashing, eliminates `StaleElementReferenceException` across automated test suites, and enables butter-smooth 60fps transitions during continuous 60-second background polling.
+4. **Verification & Stability**:
+   - Validated live card content across all 5 topic desks with 100% pass on `test_sidebar_desks.py`, `scratch/test_every_feature.py`, and `scratch/check_js.py`.
+
 ## 🌟 [v6.7.7] — 2026-10-22
 ### **Fluid Responsive Scaling, Welcoming Velvet Dark Mode & Real-Time Trend Refresh Engine**
 
