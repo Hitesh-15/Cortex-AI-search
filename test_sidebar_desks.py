@@ -76,7 +76,7 @@ btn_lib.click()
 time.sleep(0.4)
 assert driver.find_element(By.ID, "libraryModal").is_displayed()
 driver.execute_script("closeLibraryModal();")
-time.sleep(0.3)
+time.sleep(0.4)
 print("  [PASS] Library button opens library modal!")
 
 btn_set = driver.find_element(By.ID, "btnOpenSettings")
