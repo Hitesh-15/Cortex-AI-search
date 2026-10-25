@@ -547,14 +547,16 @@ ${safeSources.map((s, idx) => `${idx + 1}. [${s.title}](${s.url || '#'}) — *${
      * Dispatches brief summary to Discord or configured webhook endpoint
      */
     async dispatchWebhookAlert(brief) {
-        let webhookUrl = null;
-        try {
-            const rawSettings = localStorage.getItem('cortex_settings');
-            if (rawSettings) {
-                const s = JSON.parse(rawSettings);
-                webhookUrl = s.discordWebhook || s.webhookUrl;
-            }
-        } catch (e) {}
+        let webhookUrl = localStorage.getItem('ambu_discord_webhook') || this.config?.webhookUrl;
+        if (!webhookUrl) {
+            try {
+                const rawSettings = localStorage.getItem('cortex_settings');
+                if (rawSettings) {
+                    const s = JSON.parse(rawSettings);
+                    webhookUrl = s.discordWebhook || s.webhookUrl;
+                }
+            } catch (e) {}
+        }
 
         if (!webhookUrl || !webhookUrl.startsWith('http')) return;
 
