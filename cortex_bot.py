@@ -339,7 +339,10 @@ class CortexAutonomousBotCLI:
             req = urllib.request.Request(
                 self.webhook_url,
                 data=json.dumps(payload).encode('utf-8'),
-                headers={"Content-Type": "application/json"}
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                }
             )
             with urllib.request.urlopen(req, timeout=8) as resp:
                 if resp.status in (200, 202, 204):

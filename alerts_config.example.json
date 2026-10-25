@@ -1,5 +1,5 @@
 {
-  "webhook_url": "",
+  "webhook_url": "YOUR_DISCORD_WEBHOOK_URL",
   "interval_hours": 24,
   "topics": [
     "Artificial Intelligence Agents and Reasoning Models",

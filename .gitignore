@@ -12,5 +12,6 @@ scratch/
 __pycache__/
 *.pyc
 briefs/
+alerts_config.json
 
 
