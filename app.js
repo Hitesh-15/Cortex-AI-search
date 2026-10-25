@@ -428,6 +428,7 @@ function initCortexApp() {
     fetchLatestModelsAuto(false);
     prefetchAllResearchDesks();
     fetchLiveMarketTickers();
+    initHorizontalTickerScroll();
     initCookieConsent();
 }
 
@@ -466,6 +467,116 @@ async function fetchLiveMarketTickers() {
 function applyMarketTickerValues(data) {
     cortexTemporal.broadcastToUI();
 }
+
+// Continuous Interactive & Auto-Scrolling Horizontal Ticker Engine
+function initHorizontalTickerScroll() {
+    const container = document.querySelector(".header-ticker-group");
+    if (!container) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let isHovered = false;
+    let autoScrollRaf = null;
+    let resumeTimeout = null;
+    let hasDragged = false;
+
+    // 1. Mouse Wheel Horizontal Scroll
+    container.addEventListener("wheel", (e) => {
+        if (e.deltaY !== 0) {
+            e.preventDefault();
+            isHovered = true;
+            container.scrollLeft += e.deltaY * 0.9;
+            clearTimeout(resumeTimeout);
+            resumeTimeout = setTimeout(() => { isHovered = false; }, 2000);
+        }
+    }, { passive: false });
+
+    // 2. Drag to Scroll
+    container.addEventListener("mousedown", (e) => {
+        isDown = true;
+        hasDragged = false;
+        isHovered = true;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        container.style.cursor = "grabbing";
+    });
+
+    window.addEventListener("mouseup", () => {
+        if (isDown) {
+            isDown = false;
+            container.style.cursor = "grab";
+            clearTimeout(resumeTimeout);
+            resumeTimeout = setTimeout(() => { isHovered = false; }, 2000);
+        }
+    });
+
+    container.addEventListener("mousemove", (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        if (Math.abs(walk) > 4) hasDragged = true;
+        container.scrollLeft = scrollLeft - walk;
+    });
+
+    // Prevent accidental search clicks after a drag action
+    container.addEventListener("click", (e) => {
+        if (hasDragged) {
+            e.preventDefault();
+            e.stopPropagation();
+            hasDragged = false;
+        }
+    }, true);
+
+    // 3. Hover and Focus Pause
+    container.addEventListener("mouseenter", () => {
+        isHovered = true;
+        clearTimeout(resumeTimeout);
+    });
+
+    container.addEventListener("mouseleave", () => {
+        clearTimeout(resumeTimeout);
+        resumeTimeout = setTimeout(() => { isHovered = false; }, 1500);
+    });
+
+    container.addEventListener("focusin", () => {
+        isHovered = true;
+    });
+
+    container.addEventListener("focusout", () => {
+        clearTimeout(resumeTimeout);
+        resumeTimeout = setTimeout(() => { isHovered = false; }, 1500);
+    });
+
+    // 4. Subtle Continuous Auto-Scroll Loop across Limited Viewport Space
+    let direction = 1;
+    let pauseCounter = 0;
+
+    function step() {
+        if (!isHovered && !isDown) {
+            const maxScroll = container.scrollWidth - container.clientWidth;
+            if (maxScroll > 6) {
+                if (pauseCounter > 0) {
+                    pauseCounter--;
+                } else {
+                    container.scrollLeft += 0.45 * direction;
+                    if (container.scrollLeft >= maxScroll - 1) {
+                        pauseCounter = 90; // pause ~1.5s at far right
+                        direction = -1;
+                    } else if (container.scrollLeft <= 1) {
+                        pauseCounter = 60; // pause ~1s at start
+                        direction = 1;
+                    }
+                }
+            }
+        }
+        autoScrollRaf = requestAnimationFrame(step);
+    }
+
+    autoScrollRaf = requestAnimationFrame(step);
+}
+window.initHorizontalTickerScroll = initHorizontalTickerScroll;
 
 // Populate Chat Bar Inline Model Dropdown
 function populateChatModelSelector() {

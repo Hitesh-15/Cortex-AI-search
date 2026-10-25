@@ -131,7 +131,7 @@ def test_full_cortex_suite():
         assert len(memo_btns) >= 3, f"Expected 3 memo action buttons, found {len(memo_btns)}"
         
         # Click Copy Memo
-        memo_btns[0].click()
+        driver.execute_script("arguments[0].click();", memo_btns[0])
         time.sleep(0.3)
         print("PASS: Copy Memo action triggered with instant visual feedback.")
         

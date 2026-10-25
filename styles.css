@@ -516,7 +516,11 @@ body {
     justify-content: flex-start;
     flex: 1;
     min-width: 0;
-    gap: 12px;
+    gap: 8px;
+    overflow: hidden;
+    position: relative;
+    mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
 }
 
 .header-desk-indicator {
@@ -553,9 +557,18 @@ body {
     flex-wrap: nowrap;
     width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 2px 0;
+    padding: 3px 14px;
+    cursor: grab;
+    user-select: none;
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.header-ticker-group:active {
+    cursor: grabbing;
 }
 
 .header-ticker-group::-webkit-scrollbar {
@@ -573,6 +586,7 @@ body {
     gap: 7px;
     cursor: pointer;
     white-space: nowrap;
+    flex-shrink: 0;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     color: var(--text-secondary);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
