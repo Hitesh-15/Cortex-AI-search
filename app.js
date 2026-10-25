@@ -1906,9 +1906,31 @@ async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
         const cleanQuery = query.replace(/\b(and\s+)?(send|post)\s+(it\s+)?to\s+(the\s+)?discord(\s+channel)?\b/gi, '').trim();
         const encodedQ = encodeURIComponent(cleanQuery || query);
 
-        const payload = {
-            content: `🔔 **Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex-research.org/?q=${encodedQ}`
-        };
+        const isTeams = webhookUrl.includes("office.com") || webhookUrl.includes("logic.azure.com") || webhookUrl.includes("microsoft.com");
+        let payload;
+
+        if (isTeams) {
+            payload = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": "0078D4",
+                "summary": `Cortex Research Memo: ${query}`,
+                "sections": [{
+                    "activityTitle": `🔔 **Cortex Research Memo**: "${cleanQuery || query}"`,
+                    "activitySubtitle": "Autonomous Verified Synthesis",
+                    "text": `${cleanText}...`
+                }],
+                "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "View Live Thread",
+                    "targets": [{ "os": "default", "uri": `https://cortex.ambulkar.com/?q=${encodedQ}` }]
+                }]
+            };
+        } else {
+            payload = {
+                content: `🔔 **Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?q=${encodedQ}`
+            };
+        }
 
         const res = await fetch(webhookUrl, {
             method: "POST",
@@ -1916,7 +1938,7 @@ async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
             body: JSON.stringify(payload)
         });
 
-        return { success: res.ok || res.status === 204 };
+        return { success: res.ok || res.status === 200 || res.status === 202 || res.status === 204 };
     } catch (e) {
         return { success: false, reason: e.message };
     }
@@ -8774,30 +8796,57 @@ async function testOpenRouterApiKeyNow() {
     }
 }
 
-// Discord Webhook Tester
+// Webhook Tester (Discord, Microsoft Teams, Slack)
 async function testDiscordWebhook() {
     const input = document.getElementById("discordWebhookInput");
     if (!input) return;
     const url = input.value.trim();
 
-    if (!url || !url.startsWith("https://discord.com/api/webhooks/")) {
-        alert("⚠️ Please enter a valid Discord webhook URL (starts with https://discord.com/api/webhooks/...)");
+    const isTeams = url.includes("office.com") || url.includes("logic.azure.com") || url.includes("microsoft.com");
+    const isDiscord = url.startsWith("https://discord.com/api/webhooks/") || url.startsWith("https://canary.discord.com/api/webhooks/");
+    const isSlack = url.includes("hooks.slack.com");
+
+    if (!url || (!isTeams && !isDiscord && !isSlack && !url.startsWith("http"))) {
+        alert("⚠️ Please enter a valid Webhook URL (Discord, Microsoft Teams, or Slack).");
         return;
     }
 
     try {
+        let payload;
+        if (isTeams) {
+            payload = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": "0078D4",
+                "summary": "Cortex Topic Tracker Test Alert",
+                "sections": [{
+                    "activityTitle": "⚡ **Cortex Intelligence Watchdog**: Connection Verified!",
+                    "activitySubtitle": "Microsoft Teams Integration Active",
+                    "text": "Your automated background intelligence and research alerts are successfully linked to this Microsoft Teams channel."
+                }],
+                "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "Open Cortex",
+                    "targets": [{ "os": "default", "uri": "https://cortex.ambulkar.com" }]
+                }]
+            };
+        } else {
+            payload = {
+                content: "⚡ **Cortex Intelligence Watchdog**: Connection verified! 24/7 autonomous research alerts enabled."
+            };
+        }
+
         const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                content: "⚡ **Cortex Market Desk Test Alert**: Connection verified! 24/7 Watchdog alerts enabled."
-            })
+            body: JSON.stringify(payload)
         });
 
-        if (res.ok || res.status === 204) {
-            alert("✅ Discord Alert Sent Successfully! Check your Discord channel.");
+        if (res.ok || res.status === 200 || res.status === 202 || res.status === 204) {
+            const platform = isTeams ? "Microsoft Teams" : (isSlack ? "Slack" : "Discord");
+            alert(`✅ ${platform} Alert Sent Successfully! Check your channel.`);
         } else {
-            alert(`⚠️ Discord responded with status: ${res.status}`);
+            alert(`⚠️ Webhook responded with status: ${res.status}`);
         }
     } catch (e) {
         alert(`❌ Error sending webhook: ${e.message}`);

@@ -220,35 +220,65 @@ class CortexAutonomousBotCLI:
 
     def dispatch_webhook(self, brief_data):
         try:
-            payload = {
-                "username": "Cortex Autonomous Intelligence Bot",
-                "embeds": [
-                    {
-                        "title": f"Autonomous Executive Brief: {brief_data['title']}",
-                        "description": brief_data['executiveThesis'],
-                        "color": 3719160,
-                        "fields": [
-                            {
-                                "name": p['title'],
-                                "value": f"{p['desc']}\n*Benchmark:* `{p['metric']}`",
-                                "inline": False
-                            }
-                            for p in brief_data['pillars']
-                        ],
-                        "footer": {
-                            "text": f"Cortex Bot CLI • {len(brief_data['sources'])} Sources • {brief_data['dateStr']}"
+            is_teams = any(k in self.webhook_url for k in ["office.com", "logic.azure.com", "microsoft.com"])
+            if is_teams:
+                payload = {
+                    "@type": "MessageCard",
+                    "@context": "http://schema.org/extensions",
+                    "themeColor": "0078D4",
+                    "summary": f"Autonomous Executive Brief: {brief_data['title']}",
+                    "sections": [
+                        {
+                            "activityTitle": f"🤖 **Autonomous Executive Brief: {brief_data['title']}**",
+                            "activitySubtitle": f"Cortex Bot CLI • {len(brief_data['sources'])} Sources • {brief_data['dateStr']}",
+                            "text": brief_data['executiveThesis'],
+                            "facts": [
+                                {
+                                    "name": p['title'],
+                                    "value": f"{p['desc']} ({p['metric']})"
+                                }
+                                for p in brief_data['pillars']
+                            ]
                         }
-                    }
-                ]
-            }
+                    ],
+                    "potentialAction": [
+                        {
+                            "@type": "OpenUri",
+                            "name": "Open in Cortex",
+                            "targets": [{"os": "default", "uri": f"https://cortex.ambulkar.com/?q={urllib.parse.quote(brief_data.get('query', brief_data['title']))}"}]
+                        }
+                    ]
+                }
+            else:
+                payload = {
+                    "username": "Cortex Autonomous Intelligence Bot",
+                    "embeds": [
+                        {
+                            "title": f"Autonomous Executive Brief: {brief_data['title']}",
+                            "description": brief_data['executiveThesis'],
+                            "color": 3719160,
+                            "fields": [
+                                {
+                                    "name": p['title'],
+                                    "value": f"{p['desc']}\n*Benchmark:* `{p['metric']}`",
+                                    "inline": False
+                                }
+                                for p in brief_data['pillars']
+                            ],
+                            "footer": {
+                                "text": f"Cortex Bot CLI • {len(brief_data['sources'])} Sources • {brief_data['dateStr']}"
+                            }
+                        }
+                    ]
+                }
             req = urllib.request.Request(
                 self.webhook_url,
                 data=json.dumps(payload).encode('utf-8'),
                 headers={"Content-Type": "application/json"}
             )
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                if resp.status in (200, 204):
-                    self.log("info", "Webhook notification dispatched successfully.")
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                if resp.status in (200, 202, 204):
+                    self.log("info", f"{'Microsoft Teams' if is_teams else 'Webhook'} notification dispatched successfully.")
         except Exception as e:
             self.log("warn", f"Webhook dispatch error: {e}")
 

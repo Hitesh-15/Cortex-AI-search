@@ -561,32 +561,62 @@ ${safeSources.map((s, idx) => `${idx + 1}. [${s.title}](${s.url || '#'}) — *${
         if (!webhookUrl || !webhookUrl.startsWith('http')) return;
 
         try {
-            const payload = {
-                username: "Cortex Autonomous Intelligence",
-                avatar_url: "https://cortex.ambulkar.com/apple-touch-icon.png",
-                embeds: [
-                    {
-                        title: `Autonomous Executive Brief: ${brief.topicTitle}`,
-                        description: brief.executiveThesis,
-                        color: 3719160, // Cyan-blue
-                        fields: brief.pillars.map(p => ({
-                            name: p.title,
-                            value: `${p.desc}\n*Benchmark:* \`${p.metric}\``,
-                            inline: false
-                        })),
-                        footer: {
-                            text: `Cortex Autonomous Bot • ${brief.sourcesCount} Verified Sources • ${brief.dateStr}`
+            const isTeams = webhookUrl.includes("office.com") || webhookUrl.includes("logic.azure.com") || webhookUrl.includes("microsoft.com");
+            let payload;
+
+            if (isTeams) {
+                payload = {
+                    "@type": "MessageCard",
+                    "@context": "http://schema.org/extensions",
+                    "themeColor": "0078D4",
+                    "summary": `Autonomous Executive Brief: ${brief.topicTitle}`,
+                    "sections": [
+                        {
+                            "activityTitle": `🤖 **Autonomous Executive Brief: ${brief.topicTitle}**`,
+                            "activitySubtitle": `Cortex Autonomous Bot • ${brief.sourcesCount} Verified Sources • ${brief.dateStr}`,
+                            "text": brief.executiveThesis,
+                            "facts": brief.pillars.map(p => ({
+                                "name": p.title,
+                                "value": `${p.desc} (${p.metric})`
+                            }))
                         }
-                    }
-                ]
-            };
+                    ],
+                    "potentialAction": [
+                        {
+                            "@type": "OpenUri",
+                            "name": "Open in Cortex",
+                            "targets": [{ "os": "default", "uri": `https://cortex.ambulkar.com/?q=${encodeURIComponent(brief.query || brief.topicTitle)}` }]
+                        }
+                    ]
+                };
+            } else {
+                payload = {
+                    username: "Cortex Autonomous Intelligence",
+                    avatar_url: "https://cortex.ambulkar.com/apple-touch-icon.png",
+                    embeds: [
+                        {
+                            title: `Autonomous Executive Brief: ${brief.topicTitle}`,
+                            description: brief.executiveThesis,
+                            color: 3719160, // Cyan-blue
+                            fields: brief.pillars.map(p => ({
+                                name: p.title,
+                                value: `${p.desc}\n*Benchmark:* \`${p.metric}\``,
+                                inline: false
+                            })),
+                            footer: {
+                                text: `Cortex Autonomous Bot • ${brief.sourcesCount} Verified Sources • ${brief.dateStr}`
+                            }
+                        }
+                    ]
+                };
+            }
 
             await fetch(webhookUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            this.log('info', `Dispatched brief alert to webhook for "${brief.topicTitle}".`);
+            this.log('info', `Dispatched brief alert to ${isTeams ? 'Microsoft Teams' : 'webhook'} for "${brief.topicTitle}".`);
         } catch (err) {
             this.log('warn', `Webhook alert dispatch failed: ${err.message}`);
         }
