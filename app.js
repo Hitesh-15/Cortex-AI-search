@@ -10964,6 +10964,12 @@ function renderAutonomousBotUI() {
     if (topicCountEl) topicCountEl.textContent = String(topics.length);
     if (vaultCountEl) vaultCountEl.textContent = String(briefs.length);
 
+    // Sync Discord Webhook input
+    const botDiscordInput = document.getElementById("botDiscordWebhookInput");
+    if (botDiscordInput && !botDiscordInput.value) {
+        botDiscordInput.value = localStorage.getItem("ambu_discord_webhook") || "";
+    }
+
     // Render Topics List
     const topicsListContainer = document.getElementById("botTopicsListContainer");
     if (topicsListContainer) {
@@ -11138,6 +11144,22 @@ async function runBotImmediateCycle(targetTopicId = null) {
     }
 }
 window.runBotImmediateCycle = runBotImmediateCycle;
+
+function saveBotDiscordWebhook(val) {
+    if (val && val.trim()) {
+        localStorage.setItem("ambu_discord_webhook", val.trim());
+    } else {
+        localStorage.removeItem("ambu_discord_webhook");
+    }
+    const settingsDiscordInput = document.getElementById("discordWebhookInput");
+    if (settingsDiscordInput) settingsDiscordInput.value = val || "";
+}
+window.saveBotDiscordWebhook = saveBotDiscordWebhook;
+
+function testBotDiscordWebhook() {
+    testDiscordWebhook();
+}
+window.testBotDiscordWebhook = testBotDiscordWebhook;
 
 function addCustomBotTopic() {
     const bot = window.CortexAutonomousBot;

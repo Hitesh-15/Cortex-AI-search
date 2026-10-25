@@ -762,6 +762,15 @@
                     </div>
                 </div>
 
+                <!-- DISCORD ALERTS WEBHOOK CONNECTOR -->
+                <div class="bot-webhook-strip" style="display: flex; gap: 8px; align-items: center; background: rgba(88, 101, 242, 0.08); border: 1px solid rgba(88, 101, 242, 0.25); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px;">
+                    <i class="fa-brands fa-discord text-purple" style="font-size: 1.15rem;"></i>
+                    <input type="password" id="botDiscordWebhookInput" class="bot-input-field flex-2" placeholder="Discord Webhook URL (https://discord.com/api/webhooks/...)" style="margin: 0; padding: 6px 10px; font-size: 0.82rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff;" onchange="saveBotDiscordWebhook(this.value)">
+                    <button type="button" class="btn-secondary" onclick="testBotDiscordWebhook()" style="padding: 6px 12px; font-size: 0.76rem; white-space: nowrap;">
+                        <i class="fa-solid fa-paper-plane text-teal"></i> Test Ping
+                    </button>
+                </div>
+
                 <!-- NAVIGATION TABS -->
                 <div class="bot-tabs-bar">
                     <button type="button" class="bot-tab-btn active" id="tabBtnWatchlist" onclick="switchBotTab('watchlist')">
