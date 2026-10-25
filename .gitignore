@@ -11,5 +11,6 @@ dist/
 scratch/
 __pycache__/
 *.pyc
+briefs/
 
 

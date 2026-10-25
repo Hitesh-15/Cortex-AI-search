@@ -1,0 +1,10 @@
+{
+  "webhook_url": "",
+  "interval_hours": 24,
+  "topics": [
+    "Artificial Intelligence Agents and Reasoning Models",
+    "Solid-State Battery Commercialization and EV Automakers",
+    "NVIDIA Blackwell GPUs and Datacenter Capex",
+    "Federal Reserve Interest Rate Trajectory and Inflation"
+  ]
+}
