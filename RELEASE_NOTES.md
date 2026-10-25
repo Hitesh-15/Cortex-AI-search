@@ -2,6 +2,65 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
 
+## 🌟 [v6.8.2] — 2026-10-25
+### **Autonomous Research & Intelligence Monitoring Bot (In-Browser Studio & CLI Daemon)**
+
+```mermaid
+graph TD
+    subgraph Watchdog ["🤖 Cortex Autonomous Monitoring Engine"]
+        Scheduler["Recurring Timer (15m, 1h, 6h, 24h) or Immediate Trigger"]
+        Watchlist["Monitored Tracks: AI Compute, Semiconductors, Macro Markets, Custom Topics"]
+        Scheduler --> Watchlist
+    end
+
+    subgraph Pipeline ["🔬 Deep Synthesis & Verification Pipeline"]
+        Retrieval["Multi-Index Retrieval & Semantic Re-Ranker"]
+        Rejection["Strict Homonym & Category Rejection Gate"]
+        Compute["Deterministic Compute Sandbox (CAGR & Numerical Verification)"]
+        Brief["4-Pillar Executive Intelligence Brief Synthesizer"]
+        Retrieval --> Rejection --> Compute --> Brief
+    end
+
+    subgraph Deliverables ["📦 Autonomous Vault & Deliverables"]
+        Vault["LocalStorage Briefs Vault (Encrypted & Client-Side)"]
+        Markdown["Downloadable Markdown (.md) & JSON Feeds"]
+        Webhook["Automated Webhook Alerts (Discord / Slack)"]
+        Brief --> Vault
+        Brief --> Markdown
+        Brief --> Webhook
+    end
+
+    Watchlist --> Retrieval
+```
+
+#### Detailed Enhancements in v6.8.2:
+1. **Autonomous Background Research Bot (`window.CortexAutonomousBot`)**:
+   - Built a client-side autonomous background agent runtime for continuous market, technology, and macro monitoring.
+   - Configurable scheduling frequencies (15 minutes, 1 hour, 6 hours, 24 hours) with non-blocking browser execution and LocalStorage state persistence across sessions.
+   - Pre-configured institutional monitoring tracks:
+     - **AI Compute & Commodity Markets**: Spot pricing, hyperscaler CapEx, NVIDIA Blackwell GPU clusters, and gigawatt datacenter power constraints.
+     - **Frontier Semiconductor & Advanced Packaging**: CoWoS yields, HBM3e/HBM4 memory supply, and 2nm gate-all-around foundry deployment.
+     - **Global Macro & Liquidity Indicators**: US 10Y Treasury yield curve inversion, FOMC monetary policy trajectory, and Gold spot demand.
+     - **Autonomous AI Agents & Reasoning Architecture**: Agent harness protocols, test-time compute scaling, and context caching benchmarks.
+   - Dynamic custom topic additions with category tagging and per-topic execution controls.
+2. **Executive Intelligence Briefs Vault**:
+   - Synthesizes formal 4-part memoranda: Executive Thesis & Strategic Takeaway, 4 Architectural Pillars with quantitative benchmarks and confidence tags, and primary verified citation chips.
+   - Full export suite: One-click Markdown copy, `.md` file download, JSON workspace export, and direct "Open in Workspace" thread loading.
+3. **Autonomous Bot Studio UI Modal (`#autonomousBotModal`)**:
+   - Integrated dark glassmorphic modal with status switcher (ACTIVE / PAUSED) and pulsing status indicator dot.
+   - Three dedicated functional tabs:
+     - **Monitored Watchlist**: Active topic management, toggle checkboxes, manual single-topic runs, and custom search query registration.
+     - **Executive Briefs Vault**: Visual catalog of all synthesized intelligence briefs.
+     - **Telemetry & Live Logs**: Monospace terminal log displaying real-time events from `window.CortexEvents`.
+   - Entrypoints: Direct sidebar button (`#btnOpenAutonomousBot`), sidebar icon button, and top header telemetry button (`#btnHeaderBot`).
+4. **Standalone CLI Autonomous Bot Runner (`cortex_bot.py`)**:
+   - Lightweight, dependency-free Python 3 CLI runner supporting immediate topic queries, preset batch runs, and continuous `--daemon` mode with configurable execution intervals.
+   - Automated Discord/Slack webhook alert dispatches for continuous remote channel updates.
+5. **Tool Registry Integration**:
+   - Registered `cortex_autonomous_bot` tool in `window.CortexTools` supporting declarative `start`, `stop`, `run_immediate`, `status`, and `list_briefs` actions.
+
+---
+
 ## 🌟 [v6.8.1] — 2026-10-22
 ### **AI Compute Commodity Economics, Universal Anti-Echo Lead Gates & Guaranteed Supporting Bullets**
 

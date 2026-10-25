@@ -10706,4 +10706,438 @@ function trackAnalyticsEvent(eventName, eventParams = {}) {
 }
 window.trackAnalyticsEvent = trackAnalyticsEvent;
 
+/* ==========================================================================
+   AUTONOMOUS RESEARCH & INTELLIGENCE MONITORING BOT UI CONTROLLER
+   ========================================================================== */
+
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+window.escapeHTML = escapeHTML;
+
+function openAutonomousBotModal() {
+    const modal = document.getElementById("autonomousBotModal");
+    if (modal) {
+        modal.classList.add("active");
+        renderAutonomousBotUI();
+    }
+}
+window.openAutonomousBotModal = openAutonomousBotModal;
+
+function closeAutonomousBotModal() {
+    const modal = document.getElementById("autonomousBotModal");
+    if (modal) {
+        modal.classList.remove("active");
+    }
+}
+window.closeAutonomousBotModal = closeAutonomousBotModal;
+
+function switchBotTab(tabName) {
+    const tabBtns = {
+        watchlist: document.getElementById("tabBtnWatchlist"),
+        briefs: document.getElementById("tabBtnBriefs"),
+        logs: document.getElementById("tabBtnLogs")
+    };
+    const tabPanes = {
+        watchlist: document.getElementById("botTabWatchlist"),
+        briefs: document.getElementById("botTabBriefs"),
+        logs: document.getElementById("botTabLogs")
+    };
+
+    Object.keys(tabBtns).forEach(k => {
+        if (tabBtns[k]) tabBtns[k].classList.toggle("active", k === tabName);
+        if (tabPanes[k]) tabPanes[k].classList.toggle("active", k === tabName);
+    });
+
+    if (tabName === "logs" || tabName === "briefs") {
+        renderAutonomousBotUI();
+    }
+}
+window.switchBotTab = switchBotTab;
+
+function renderAutonomousBotUI() {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+
+    const isActive = bot.isActive();
+    const statusPill = document.getElementById("botStatusPill");
+    const statusText = document.getElementById("botStatusText");
+    const toggleBtn = document.getElementById("btnToggleBotActive");
+    const intervalSelect = document.getElementById("botIntervalSelect");
+    const sidebarDot = document.getElementById("sidebarBotStatusDot");
+    const headerDot = document.getElementById("headerBotPulseDot");
+    const topicCountEl = document.getElementById("botTopicCount");
+    const vaultCountEl = document.getElementById("botVaultCount");
+
+    // Status Pill & Buttons
+    if (statusPill) {
+        statusPill.className = `bot-status-pill ${isActive ? 'active' : 'paused'}`;
+    }
+    if (statusText) {
+        statusText.textContent = isActive ? "ACTIVE MONITORING" : "PAUSED";
+    }
+    if (toggleBtn) {
+        toggleBtn.className = `btn-bot-toggle ${isActive ? 'active' : ''}`;
+        toggleBtn.innerHTML = isActive 
+            ? `<i class="fa-solid fa-pause"></i> Pause Bot` 
+            : `<i class="fa-solid fa-play"></i> Activate Bot`;
+    }
+    if (intervalSelect && bot.config) {
+        intervalSelect.value = String(bot.config.intervalMinutes || 60);
+    }
+    if (sidebarDot) {
+        sidebarDot.className = `bot-status-indicator-dot ${isActive ? 'active' : ''}`;
+    }
+    if (headerDot) {
+        headerDot.className = `header-bot-dot ${isActive ? 'active' : ''}`;
+    }
+
+    // Counts
+    const topics = bot.config.topics || [];
+    const briefs = bot.getBriefs() || [];
+    if (topicCountEl) topicCountEl.textContent = String(topics.length);
+    if (vaultCountEl) vaultCountEl.textContent = String(briefs.length);
+
+    // Render Topics List
+    const topicsListContainer = document.getElementById("botTopicsListContainer");
+    if (topicsListContainer) {
+        if (topics.length === 0) {
+            topicsListContainer.innerHTML = `
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.84rem;">
+                    No topics currently on watchlist. Add a topic above to begin automated monitoring.
+                </div>
+            `;
+        } else {
+            topicsListContainer.innerHTML = topics.map(t => `
+                <div class="bot-topic-card" id="card_${t.id}">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" ${t.enabled ? 'checked' : ''} onchange="toggleBotTopicEnabled('${t.id}', this.checked)" title="Enable / Disable topic" style="cursor: pointer;">
+                        <div class="bot-topic-info">
+                            <div class="bot-topic-title-row">
+                                <span class="bot-topic-title">${escapeHTML(t.title)}</span>
+                                <span class="bot-topic-category-badge">${escapeHTML(t.category || t.desk || 'topic')}</span>
+                            </div>
+                            <div class="bot-topic-query" title="${escapeHTML(t.query)}">
+                                <i class="fa-solid fa-magnifying-glass" style="font-size: 0.70rem; color: #64748b;"></i> ${escapeHTML(t.query)}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bot-topic-actions">
+                        <button type="button" class="btn-topic-action" onclick="runBotImmediateCycle('${t.id}')" title="Run research immediately for this topic">
+                            <i class="fa-solid fa-bolt text-amber"></i> Run
+                        </button>
+                        <button type="button" class="btn-topic-action delete" onclick="removeBotTopic('${t.id}')" title="Remove topic from watchlist">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Render Briefs Vault
+    const briefsContainer = document.getElementById("botBriefsVaultContainer");
+    if (briefsContainer) {
+        if (briefs.length === 0) {
+            briefsContainer.innerHTML = `
+                <div style="text-align: center; padding: 36px 20px; color: #94a3b8; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px;">
+                    <i class="fa-solid fa-robot" style="font-size: 2rem; color: #38bdf8; margin-bottom: 12px; display: block;"></i>
+                    <h4 style="color: #f1f5f9; margin: 0 0 6px 0; font-size: 0.95rem;">No Synthesized Briefs in Vault Yet</h4>
+                    <p style="margin: 0 0 14px 0; font-size: 0.82rem;">Activate the Autonomous Bot scheduler or trigger an immediate cycle to generate your first verified executive briefing memorandum.</p>
+                    <button type="button" class="btn-primary" onclick="runBotImmediateCycle()">
+                        <i class="fa-solid fa-bolt"></i> Run Immediate Cycle Now
+                    </button>
+                </div>
+            `;
+        } else {
+            briefsContainer.innerHTML = briefs.map(b => `
+                <div class="cortex-brief-card" id="vault_${b.id}">
+                    <div class="brief-card-header">
+                        <div class="brief-badge">
+                            <i class="fa-solid fa-robot text-cyan"></i> Autonomous Executive Brief
+                        </div>
+                        <div class="brief-meta">
+                            <span><i class="fa-regular fa-calendar"></i> ${b.dateStr}</span>
+                            <span><i class="fa-regular fa-clock"></i> ${b.timeStr}</span>
+                            <span class="brief-sources-pill"><i class="fa-solid fa-link"></i> ${b.sourcesCount || 0} Sources</span>
+                        </div>
+                    </div>
+
+                    <h3 class="brief-title">${escapeHTML(b.topicTitle)}</h3>
+                    
+                    <div class="brief-thesis-box">
+                        <div class="thesis-label"><i class="fa-solid fa-bullseye text-amber"></i> Executive Thesis & Strategic Takeaway</div>
+                        <p class="thesis-text">${escapeHTML(b.executiveThesis)}</p>
+                    </div>
+
+                    <div class="brief-pillars-grid">
+                        ${(b.pillars || []).map((p, idx) => `
+                            <div class="brief-pillar-item">
+                                <div class="pillar-num">0${idx + 1}</div>
+                                <div class="pillar-content">
+                                    <h4 class="pillar-title">${escapeHTML(p.title)}</h4>
+                                    <p class="pillar-desc">${escapeHTML(p.desc)}</p>
+                                    <div class="pillar-metric-tag">
+                                        <span class="metric-val">${escapeHTML(p.metric)}</span>
+                                        <span class="metric-conf">${escapeHTML(p.confidence)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="brief-card-actions-strip">
+                        <button type="button" class="btn-lib-action" onclick="copyBotBriefMarkdown('${b.id}', this)" title="Copy Markdown to Clipboard">
+                            <i class="fa-regular fa-copy text-teal"></i> Copy Markdown
+                        </button>
+                        <button type="button" class="btn-lib-action" onclick="downloadBotBriefMarkdown('${b.id}')" title="Download .md file">
+                            <i class="fa-solid fa-download text-cyan"></i> Download .md
+                        </button>
+                        <button type="button" class="btn-lib-action" onclick="sendBotBriefToWorkspace('${b.id}')" title="Open research in main search workspace">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-purple"></i> Open in Workspace
+                        </button>
+                        <button type="button" class="btn-lib-action delete" onclick="deleteBotBrief('${b.id}')" title="Delete brief from vault">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Render Terminal Logs
+    const terminalLogs = document.getElementById("botTerminalLogs");
+    if (terminalLogs) {
+        const logs = bot.getLogs() || [];
+        if (logs.length === 0) {
+            terminalLogs.innerHTML = `<div style="color: #64748b; font-style: italic;">No execution logs recorded yet.</div>`;
+        } else {
+            terminalLogs.innerHTML = logs.map(l => {
+                const timeStr = new Date(l.timestamp).toLocaleTimeString();
+                return `
+                    <div class="log-line">
+                        <span class="log-time">[${timeStr}]</span>
+                        <span class="log-level ${l.level}">${l.level}</span>
+                        <span class="log-msg">${escapeHTML(l.message)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+}
+window.renderAutonomousBotUI = renderAutonomousBotUI;
+
+function toggleAutonomousBotStatus() {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    if (bot.isActive()) {
+        bot.stop();
+    } else {
+        bot.start();
+    }
+    renderAutonomousBotUI();
+}
+window.toggleAutonomousBotStatus = toggleAutonomousBotStatus;
+
+function changeBotInterval(mins) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    bot.setIntervalMinutes(mins);
+    renderAutonomousBotUI();
+}
+window.changeBotInterval = changeBotInterval;
+
+async function runBotImmediateCycle(targetTopicId = null) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+
+    const btn = document.getElementById("btnRunImmediateBotCycle");
+    const originalHTML = btn ? btn.innerHTML : null;
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Synthesizing...</span>`;
+    }
+
+    try {
+        const res = await bot.runImmediateCycle(targetTopicId);
+        if (res.status === 'success' && res.briefs && res.briefs.length > 0) {
+            switchBotTab('briefs');
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHTML || `<i class="fa-solid fa-bolt"></i> <span>Run Immediate Cycle</span>`;
+        }
+        renderAutonomousBotUI();
+    }
+}
+window.runBotImmediateCycle = runBotImmediateCycle;
+
+function addCustomBotTopic() {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+
+    const titleEl = document.getElementById("botNewTopicTitle");
+    const queryEl = document.getElementById("botNewTopicQuery");
+    const deskEl = document.getElementById("botNewTopicDesk");
+
+    const title = titleEl ? titleEl.value.trim() : "";
+    const query = queryEl ? queryEl.value.trim() : "";
+    const desk = deskEl ? deskEl.value : "web";
+
+    if (!title || !query) {
+        alert("Please enter both a topic title and a search query.");
+        return;
+    }
+
+    bot.addTopic({
+        title,
+        query,
+        desk,
+        category: "custom"
+    });
+
+    if (titleEl) titleEl.value = "";
+    if (queryEl) queryEl.value = "";
+    renderAutonomousBotUI();
+}
+window.addCustomBotTopic = addCustomBotTopic;
+
+function removeBotTopic(id) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    bot.removeTopic(id);
+    renderAutonomousBotUI();
+}
+window.removeBotTopic = removeBotTopic;
+
+function toggleBotTopicEnabled(id, isEnabled) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    bot.toggleTopic(id, isEnabled);
+    renderAutonomousBotUI();
+}
+window.toggleBotTopicEnabled = toggleBotTopicEnabled;
+
+function copyBotBriefMarkdown(briefId, btn) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    const briefs = bot.getBriefs();
+    const brief = briefs.find(b => b.id === briefId);
+    if (!brief) return;
+
+    navigator.clipboard.writeText(brief.markdown).then(() => {
+        if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check text-teal"></i> Copied!`;
+            setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+        }
+    }).catch(err => {
+        console.error("Clipboard copy failed:", err);
+    });
+}
+window.copyBotBriefMarkdown = copyBotBriefMarkdown;
+
+function downloadBotBriefMarkdown(briefId) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    const briefs = bot.getBriefs();
+    const brief = briefs.find(b => b.id === briefId);
+    if (!brief) return;
+
+    const blob = new Blob([brief.markdown], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Cortex_Brief_${brief.topicTitle.replace(/[^a-zA-Z0-9_-]/g, '_')}_${brief.dateStr.replace(/[^a-zA-Z0-9]/g, '-')}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+window.downloadBotBriefMarkdown = downloadBotBriefMarkdown;
+
+function sendBotBriefToWorkspace(briefId) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    const briefs = bot.getBriefs();
+    const brief = briefs.find(b => b.id === briefId);
+    if (!brief) return;
+
+    closeAutonomousBotModal();
+    executeSearch(brief.query);
+}
+window.sendBotBriefToWorkspace = sendBotBriefToWorkspace;
+
+function deleteBotBrief(briefId) {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    bot.deleteBrief(briefId);
+    renderAutonomousBotUI();
+}
+window.deleteBotBrief = deleteBotBrief;
+
+function clearAllBotBriefs() {
+    if (!confirm("Are you sure you want to clear all stored briefs from the vault?")) return;
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    bot.clearAllBriefs();
+    renderAutonomousBotUI();
+}
+window.clearAllBotBriefs = clearAllBotBriefs;
+
+function clearBotLogs() {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    bot.clearLogs();
+    renderAutonomousBotUI();
+}
+window.clearBotLogs = clearBotLogs;
+
+function exportAllBotBriefsJSON() {
+    const bot = window.CortexAutonomousBot;
+    if (!bot) return;
+    const briefs = bot.getBriefs();
+    const blob = new Blob([JSON.stringify(briefs, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cortex_autonomous_briefs_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+window.exportAllBotBriefsJSON = exportAllBotBriefsJSON;
+
+// Wire CortexEvents to Autonomous Bot UI live updates
+if (window.CortexEvents) {
+    window.CortexEvents.on('bot:status_change', () => renderAutonomousBotUI());
+    window.CortexEvents.on('bot:cycle_complete', () => renderAutonomousBotUI());
+    window.CortexEvents.on('bot:log', () => {
+        const terminalLogs = document.getElementById("botTerminalLogs");
+        if (terminalLogs && document.getElementById("autonomousBotModal")?.classList.contains("active")) {
+            renderAutonomousBotUI();
+        }
+    });
+}
+
+// Initial status badge check on page load
+setTimeout(() => {
+    if (window.CortexAutonomousBot) {
+        const isActive = window.CortexAutonomousBot.isActive();
+        const sidebarDot = document.getElementById("sidebarBotStatusDot");
+        const headerDot = document.getElementById("headerBotPulseDot");
+        if (sidebarDot) sidebarDot.className = `bot-status-indicator-dot ${isActive ? 'active' : ''}`;
+        if (headerDot) headerDot.className = `header-bot-dot ${isActive ? 'active' : ''}`;
+    }
+}, 500);
+
+
 // Trigger cookie consent initialization in initCortexApp
