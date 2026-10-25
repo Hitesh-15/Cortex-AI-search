@@ -585,14 +585,14 @@ ${safeSources.map((s, idx) => `${idx + 1}. [${s.title}](${s.url || '#'}) — *${
                         {
                             "@type": "OpenUri",
                             "name": "Open in Cortex",
-                            "targets": [{ "os": "default", "uri": `https://cortex.ambulkar.com/?q=${encodeURIComponent(brief.query || brief.topicTitle)}` }]
+                            "targets": [{ "os": "default", "uri": `https://ai.ambulkar.com/?q=${encodeURIComponent(brief.query || brief.topicTitle)}` }]
                         }
                     ]
                 };
             } else {
                 payload = {
                     username: "Cortex Autonomous Intelligence",
-                    avatar_url: "https://cortex.ambulkar.com/apple-touch-icon.png",
+                    avatar_url: "https://ai.ambulkar.com/apple-touch-icon.png",
                     embeds: [
                         {
                             title: `Autonomous Executive Brief: ${brief.topicTitle}`,

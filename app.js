@@ -1923,12 +1923,12 @@ async function dispatchResearchMemoToDiscord(query, htmlContent, threadId) {
                 "potentialAction": [{
                     "@type": "OpenUri",
                     "name": "View Live Thread",
-                    "targets": [{ "os": "default", "uri": `https://cortex.ambulkar.com/?q=${encodedQ}` }]
+                    "targets": [{ "os": "default", "uri": `https://ai.ambulkar.com/?q=${encodedQ}` }]
                 }]
             };
         } else {
             payload = {
-                content: `🔔 **Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://cortex.ambulkar.com/?q=${encodedQ}`
+                content: `🔔 **Cortex Research Memo**\n**Query:** "${query}"\n\n**Executive Summary:**\n${cleanText}...\n\n🔗 **View Live Thread:** https://ai.ambulkar.com/?q=${encodedQ}`
             };
         }
 
@@ -8827,7 +8827,7 @@ async function testDiscordWebhook() {
                 "potentialAction": [{
                     "@type": "OpenUri",
                     "name": "Open Cortex",
-                    "targets": [{ "os": "default", "uri": "https://cortex.ambulkar.com" }]
+                    "targets": [{ "os": "default", "uri": "https://ai.ambulkar.com" }]
                 }]
             };
         } else {

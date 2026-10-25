@@ -264,7 +264,7 @@ class CortexAutonomousBotCLI:
         try:
             is_teams = any(k in self.webhook_url for k in ["office.com", "logic.azure.com", "microsoft.com"])
             encoded_query = urllib.parse.quote(brief_data.get('query', brief_data['title']))
-            cortex_url = f"https://cortex.ambulkar.com/?q={encoded_query}"
+            cortex_url = f"https://ai.ambulkar.com/?q={encoded_query}"
 
             if is_teams:
                 # Microsoft Teams Adaptive Card / MessageCard format
@@ -321,7 +321,7 @@ class CortexAutonomousBotCLI:
 
                 payload = {
                     "username": "Cortex Google Alerts Bot",
-                    "avatar_url": "https://cortex.ambulkar.com/apple-touch-icon.png",
+                    "avatar_url": "https://ai.ambulkar.com/apple-touch-icon.png",
                     "embeds": [
                         {
                             "title": f"🔔 Cortex Alert • {brief_data['title']}",
