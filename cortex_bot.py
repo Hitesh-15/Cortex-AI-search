@@ -450,8 +450,18 @@ def main():
 
     # Load configuration from file if present
     cfg = {}
-    if args.config:
+    if args.config and os.path.exists(args.config):
         cfg = load_config_file(args.config) or {}
+    elif os.path.exists("alerts_config.json"):
+        cfg = load_config_file("alerts_config.json") or {}
+    elif os.path.exists("alerts_topics.json"):
+        raw_topics = load_config_file("alerts_topics.json")
+        if isinstance(raw_topics, list):
+            cfg = {"topics": raw_topics}
+        elif isinstance(raw_topics, dict):
+            cfg = raw_topics
+    elif os.path.exists("alerts_config.example.json"):
+        cfg = load_config_file("alerts_config.example.json") or {}
 
     webhook_url = args.webhook or cfg.get("webhook_url") or os.environ.get("CORTEX_WEBHOOK_URL")
     interval = args.interval or (cfg.get("interval_hours", 24) * 3600) or 86400
