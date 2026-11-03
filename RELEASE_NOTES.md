@@ -1,6 +1,18 @@
 # 🚀 Cortex Release Notes & Changelog
 
-All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([cortex-research.org](https://cortex-research.org)) are documented in this file.
+All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
+
+## 🌐 [v6.8.3] — 2026-11-03
+### **Production Domain Unification (`ai.ambulkar.com`), Academic API Word-Boundary Routing & UI/UX Compliance Verification**
+
+#### Detailed Enhancements in v6.8.3:
+1. **End-to-End Production Domain Unification (`ai.ambulkar.com`)**:
+   - Standardized canonical links, OpenGraph social cards, contact links, system prompts, and exported deliverable metadata (`.pptx`, `.docx`, `.md`, and Discord webhook alerts) across `index.html`, `404.html`, `privacy.html`, `terms.html`, `thank-you.html`, `README.md`, and `app.js` to `https://ai.ambulkar.com`.
+2. **Academic API Word-Boundary Gate & Polite-Pool Rate-Limit Guard**:
+   - Upgraded the OpenAlex academic trigger in `app.js` from substring matching (`qLower.includes("paper")`, which falsely matched `"whitepaper"` deliverable prompts) to whole-word boundary matching (`/\b(doi|arxiv|paper|papers|journal|journals)\b/i`).
+   - Added polite-pool identification (`mailto=cortex@ambulkar.com`) and a 60-second client-side cooldown guard on HTTP `429` responses to eliminate burst rate-limit noise.
+3. **Full Compliance & UI/UX Readability Audit**:
+   - Verified 100% pass across `check_js.py`, `test_modular_runtime.py`, `test_all_in_one_features.py`, `test_diverse_queries.py`, `reproduce_issue.py`, `audit_card_parity.py`, `test_every_feature.py` (58/58 UI checks), and `test_cortex_stress_and_references.py`.
 
 ## 🌟 [v6.8.2] — 2026-10-25
 ### **Autonomous Research & Intelligence Monitoring Bot (In-Browser Studio & CLI Daemon)**
