@@ -11043,13 +11043,13 @@ function renderAutonomousBotUI() {
         } else {
             topicsListContainer.innerHTML = topics.map(t => `
                 <div class="bot-topic-card" id="card_${t.id}">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" ${t.enabled ? 'checked' : ''} onchange="toggleBotTopicEnabled('${t.id}', this.checked)" title="Enable / Disable topic" style="cursor: pointer;">
+                    <div class="bot-topic-left">
+                        <input type="checkbox" ${t.enabled ? 'checked' : ''} onchange="toggleBotTopicEnabled('${t.id}', this.checked)" title="Enable / Disable topic" style="cursor: pointer; flex-shrink: 0; width: 16px; height: 16px;">
                         <div class="bot-topic-info">
                             <div class="bot-topic-title-row">
                                 <span class="bot-topic-title">${escapeHTML(t.title)}</span>
-                                <span class="bot-topic-category-badge">${escapeHTML(t.monitorType === 'page' ? 'PAGE-DIFF' : (t.category || t.desk || 'topic'))}</span>
-                                ${t.goal ? `<span style="font-size: 0.68rem; color: #34d399; background: rgba(16,185,129,0.1); padding: 1px 6px; border-radius: 4px;">Goal: ${escapeHTML(t.goal.substring(0, 38))}${t.goal.length > 38 ? '…' : ''}</span>` : ''}
+                                <span class="bot-topic-category-badge">${escapeHTML((t.monitorType === 'page' ? 'PAGE-DIFF' : (t.category || t.desk || 'topic')).replace(/_/g, ' '))}</span>
+                                ${t.goal ? `<span class="bot-goal-pill" title="${escapeHTML(t.goal)}">Goal: ${escapeHTML(t.goal)}</span>` : ''}
                             </div>
                             <div class="bot-topic-query" title="${escapeHTML(t.query)}">
                                 <i class="fa-solid fa-magnifying-glass" style="font-size: 0.70rem; color: #64748b;"></i> ${escapeHTML(t.query)}
@@ -11544,26 +11544,29 @@ async function runLiveSmartMoneyRadarUI() {
         const badgeBg = (dir) => dir === "buy" ? "rgba(16,185,129,0.14)" : (dir === "sell_trim" ? "rgba(239,68,68,0.14)" : "rgba(245,158,11,0.14)");
 
         out.innerHTML = `
-            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 14px 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-                    <strong style="color: #f8fafc; font-size: 0.9rem;"><i class="fa-solid fa-earth-americas text-cyan"></i> Cross-Asset Global Buy/Sell & Positioning Matrix (${radar.totalTrackedSites} Sites)</strong>
-                    <span style="font-size: 0.72rem; color: #94a3b8;">${radar.dailySitesCount} High-Frequency Feeds Active</span>
+            <div style="background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.32); border-radius: 14px; padding: 18px 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                    <strong style="color: #f8fafc; font-size: 0.96rem;"><i class="fa-solid fa-earth-americas text-cyan"></i> Cross-Asset Global Buy/Sell & Positioning Matrix (${radar.totalTrackedSites} Sites)</strong>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 0.75rem; color: #94a3b8;">${radar.dailySitesCount} High-Frequency Feeds Active</span>
+                        <button type="button" class="btn-topic-action" onclick="document.getElementById('smartMoneyDynamicOutput').innerHTML=''" title="Collapse panel">Collapse &times;</button>
+                    </div>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
                     ${radar.allocationMatrix.map(row => `
-                        <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 7px; padding: 9px 12px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
-                                <span style="font-size: 0.82rem; font-weight: 700; color: #f1f5f9;">${escapeHTML(row.assetClass)}</span>
-                                <span style="font-size: 0.68rem; font-weight: 700; color: ${badgeColor(row.direction)}; background: ${badgeBg(row.direction)}; padding: 2px 7px; border-radius: 4px;">${escapeHTML(row.signal)}</span>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 13px 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px;">
+                                <span style="font-size: 0.88rem; font-weight: 700; color: #f8fafc;">${escapeHTML(row.assetClass)}</span>
+                                <span style="font-size: 0.71rem; font-weight: 700; color: ${badgeColor(row.direction)}; background: ${badgeBg(row.direction)}; padding: 3px 9px; border-radius: 6px;">${escapeHTML(row.signal)}</span>
                             </div>
-                            <div style="font-size: 0.76rem; color: #94a3b8; line-height: 1.45; margin-bottom: 6px;">${escapeHTML(row.catalysts)}</div>
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <div style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.55; margin-bottom: 9px;">${escapeHTML(row.catalysts)}</div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                 ${row.trackedVia.map(link => `<a href="${escapeHTML(link.url)}" target="_blank" rel="noopener" class="brief-source-chip"><i class="fa-solid fa-link"></i> ${escapeHTML(link.name)}</a>`).join('')}
                             </div>
                         </div>
                     `).join('')}
                 </div>
-                <div style="font-size: 0.70rem; color: #64748b; margin-top: 8px; font-style: italic;">${escapeHTML(radar.disclaimer)}</div>
+                <div style="font-size: 0.74rem; color: #64748b; margin-top: 12px; font-style: italic;">${escapeHTML(radar.disclaimer)}</div>
             </div>
         `;
     } finally {
@@ -11575,6 +11578,22 @@ async function runLiveSmartMoneyRadarUI() {
 }
 window.runLiveSmartMoneyRadarUI = runLiveSmartMoneyRadarUI;
 
+function formatSecFormTitle(form, rawDesc) {
+    const labels = {
+        "4": "Form 4 • Insider Stock Transaction",
+        "13F-HR": "13F-HR • Institutional Portfolio Holdings",
+        "10-K": "10-K • Audited Annual Financial Report",
+        "10-Q": "10-Q • Quarterly Financial Statements",
+        "8-K": "8-K • Material Corporate Event Disclosure",
+        "SC 13D": "Schedule 13D • Activist Ownership Stake",
+        "SC 13G": "Schedule 13G • Passive 5%+ Institutional Stake"
+    };
+    if (rawDesc && rawDesc.trim() && rawDesc.trim().toUpperCase() !== String(form).toUpperCase() && !rawDesc.includes("Regulatory Disclosure")) {
+        return rawDesc;
+    }
+    return labels[form] || rawDesc || `${form} Regulatory Filing`;
+}
+
 async function lookupSecEdgarFilingsUI(overrideTicker = null) {
     const input = document.getElementById("edgarTickerInput");
     const out = document.getElementById("smartMoneyDynamicOutput");
@@ -11583,23 +11602,26 @@ async function lookupSecEdgarFilingsUI(overrideTicker = null) {
     const ticker = (overrideTicker || (input ? input.value : "BRK.A") || "BRK.A").trim();
     if (input && overrideTicker) input.value = overrideTicker;
 
-    out.innerHTML = `<div style="padding: 12px; font-size: 0.8rem; color: #38bdf8;"><i class="fa-solid fa-spinner fa-spin"></i> Querying SEC EDGAR filings for <strong>${escapeHTML(ticker)}</strong>...</div>`;
+    out.innerHTML = `<div style="padding: 16px; font-size: 0.84rem; color: #38bdf8;"><i class="fa-solid fa-spinner fa-spin"></i> Querying SEC EDGAR filings for <strong>${escapeHTML(ticker)}</strong>...</div>`;
     const data = await window.CortexInstitutionalRadar.fetchSecEdgarFilings(ticker, 6);
 
     out.innerHTML = `
-        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 12px 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                <strong style="color: #f8fafc; font-size: 0.88rem;"><i class="fa-solid fa-scale-balanced text-cyan"></i> SEC EDGAR Regulatory Filings: ${escapeHTML(data.entityName)} (${escapeHTML(data.ticker)})</strong>
-                <a href="${escapeHTML(data.browseUrl)}" target="_blank" rel="noopener" style="font-size: 0.74rem; color: #38bdf8; text-decoration: none;">Open SEC CIK #${escapeHTML(data.cik)} ➔</a>
+        <div style="background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56, 189, 248, 0.32); border-radius: 14px; padding: 18px 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                <strong style="color: #f8fafc; font-size: 0.94rem;"><i class="fa-solid fa-scale-balanced text-cyan"></i> SEC EDGAR Regulatory Filings: ${escapeHTML(data.entityName)} (${escapeHTML(data.ticker)})</strong>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="${escapeHTML(data.browseUrl)}" target="_blank" rel="noopener" style="font-size: 0.78rem; font-weight: 600; color: #38bdf8; text-decoration: none;">Open SEC CIK #${escapeHTML(data.cik)} ➔</a>
+                    <button type="button" class="btn-topic-action" onclick="document.getElementById('smartMoneyDynamicOutput').innerHTML=''" title="Collapse filings panel">Collapse &times;</button>
+                </div>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
                 ${data.filings.map(f => `
-                    <a href="${escapeHTML(f.url)}" target="_blank" rel="noopener" style="text-decoration: none; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px;">
+                    <a href="${escapeHTML(f.url)}" target="_blank" rel="noopener" style="text-decoration: none; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09); border-radius: 10px; padding: 12px 15px; display: flex; flex-direction: column; gap: 6px; transition: border-color 0.18s ease;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 0.74rem; font-weight: 700; color: #34d399;">${escapeHTML(f.form)}</span>
-                            <span style="font-size: 0.68rem; color: #94a3b8;">${escapeHTML(f.filingDate)}</span>
+                            <span style="font-size: 0.76rem; font-weight: 700; color: #34d399; background: rgba(16,185,129,0.12); padding: 2px 8px; border-radius: 5px;">${escapeHTML(String(f.form).startsWith('Form') ? f.form : 'Form ' + f.form)}</span>
+                            <span style="font-size: 0.74rem; color: #94a3b8; font-family: var(--font-mono);">${escapeHTML(f.filingDate)}</span>
                         </div>
-                        <div style="font-size: 0.75rem; color: #e2e8f0;">${escapeHTML(f.description)}</div>
+                        <div style="font-size: 0.80rem; color: #e2e8f0; line-height: 1.4;">${escapeHTML(formatSecFormTitle(f.form, f.description))}</div>
                     </a>
                 `).join('')}
             </div>

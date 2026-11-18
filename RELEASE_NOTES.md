@@ -2,6 +2,12 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## ✨ [v6.9.1] — 2026-11-17
+### **Autonomous Bot Studio Spacious Widescreen UI & Single-Scroll Ergonomics**
+1. **Widescreen Studio Canvas (`1240px` × `92vh`)**: Expanded `#autonomousBotModal` width, padding, and vertical breathing room across all 4 studio tabs.
+2. **Pinned Single-Line Navigation Tabs & Pill Counters**: Eliminated multi-line tab wrapping and parenthetical flex gaps using dedicated `.bot-tab-count` pills and pinned header navigation.
+3. **2-Row Monitor Builder & Overflow-Free Cards**: Re-architected `.bot-add-topic-form` into a spacious 2-row CSS grid with full placeholder visibility, eliminated nested double-scrollbars and horizontal card overflow, upgraded SEC EDGAR filing cards with `Collapse` controls, and arranged the 50-site institutional directory into a responsive 2-column grid.
+
 ## 🏛️ [v6.9.0] — 2026-11-17
 ### **Stateful Page-Diff Monitor, Private Local AI Runtime & 50-Site Institutional Smart Money Radar**
 

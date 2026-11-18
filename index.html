@@ -49,7 +49,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=2026.09.13.14">
+    <link rel="stylesheet" href="styles.css?v=2026.11.17.01">
 </head>
 
 <body>
@@ -743,99 +743,111 @@
     <!-- AUTONOMOUS RESEARCH & MONITORING BOT STUDIO MODAL -->
     <div id="autonomousBotModal" class="modal-backdrop" onclick="if(event.target===this) closeAutonomousBotModal()">
         <div class="modal-box autonomous-bot-modal-box">
-            <div class="modal-header">
-                <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="modal-header" style="margin-bottom: 14px; padding-bottom: 14px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
                     <div class="bot-modal-icon-badge">
                         <i class="fa-solid fa-robot text-cyan"></i>
                     </div>
                     <div>
-                        <h3 style="margin: 0; font-size: 1.18rem; font-weight: 700; color: #f8fafc;">Autonomous Research & Intelligence Bot</h3>
-                        <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: #94a3b8;">Continuous Market & Tech Watchdog • Automated Executive Brief Synthesis</p>
+                        <h3 style="margin: 0; font-size: 1.24rem; font-weight: 700; color: #f8fafc; letter-spacing: -0.01em;">Autonomous Research & Intelligence Bot</h3>
+                        <p style="margin: 3px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Continuous Market & Tech Watchdog • Stateful Page-Diffs • 50-Site Institutional Radar</p>
                     </div>
                 </div>
                 <button class="modal-close" id="btnCloseAutonomousBot" onclick="closeAutonomousBotModal()">&times;</button>
             </div>
 
+            <!-- PINNED NAVIGATION TABS (Single crisp row, never scrolls out of view) -->
+            <div class="bot-tabs-bar">
+                <button type="button" class="bot-tab-btn active" id="tabBtnWatchlist" onclick="switchBotTab('watchlist')">
+                    <i class="fa-solid fa-list-check text-cyan"></i>
+                    <span>Monitored Watchlist</span>
+                    <span class="bot-tab-count" id="botTopicCount">5</span>
+                </button>
+                <button type="button" class="bot-tab-btn" id="tabBtnBriefs" onclick="switchBotTab('briefs')">
+                    <i class="fa-solid fa-file-invoice text-amber"></i>
+                    <span>Executive Briefs Vault</span>
+                    <span class="bot-tab-count" id="botVaultCount">0</span>
+                </button>
+                <button type="button" class="bot-tab-btn" id="tabBtnSmartMoney" onclick="switchBotTab('smartmoney')">
+                    <i class="fa-solid fa-building-columns text-emerald"></i>
+                    <span>Smart Money 50 & EDGAR</span>
+                </button>
+                <button type="button" class="bot-tab-btn" id="tabBtnLogs" onclick="switchBotTab('logs')">
+                    <i class="fa-solid fa-terminal text-purple"></i>
+                    <span>Telemetry & Live Logs</span>
+                </button>
+            </div>
+
+            <!-- UNIFIED SINGLE SCROLLABLE STUDIO BODY -->
             <div class="bot-modal-body">
-                <!-- TOP CONTROL BANNER: STATUS & FREQUENCY -->
-                <div class="bot-control-strip">
-                    <div class="bot-status-container">
-                        <span class="bot-control-label">Scheduler Status:</span>
-                        <div id="botStatusPill" class="bot-status-pill paused">
-                            <span class="bot-pulse-dot"></span>
-                            <span id="botStatusText">PAUSED</span>
-                        </div>
-                        <button type="button" id="btnToggleBotActive" class="btn-bot-toggle" onclick="toggleAutonomousBotStatus()">
-                            <i class="fa-solid fa-play"></i> Activate Bot
-                        </button>
-                    </div>
-
-                    <div class="bot-frequency-container">
-                        <label for="botIntervalSelect" class="bot-control-label"><i class="fa-solid fa-clock-rotate-left text-cyan"></i> Frequency:</label>
-                        <select id="botIntervalSelect" class="bot-select" onchange="changeBotInterval(this.value)">
-                            <option value="15">Every 15 Minutes (Active Watch)</option>
-                            <option value="60" selected>Every 1 Hour (Standard)</option>
-                            <option value="360">Every 6 Hours (Periodic)</option>
-                            <option value="1440">Every 24 Hours (Daily Digest)</option>
-                        </select>
-                        <button type="button" id="btnRunImmediateBotCycle" class="btn-primary btn-run-cycle" onclick="runBotImmediateCycle()" title="Execute deep intelligence synthesis immediately">
-                            <i class="fa-solid fa-bolt"></i> <span>Run Immediate Cycle</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- DISCORD ALERTS WEBHOOK CONNECTOR -->
-                <div class="bot-webhook-strip" style="display: flex; gap: 8px; align-items: center; background: rgba(88, 101, 242, 0.08); border: 1px solid rgba(88, 101, 242, 0.25); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px;">
-                    <i class="fa-brands fa-discord text-purple" style="font-size: 1.15rem;"></i>
-                    <input type="password" id="botDiscordWebhookInput" class="bot-input-field flex-2" placeholder="Discord Webhook URL (https://discord.com/api/webhooks/...)" style="margin: 0; padding: 6px 10px; font-size: 0.82rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff;" onchange="saveBotDiscordWebhook(this.value)">
-                    <button type="button" class="btn-secondary" onclick="testBotDiscordWebhook()" style="padding: 6px 12px; font-size: 0.76rem; white-space: nowrap;">
-                        <i class="fa-solid fa-paper-plane text-teal"></i> Test Ping
-                    </button>
-                </div>
-
-                <!-- NAVIGATION TABS -->
-                <div class="bot-tabs-bar">
-                    <button type="button" class="bot-tab-btn active" id="tabBtnWatchlist" onclick="switchBotTab('watchlist')">
-                        <i class="fa-solid fa-list-check text-cyan"></i> Monitored Watchlist (<span id="botTopicCount">4</span>)
-                    </button>
-                    <button type="button" class="bot-tab-btn" id="tabBtnBriefs" onclick="switchBotTab('briefs')">
-                        <i class="fa-solid fa-file-invoice text-amber"></i> Executive Briefs Vault (<span id="botVaultCount">0</span>)
-                    </button>
-                    <button type="button" class="bot-tab-btn" id="tabBtnSmartMoney" onclick="switchBotTab('smartmoney')">
-                        <i class="fa-solid fa-building-columns text-emerald"></i> Smart Money 50 & EDGAR
-                    </button>
-                    <button type="button" class="bot-tab-btn" id="tabBtnLogs" onclick="switchBotTab('logs')">
-                        <i class="fa-solid fa-terminal text-purple"></i> Telemetry & Live Logs
-                    </button>
-                </div>
-
                 <!-- TAB CONTENT 1: MONITORED TOPICS WATCHLIST -->
                 <div id="botTabWatchlist" class="bot-tab-pane active">
+                    <!-- TOP CONTROL BANNER: STATUS & FREQUENCY -->
+                    <div class="bot-control-strip">
+                        <div class="bot-status-container">
+                            <span class="bot-control-label">Scheduler Status:</span>
+                            <div id="botStatusPill" class="bot-status-pill paused">
+                                <span class="bot-pulse-dot"></span>
+                                <span id="botStatusText">PAUSED</span>
+                            </div>
+                            <button type="button" id="btnToggleBotActive" class="btn-bot-toggle" onclick="toggleAutonomousBotStatus()">
+                                <i class="fa-solid fa-play"></i> Activate Bot
+                            </button>
+                        </div>
+
+                        <div class="bot-frequency-container">
+                            <label for="botIntervalSelect" class="bot-control-label"><i class="fa-solid fa-clock-rotate-left text-cyan"></i> Frequency:</label>
+                            <select id="botIntervalSelect" class="bot-select" onchange="changeBotInterval(this.value)">
+                                <option value="15">Every 15 Minutes (Active Watch)</option>
+                                <option value="60" selected>Every 1 Hour (Standard)</option>
+                                <option value="360">Every 6 Hours (Periodic)</option>
+                                <option value="1440">Every 24 Hours (Daily Digest)</option>
+                            </select>
+                            <button type="button" id="btnRunImmediateBotCycle" class="btn-primary btn-run-cycle" onclick="runBotImmediateCycle()" title="Execute deep intelligence synthesis immediately">
+                                <i class="fa-solid fa-bolt"></i> <span>Run Immediate Cycle</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DISCORD ALERTS WEBHOOK CONNECTOR -->
+                    <div class="bot-webhook-strip">
+                        <i class="fa-brands fa-discord text-purple" style="font-size: 1.15rem; flex-shrink: 0;"></i>
+                        <input type="password" id="botDiscordWebhookInput" class="bot-input-field" placeholder="Discord Webhook URL (https://discord.com/api/webhooks/...)" onchange="saveBotDiscordWebhook(this.value)">
+                        <button type="button" class="btn-secondary" onclick="testBotDiscordWebhook()" style="padding: 8px 14px; font-size: 0.78rem; white-space: nowrap;">
+                            <i class="fa-solid fa-paper-plane text-teal"></i> Test Ping
+                        </button>
+                    </div>
+
                     <div class="bot-pane-desc">
-                        <span>Select pre-configured institutional tracks or add Stateful Topic / Webpage-Diff monitors with custom goal filtering and deduplication memory.</span>
-                        <label style="display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; font-size: 0.76rem; color: #38bdf8; cursor: pointer;">
-                            <input type="checkbox" id="botDedupeToggle" checked onchange="toggleBotDedupeMemory(this.checked)"> Stateful Dedupe (Skip Unchanged)
+                        <span>Configure institutional tracks or add Stateful Topic / Webpage-Diff monitors with goal filtering.</span>
+                        <label class="bot-dedupe-label">
+                            <input type="checkbox" id="botDedupeToggle" checked onchange="toggleBotDedupeMemory(this.checked)">
+                            <span>Stateful Dedupe (Skip Unchanged)</span>
                         </label>
                     </div>
 
-                    <!-- CUSTOM TOPIC ADD FORM -->
+                    <!-- SPACIOUS 2-ROW CUSTOM MONITOR ADD FORM -->
                     <div class="bot-add-topic-form">
-                        <select id="botNewMonitorType" class="bot-select" style="max-width: 138px;" onchange="handleBotMonitorTypeChange(this.value)">
-                            <option value="search" selected>Topic Monitor</option>
-                            <option value="page">Page-Diff URL</option>
-                        </select>
-                        <input type="text" id="botNewTopicTitle" placeholder="Monitor Title (e.g. Oaktree Memos)" class="bot-input-field">
-                        <input type="text" id="botNewTopicQuery" placeholder="Search Query or Target URL (https://...)" class="bot-input-field flex-2">
-                        <input type="text" id="botNewTopicGoal" placeholder="Optional Goal Filter (e.g. Only new memos or pricing changes)" class="bot-input-field flex-2">
-                        <select id="botNewTopicDesk" class="bot-select" style="max-width: 130px;">
-                            <option value="finance">Finance</option>
-                            <option value="web" selected>Market & Web</option>
-                            <option value="academic">Academic</option>
-                            <option value="code">Engineering</option>
-                        </select>
-                        <button type="button" class="btn-secondary" onclick="addCustomBotTopic()" style="padding: 7px 12px; white-space: nowrap;">
-                            <i class="fa-solid fa-plus text-teal"></i> Add Topic
-                        </button>
+                        <div class="bot-form-row-top">
+                            <select id="botNewMonitorType" class="bot-select" onchange="handleBotMonitorTypeChange(this.value)">
+                                <option value="search" selected>Topic Monitor</option>
+                                <option value="page">Page-Diff URL</option>
+                            </select>
+                            <input type="text" id="botNewTopicTitle" placeholder="Monitor Title (e.g. Oaktree Investor Memos)" class="bot-input-field">
+                            <select id="botNewTopicDesk" class="bot-select">
+                                <option value="finance">Finance Desk</option>
+                                <option value="web" selected>Market & Web</option>
+                                <option value="academic">Academic</option>
+                                <option value="code">Engineering</option>
+                            </select>
+                        </div>
+                        <div class="bot-form-row-bottom">
+                            <input type="text" id="botNewTopicQuery" placeholder="Search Query or Target URL (https://...)" class="bot-input-field">
+                            <input type="text" id="botNewTopicGoal" placeholder="Optional Goal Filter (e.g. Only new memos or pricing updates)" class="bot-input-field">
+                            <button type="button" class="btn-secondary bot-add-submit-btn" onclick="addCustomBotTopic()">
+                                <i class="fa-solid fa-plus text-teal"></i> Add Monitor
+                            </button>
+                        </div>
                     </div>
 
                     <!-- TOPICS LIST GRID -->
@@ -847,8 +859,8 @@
                 <!-- TAB CONTENT 2: EXECUTIVE BRIEFS VAULT -->
                 <div id="botTabBriefs" class="bot-tab-pane">
                     <div class="bot-vault-toolbar">
-                        <span style="font-size: 0.82rem; color: #94a3b8;">Synthesized Executive Intelligence Briefs archived automatically from background cycles.</span>
-                        <div style="display: flex; gap: 8px;">
+                        <span style="font-size: 0.84rem; color: #94a3b8;">Synthesized Executive Intelligence Briefs archived automatically from background cycles.</span>
+                        <div style="display: flex; gap: 10px;">
                             <button type="button" class="btn-lib-action" onclick="exportAllBotBriefsJSON()" title="Export all briefs to JSON">
                                 <i class="fa-solid fa-download"></i> Export JSON
                             </button>
@@ -863,25 +875,31 @@
                     </div>
                 </div>
 
-                <!-- TAB CONTENT 4: SMART MONEY 50 & SEC EDGAR TERMINAL -->
+                <!-- TAB CONTENT 3: SMART MONEY 50 & SEC EDGAR TERMINAL -->
                 <div id="botTabSmartMoney" class="bot-tab-pane">
-                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
-                        <div>
-                            <div style="font-size: 0.88rem; font-weight: 700; color: #f8fafc;"><i class="fa-solid fa-compass text-emerald"></i> 50-Site Billionaire, Insider & World Markets Radar</div>
-                            <div style="font-size: 0.76rem; color: #94a3b8;">Tracks SEC 13F superinvestor flows, Form 4 insider cluster buys/sells, central bank liquidity, commodities & valuation memos.</div>
+                    <div class="smart-money-hero-banner">
+                        <div style="min-width: 0; flex: 1;">
+                            <div style="font-size: 0.96rem; font-weight: 700; color: #f8fafc; margin-bottom: 4px;">
+                                <i class="fa-solid fa-compass text-emerald"></i> 50-Site Billionaire, Insider & World Markets Radar
+                            </div>
+                            <div style="font-size: 0.80rem; color: #94a3b8; line-height: 1.5;">
+                                Tracks SEC 13F superinvestor flows, Form 4 insider cluster buys/sells, central bank liquidity, commodities & valuation memos.
+                            </div>
                         </div>
-                        <button type="button" id="btnRunSmartMoneyRadar" class="btn-primary" onclick="runLiveSmartMoneyRadarUI()" style="font-size: 0.78rem; padding: 7px 14px; white-space: nowrap;">
+                        <button type="button" id="btnRunSmartMoneyRadar" class="btn-primary" onclick="runLiveSmartMoneyRadarUI()" style="font-size: 0.82rem; padding: 10px 18px; white-space: nowrap; flex-shrink: 0;">
                             <i class="fa-solid fa-satellite-dish"></i> Scan Global Buy/Sell Radar
                         </button>
                     </div>
 
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px;">
-                        <span style="font-size: 0.78rem; font-weight: 600; color: #38bdf8; white-space: nowrap;"><i class="fa-solid fa-scale-balanced"></i> SEC EDGAR Lookup:</span>
-                        <input type="text" id="edgarTickerInput" class="bot-input-field" placeholder="Ticker or Institution (e.g. BRK.A, NVDA, AAPL, MSFT, JPM, BLK)" value="BRK.A" style="max-width: 280px;">
-                        <button type="button" id="btnLookupEdgar" class="btn-secondary" onclick="lookupSecEdgarFilingsUI()" style="padding: 6px 12px; font-size: 0.76rem;">
+                    <div class="edgar-lookup-strip">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8; white-space: nowrap;">
+                            <i class="fa-solid fa-scale-balanced"></i> SEC EDGAR Lookup:
+                        </span>
+                        <input type="text" id="edgarTickerInput" class="bot-input-field" placeholder="Ticker or Institution (e.g. BRK.A, NVDA, AAPL, MSFT, JPM, BLK)" value="BRK.A" style="max-width: 320px;">
+                        <button type="button" id="btnLookupEdgar" class="btn-secondary" onclick="lookupSecEdgarFilingsUI()" style="padding: 8px 14px; font-size: 0.78rem; white-space: nowrap;">
                             <i class="fa-solid fa-magnifying-glass text-cyan"></i> Fetch 10-K / 13F / Form 4
                         </button>
-                        <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-left: auto;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto;">
                             <button type="button" class="btn-topic-action" onclick="quickEdgarLookup('BRK.A')">BRK.A</button>
                             <button type="button" class="btn-topic-action" onclick="quickEdgarLookup('NVDA')">NVDA</button>
                             <button type="button" class="btn-topic-action" onclick="quickEdgarLookup('JPM')">JPM</button>
@@ -889,10 +907,10 @@
                         </div>
                     </div>
 
-                    <div id="smartMoneyDynamicOutput" style="margin-bottom: 12px;"></div>
+                    <div id="smartMoneyDynamicOutput" class="smart-money-dynamic-panel"></div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="smartMoneyCategoryChips">
+                    <div class="smart-money-filter-bar">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="smartMoneyCategoryChips">
                             <button type="button" class="btn-topic-action active" onclick="filterSmartMoneyDirectory('all', this)">All 50 Sites</button>
                             <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('insider_13f', this)">Insider & 13F Flows</button>
                             <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('central_banks_macro', this)">Central Banks & Macro</button>
@@ -900,19 +918,19 @@
                             <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('valuation_screeners', this)">Valuation & ETFs</button>
                             <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('research_commentary', this)">Quant & History</button>
                         </div>
-                        <span id="smartMoneyCountLabel" style="font-size: 0.74rem; color: #94a3b8;">50 Verified Sources</span>
+                        <span id="smartMoneyCountLabel" style="font-size: 0.78rem; color: #94a3b8; font-weight: 500;">50 Verified Institutional Sources</span>
                     </div>
 
-                    <div id="smartMoneyDirectoryList" class="bot-topics-list" style="max-height: 32vh;">
+                    <div id="smartMoneyDirectoryList" class="smart-money-grid">
                         <!-- Populated dynamically from CortexInstitutionalRadar -->
                     </div>
                 </div>
 
-                <!-- TAB CONTENT 3: LIVE TELEMETRY LOGS -->
+                <!-- TAB CONTENT 4: LIVE TELEMETRY LOGS -->
                 <div id="botTabLogs" class="bot-tab-pane">
                     <div class="bot-logs-toolbar">
-                        <span style="font-size: 0.80rem; color: #94a3b8;"><i class="fa-solid fa-circle-info text-cyan"></i> Real-time execution events dispatched via <code>window.CortexEvents</code>.</span>
-                        <button type="button" class="btn-lib-action" onclick="clearBotLogs()" style="font-size: 0.72rem;">
+                        <span style="font-size: 0.82rem; color: #94a3b8;"><i class="fa-solid fa-circle-info text-cyan"></i> Real-time execution events dispatched via <code>window.CortexEvents</code>.</span>
+                        <button type="button" class="btn-lib-action" onclick="clearBotLogs()" style="font-size: 0.75rem;">
                             <i class="fa-solid fa-eraser"></i> Clear Terminal
                         </button>
                     </div>
@@ -922,11 +940,11 @@
                 </div>
             </div>
 
-            <div class="modal-footer" style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #64748b;">
+            <div class="modal-footer" style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.80rem; color: #94a3b8;">
                     <i class="fa-solid fa-shield-halved text-emerald"></i> 100% Client-Side Local Execution • Zero Cloud Relay
                 </div>
-                <button type="button" class="btn-primary" onclick="closeAutonomousBotModal()">Done</button>
+                <button type="button" class="btn-primary" onclick="closeAutonomousBotModal()" style="padding: 9px 22px;">Done</button>
             </div>
         </div>
     </div>
@@ -1035,7 +1053,7 @@
     <script src="src/retrieval/institutional_radar.js"></script>
     <script src="src/core/autonomous_bot.js"></script>
     <!-- Application Script -->
-    <script src="app.js?v=2026.09.13.10"></script>
+    <script src="app.js?v=2026.11.17.01"></script>
 </body>
 
 </html>
