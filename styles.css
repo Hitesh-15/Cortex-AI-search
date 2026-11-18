@@ -6638,7 +6638,8 @@ body.legal-page-body {
     transition: all 0.18s ease;
 }
 
-.btn-topic-action:hover {
+.btn-topic-action:hover,
+.btn-topic-action.active {
     background: rgba(56, 189, 248, 0.15);
     color: #38bdf8;
     border-color: rgba(56, 189, 248, 0.35);

@@ -1591,6 +1591,9 @@ const CORTEX_SLASH_COMMANDS = [
     { cmd: "/research", title: "Deep Web Intelligence", desc: "Multi-source retrieval with verified citations", mode: "web" },
     { cmd: "/academic", title: "Academic & arXiv Papers", desc: "Peer-reviewed scientific preprints & studies", mode: "academic" },
     { cmd: "/finance", title: "Institutional Market Telemetry", desc: "Corporate disclosures, treasury yields & 10-K analysis", mode: "finance" },
+    { cmd: "/smartmoney", title: "Smart Money 50 Radar", desc: "50-site billionaire, insider Form 4 & cross-asset buy/sell radar", mode: "smartmoney" },
+    { cmd: "/edgar", title: "SEC EDGAR Filings", desc: "Live 10-K, 10-Q, 8-K, 13F-HR & Form 4 lookup", mode: "edgar" },
+    { cmd: "/localai", title: "Private Local AI", desc: "Zero-cost localhost:11434 model runtime connector", mode: "localai" },
     { cmd: "/clear", title: "Reset Workspace", desc: "Clear active thread and start a new search", mode: "clear" }
 ];
 
@@ -1712,6 +1715,26 @@ function applyChosenSlashCommand(cmd) {
         return;
     }
 
+    if (found.mode === "smartmoney") {
+        input.value = "";
+        openAutonomousBotModal();
+        switchBotTab("smartmoney");
+        runLiveSmartMoneyRadarUI();
+        return;
+    }
+    if (found.mode === "edgar") {
+        input.value = "";
+        openAutonomousBotModal();
+        switchBotTab("smartmoney");
+        setTimeout(() => document.getElementById("edgarTickerInput")?.focus(), 80);
+        return;
+    }
+    if (found.mode === "localai") {
+        input.value = "";
+        openSettingsModal();
+        setTimeout(() => document.getElementById("localAiEndpointInput")?.focus(), 80);
+        return;
+    }
     if (found.mode === "studio") {
         input.value = "@studio ";
         input.focus();
@@ -3615,10 +3638,20 @@ async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effo
     let contentHTML = "";
     const activeAuthKey = (typeof CortexAuthVault !== "undefined" && CortexAuthVault.getActiveKey) ? CortexAuthVault.getActiveKey() : "";
     const orKey = activeAuthKey || appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
-    const hasCustomKey = Boolean(apiKey || orKey);
+    const localAiActive = Boolean(window.CortexLocalAI && window.CortexLocalAI.isEnabled());
+    const hasCustomKey = Boolean(apiKey || orKey || localAiActive);
     let activeModelDisplay = formatSingleModelName(activeModel);
 
-    if (provider === "openai" && apiKey) {
+    if (localAiActive) {
+        const localRes = await window.CortexLocalAI.generateCompletion(query, sources, onStreamChunk);
+        if (localRes && localRes.success && localRes.html) {
+            contentHTML = localRes.html;
+            activeModelDisplay = localRes.modelUsed;
+            spendMetrics.costUSD = 0;
+            spendMetrics.costFormatted = "$0.00000";
+        }
+    }
+    if (!contentHTML && provider === "openai" && apiKey) {
         contentHTML = await callOpenAIProvider(query, sources, activeModel, apiKey);
         activeModelDisplay = "OpenAI GPT-4o";
     } else if (provider === "claude" && apiKey) {
@@ -8701,6 +8734,15 @@ function openSettingsModal() {
 
     if (apiKeyInput) apiKeyInput.value = appState.settings.apiKeys.openrouter || localStorage.getItem("ambu_key_openrouter") || "";
     if (discordInput) discordInput.value = localStorage.getItem("ambu_discord_webhook") || "";
+    if (window.CortexLocalAI) {
+        const lCfg = window.CortexLocalAI.getConfig();
+        const lToggle = document.getElementById("localAiEnabledToggle");
+        const lEndpoint = document.getElementById("localAiEndpointInput");
+        const lModel = document.getElementById("localAiModelInput");
+        if (lToggle) lToggle.checked = Boolean(lCfg.enabled);
+        if (lEndpoint) lEndpoint.value = lCfg.endpoint || "http://localhost:11434";
+        if (lModel) lModel.value = lCfg.model || "qwen2.5:7b";
+    }
 
     if (modal) modal.classList.add("active");
 }
@@ -8876,6 +8918,16 @@ function saveSettingsForm(e) {
     }
     if (discordInput) {
         localStorage.setItem("ambu_discord_webhook", discordInput.value.trim());
+    }
+    if (window.CortexLocalAI) {
+        const lToggle = document.getElementById("localAiEnabledToggle");
+        const lEndpoint = document.getElementById("localAiEndpointInput");
+        const lModel = document.getElementById("localAiModelInput");
+        window.CortexLocalAI.saveConfig({
+            enabled: Boolean(lToggle && lToggle.checked),
+            endpoint: lEndpoint ? lEndpoint.value.trim() : "http://localhost:11434",
+            model: lModel ? lModel.value.trim() : "qwen2.5:7b"
+        });
     }
 
     closeSettingsModal();
@@ -10904,11 +10956,13 @@ function switchBotTab(tabName) {
     const tabBtns = {
         watchlist: document.getElementById("tabBtnWatchlist"),
         briefs: document.getElementById("tabBtnBriefs"),
+        smartmoney: document.getElementById("tabBtnSmartMoney"),
         logs: document.getElementById("tabBtnLogs")
     };
     const tabPanes = {
         watchlist: document.getElementById("botTabWatchlist"),
         briefs: document.getElementById("botTabBriefs"),
+        smartmoney: document.getElementById("botTabSmartMoney"),
         logs: document.getElementById("botTabLogs")
     };
 
@@ -10917,8 +10971,9 @@ function switchBotTab(tabName) {
         if (tabPanes[k]) tabPanes[k].classList.toggle("active", k === tabName);
     });
 
-    if (tabName === "logs" || tabName === "briefs") {
+    if (tabName === "logs" || tabName === "briefs" || tabName === "smartmoney") {
         renderAutonomousBotUI();
+        if (tabName === "smartmoney") renderSmartMoneyDirectoryUI();
     }
 }
 window.switchBotTab = switchBotTab;
@@ -10971,6 +11026,10 @@ function renderAutonomousBotUI() {
     if (botDiscordInput && !botDiscordInput.value) {
         botDiscordInput.value = localStorage.getItem("ambu_discord_webhook") || "";
     }
+    const dedupeToggle = document.getElementById("botDedupeToggle");
+    if (dedupeToggle && bot.config) {
+        dedupeToggle.checked = bot.config.dedupeEnabled !== false;
+    }
 
     // Render Topics List
     const topicsListContainer = document.getElementById("botTopicsListContainer");
@@ -10989,7 +11048,8 @@ function renderAutonomousBotUI() {
                         <div class="bot-topic-info">
                             <div class="bot-topic-title-row">
                                 <span class="bot-topic-title">${escapeHTML(t.title)}</span>
-                                <span class="bot-topic-category-badge">${escapeHTML(t.category || t.desk || 'topic')}</span>
+                                <span class="bot-topic-category-badge">${escapeHTML(t.monitorType === 'page' ? 'PAGE-DIFF' : (t.category || t.desk || 'topic'))}</span>
+                                ${t.goal ? `<span style="font-size: 0.68rem; color: #34d399; background: rgba(16,185,129,0.1); padding: 1px 6px; border-radius: 4px;">Goal: ${escapeHTML(t.goal.substring(0, 38))}${t.goal.length > 38 ? '…' : ''}</span>` : ''}
                             </div>
                             <div class="bot-topic-query" title="${escapeHTML(t.query)}">
                                 <i class="fa-solid fa-magnifying-glass" style="font-size: 0.70rem; color: #64748b;"></i> ${escapeHTML(t.query)}
@@ -11170,6 +11230,8 @@ function addCustomBotTopic() {
     const titleEl = document.getElementById("botNewTopicTitle");
     const queryEl = document.getElementById("botNewTopicQuery");
     const deskEl = document.getElementById("botNewTopicDesk");
+    const typeEl = document.getElementById("botNewMonitorType");
+    const goalEl = document.getElementById("botNewTopicGoal");
 
     const title = titleEl ? titleEl.value.trim() : "";
     const query = queryEl ? queryEl.value.trim() : "";
@@ -11183,9 +11245,13 @@ function addCustomBotTopic() {
     bot.addTopic({
         title,
         query,
+        targetUrl: (typeEl && typeEl.value === "page") ? query : "",
+        monitorType: typeEl ? typeEl.value : "search",
+        goal: goalEl ? goalEl.value.trim() : "",
         desk,
-        category: "custom"
+        category: (typeEl && typeEl.value === "page") ? "page_diff" : "custom"
     });
+    if (goalEl) goalEl.value = "";
 
     if (titleEl) titleEl.value = "";
     if (queryEl) queryEl.value = "";
@@ -11325,3 +11391,224 @@ setTimeout(() => {
 
 
 // Trigger cookie consent initialization in initCortexApp
+
+
+// ==========================================================================
+// CORTEX v6.9.0 CONTROLLERS: LOCAL AI GATEWAY, STATEFUL MONITOR & SMART MONEY 50
+// ==========================================================================
+
+async function testLocalAiGatewayNow() {
+    const statusEl = document.getElementById("localAiStatusMessage");
+    const endpointEl = document.getElementById("localAiEndpointInput");
+    const modelEl = document.getElementById("localAiModelInput");
+    const btn = document.getElementById("btnTestLocalAi");
+
+    if (!window.CortexLocalAI || !statusEl) return;
+    const endpoint = endpointEl ? endpointEl.value.trim() : "http://localhost:11434";
+
+    const origHTML = btn ? btn.innerHTML : "";
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Probing...';
+    }
+    statusEl.innerHTML = '<span style="color: #38bdf8;">Probing local inference server at <code>' + escapeHTML(endpoint) + '</code>...</span>';
+
+    try {
+        const res = await window.CortexLocalAI.detectModels(endpoint);
+        if (res.reachable) {
+            if (res.models.length > 0 && modelEl && (!modelEl.value || modelEl.value === "qwen2.5:7b")) {
+                modelEl.value = res.models[0];
+            }
+            const modelList = res.models.length > 0 ? res.models.slice(0, 5).join(", ") : "Connected (enter model ID manually)";
+            statusEl.innerHTML = '<span style="color: #34d399; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Connected (' + res.latencyMs + 'ms)</span> • Models: <code>' + escapeHTML(modelList) + '</code>';
+        } else {
+            statusEl.innerHTML = '<span style="color: #fbbf24;"><i class="fa-solid fa-circle-exclamation"></i> No active daemon detected on <code>' + escapeHTML(endpoint) + '</code>. Start your local server with browser CORS enabled, then click Save Settings.</span>';
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = origHTML;
+        }
+    }
+}
+window.testLocalAiGatewayNow = testLocalAiGatewayNow;
+
+function toggleBotDedupeMemory(checked) {
+    if (window.CortexAutonomousBot) {
+        window.CortexAutonomousBot.setDedupeEnabled(Boolean(checked));
+    }
+}
+window.toggleBotDedupeMemory = toggleBotDedupeMemory;
+
+function handleBotMonitorTypeChange(val) {
+    const queryEl = document.getElementById("botNewTopicQuery");
+    const titleEl = document.getElementById("botNewTopicTitle");
+    if (!queryEl) return;
+    if (val === "page") {
+        queryEl.placeholder = "Target Webpage URL to Diff (e.g. https://www.oaktreecapital.com/insights/memos)";
+        if (titleEl && !titleEl.value) titleEl.placeholder = "Page Monitor Title (e.g. Howard Marks Memos)";
+    } else {
+        queryEl.placeholder = "Search Query or Focus Parameters";
+        if (titleEl && !titleEl.value) titleEl.placeholder = "Monitor Title (e.g. Solid-State Battery Commercialization)";
+    }
+}
+window.handleBotMonitorTypeChange = handleBotMonitorTypeChange;
+
+let activeSmartMoneyCategory = "all";
+
+function renderSmartMoneyDirectoryUI(category = null) {
+    if (category) activeSmartMoneyCategory = category;
+    const container = document.getElementById("smartMoneyDirectoryList");
+    const countLabel = document.getElementById("smartMoneyCountLabel");
+    if (!container || !window.CortexInstitutionalRadar) return;
+
+    const list = window.CortexInstitutionalRadar.getSources(activeSmartMoneyCategory, "all");
+    if (countLabel) countLabel.textContent = `${list.length} Verified Institutional Source${list.length === 1 ? '' : 's'}`;
+
+    container.innerHTML = list.map(s => `
+        <div class="bot-topic-card">
+            <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+                <span style="font-family: var(--font-mono); font-size: 0.72rem; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 2px 6px; border-radius: 4px; flex-shrink: 0;">#${String(s.id).padStart(2, '0')}</span>
+                <div class="bot-topic-info">
+                    <div class="bot-topic-title-row">
+                        <a href="${escapeHTML(s.url)}" target="_blank" rel="noopener" class="bot-topic-title" style="text-decoration: none; color: #f8fafc;">${escapeHTML(s.name)} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.65rem; color: #38bdf8;"></i></a>
+                        <span class="bot-topic-category-badge">${escapeHTML(s.cadence)}</span>
+                    </div>
+                    <div class="bot-topic-query">${escapeHTML(s.desc)} • <span style="color: #64748b;">${escapeHTML(s.domain)}</span></div>
+                </div>
+            </div>
+            <div class="bot-topic-actions">
+                <button type="button" class="btn-topic-action" onclick="monitorSmartMoneySite(${s.id})" title="Add Page-Diff Monitor to Watchlist">
+                    <i class="fa-solid fa-code-compare text-emerald"></i> Track Diff
+                </button>
+                <button type="button" class="btn-topic-action" onclick="researchSmartMoneySite(${s.id})" title="Synthesize latest signals in workspace">
+                    <i class="fa-solid fa-magnifying-glass text-cyan"></i> Scan
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+window.renderSmartMoneyDirectoryUI = renderSmartMoneyDirectoryUI;
+
+function filterSmartMoneyDirectory(category, btnEl) {
+    const chips = document.querySelectorAll("#smartMoneyCategoryChips .btn-topic-action");
+    chips.forEach(c => c.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+    renderSmartMoneyDirectoryUI(category);
+}
+window.filterSmartMoneyDirectory = filterSmartMoneyDirectory;
+
+function monitorSmartMoneySite(siteId) {
+    if (!window.CortexInstitutionalRadar || !window.CortexAutonomousBot) return;
+    const site = window.CortexInstitutionalRadar.sources.find(s => s.id === siteId);
+    if (!site) return;
+
+    window.CortexAutonomousBot.addTopic({
+        title: `${site.name} — Institutional Page Diff`,
+        query: site.url,
+        targetUrl: site.url,
+        monitorType: "page",
+        goal: `Detect new filings, memos, portfolio trades, or macro updates on ${site.name}`,
+        desk: "finance",
+        category: "page_diff"
+    });
+    switchBotTab("watchlist");
+    renderAutonomousBotUI();
+}
+window.monitorSmartMoneySite = monitorSmartMoneySite;
+
+function researchSmartMoneySite(siteId) {
+    if (!window.CortexInstitutionalRadar) return;
+    const site = window.CortexInstitutionalRadar.sources.find(s => s.id === siteId);
+    if (!site) return;
+    closeAutonomousBotModal();
+    selectResearchDesk("finance");
+    executeSearch(`Latest institutional market findings, portfolio moves, and key insights from ${site.name} (${site.domain})`);
+}
+window.researchSmartMoneySite = researchSmartMoneySite;
+
+async function runLiveSmartMoneyRadarUI() {
+    const out = document.getElementById("smartMoneyDynamicOutput");
+    const btn = document.getElementById("btnRunSmartMoneyRadar");
+    if (!out || !window.CortexInstitutionalRadar) return;
+
+    const orig = btn ? btn.innerHTML : "";
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning 50 Sources...';
+    }
+
+    try {
+        const radar = await window.CortexInstitutionalRadar.synthesizeGlobalSmartMoneyRadar();
+        const badgeColor = (dir) => dir === "buy" ? "#34d399" : (dir === "sell_trim" ? "#f87171" : "#fbbf24");
+        const badgeBg = (dir) => dir === "buy" ? "rgba(16,185,129,0.14)" : (dir === "sell_trim" ? "rgba(239,68,68,0.14)" : "rgba(245,158,11,0.14)");
+
+        out.innerHTML = `
+            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 14px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+                    <strong style="color: #f8fafc; font-size: 0.9rem;"><i class="fa-solid fa-earth-americas text-cyan"></i> Cross-Asset Global Buy/Sell & Positioning Matrix (${radar.totalTrackedSites} Sites)</strong>
+                    <span style="font-size: 0.72rem; color: #94a3b8;">${radar.dailySitesCount} High-Frequency Feeds Active</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    ${radar.allocationMatrix.map(row => `
+                        <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 7px; padding: 9px 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                                <span style="font-size: 0.82rem; font-weight: 700; color: #f1f5f9;">${escapeHTML(row.assetClass)}</span>
+                                <span style="font-size: 0.68rem; font-weight: 700; color: ${badgeColor(row.direction)}; background: ${badgeBg(row.direction)}; padding: 2px 7px; border-radius: 4px;">${escapeHTML(row.signal)}</span>
+                            </div>
+                            <div style="font-size: 0.76rem; color: #94a3b8; line-height: 1.45; margin-bottom: 6px;">${escapeHTML(row.catalysts)}</div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                ${row.trackedVia.map(link => `<a href="${escapeHTML(link.url)}" target="_blank" rel="noopener" class="brief-source-chip"><i class="fa-solid fa-link"></i> ${escapeHTML(link.name)}</a>`).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="font-size: 0.70rem; color: #64748b; margin-top: 8px; font-style: italic;">${escapeHTML(radar.disclaimer)}</div>
+            </div>
+        `;
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+        }
+    }
+}
+window.runLiveSmartMoneyRadarUI = runLiveSmartMoneyRadarUI;
+
+async function lookupSecEdgarFilingsUI(overrideTicker = null) {
+    const input = document.getElementById("edgarTickerInput");
+    const out = document.getElementById("smartMoneyDynamicOutput");
+    if (!out || !window.CortexInstitutionalRadar) return;
+
+    const ticker = (overrideTicker || (input ? input.value : "BRK.A") || "BRK.A").trim();
+    if (input && overrideTicker) input.value = overrideTicker;
+
+    out.innerHTML = `<div style="padding: 12px; font-size: 0.8rem; color: #38bdf8;"><i class="fa-solid fa-spinner fa-spin"></i> Querying SEC EDGAR filings for <strong>${escapeHTML(ticker)}</strong>...</div>`;
+    const data = await window.CortexInstitutionalRadar.fetchSecEdgarFilings(ticker, 6);
+
+    out.innerHTML = `
+        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 12px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                <strong style="color: #f8fafc; font-size: 0.88rem;"><i class="fa-solid fa-scale-balanced text-cyan"></i> SEC EDGAR Regulatory Filings: ${escapeHTML(data.entityName)} (${escapeHTML(data.ticker)})</strong>
+                <a href="${escapeHTML(data.browseUrl)}" target="_blank" rel="noopener" style="font-size: 0.74rem; color: #38bdf8; text-decoration: none;">Open SEC CIK #${escapeHTML(data.cik)} ➔</a>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px;">
+                ${data.filings.map(f => `
+                    <a href="${escapeHTML(f.url)}" target="_blank" rel="noopener" style="text-decoration: none; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.74rem; font-weight: 700; color: #34d399;">${escapeHTML(f.form)}</span>
+                            <span style="font-size: 0.68rem; color: #94a3b8;">${escapeHTML(f.filingDate)}</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: #e2e8f0;">${escapeHTML(f.description)}</div>
+                    </a>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+window.lookupSecEdgarFilingsUI = lookupSecEdgarFilingsUI;
+
+function quickEdgarLookup(ticker) {
+    lookupSecEdgarFilingsUI(ticker);
+}
+window.quickEdgarLookup = quickEdgarLookup;

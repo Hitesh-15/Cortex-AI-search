@@ -1,10 +1,44 @@
 {
   "webhook_url": "YOUR_DISCORD_WEBHOOK_URL",
   "interval_hours": 24,
+  "enable_smart_money_50": true,
+  "page_monitors": [
+    {
+      "name": "Oaktree Capital — Howard Marks Memos",
+      "url": "https://www.oaktreecapital.com/insights/memos",
+      "goal": "Alert when a new investor memo title is published"
+    },
+    {
+      "name": "OpenInsider — Executive Form 4 Cluster Buys",
+      "url": "http://openinsider.com/latest-cluster-buys",
+      "goal": "Track new C-suite open-market cluster stock purchases"
+    },
+    {
+      "name": "Berkshire Hathaway — Shareholder Letters & Reports",
+      "url": "https://www.berkshirehathaway.com/letters/letters.html",
+      "goal": "Detect newly posted annual letters or quarterly financial filings"
+    }
+  ],
   "topics": [
-    "Artificial Intelligence Agents and Reasoning Models",
-    "Solid-State Battery Commercialization and EV Automakers",
-    "NVIDIA Blackwell GPUs and Datacenter Capex",
-    "Federal Reserve Interest Rate Trajectory and Inflation"
+    {
+      "title": "Artificial Intelligence Agents and Reasoning Models",
+      "query": "Autonomous AI agents test-time compute enterprise deployments",
+      "goal": "Only surface major frontier architecture launches and enterprise benchmarks"
+    },
+    {
+      "title": "Solid-State Battery Commercialization and EV Supply Chain",
+      "query": "Solid-state battery pilot lines gigafactory energy density",
+      "goal": "Report commercial mass-production milestones and OEM contracts"
+    },
+    {
+      "title": "NVIDIA Blackwell GPUs and Hyperscaler Datacenter Capex",
+      "query": "NVIDIA Blackwell HBM4 CoWoS hyperscaler capex gigawatt power",
+      "goal": "Track quarterly CapEx revisions, cluster shipments, and grid bottlenecks"
+    },
+    {
+      "title": "Global Central Banks, Gold Reserves and Sovereign Yields",
+      "query": "Federal Reserve ECB BIS gold reserves 10Y Treasury yield liquidity",
+      "goal": "Surface rate policy shifts, central bank bullion buying, and yield curve moves"
+    }
   ]
 }

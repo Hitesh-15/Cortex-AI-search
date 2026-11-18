@@ -1,4 +1,4 @@
-name: Cortex 24/7 Google Alerts Watchdog
+name: Cortex 24/7 Stateful Watchdog & Smart Money 50 Radar
 
 on:
   schedule:
@@ -18,7 +18,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run Cortex 24/7 Autonomous Alerts Bot
+      - name: Restore Stateful Monitor Snapshots & Deduplication Cache
+        uses: actions/cache@v4
+        with:
+          path: briefs/monitor_state.json
+          key: cortex-monitor-state-${{ github.run_id }}
+          restore-keys: |
+            cortex-monitor-state-
+
+      - name: Run Cortex Stateful Page-Diff & 50-Site Smart Money Radar
         env:
           CORTEX_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |

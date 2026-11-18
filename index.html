@@ -664,6 +664,28 @@
                     <span class="help-text" style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px; display: block;">Receive automated 24/7 background research alerts directly in your Discord channel.</span>
                 </div>
 
+                <!-- PRIVATE LOCAL AI RUNTIME CONNECTOR (localhost:11434 / OpenAI-Compatible) -->
+                <div class="form-group" style="margin-top: 18px; background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; flex-wrap: wrap;">
+                        <label for="localAiEndpointInput" style="margin: 0; font-size: 0.86rem; color: #f8fafc;"><i class="fa-solid fa-microchip text-emerald"></i> Private Local AI Runtime (<code>localhost</code> • $0.00)</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label style="display: inline-flex; align-items: center; gap: 5px; font-size: 0.76rem; color: #cbd5e1; cursor: pointer; margin: 0;">
+                                <input type="checkbox" id="localAiEnabledToggle" style="cursor: pointer;"> Enable
+                            </label>
+                            <button type="button" id="btnTestLocalAi" class="btn-secondary" onclick="testLocalAiGatewayNow()" style="font-size: 0.74rem; padding: 4px 10px; border-radius: 4px;">
+                                <i class="fa-solid fa-plug-circle-check text-emerald"></i> Detect & Test
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="text" id="localAiEndpointInput" class="text-input" placeholder="http://localhost:11434" value="http://localhost:11434" style="flex: 2; min-width: 180px; padding: 8px 10px; font-size: 0.82rem;">
+                        <input type="text" id="localAiModelInput" class="text-input" placeholder="qwen2.5:7b" value="qwen2.5:7b" style="flex: 1; min-width: 120px; padding: 8px 10px; font-size: 0.82rem;">
+                    </div>
+                    <div id="localAiStatusMessage" style="font-size: 0.75rem; color: #94a3b8; margin-top: 6px;">
+                        Connect directly to your own local model server on <code>localhost:11434</code> or <code>/v1</code> with zero cloud relay.
+                    </div>
+                </div>
+
                 <div class="modal-footer" style="margin-top: 24px;">
                     <button type="button" class="btn-secondary" id="btnCancelSettings" onclick="closeSettingsModal()">Cancel</button>
                     <button type="submit" class="btn-primary">Save Settings</button>
@@ -779,6 +801,9 @@
                     <button type="button" class="bot-tab-btn" id="tabBtnBriefs" onclick="switchBotTab('briefs')">
                         <i class="fa-solid fa-file-invoice text-amber"></i> Executive Briefs Vault (<span id="botVaultCount">0</span>)
                     </button>
+                    <button type="button" class="bot-tab-btn" id="tabBtnSmartMoney" onclick="switchBotTab('smartmoney')">
+                        <i class="fa-solid fa-building-columns text-emerald"></i> Smart Money 50 & EDGAR
+                    </button>
                     <button type="button" class="bot-tab-btn" id="tabBtnLogs" onclick="switchBotTab('logs')">
                         <i class="fa-solid fa-terminal text-purple"></i> Telemetry & Live Logs
                     </button>
@@ -787,13 +812,21 @@
                 <!-- TAB CONTENT 1: MONITORED TOPICS WATCHLIST -->
                 <div id="botTabWatchlist" class="bot-tab-pane active">
                     <div class="bot-pane-desc">
-                        <span>Select pre-configured institutional research tracks or add custom search prompts for recurring autonomous synthesis.</span>
+                        <span>Select pre-configured institutional tracks or add Stateful Topic / Webpage-Diff monitors with custom goal filtering and deduplication memory.</span>
+                        <label style="display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; font-size: 0.76rem; color: #38bdf8; cursor: pointer;">
+                            <input type="checkbox" id="botDedupeToggle" checked onchange="toggleBotDedupeMemory(this.checked)"> Stateful Dedupe (Skip Unchanged)
+                        </label>
                     </div>
 
                     <!-- CUSTOM TOPIC ADD FORM -->
                     <div class="bot-add-topic-form">
-                        <input type="text" id="botNewTopicTitle" placeholder="Topic Title (e.g. Solid-State Battery Commercialization)" class="bot-input-field">
-                        <input type="text" id="botNewTopicQuery" placeholder="Search Query / Focus Parameters" class="bot-input-field flex-2">
+                        <select id="botNewMonitorType" class="bot-select" style="max-width: 138px;" onchange="handleBotMonitorTypeChange(this.value)">
+                            <option value="search" selected>Topic Monitor</option>
+                            <option value="page">Page-Diff URL</option>
+                        </select>
+                        <input type="text" id="botNewTopicTitle" placeholder="Monitor Title (e.g. Oaktree Memos)" class="bot-input-field">
+                        <input type="text" id="botNewTopicQuery" placeholder="Search Query or Target URL (https://...)" class="bot-input-field flex-2">
+                        <input type="text" id="botNewTopicGoal" placeholder="Optional Goal Filter (e.g. Only new memos or pricing changes)" class="bot-input-field flex-2">
                         <select id="botNewTopicDesk" class="bot-select" style="max-width: 130px;">
                             <option value="finance">Finance</option>
                             <option value="web" selected>Market & Web</option>
@@ -830,6 +863,51 @@
                     </div>
                 </div>
 
+                <!-- TAB CONTENT 4: SMART MONEY 50 & SEC EDGAR TERMINAL -->
+                <div id="botTabSmartMoney" class="bot-tab-pane">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-size: 0.88rem; font-weight: 700; color: #f8fafc;"><i class="fa-solid fa-compass text-emerald"></i> 50-Site Billionaire, Insider & World Markets Radar</div>
+                            <div style="font-size: 0.76rem; color: #94a3b8;">Tracks SEC 13F superinvestor flows, Form 4 insider cluster buys/sells, central bank liquidity, commodities & valuation memos.</div>
+                        </div>
+                        <button type="button" id="btnRunSmartMoneyRadar" class="btn-primary" onclick="runLiveSmartMoneyRadarUI()" style="font-size: 0.78rem; padding: 7px 14px; white-space: nowrap;">
+                            <i class="fa-solid fa-satellite-dish"></i> Scan Global Buy/Sell Radar
+                        </button>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px;">
+                        <span style="font-size: 0.78rem; font-weight: 600; color: #38bdf8; white-space: nowrap;"><i class="fa-solid fa-scale-balanced"></i> SEC EDGAR Lookup:</span>
+                        <input type="text" id="edgarTickerInput" class="bot-input-field" placeholder="Ticker or Institution (e.g. BRK.A, NVDA, AAPL, MSFT, JPM, BLK)" value="BRK.A" style="max-width: 280px;">
+                        <button type="button" id="btnLookupEdgar" class="btn-secondary" onclick="lookupSecEdgarFilingsUI()" style="padding: 6px 12px; font-size: 0.76rem;">
+                            <i class="fa-solid fa-magnifying-glass text-cyan"></i> Fetch 10-K / 13F / Form 4
+                        </button>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-left: auto;">
+                            <button type="button" class="btn-topic-action" onclick="quickEdgarLookup('BRK.A')">BRK.A</button>
+                            <button type="button" class="btn-topic-action" onclick="quickEdgarLookup('NVDA')">NVDA</button>
+                            <button type="button" class="btn-topic-action" onclick="quickEdgarLookup('JPM')">JPM</button>
+                            <button type="button" class="btn-topic-action" onclick="quickEdgarLookup('BLK')">BLK</button>
+                        </div>
+                    </div>
+
+                    <div id="smartMoneyDynamicOutput" style="margin-bottom: 12px;"></div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="smartMoneyCategoryChips">
+                            <button type="button" class="btn-topic-action active" onclick="filterSmartMoneyDirectory('all', this)">All 50 Sites</button>
+                            <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('insider_13f', this)">Insider & 13F Flows</button>
+                            <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('central_banks_macro', this)">Central Banks & Macro</button>
+                            <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('letters_memos', this)">Billionaire Letters</button>
+                            <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('valuation_screeners', this)">Valuation & ETFs</button>
+                            <button type="button" class="btn-topic-action" onclick="filterSmartMoneyDirectory('research_commentary', this)">Quant & History</button>
+                        </div>
+                        <span id="smartMoneyCountLabel" style="font-size: 0.74rem; color: #94a3b8;">50 Verified Sources</span>
+                    </div>
+
+                    <div id="smartMoneyDirectoryList" class="bot-topics-list" style="max-height: 32vh;">
+                        <!-- Populated dynamically from CortexInstitutionalRadar -->
+                    </div>
+                </div>
+
                 <!-- TAB CONTENT 3: LIVE TELEMETRY LOGS -->
                 <div id="botTabLogs" class="bot-tab-pane">
                     <div class="bot-logs-toolbar">
@@ -863,10 +941,14 @@
             <div style="padding-top: 4px; font-size: 0.88rem; line-height: 1.6; color: #cbd5e1;">
                 <div style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <strong style="color: #38bdf8; font-size: 0.95rem;">🌐 Version 6.8.3 (Active Release • Domain Unification & Academic API Guard)</strong>
+                        <strong style="color: #38bdf8; font-size: 0.95rem;">🏛️ Version 6.9.0 (Active Release • Stateful Monitor, Local AI & Smart Money 50)</strong>
                         <span style="font-size: 0.72rem; color: #34d399; background: rgba(52, 211, 153, 0.15); padding: 2px 8px; border-radius: 12px; font-weight: 600;">LATEST</span>
                     </div>
-                    <p style="margin: 0; font-size: 0.82rem; color: #cbd5e1;">Production Domain Unification & Academic Rate-Limit Resilience: Unified canonical URLs, OpenGraph cards, legal pages, and deliverable watermarks to <code>ai.ambulkar.com</code>; tightened academic API routing with whole-word boundary matching so non-academic whitepaper prompts never trigger external DOI endpoints, paired with polite-pool headers and automatic HTTP 429 cooldown guards.</p>
+                    <p style="margin: 0; font-size: 0.82rem; color: #cbd5e1;">Stateful Page-Diff Monitor, Private Local AI Gateway & 50-Site Institutional Radar: Added zero-cost <code>localhost:11434</code> local model runtime connector, stateful deduplication & webpage diff monitoring with goal filters, live SEC EDGAR 10-K/13F/Form 4 lookup, and a 50-source global billionaire, insider & central-bank cross-asset Buy/Sell radar.</p>
+                </div>
+                <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 11px 15px; margin-bottom: 14px;">
+                    <strong style="color: #38bdf8; font-size: 0.90rem;">🌐 Version 6.8.3 (Domain Unification & Academic API Guard)</strong>
+                    <p style="margin-top: 3px; font-size: 0.80rem; color: #94a3b8;">Production Domain Unification & Academic Rate-Limit Resilience: Unified canonical URLs, OpenGraph cards, legal pages, and deliverable watermarks to <code>ai.ambulkar.com</code>; tightened academic API routing with whole-word boundary matching and HTTP 429 cooldown guards.</p>
                 </div>
                 <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 11px 15px; margin-bottom: 14px;">
                     <strong style="color: #38bdf8; font-size: 0.90rem;">🤖 Version 6.8.2 (Autonomous Research Bot)</strong>
@@ -949,6 +1031,8 @@
     <script src="src/verification/guardrails.js"></script>
     <script src="src/retrieval/retrieval_engine.js?v=2026.09.13.05"></script>
     <script src="src/core/agent_harness.js"></script>
+    <script src="src/core/local_ai_gateway.js"></script>
+    <script src="src/retrieval/institutional_radar.js"></script>
     <script src="src/core/autonomous_bot.js"></script>
     <!-- Application Script -->
     <script src="app.js?v=2026.09.13.10"></script>

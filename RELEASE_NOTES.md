@@ -2,6 +2,20 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## 🏛️ [v6.9.0] — 2026-11-17
+### **Stateful Page-Diff Monitor, Private Local AI Runtime & 50-Site Institutional Smart Money Radar**
+
+#### Detailed Enhancements in v6.9.0:
+1. **Stateful Webpage-Diff & Deduplicating Monitor Engine (`$0.00` Native Alternative)**:
+   - Upgraded `src/core/autonomous_bot.js` (`window.CortexAutonomousBot`) and `cortex_bot.py` with stateful content fingerprinting (`monitor_state.json` / `cortex_bot_monitor_state`), seen-URL deduplication memory, plain-English `goal` filtering, and line-level webpage text diffing (`difflib`).
+   - Added GitHub Actions cache persistence (`actions/cache@v4`) in `.github/workflows/cortex_alerts.yml` so daily scheduled runs maintain cross-day state and eliminate duplicate alert noise.
+2. **Private Local AI Runtime Connector (`src/core/local_ai_gateway.js`)**:
+   - Built `window.CortexLocalAI` (`cortex_local_ai` tool) supporting zero-cost (`$0.00`), 100% private client-to-localhost inference via `http://localhost:11434` (`/api/tags`, `/api/chat`) and OpenAI-compatible `/v1/chat/completions` servers.
+   - Integrated a **Private Local AI Runtime** configuration & live model discovery panel inside `#settingsModal` plus `/localai` spotlight command.
+3. **Institutional SEC EDGAR & 50-Site Global Smart Money Radar (`src/retrieval/institutional_radar.js`)**:
+   - Built `window.CortexInstitutionalRadar` (`cortex_sec_edgar` & `cortex_institutional_radar` tools) indexing all 50 institutional, superinvestor 13F, corporate Form 4 insider, central bank (Fed, ECB, BIS, FRED), commodity, and valuation sources.
+   - Added live SEC EDGAR regulatory filing lookup (`10-K`, `10-Q`, `8-K`, `13F-HR`, `Form 4`), a 5-tier **Cross-Asset Global Buy/Sell & Allocation Matrix** (spanning Hard Assets/Metals, Insider Cluster-Buy Equities, Sovereign Short-Duration Liquidity, Credit/Trim Warnings, and Global Energy/Value), a dedicated **Smart Money 50 & EDGAR** studio tab (`#botTabSmartMoney`), `--smart-money` CLI mode, and `/smartmoney` & `/edgar` slash commands.
+
 ## 🌐 [v6.8.3] — 2026-11-03
 ### **Production Domain Unification (`ai.ambulkar.com`), Academic API Word-Boundary Routing & UI/UX Compliance Verification**
 
