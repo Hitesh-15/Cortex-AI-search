@@ -2,6 +2,12 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## 🛡️ [v6.9.6] — 2026-11-17
+### **Live Service Outage & Status Engine, TV/Novel Homonym Gate & Source-Locked Lead Citations**
+1. **Live Service Outage & System Status Synthesis**: Added dedicated real-time outage/status detection (`Apple Services Down`, `Cloudflare outage`, `Is GitHub down`, AWS, Azure, OpenAI, Anthropic, Google Cloud, Stripe, Slack, Discord, and arbitrary services), pairing chronological incident wire checks (`search_by_date` 48h window) with official component status dashboards (`apple.com/support/systemstatus/`, `githubstatus.com`, `cloudflarestatus.com`, etc.) instead of generic encyclopedic company history.
+2. **Television Series, Streaming Adaptation & Novel Homonym Gate**: Blocked unrelated television series, streaming shows, miniseries, and novel adaptations (such as *Down Cemetery Road* matching `"Down"` + `"Apple"`) across retrieval, semantic re-ranking, and sentence extraction unless entertainment media is explicitly queried.
+3. **Source-Locked Lead Extraction (Zero Franken-Sentences)**: Locked `extractGrammaticalLead` to return the exact source index (`resolvedLeadSource`) for both the primary lead sentence and supporting lead clause, preventing cross-source sentence splicing or mismatched `[N]` badges.
+
 ## ⏱️ [v6.9.5] — 2026-11-17
 ### **Clock-Synchronized Telemetry Precision, 15-Minute Cache TTL & Click-to-Sync Header Clock**
 1. **Interactive Header Clock Sync (`#headerLiveClock`)**: Upgraded `#headerLiveClock` into an interactive live telemetry anchor displaying exact UTC timestamp and live feed age (`Feeds synced just now / Xs ago`), with 1-click manual cache-busted synchronization (`syncLiveTelemetryClock()`) across market spot prices and all 5 research desks.
