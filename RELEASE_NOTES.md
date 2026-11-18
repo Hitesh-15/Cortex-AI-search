@@ -2,6 +2,14 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## ⚡ [v6.9.2] — 2026-11-17
+### **Slash Command (`/`) & `@` Mention Real-Click Hit-Testing Fix & Full Interactive Audit**
+1. **Fixed `/` Slash Command Menu Click Interception (`pointer-events` & `z-index`)**:
+   - Restored `pointer-events: auto !important` on `.slash-commands-popup` (which previously inherited `pointer-events: none` from `.bottom-search-wrapper`, causing physical mouse clicks to pass through the menu).
+   - Centered `.slash-commands-popup` and `.at-mention-menu` directly above `#searchForm`, added `onmousedown` focus-preserving selection handlers, tailored active placeholders for each `/` command, and capped popup height (`min(320px, calc(100dvh - 220px))`) with elevated `z-index` so `.top-header` never overlaps items on compact split-screen viewports.
+2. **Real-Click End-to-End Interactive Verification**:
+   - Verified 100% pass across all 11 `/` commands, all 12 `@` mentions, all modals, tabs, and 58 UI regression checks using physical browser coordinate clicks.
+
 ## ✨ [v6.9.1] — 2026-11-17
 ### **Autonomous Bot Studio Spacious Widescreen UI & Single-Scroll Ergonomics**
 1. **Widescreen Studio Canvas (`1240px` × `92vh`)**: Expanded `#autonomousBotModal` width, padding, and vertical breathing room across all 4 studio tabs.

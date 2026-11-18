@@ -1538,7 +1538,7 @@ function handleAtMentionQuery() {
 
     activeMentionIndex = 0;
     menu.innerHTML = filtered.map((m, idx) => `
-        <div class="at-item ${idx === 0 ? 'active' : ''}" data-tag="${m.tag}" onclick="applyChosenMentionTag('${m.tag}')">
+        <div class="at-item ${idx === 0 ? 'active' : ''}" data-tag="${m.tag}" onmousedown="event.preventDefault(); applyChosenMentionTag('${m.tag}')" onclick="applyChosenMentionTag('${m.tag}')">
             <span class="at-tag">${m.tag}</span>
             <span class="at-name">${m.name}</span>
             <span class="at-desc">${m.desc}</span>
@@ -1557,7 +1557,11 @@ function updateActiveMentionItem(items) {
     });
 }
 
+let _lastMentionAppliedAt = 0;
 function applyChosenMentionTag(tag) {
+    const now = Date.now();
+    if (now - _lastMentionAppliedAt < 120) return;
+    _lastMentionAppliedAt = now;
     const input = document.getElementById("searchInput");
     if (!input) return;
 
@@ -1687,7 +1691,7 @@ function handleSlashCommandQuery() {
 
     activeSlashIndex = 0;
     menu.innerHTML = filtered.map((c, idx) => `
-        <div class="slash-cmd-item ${idx === 0 ? 'selected' : ''}" data-cmd="${c.cmd}" onclick="applyChosenSlashCommand('${c.cmd}')">
+        <div class="slash-cmd-item ${idx === 0 ? 'selected' : ''}" data-cmd="${c.cmd}" onmousedown="event.preventDefault(); applyChosenSlashCommand('${c.cmd}')" onclick="applyChosenSlashCommand('${c.cmd}')">
             <span class="slash-cmd-badge">${c.cmd}</span>
             <div class="slash-cmd-info" style="display: flex; flex-direction: column; gap: 2px;">
                 <span class="slash-cmd-title" style="color: #f8fafc; font-size: 13px; font-weight: 600;">${c.title}</span>
@@ -1700,7 +1704,13 @@ function handleSlashCommandQuery() {
     menu.classList.add("active");
 }
 
+let _lastSlashAppliedAt = 0;
+
 function applyChosenSlashCommand(cmd) {
+    const now = Date.now();
+    if (now - _lastSlashAppliedAt < 120) return;
+    _lastSlashAppliedAt = now;
+
     const input = document.getElementById("searchInput");
     const found = CORTEX_SLASH_COMMANDS.find(c => c.cmd === cmd);
     closeSlashCommandsMenu();
@@ -1720,6 +1730,7 @@ function applyChosenSlashCommand(cmd) {
         openAutonomousBotModal();
         switchBotTab("smartmoney");
         runLiveSmartMoneyRadarUI();
+        if (typeof showToast === "function") showToast("Opened Smart Money 50 Radar", "info");
         return;
     }
     if (found.mode === "edgar") {
@@ -1727,25 +1738,42 @@ function applyChosenSlashCommand(cmd) {
         openAutonomousBotModal();
         switchBotTab("smartmoney");
         setTimeout(() => document.getElementById("edgarTickerInput")?.focus(), 80);
+        if (typeof showToast === "function") showToast("Opened SEC EDGAR Filing Lookup", "info");
         return;
     }
     if (found.mode === "localai") {
         input.value = "";
         openSettingsModal();
         setTimeout(() => document.getElementById("localAiEndpointInput")?.focus(), 80);
+        if (typeof showToast === "function") showToast("Opened Private Local AI Runtime", "info");
         return;
     }
     if (found.mode === "studio") {
         input.value = "@studio ";
+        input.placeholder = "Enter topic for 5-slide Presentation Deck & Executive Whitepaper...";
         input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
         if (typeof showToast === "function") showToast("Presentation Deck Studio activated", "info");
-    } else {
-        const deskNav = document.querySelector(`.focus-nav-item[data-mode='${found.mode}']`);
-        if (deskNav) deskNav.click();
-        input.value = "";
-        input.focus();
-        if (typeof showToast === "function") showToast(`Switched to ${found.title}`, "info");
+        return;
     }
+
+    const deskNav = document.querySelector(`.focus-nav-item[data-mode='${found.mode}']`);
+    if (deskNav) deskNav.click();
+    input.value = "";
+
+    const slashPlaceholders = {
+        "/code": "Code Sandbox active — ask to write or run JS/Python algorithms...",
+        "/math": "Compute Sandbox active — enter math or CAGR (e.g. Calculate CAGR from 100 to 250 over 4 years)...",
+        "/chart": "SVG Chart Studio active — describe metrics or time-series to visualize...",
+        "/research": "Deep Web Intelligence active — ask any multi-source research question...",
+        "/academic": "Academic & arXiv Desk active — search peer-reviewed papers & preprints...",
+        "/finance": "Financial Markets Desk active — search equities, yields, macro & 10-K filings..."
+    };
+    if (slashPlaceholders[cmd]) {
+        input.placeholder = slashPlaceholders[cmd];
+    }
+    input.focus();
+    if (typeof showToast === "function") showToast(`${found.title} activated`, "info");
 }
 window.applyChosenSlashCommand = applyChosenSlashCommand;
 

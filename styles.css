@@ -4130,18 +4130,28 @@ option:active {
 .slash-commands-popup {
     position: absolute;
     bottom: calc(100% + 10px);
-    left: 14px;
-    width: 340px;
-    max-height: 300px;
-    background: rgba(13, 19, 32, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: min(560px, calc(100% - 32px));
+    max-width: var(--content-max-width, 860px);
+    max-height: min(320px, calc(100dvh - 220px));
+    background: rgba(13, 19, 32, 0.98);
+    border: 1px solid rgba(56, 189, 248, 0.32);
     border-radius: 14px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(56, 189, 248, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.85), 0 0 32px rgba(56, 189, 248, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 1200;
     padding: 8px;
     display: none;
+    pointer-events: auto !important;
     backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+}
+
+.bottom-search-wrapper:has(.slash-commands-popup.active),
+.bottom-search-wrapper:has(#atMentionMenu:not([style*="display: none"])) {
+    z-index: 65 !important;
 }
 
 .slash-commands-popup.active {
@@ -4153,9 +4163,11 @@ option:active {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 9px 12px;
-    border-radius: 8px;
+    padding: 10px 14px;
+    border-radius: 9px;
     cursor: pointer;
+    pointer-events: auto !important;
+    user-select: none;
     transition: all 0.15s ease;
 }
 
