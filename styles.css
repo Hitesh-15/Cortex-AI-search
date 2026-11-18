@@ -3170,6 +3170,49 @@ option:active {
     margin: 0 0 8px 0;
 }
 
+
+.digest-status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+.digest-live-ticker-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.digest-live-ticker-strip .sparkline-pill {
+    cursor: pointer;
+    padding: 7px 11px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.digest-live-ticker-strip .sparkline-pill:hover {
+    transform: translateY(-1px);
+    border-color: rgba(56, 189, 248, 0.45);
+}
+
+.digest-asset-name {
+    color: #f8fafc;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.74rem;
+}
+
 .digest-lead-desc {
     font-size: 0.88rem;
     color: #cbd5e1;
