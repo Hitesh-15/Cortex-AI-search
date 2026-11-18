@@ -10,7 +10,7 @@ All notable changes, continuous architectural improvements, and daily/weekly fea
    - **02 • Compute Scale, Silicon & Power Grid** (`$320B+` hyperscaler CapEx, `HBM4` / `CoWoS-L`, `2nm` foundry yields, and `120kW+` nuclear/baseload power interconnects).
    - **03 • Agentic Harnesses & Private Local AI** (Observe–Plan–Act–Reflect tool loops, deterministic math/code sandboxes, and `$0.00` `localhost:11434` local model routing).
    - **04 • Live Wire & Stateful Watchdog Feed** (dynamically populated from the live multi-index sources crawled in that exact cycle + active stateful monitor count).
-3. **Interactive Citation Parity & Query Scoping**: Upgraded all Digest inline `[N]` badges to interactive hover-preview & click-to-highlight `<button class="citation-ref">` elements, and tightened `isDigest` detection so generic queries containing `"briefing"` never falsely trigger the Morning Digest template.
+3. **Interactive Citation Parity, Query Scoping & License Attribution**: Upgraded all Digest inline `[N]` badges to interactive hover-preview & click-to-highlight `<button class="citation-ref">` elements, tightened `isDigest` detection, and aligned `LICENSE` copyright attribution (`Copyright (c) 2026 Hitesh Ambulkar`) with `ai.ambulkar.com` and legal pages.
 
 ## 🪶 [v6.9.3] — 2026-11-17
 ### **Quiet Single-Row Answer Footer & `Export ▾` Popover Menu**
