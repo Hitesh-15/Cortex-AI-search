@@ -546,17 +546,22 @@ class CortexAutonomousBotEngine {
      */
     constructExecutiveBrief(topic, sources, computedMetrics, durationSec, stateMeta = {}) {
         const id = `brief_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-        const timestamp = new Date().toISOString();
+        const hasClock = typeof window !== 'undefined' && window.cortexTemporal;
+        const timestamp = hasClock && typeof window.cortexTemporal.getExactUtcIso === 'function'
+            ? window.cortexTemporal.getExactUtcIso()
+            : new Date().toISOString();
         const dateStr = new Date().toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric'
         });
-        const timeStr = new Date().toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZoneName: 'short'
-        });
+        const timeStr = hasClock && typeof window.cortexTemporal.getCurrentTime === 'function'
+            ? window.cortexTemporal.getCurrentTime()
+            : new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+            });
 
         const safeSources = (sources && sources.length > 0) ? sources.slice(0, 5) : [];
         const isSmartMoney = topic.id === 'smart_money_50' || topic.category === 'smart_money';

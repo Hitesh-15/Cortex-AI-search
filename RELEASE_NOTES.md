@@ -2,6 +2,13 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## ⏱️ [v6.9.5] — 2026-11-17
+### **Clock-Synchronized Telemetry Precision, 15-Minute Cache TTL & Click-to-Sync Header Clock**
+1. **Interactive Header Clock Sync (`#headerLiveClock`)**: Upgraded `#headerLiveClock` into an interactive live telemetry anchor displaying exact UTC timestamp and live feed age (`Feeds synced just now / Xs ago`), with 1-click manual cache-busted synchronization (`syncLiveTelemetryClock()`) across market spot prices and all 5 research desks.
+2. **Strict 15-Minute Clock TTL Eviction**: Enforced a 15-minute age check (`Date.now() - lastUpdated`) on `cortex_master_telemetry_v3` and `cortex_live_trends_v10` in `localStorage` so stale cached snapshots never persist across sessions.
+3. **HTTP Cache-Busting (`cache: "no-store"`) & Chronological Recency Retrieval**: Added `cache: "no-store"` across live market ticker, trending desk, Wikipedia, and Hacker News endpoints; added dual relevance + chronological (`search_by_date`) retrieval for recency queries (`latest`, `today`, `current`, `breaking`, `this week`); and eliminated remaining hardcoded fallback market figures in `fetchWebSources` by wiring every asset directly to `cortexTemporal`.
+4. **Full Clock Injection in Private Local AI & Autonomous Watchdog**: Injected `cortexTemporal.getSystemPromptContext()` and crawl timestamps into `src/core/local_ai_gateway.js` and aligned `src/core/autonomous_bot.js` executive brief timestamps with `cortexTemporal`.
+
 ## ☀️ [v6.9.4] — 2026-11-17
 ### **Evolved Executive Daily Intelligence Briefing (Live Ticker Sync, Smart Money 50 & Agentic Runtimes)**
 1. **Live DOM Market Telemetry Sync**: Replaced stale hardcoded 2024/2025 benchmark figures (`$76.80` oil, `4.26%` 10Y, `$220B` CapEx) with a balanced 3×2 clickable cross-asset strip dynamically synchronized to Cortex's live header telemetry (`GOLD`, `COPPER`, `BRENT OIL`, `S&P 500`, `NASDAQ`, `US 10Y`).

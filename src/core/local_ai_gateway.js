@@ -138,17 +138,25 @@ class CortexLocalAIGatewayEngine {
             .map((s, idx) => `[${s.num || idx + 1}] ${s.title}: ${s.snippet || ''}`)
             .join('\n');
 
+        const temporalContext = (typeof window !== 'undefined' && window.cortexTemporal && typeof window.cortexTemporal.getSystemPromptContext === 'function')
+            ? window.cortexTemporal.getSystemPromptContext()
+            : '';
+        const crawlStamp = (typeof window !== 'undefined' && window.cortexTemporal && typeof window.cortexTemporal.getTodayFull === 'function')
+            ? ` (Crawled ${window.cortexTemporal.getTodayFull()} at ${window.cortexTemporal.getCurrentTime()})`
+            : '';
+
         const systemPrompt = [
             'You are Cortex (ai.ambulkar.com), a high-precision, direct AI research engine.',
+            temporalContext,
             'Follow the 4-Part Structure strictly:',
             '1. Direct bottom-line answer in the first 1-2 sentences with inline citations like <span class="citation-ref">[1]</span>.',
             '2. Structured subheading (### ...) with bullet points starting with bold concepts (* **Concept:** Explanation [1]).',
             '3. Context & Implications narrative paragraph.',
             '4. Distinct architectural or strategic takeaway in <div class="cortex-takeaway-card"><div class="cortex-takeaway-label"><i class="fa-solid fa-lightbulb text-amber"></i> Key Takeaway</div><p class="cortex-takeaway-text">...</p></div> (omit for simple factual/math lookups).',
             'Zero meta-commentary or disclaimers.'
-        ].join('\n');
+        ].filter(Boolean).join('\n');
 
-        const userPrompt = `Query: "${query}"\n\nVerified Sources:\n${sourceContext}`;
+        const userPrompt = `Query: "${query}"\n\nVerified Sources${crawlStamp}:\n${sourceContext}`;
         const v1ChatUrl = base.endsWith('/v1') ? `${base}/chat/completions` : `${base}/v1/chat/completions`;
 
         try {

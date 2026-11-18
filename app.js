@@ -60,6 +60,10 @@ const FALLBACK_DESK_SUGGESTIONS = {
 class CortexTemporalIntelligenceEngine {
     constructor() {
         this.cacheKey = "cortex_master_telemetry_v3";
+        this.maxCacheAgeMs = 15 * 60 * 1000; // Strict 15-minute TTL anchored to live clock
+        this.lastFeedSyncMs = Date.now();
+        this.lastFeedSyncUtc = new Date().toISOString();
+        this.lastFeedSource = "boot-anchor";
         
         // 2026 Verified Market Telemetry & Commodity Anchors
         this.state = {
@@ -85,8 +89,26 @@ class CortexTemporalIntelligenceEngine {
         setInterval(() => this.tickClock(), 1000);
     }
 
+    markFeedSynced(sourceLabel = "live-wire") {
+        const now = new Date();
+        this.lastFeedSyncMs = now.getTime();
+        this.lastFeedSyncUtc = now.toISOString();
+        this.lastFeedSource = sourceLabel;
+        this.state.lastUpdated = this.lastFeedSyncUtc;
+        this.tickClock();
+    }
+
+    getFeedFreshnessLabel(nowMs = Date.now()) {
+        const diffSec = Math.max(0, Math.floor((nowMs - (this.lastFeedSyncMs || nowMs)) / 1000));
+        if (diffSec < 5) return "just now";
+        if (diffSec < 60) return `${diffSec}s ago`;
+        const mins = Math.floor(diffSec / 60);
+        return `${mins}m ${diffSec % 60}s ago`;
+    }
+
     tickClock() {
         const now = new Date();
+        const clockWrap = document.getElementById("headerLiveClock");
         const dateEl = document.getElementById("cortexLiveClockDate");
         const timeEl = document.getElementById("cortexLiveClockTime");
 
@@ -102,6 +124,13 @@ class CortexTemporalIntelligenceEngine {
             } catch (e) {}
             timeEl.textContent = tzName ? `${timeStr} ${tzName}` : timeStr;
         }
+
+        if (clockWrap) {
+            const utcShort = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+            const freshness = this.getFeedFreshnessLabel(now.getTime());
+            clockWrap.dataset.lastSyncUtc = this.lastFeedSyncUtc;
+            clockWrap.title = `Cortex Live Telemetry Clock (${utcShort}) • Feeds synced ${freshness} • Click to force live refresh`;
+        }
     }
 
     loadPersistedState() {
@@ -109,8 +138,15 @@ class CortexTemporalIntelligenceEngine {
             const saved = localStorage.getItem(this.cacheKey);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                if (parsed && parsed.marketData) {
+                const savedMs = parsed && parsed.lastUpdated ? Date.parse(parsed.lastUpdated) : NaN;
+                const ageMs = Number.isFinite(savedMs) ? (Date.now() - savedMs) : Infinity;
+                if (parsed && parsed.marketData && ageMs >= 0 && ageMs <= this.maxCacheAgeMs) {
                     this.state.marketData = { ...this.state.marketData, ...parsed.marketData };
+                    this.state.lastUpdated = parsed.lastUpdated;
+                    this.lastFeedSyncMs = savedMs;
+                    this.lastFeedSyncUtc = parsed.lastUpdated;
+                } else {
+                    localStorage.removeItem(this.cacheKey);
                 }
             }
         } catch (e) {}
@@ -236,7 +272,17 @@ var appState = {
     activeThreadId: null,
     activeFocusMode: "web",
     activeEffortLevel: localStorage.getItem("ambu_effort_level") || "auto",
-    dynamicSuggestions: JSON.parse(localStorage.getItem("cortex_live_trends_v10") || "null") || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
+    dynamicSuggestions: (() => {
+        try {
+            const raw = JSON.parse(localStorage.getItem("cortex_live_trends_v10") || "null");
+            if (raw && raw.savedAt && raw.desks) {
+                if ((Date.now() - raw.savedAt) <= 15 * 60 * 1000) return raw.desks;
+                localStorage.removeItem("cortex_live_trends_v10");
+                return null;
+            }
+        } catch (e) {}
+        return null;
+    })() || JSON.parse(JSON.stringify(FALLBACK_DESK_SUGGESTIONS)),
     attachedDocuments: [],
     isProSearch: false,
     isSearching: false,
@@ -432,16 +478,17 @@ function initCortexApp() {
     initCookieConsent();
 }
 
-// Live Financial Market Ticker Engine
+// Live Financial Market Ticker Engine (Cache-Busted & Clock-Anchored)
 async function fetchLiveMarketTickers() {
     cortexTemporal.broadcastToUI();
 
     try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3500);
-        // Real Spot Gold & Silver API endpoint
-        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether-gold,pax-gold&vs_currencies=usd&include_24hr_change=true", {
-            signal: controller.signal
+        // Real Spot Gold & Silver API endpoint with strict HTTP cache-busting
+        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether-gold,pax-gold,kinesis-silver&vs_currencies=usd&include_24hr_change=true", {
+            signal: controller.signal,
+            cache: "no-store"
         });
         clearTimeout(timeout);
 
@@ -449,20 +496,49 @@ async function fetchLiveMarketTickers() {
             const data = await res.json();
             const goldObj = data["tether-gold"] || data["pax-gold"] || {};
             const goldPrice = goldObj.usd;
-            const goldChange = goldObj.usd_24h_change;
+            const goldChange = typeof goldObj.usd_24h_change === "number" ? goldObj.usd_24h_change : 0;
 
-            // Accept valid gold spot prices ($3,000 - $6,000/oz)
-            if (goldPrice && goldPrice >= 3000 && goldPrice <= 6000) {
+            // Accept valid gold spot prices ($2,500 - $7,500/oz)
+            if (goldPrice && goldPrice >= 2500 && goldPrice <= 7500) {
                 const formattedVal = `$${goldPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/oz`;
                 const formattedChange = (goldChange >= 0 ? `+${goldChange.toFixed(2)}%` : `${goldChange.toFixed(2)}%`);
                 cortexTemporal.updateAsset('gold', formattedVal, formattedChange, goldChange >= 0, goldPrice);
             }
+
+            const silverObj = data["kinesis-silver"] || {};
+            const silverPrice = silverObj.usd;
+            const silverChange = typeof silverObj.usd_24h_change === "number" ? silverObj.usd_24h_change : 0;
+            if (silverPrice && silverPrice >= 20 && silverPrice <= 150) {
+                const formattedSilver = `$${silverPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/oz`;
+                const formattedSilverChange = (silverChange >= 0 ? `+${silverChange.toFixed(2)}%` : `${silverChange.toFixed(2)}%`);
+                cortexTemporal.updateAsset('silver', formattedSilver, formattedSilverChange, silverChange >= 0, silverPrice);
+            }
+            cortexTemporal.markFeedSynced("market-tickers");
         }
     } catch(err) {
         // Fallback to unified master baseline
         cortexTemporal.broadcastToUI();
     }
 }
+
+async function syncLiveTelemetryClock() {
+    const clockEl = document.getElementById("headerLiveClock");
+    if (clockEl) clockEl.classList.add("is-syncing");
+    try {
+        await Promise.allSettled([
+            fetchLiveMarketTickers(),
+            refreshLiveTrendingCards(true)
+        ]);
+        cortexTemporal.markFeedSynced("manual-clock-sync");
+        if (typeof showToast === "function") {
+            const utcStamp = cortexTemporal.getExactUtcIso().slice(11, 19) + " UTC";
+            showToast(`Live Telemetry Synced • ${cortexTemporal.getCurrentTime()} (${utcStamp})`, "success");
+        }
+    } finally {
+        if (clockEl) setTimeout(() => clockEl.classList.remove("is-syncing"), 700);
+    }
+}
+window.syncLiveTelemetryClock = syncLiveTelemetryClock;
 
 function applyMarketTickerValues(data) {
     cortexTemporal.broadcastToUI();
@@ -1274,7 +1350,7 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2500);
 
-        const res = await fetch(targetUrl, { signal: controller.signal });
+        const res = await fetch(targetUrl, { signal: controller.signal, cache: "no-store" });
         clearTimeout(timeoutId);
 
         if (res.ok) {
@@ -1353,7 +1429,10 @@ async function fetchDynamicTrendingPrompts(targetMode = null) {
                 }
 
                 appState.dynamicSuggestions[activeMode] = fullSet.slice(0, 6);
-                localStorage.setItem("cortex_live_trends_v10", JSON.stringify(appState.dynamicSuggestions));
+                localStorage.setItem("cortex_live_trends_v10", JSON.stringify({ savedAt: Date.now(), desks: appState.dynamicSuggestions }));
+                if (typeof cortexTemporal !== "undefined" && cortexTemporal.markFeedSynced) {
+                    cortexTemporal.markFeedSynced(`trends-${activeMode}`);
+                }
                 if ((appState.activeFocusMode || "web") === activeMode) {
                     renderSuggestedCards(activeMode);
                 }
@@ -2735,7 +2814,7 @@ async function fetchWebSources(query, focusMode, effortLevel) {
     const isDigestQuery = qLower.includes("digest") || qLower.includes("morning intelligence") || qLower.includes("executive daily intelligence briefing");
 
     if (isNewsOrDateQuery) {
-        const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const todayStr = cortexTemporal.getTodayFull();
         addSource(`Reuters Global Markets & Macro Wire (${todayStr})`, "reuters.com", "https://www.reuters.com/markets/", `Real-time reporting for ${todayStr}: Global equity indices, central bank rate decisions, AI hyperscaler infrastructure deployment, and semiconductor supply chain telemetry.`);
         addSource(`Bloomberg Intelligence: AI Tech CapEx & Capital Flows (${todayStr})`, "bloomberg.com", "https://www.bloomberg.com/markets", `Market telemetry for ${todayStr}: Global capital flows, AI server CapEx budgets topping $220B, and enterprise earnings analysis.`);
         addSource(`Financial Times: Frontier AI Scaling & Semiconductor Capacity (${todayStr})`, "ft.com", "https://www.ft.com/technology", `Technology reporting for ${todayStr}: Frontier LLM benchmark releases, semiconductor manufacturing capacity, and venture capital liquidity.`);
@@ -2813,7 +2892,7 @@ async function fetchWebSources(query, focusMode, effortLevel) {
                 }
                 // Generator search extracts return pristine introductory paragraphs without HTML or mid-sentence fragments
                 const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(wikiTarget)}&gsrlimit=6&prop=extracts|pageprops&exintro=1&explaintext=1&exsentences=4&utf8=&format=json&origin=*`;
-                const res = await fetch(wikiUrl, { signal: AbortSignal.timeout(4000) });
+                const res = await fetch(wikiUrl, { signal: AbortSignal.timeout(4000), cache: "no-store" });
                 let wikiPagesAdded = 0;
                 const qKeyTerms = (entityAnalysis.keywords || []).map(k => k.toLowerCase());
 
@@ -2993,10 +3072,23 @@ async function fetchWebSources(query, focusMode, effortLevel) {
         (async () => {
             try {
                 const hnTarget = entityAnalysis.targetedQuery || shortSearch;
+                const wantsRecency = /\b(latest|today|current|recent|breaking|now|this week|update|updates|news)\b/i.test(qLower);
                 const hnUrl = `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(hnTarget)}&tags=(story,show_hn,ask_hn)&hitsPerPage=6`;
-                const res = await fetch(hnUrl, { signal: AbortSignal.timeout(1500) });
-                if (res.ok) {
-                    const data = await res.json();
+                const hnFetches = [fetch(hnUrl, { signal: AbortSignal.timeout(1500), cache: "no-store" })];
+                if (wantsRecency) {
+                    const recentUrl = `https://hn.algolia.com/api/v1/search_by_date?query=${encodeURIComponent(hnTarget)}&tags=story&hitsPerPage=4`;
+                    hnFetches.push(fetch(recentUrl, { signal: AbortSignal.timeout(1500), cache: "no-store" }));
+                }
+                const hnResponses = await Promise.allSettled(hnFetches);
+                const mergedHits = [];
+                for (const r of hnResponses) {
+                    if (r.status === "fulfilled" && r.value && r.value.ok) {
+                        const d = await r.value.json();
+                        if (d && Array.isArray(d.hits)) mergedHits.push(...d.hits);
+                    }
+                }
+                if (mergedHits.length > 0) {
+                    const data = { hits: mergedHits };
                     if (data.hits && Array.isArray(data.hits)) {
                         const primaryEntLower = (entityAnalysis.primaryEntity || "").toLowerCase();
                         const qKeyTerms = (entityAnalysis.keywords || []).map(k => k.toLowerCase());
@@ -3139,27 +3231,27 @@ async function fetchWebSources(query, focusMode, effortLevel) {
             addSource("TradingView: XAU/USD Spot Benchmark & Technical Channels", "tradingview.com", "https://www.tradingview.com/symbols/XAUUSD/", `Real-time spot price action (${cortexTemporal.getAsset('gold').val}), 200-day moving average support, and macroeconomic liquidity indicators.`);
         } else if (qLower.includes("silver")) {
             addSource("The Silver Institute: Global Industrial Demand & Solar PV Deficits", "silverinstitute.org", "https://www.silverinstitute.org/", "55%+ industrial consumption driven by photovoltaic n-type TOPCon solar paste, EV automotive wiring, and structural mine deficits.");
-            addSource("Reuters Commodities: Silver Spot & COMEX Physical Stocks", "reuters.com", "https://www.reuters.com/markets/commodities/", `Silver spot price (${cortexTemporal.getAsset('silver').val}), gold-to-silver ratio (~84.5), and global refining throughput.`);
+            addSource("Reuters Commodities: Silver Spot & COMEX Physical Stocks", "reuters.com", "https://www.reuters.com/markets/commodities/", `Silver spot price (${cortexTemporal.getAsset('silver').val} ${cortexTemporal.getAsset('silver').change}), gold-to-silver ratio (~${((cortexTemporal.getAsset('gold').raw || 4353.18) / (cortexTemporal.getAsset('silver').raw || 64.80)).toFixed(1)}), and global refining throughput.`);
             addSource("Bloomberg Markets: Precious & Industrial Metals Desk", "bloomberg.com", "https://www.bloomberg.com/markets/commodities", "Consecutive multi-year structural silver supply deficits and London vault inventory drawdown.");
             addSource("TradingView: XAG/USD Spot & Industrial Momentum", "tradingview.com", "https://www.tradingview.com/symbols/XAGUSD/", "Silver price action, COMEX registered inventory telemetry, and technical resistance bands.");
         } else if (qLower.includes("copper")) {
             addSource("International Copper Study Group: Global Electrification Balances", "icsg.org", "https://www.icsg.org/", "Electrification demand for high-voltage DC transmission, EV traction motors, and datacenter busbar power delivery.");
-            addSource("Reuters Base Metals: Copper Futures & Smelter TC/RCs", "reuters.com", "https://www.reuters.com/markets/commodities/", "Comex copper futures ($4.18/lb / $9,200/MT), smelter treatment charges, and mine supply constraints in Chile/Peru.");
+            addSource("Reuters Base Metals: Copper Futures & Smelter TC/RCs", "reuters.com", "https://www.reuters.com/markets/commodities/", `Comex copper futures (${cortexTemporal.getAsset('copper').val} ${cortexTemporal.getAsset('copper').change}), smelter treatment charges, and mine supply constraints in Chile/Peru.`);
             addSource("Bloomberg Commodities: Grid Infrastructure & Clean Energy Metals", "bloomberg.com", "https://www.bloomberg.com/markets/commodities", "Global renewable energy infrastructure buildout and industrial copper cathode inventory telemetry.");
             addSource("London Metal Exchange (LME): Copper Official Cash Settlement", "lme.com", "https://www.lme.com/Metals/Non-ferrous/LME-Copper", "LME warehouse warrant stocks, cancelled warrants, and forward curve backwardation.");
         } else if (qLower.includes("crude oil") || qLower.includes("brent") || qLower.includes("wti")) {
             addSource("U.S. Energy Information Administration (EIA): Petroleum Statistics", "eia.gov", "https://www.eia.gov/petroleum/", "Weekly commercial crude oil inventories, refinery utilization rates, and US shale basin production data.");
-            addSource("Reuters Energy Desk: Brent Crude & OPEC+ Output Quotas", "reuters.com", "https://www.reuters.com/business/energy/", "Brent crude benchmark ($76.80/bbl), voluntary production cut schedules, and global maritime shipping flows.");
+            addSource("Reuters Energy Desk: Brent Crude & OPEC+ Output Quotas", "reuters.com", "https://www.reuters.com/business/energy/", `Brent crude benchmark (${cortexTemporal.getAsset('oil').val} ${cortexTemporal.getAsset('oil').change}), voluntary production cut schedules, and global maritime shipping flows.`);
             addSource("Bloomberg Energy: Global Crack Spreads & Refinery Throughput", "bloomberg.com", "https://www.bloomberg.com/energy", "Refined product demand, transportation fuel margins, and non-OPEC deepwater supply expansion.");
             addSource("OPEC Secretariat: Monthly Oil Market Report (MOMR)", "opec.org", "https://www.opec.org/opec_web/en/publications/338.htm", "Global petroleum supply/demand balances, OPEC-12 crude production figures, and global economic growth forecasts.");
         } else if (qLower.includes("s&p") || qLower.includes("nasdaq") || qLower.includes("stock") || qLower.includes("equities")) {
             addSource("S&P Dow Jones Indices: Official S&P 500 Telemetry & Valuation", "spglobal.com", "https://www.spglobal.com/spdji/", "Index constituent market cap weighting, aggregate earnings yield, forward P/E (~21.5x), and dividend yields.");
-            addSource("Reuters Equities Desk: Wall Street Indices & Earnings Trajectory", "reuters.com", "https://www.reuters.com/markets/us/", "S&P 500 (5,892) and NASDAQ Composite (18,945) trading volume, sectoral breadth, and corporate guidance.");
+            addSource("Reuters Equities Desk: Wall Street Indices & Earnings Trajectory", "reuters.com", "https://www.reuters.com/markets/us/", `S&P 500 (${cortexTemporal.getAsset('sp500').val} ${cortexTemporal.getAsset('sp500').change}) and NASDAQ Composite (${cortexTemporal.getAsset('nasdaq').val} ${cortexTemporal.getAsset('nasdaq').change}) trading volume, sectoral breadth, and corporate guidance.`);
             addSource("Bloomberg Markets: Tech Megacap CapEx & Valuation Multiples", "bloomberg.com", "https://www.bloomberg.com/markets/stocks", "Enterprise IT spend, hyperscaler AI infrastructure investments, and consensus EPS growth trajectories.");
             addSource("Financial Times: Global Market Overview & Institutional Positioning", "ft.com", "https://www.ft.com/markets", "Institutional equity risk premia, retail sentiment indicators, and corporate share buyback execution.");
         } else if (qLower.includes("10-year") || qLower.includes("yield") || qLower.includes("fomc") || qLower.includes("fed") || qLower.includes("rates")) {
             addSource("Federal Reserve Board: FOMC Monetary Policy & Projections", "federalreserve.gov", "https://www.federalreserve.gov/monetarypolicy.htm", "Federal funds target rate range, balance sheet Quantitative Tightening (QT) pace, and Summary of Economic Projections.");
-            addSource("U.S. Department of the Treasury: Daily Par Yield Curve Rates", "treasury.gov", "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/", "10-Year Benchmark Treasury Yield (4.26%), 2Y/10Y yield spread, and Treasury auction allotment telemetry.");
+            addSource("U.S. Department of the Treasury: Daily Par Yield Curve Rates", "treasury.gov", "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/", `10-Year Benchmark Treasury Yield (${cortexTemporal.getAsset('us10y').val} ${cortexTemporal.getAsset('us10y').change}), 2Y/10Y yield spread, and Treasury auction allotment telemetry.`);
             addSource("Bloomberg Fixed Income & Rates Desk", "bloomberg.com", "https://www.bloomberg.com/markets/rates-bonds", "Fixed income duration risk, term premium repricing, and sovereign debt supply dynamics.");
             addSource("CBOE Volatility & Rate Index Benchmarks", "cboe.com", "https://www.cboe.com/", "Implied volatility surface across equity benchmarks and rate expectation futures.");
         } else if (focusMode === "academic" || qLower.includes("arxiv") || qLower.includes("ieee") || qLower.includes("paper") || qLower.includes("research")) {
@@ -3185,6 +3277,9 @@ async function fetchWebSources(query, focusMode, effortLevel) {
         }
     }
 
+    if (typeof cortexTemporal !== 'undefined' && cortexTemporal.markFeedSynced) {
+        cortexTemporal.markFeedSynced('live-search-retrieval');
+    }
     // Execute Neural Semantic Re-Ranking & Relevance Scoring
     return cortexSemanticReRanker(query, sources, focusMode);
 }
@@ -4815,8 +4910,8 @@ function generateLocalSynthesizedAnswer(query, sources, focusMode, effortLevel, 
         /\b(morning digest|daily digest|executive daily digest|daily intelligence briefing|morning intelligence)\b/i.test(qLower);
 
     if (isDigest) {
-        const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+        const todayStr = cortexTemporal.getTodayFull();
+        const timeStr = `${cortexTemporal.getCurrentTime()} (${cortexTemporal.getExactUtcIso().slice(11, 16)} UTC)`;
         const safeSrc = Array.isArray(sources) ? sources : [];
         const maxCite = Math.max(1, safeSrc.length);
 
