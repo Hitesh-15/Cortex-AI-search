@@ -527,58 +527,104 @@
                 </form>
             </div>
 
-            <!-- TAB 4: LIVE CLOUD AUTO-SYNC (ZERO-CONFIG) -->
+            <!-- TAB 4: OPT-IN FIREBASE CLOUD SYNC & PWA APP INSTALL -->
             <div id="authTabCloudSync" class="auth-tab-pane" style="display: none;">
                 <div style="padding: 6px 0;">
-                    <!-- SYNC STATUS INDICATOR -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span id="cloudSyncDot" style="width: 10px; height: 10px; border-radius: 50%; background: #34d399; display: inline-block; box-shadow: 0 0 10px #34d399;"></span>
+                    <!-- GOOGLE FIREBASE PERMANENT CROSS-DEVICE SYNC -->
+                    <div style="background: rgba(15, 23, 42, 0.55); border: 1px solid rgba(56, 189, 248, 0.26); border-radius: 10px; padding: 14px; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px;">
                             <div>
-                                <div style="font-size: 0.86rem; font-weight: 600; color: #f8fafc;" id="cloudSyncStatusTitle">Live Auto-Sync Active</div>
-                                <div style="font-size: 0.74rem; color: #94a3b8;" id="cloudSyncStatusDesc">Sync Room: <strong style="color: #38bdf8; font-family: monospace;" id="cloudSyncRoomBadge">CTX-AUTO</strong></div>
+                                <div style="font-size: 0.88rem; font-weight: 700; color: #f8fafc;"><i class="fa-solid fa-cloud text-cyan"></i> Firebase Cloud Sync (Opt-In)</div>
+                                <div style="font-size: 0.72rem; color: #94a3b8;" id="firebaseProjectBadge">Not Configured (Local-Only)</div>
+                            </div>
+                            <span style="font-size: 0.68rem; padding: 2px 8px; border-radius: 999px; background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.28);">Laptop + Android + iOS</span>
+                        </div>
+
+                        <!-- SIGNED OUT VIEW -->
+                        <div id="firebaseSignedOutView">
+                            <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.45;">By default, Cortex stays 100% local in your browser. Sign in to sync threads permanently across your laptop, Android, and iOS PWA via your Google Firebase Firestore project.</p>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+                                <button type="button" class="btn-primary" onclick="CortexFirebaseSync.signInWithGoogle()" style="flex: 1; min-width: 170px; font-size: 0.8rem; padding: 8px 12px;">
+                                    <i class="fa-brands fa-google"></i> Sign in with Google
+                                </button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                                <input type="email" id="firebaseEmailInput" placeholder="Email address" style="padding: 7px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); color: #fff;">
+                                <input type="password" id="firebasePasswordInput" placeholder="Password (6+ chars)" style="padding: 7px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); color: #fff;">
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signInWithEmail(false)" style="flex: 1; font-size: 0.76rem; padding: 6px 10px;">Sign In (Email)</button>
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signInWithEmail(true)" style="flex: 1; font-size: 0.76rem; padding: 6px 10px;">Create Account</button>
                             </div>
                         </div>
-                        <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.triggerManualSync()" style="font-size: 0.75rem; padding: 5px 10px; border-radius: 6px;">
-                            <i class="fa-solid fa-arrows-rotate text-cyan"></i> Sync Now
+
+                        <!-- SIGNED IN VIEW -->
+                        <div id="firebaseSignedInView" style="display: none;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 9px 12px; margin-bottom: 10px;">
+                                <div>
+                                    <div style="font-size: 0.82rem; font-weight: 600; color: #34d399;"><i class="fa-solid fa-circle-check"></i> <span id="firebaseUserEmail">Signed In</span></div>
+                                    <div style="font-size: 0.72rem; color: #94a3b8;" id="firebaseSyncMeta">Real-time Firestore sync active</div>
+                                </div>
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.pushAllLocalThreads()" style="font-size: 0.74rem; padding: 5px 10px;">
+                                    <i class="fa-solid fa-arrows-rotate text-cyan"></i> Sync Now
+                                </button>
+                            </div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.clearAllCloudThreads()" style="font-size: 0.75rem; padding: 6px 10px; color: #fca5a5;">
+                                    <i class="fa-solid fa-trash-can"></i> Wipe Cloud History
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signOut()" style="font-size: 0.75rem; padding: 6px 10px; margin-left: auto;">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="firebaseSyncStatusMsg" style="display: none; font-size: 0.74rem; margin-top: 8px;"></div>
+
+                        <details style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
+                            <summary style="cursor: pointer; font-size: 0.75rem; color: #38bdf8; font-weight: 600;">Configure Firebase Project (Paste Web Config)</summary>
+                            <div style="margin-top: 8px;">
+                                <textarea id="firebaseConfigInput" rows="4" placeholder='{"apiKey":"AIza...","authDomain":"your-app.firebaseapp.com","projectId":"your-app","appId":"1:..."}' style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 0.74rem; font-family: monospace; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.14); color: #e2e8f0; margin-bottom: 6px;"></textarea>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="btn-primary" onclick="CortexFirebaseSync.saveConfigFromInput()" style="font-size: 0.74rem; padding: 5px 12px;">Save Firebase Config</button>
+                                    <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.clearSavedConfig()" style="font-size: 0.74rem; padding: 5px 10px;">Disconnect</button>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- INSTALL CORTEX AS MOBILE / DESKTOP PWA -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+                        <div style="min-width: 0;">
+                            <div style="font-size: 0.82rem; font-weight: 600; color: #f8fafc;"><i class="fa-solid fa-mobile-screen-button text-cyan"></i> Install App (Android & iOS PWA)</div>
+                            <div style="font-size: 0.72rem; color: #94a3b8;" id="pwaInstallStatusText">Install Cortex on Android Chrome or iOS Safari for full-screen app mode.</div>
+                        </div>
+                        <button type="button" id="btnInstallPwaModal" class="btn-secondary" onclick="window.CortexPWA && CortexPWA.promptInstall()" style="font-size: 0.75rem; padding: 6px 12px; white-space: nowrap;">
+                            <i class="fa-solid fa-download text-cyan"></i> Install App
                         </button>
                     </div>
 
-                    <!-- 6-DIGIT PAIRING CODE CARD -->
-                    <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 14px; text-align: center; margin-bottom: 14px;">
-                        <div style="font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 4px;">Your 6-Digit Device Pairing Code</div>
-                        <div id="cloudSyncDisplayCode" style="font-size: 1.65rem; font-weight: 800; letter-spacing: 0.12em; color: #38bdf8; font-family: 'JetBrains Mono', monospace; margin: 4px 0 10px 0;">CTX-849204</div>
-                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                            <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.copyPairingCode()" style="font-size: 0.78rem; padding: 6px 12px;">
-                                <i class="fa-solid fa-copy text-cyan"></i> Copy Pairing Code
-                            </button>
-                            <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.generateNewRoom()" style="font-size: 0.78rem; padding: 6px 12px;" title="Generate a brand new sync room ID">
-                                <i class="fa-solid fa-plus"></i> New Room ID
-                            </button>
+                    <!-- LEGACY 6-DIGIT TEMPORARY PAIRING ROOM (OPT-IN) -->
+                    <details style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 12px;">
+                        <summary style="cursor: pointer; font-size: 0.76rem; color: #cbd5e1; font-weight: 600;">Quick 6-Digit Temporary Room (No Account Required)</summary>
+                        <div style="margin-top: 10px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span id="cloudSyncDot" style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block;"></span>
+                                    <div>
+                                        <div style="font-size: 0.8rem; font-weight: 600; color: #f8fafc;" id="cloudSyncStatusTitle">Temporary Room (Idle)</div>
+                                        <div style="font-size: 0.72rem; color: #94a3b8;" id="cloudSyncStatusDesc">Room: <strong style="color: #38bdf8; font-family: monospace;" id="cloudSyncRoomBadge">CTX-AUTO</strong></div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.triggerManualSync()" style="font-size: 0.72rem; padding: 4px 9px;">Sync Now</button>
+                            </div>
+                            <div id="cloudSyncDisplayCode" style="font-size: 1.25rem; font-weight: 800; letter-spacing: 0.1em; color: #38bdf8; font-family: 'JetBrains Mono', monospace; text-align: center; margin-bottom: 8px;">CTX-849204</div>
+                            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                                <input type="text" id="joinSyncCodeInput" placeholder="e.g. CTX-849204" style="flex: 1; padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-transform: uppercase; font-family: monospace;">
+                                <button type="button" class="btn-primary" onclick="CortexLiveSyncEngine.joinSyncRoom()" style="font-size: 0.76rem; padding: 6px 12px;">Connect Room</button>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- CONNECT / JOIN EXISTING ROOM -->
-                    <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: #e2e8f0; display: block; margin-bottom: 6px;">
-                            <i class="fa-solid fa-link text-purple"></i> Pair with Another Laptop, Desktop or Phone
-                        </label>
-                        <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 8px 0;">Enter the 6-digit Sync Code from your other device to connect and synchronize all threads and API keys instantly:</p>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="joinSyncCodeInput" placeholder="e.g. CTX-849204" style="flex: 1; padding: 8px 12px; font-size: 0.86rem; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-transform: uppercase; font-family: monospace;">
-                            <button type="button" class="btn-primary" onclick="CortexLiveSyncEngine.joinSyncRoom()" style="font-size: 0.8rem; padding: 8px 14px; white-space: nowrap;">
-                                <i class="fa-solid fa-plug"></i> Connect Room
-                            </button>
-                        </div>
-                    </div>
-
-                    <div style="font-size: 0.73rem; color: #94a3b8; line-height: 1.5; display: flex; align-items: flex-start; gap: 8px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 6px; padding: 8px 10px;">
-                        <i class="fa-solid fa-shield-halved text-emerald" style="margin-top: 2px;"></i>
-                        <div>
-                            <strong style="color: #34d399;">100% Zero-Knowledge End-to-End Encryption</strong><br>
-                            All search threads and API keys are encrypted client-side with <strong>AES-256-GCM</strong> using your Master PIN before leaving your browser. The cloud relay stores only encrypted ciphertext.
-                        </div>
-                    </div>
+                    </details>
                 </div>
             </div>
 
@@ -1029,7 +1075,7 @@
             <h4>Local-First & Zero Tracking</h4>
         </div>
         <p class="cookie-consent-text">
-            Cortex stores zero tracking cookies and never sells data. Research history and encrypted credentials remain strictly on your device.
+            Cortex stores zero tracking cookies and never sells data. By default, search history stays strictly on your device; if you optionally sign in to Firebase Cloud Sync, your threads sync securely under your account and can be erased anytime.
         </p>
         <div class="cookie-consent-actions">
             <button type="button" class="btn-cookie-accept" id="btnCookieAcceptAll" onclick="handleCookieConsent('all')">Got It</button>
@@ -1052,8 +1098,11 @@
     <script src="src/core/local_ai_gateway.js"></script>
     <script src="src/retrieval/institutional_radar.js"></script>
     <script src="src/core/autonomous_bot.js"></script>
+    <script src="src/core/pwa_manager.js"></script>
+    <script src="src/core/firebase_config.js"></script>
+    <script src="src/core/firebase_sync.js"></script>
     <!-- Application Script -->
-    <script src="app.js?v=2026.11.17.06"></script>
+    <script src="app.js?v=2026.11.18.01"></script>
 </body>
 
 </html>

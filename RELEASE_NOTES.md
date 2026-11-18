@@ -2,6 +2,12 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## 📱 [v7.0.0] — 2026-11-18
+### **Installable Android & iOS PWA + Opt-In Google Firebase Auth & Firestore Cross-Device Sync**
+1. **Installable Progressive Web App (`sw.js` + `src/core/pwa_manager.js`)**: Added a network-first Service Worker (`sw.js`) and `CortexPWA` install manager so `ai.ambulkar.com` installs as a full-screen standalone app on Android (Chrome/Edge) and iOS (Safari Share → Add to Home Screen) with automatic updates and offline shell fallback.
+2. **Opt-In Google Firebase Auth & Firestore Per-Thread Sync (`src/core/firebase_sync.js`)**: Added lazy-loaded Firebase Auth (Google Sign-In & Email/Password) + real-time Firestore `onSnapshot` sync storing threads individually under `users/{uid}/threads/{threadId}` with optional client-side `AES-256-GCM` encryption and 1-click `Wipe Cloud History`.
+3. **True Local-First Default & Updated Legal Policies**: Converted the legacy 6-digit relay to strict opt-in so unauthenticated visitors transmit zero bytes externally, and updated `index.html`, `privacy.html` (v3.0), and `terms.html` (v3.0) to transparently document local-first defaults alongside optional Firebase Cloud Sync.
+
 ## 🛡️ [v6.9.6] — 2026-11-17
 ### **Live Service Outage & Status Engine, TV/Novel Homonym Gate & Source-Locked Lead Citations**
 1. **Live Service Outage & System Status Synthesis**: Added dedicated real-time outage/status detection (`Apple Services Down`, `Cloudflare outage`, `Is GitHub down`, AWS, Azure, OpenAI, Anthropic, Google Cloud, Stripe, Slack, Discord, and arbitrary services), pairing chronological incident wire checks (`search_by_date` 48h window) with official component status dashboards (`apple.com/support/systemstatus/`, `githubstatus.com`, `cloudflarestatus.com`, etc.) instead of generic encyclopedic company history.

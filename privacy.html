@@ -67,11 +67,11 @@
                 <i class="fa-solid fa-shield-halved text-cyan"></i> GDPR & CCPA Regulatory Standard
             </div>
             <h1 class="legal-title">Privacy Policy</h1>
-            <p class="legal-subtitle">Effective Date: September 13, 2026 • Version 2.4</p>
+            <p class="legal-subtitle">Effective Date: November 18, 2026 • Version 3.0</p>
 
             <section class="legal-section">
                 <h2>1. Core Principles: Local-First & Zero Data Monetization</h2>
-                <p>Cortex is engineered around the principle of data minimization and zero unsolicited telemetry. We do not sell, rent, monetize, or broker personal information to third parties or advertising networks. All research sessions, query history, and saved workspaces remain strictly within your browser's client-side environment (IndexedDB and LocalStorage) unless you explicitly configure remote webhook alerts.</p>
+                <p>Cortex is engineered around the principle of data minimization and zero unsolicited telemetry. We do not sell, rent, monetize, or broker personal information to third parties or advertising networks. By default, all research sessions, query history, and saved workspaces remain strictly within your browser's client-side storage (LocalStorage). Remote storage is strictly opt-in: data only leaves your device if you explicitly sign in to optional Cross-Device Cloud Sync (Google Firebase Auth & Firestore) or configure remote webhook alerts.</p>
             </section>
 
             <section class="legal-section">
@@ -84,7 +84,7 @@
                 <ul>
                     <li><strong>No Personal Identity Profiling:</strong> We do not require registration, personal names, phone numbers, or social identifiers to conduct market intelligence queries.</li>
                     <li><strong>No Cross-Site Tracking:</strong> We do not deploy cross-site tracking pixels, persistent third-party advertising cookies, or browser fingerprinting scripts.</li>
-                    <li><strong>No Retention of Model Inputs:</strong> Search inquiries processed via the client remain ephemeral and are not indexed in any centralized surveillance repository.</li>
+                    <li><strong>Opt-In Cloud Sync Isolation (Google Firebase):</strong> If you choose to sign in to Cross-Device Cloud Sync, your Firebase account identifier (<code>uid</code> / email) and saved research threads are stored solely under your private path (<code>users/{uid}/threads</code>) protected by Firebase Security Rules, with optional client-side AES-256-GCM encryption and 1-click full deletion via <em>Wipe Cloud History</em>.</li>
                 </ul>
             </section>
 

@@ -2729,8 +2729,13 @@ function createNewThread(initialQuery = "") {
 }
 
 function saveThreadsToLocalStorage() {
+    const activeThread = (appState.threads || []).find(t => t.id === appState.activeThreadId);
+    if (activeThread) activeThread.updatedAt = Date.now();
     localStorage.setItem("ambu_threads", JSON.stringify(appState.threads));
-    if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.schedulePush) {
+    if (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn() && activeThread) {
+        window.CortexFirebaseSync.syncThread(activeThread);
+    }
+    if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.schedulePush && localStorage.getItem("cortex_legacy_relay_enabled") === "true") {
         CortexLiveSyncEngine.schedulePush();
     }
 }
@@ -8959,6 +8964,9 @@ function switchThread(threadId) {
 
 function deleteThread(threadId) {
     if (!threadId) return;
+    if (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn()) {
+        window.CortexFirebaseSync.deleteThread(threadId);
+    }
     if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.markThreadDeleted) {
         CortexLiveSyncEngine.markThreadDeleted(threadId);
     }
@@ -9623,22 +9631,25 @@ var CortexLiveSyncEngine = {
         if (!newId) return;
         const clean = newId.trim().toUpperCase();
         localStorage.setItem(this.STORAGE_ROOM_KEY, clean);
+        localStorage.setItem("cortex_legacy_relay_enabled", "true");
         this.updateUI();
         this.pullSync(true);
     },
 
     init() {
         this.updateUI();
+        // Strictly opt-in: never poll or broadcast to external relay unless user explicitly connected a room
+        if (localStorage.getItem("cortex_legacy_relay_enabled") !== "true") return;
         if (!this.pollInterval) {
             this.pollInterval = setInterval(() => {
                 this.pullSync(false);
-            }, 8000); // 8-second continuous live polling
+            }, 8000);
         }
         window.addEventListener("focus", () => {
-            this.pullSync(true);
+            if (localStorage.getItem("cortex_legacy_relay_enabled") === "true") this.pullSync(true);
         });
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible") {
+            if (document.visibilityState === "visible" && localStorage.getItem("cortex_legacy_relay_enabled") === "true") {
                 this.pullSync(true);
             }
         });
@@ -9678,6 +9689,9 @@ var CortexLiveSyncEngine = {
     },
 
     clearAllHistory() {
+        if (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn()) {
+            window.CortexFirebaseSync.clearAllCloudThreads();
+        }
         const now = Date.now();
         localStorage.setItem("cortex_history_cleared_at", String(now));
         localStorage.setItem("ambu_threads", "[]");
@@ -9776,7 +9790,8 @@ var CortexLiveSyncEngine = {
             localStorage.setItem(`cortex_cloud_snapshot_${roomId}`, JSON.stringify(payload));
             this.lastSyncedTime = payload.updatedAt;
 
-            // Broadcast to multi-device cloud relay (enables instant laptop-to-mobile sync)
+            if (localStorage.getItem("cortex_legacy_relay_enabled") !== "true") return;
+            // Broadcast to multi-device cloud relay (only when user explicitly opts in)
             if (this.rateLimitUntil && Date.now() < this.rateLimitUntil) return;
             const topic = this.getRelayTopic(roomId);
             const res = await fetch(`https://ntfy.sh/${topic}`, {
