@@ -3602,47 +3602,87 @@ const outputCost = (completionTokens / 1000000) * outputRate;
     };
 }
 
-// Render Unified Global Telemetry Bar
+// Render Quiet Single-Row Answer Footer + Export Popover Menu
 function renderUnifiedTelemetryBar(modelDisplay, costUSD, totalTokens, effortClass) {
-    const costFormatted = (typeof costUSD === "number" && !isNaN(costUSD)) ? (costUSD === 0 ? "$0.00000" : `$${costUSD.toFixed(5)}`) : "$0.00000";
-    const tokenDisplay = (typeof totalTokens === "number" && totalTokens > 0) ? `${totalTokens} tokens` : "0 tokens (Free Tier)";
-    const effortLabel = (effortClass && effortClass.label) ? effortClass.label : "AUTO";
-    const effortReason = (effortClass && effortClass.reason) ? effortClass.reason : "Automated Router";
+    const cleanModelLabel = String(modelDisplay || "Cortex Neural Engine")
+        .replace(/Cortex Neural Extractive Engine\s*\(Free\)/i, "Cortex Neural Engine")
+        .replace(/Cortex Neural Extractive Engine/i, "Cortex Neural Engine");
+    const hasPaidSpend = typeof costUSD === "number" && !isNaN(costUSD) && costUSD > 0;
+    const spendTagHTML = hasPaidSpend
+        ? `<span class="quiet-spend-tag" title="Exact Query Spend">• $${costUSD.toFixed(5)}</span>`
+        : "";
 
     return `
-        <div class="unified-telemetry-bar">
+        <div class="unified-telemetry-bar" data-footer="quiet">
             <div class="unified-telemetry-left">
-                <span class="unified-pill model" title="Executed Model Architecture"><i class="fa-solid fa-brain text-cyan"></i> ${modelDisplay}</span>
-                <span class="unified-pill spend" title="Exact Query Cost"><i class="fa-solid fa-coins"></i> ${costFormatted}</span>
-                <span class="unified-pill" title="Prompt & Output Tokens"><i class="fa-solid fa-microchip"></i> ${tokenDisplay}</span>
-                <span class="unified-pill effort" title="${effortReason}"><i class="fa-solid fa-gauge-high"></i> ${effortLabel}</span>
+                <span class="quiet-model-label" title="Synthesized via ${cleanModelLabel}">
+                    <i class="fa-solid fa-sparkles text-cyan"></i> ${cleanModelLabel}
+                </span>
+                ${spendTagHTML}
             </div>
             <div class="unified-telemetry-actions">
-                <button type="button" class="btn-memo-action btn-studio-ppt desktop-only-action" onclick="generateSlideDeckFromMemo(this)" title="Generate Presentation Slide Deck (.PPTX & In-App Viewer)">
-                    <i class="fa-solid fa-file-powerpoint text-amber"></i> <span>Generate Deck (.PPTX)</span>
-                </button>
-                <button type="button" class="btn-memo-action btn-studio-doc desktop-only-action" onclick="generateDocumentFromMemo(this)" title="Download Formatted Word Document (.DOCX)">
-                    <i class="fa-solid fa-file-word text-cyan"></i> <span>Export .DOCX</span>
-                </button>
-                <button type="button" class="btn-memo-action btn-memo-listen" onclick="toggleAudioBriefing(this)" title="Listen to 60-Second Audio Executive Briefing">
-                    <i class="fa-solid fa-headphones text-purple"></i> <span>Listen</span>
+                <button type="button" class="btn-memo-action btn-memo-copy" onclick="copyMemoContent(this)" title="Copy Answer to Clipboard">
+                    <i class="fa-regular fa-copy"></i> <span>Copy</span>
                 </button>
                 <button type="button" class="btn-memo-action btn-memo-save desktop-only-action" onclick="saveCurrentMemoToLibrary(this)" title="Save to Research Library">
-                    <i class="fa-solid fa-bookmark text-teal"></i> <span>Save</span>
+                    <i class="fa-regular fa-bookmark"></i> <span>Save</span>
                 </button>
-                <button type="button" class="btn-memo-action btn-memo-copy" onclick="copyMemoContent(this)" title="Copy Executive Memo to Clipboard">
-                    <i class="fa-solid fa-copy"></i> <span>Copy Memo</span>
+                <button type="button" class="btn-memo-action btn-memo-listen" onclick="toggleAudioBriefing(this)" title="Listen to Audio Briefing">
+                    <i class="fa-solid fa-headphones"></i> <span>Listen</span>
                 </button>
-                <button type="button" class="btn-memo-action btn-memo-export-md desktop-only-action" onclick="exportMemoMarkdown(this)" title="Download Executive Memo as Markdown (.md)">
-                    <i class="fa-solid fa-download"></i> <span>Export .MD</span>
-                </button>
-                <button type="button" class="btn-memo-action btn-memo-print desktop-only-action" onclick="printExecutiveMemo(this)" title="Print or Save as Clean PDF">
-                    <i class="fa-solid fa-print"></i> <span>Print / PDF</span>
-                </button>
+                <div class="memo-export-dropdown-wrap desktop-only-action">
+                    <button type="button" class="btn-memo-action btn-memo-export-trigger" onclick="toggleMemoExportMenu(this, event)" title="Export as Slide Deck, Word, Markdown, or PDF">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i> <span>Export</span> <i class="fa-solid fa-chevron-down export-caret"></i>
+                    </button>
+                    <div class="memo-export-menu">
+                        <button type="button" class="memo-export-item" onclick="closeAllMemoExportMenus(); generateSlideDeckFromMemo(this)">
+                            <i class="fa-solid fa-file-powerpoint text-amber"></i> <span>Slide Deck (.PPTX)</span>
+                        </button>
+                        <button type="button" class="memo-export-item" onclick="closeAllMemoExportMenus(); generateDocumentFromMemo(this)">
+                            <i class="fa-solid fa-file-word text-cyan"></i> <span>Word Document (.DOCX)</span>
+                        </button>
+                        <button type="button" class="memo-export-item btn-memo-export-md" onclick="closeAllMemoExportMenus(); exportMemoMarkdown(this)">
+                            <i class="fa-solid fa-file-lines text-emerald"></i> <span>Markdown (.MD)</span>
+                        </button>
+                        <button type="button" class="memo-export-item btn-memo-print" onclick="closeAllMemoExportMenus(); printExecutiveMemo(this)">
+                            <i class="fa-solid fa-print text-purple"></i> <span>Print / Save PDF</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     `;
 }
+
+function closeAllMemoExportMenus() {
+    document.querySelectorAll(".memo-export-menu.open").forEach(m => m.classList.remove("open"));
+    document.querySelectorAll(".btn-memo-export-trigger.active").forEach(b => b.classList.remove("active"));
+}
+window.closeAllMemoExportMenus = closeAllMemoExportMenus;
+
+function toggleMemoExportMenu(btn, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    const wrap = btn ? btn.closest(".memo-export-dropdown-wrap") : null;
+    const menu = wrap ? wrap.querySelector(".memo-export-menu") : null;
+    if (!menu) return;
+
+    const wasOpen = menu.classList.contains("open");
+    closeAllMemoExportMenus();
+    if (!wasOpen) {
+        menu.classList.add("open");
+        btn.classList.add("active");
+    }
+}
+window.toggleMemoExportMenu = toggleMemoExportMenu;
+
+document.addEventListener("click", (e) => {
+    if (!e.target.closest(".memo-export-dropdown-wrap")) {
+        closeAllMemoExportMenus();
+    }
+});
 
 // AI Response Synthesis Engine (High-Throughput Streaming & Speed Optimization)
 async function synthesizeAIResponse(query, sources, focusMode, effortLevel, effortClass, modelOverride = null, onStreamChunk = null) {
@@ -4521,10 +4561,7 @@ async function executeDeepResearchPipeline(actualQuery, stepId, stepElement, tar
     const telemetryFooter = `
         <div class="unified-telemetry-bar" style="margin-top: 24px;">
             <div class="unified-telemetry-left">
-                <span class="unified-pill model" title="Executed Model Architecture"><i class="fa-solid fa-wand-magic-sparkles text-amber"></i> ${activeModelDisplay}</span>
-                <span class="unified-pill spend" title="Exact Query Cost"><i class="fa-solid fa-coins"></i> $0.00000</span>
-                <span class="unified-pill" title="Deliverable Format"><i class="fa-solid fa-file-powerpoint text-amber"></i> .PPTX + .DOCX + Whitepaper</span>
-                <span class="unified-pill effort" title="High Effort Deep Research"><i class="fa-solid fa-gauge-high"></i> DEEP COMPUTE</span>
+                <span class="quiet-model-label" title="Deliverable Studio Synthesis"><i class="fa-solid fa-wand-magic-sparkles text-amber"></i> ${activeModelDisplay}</span>
             </div>
             <div class="unified-telemetry-actions">
                 <button type="button" class="btn-memo-action btn-studio-ppt desktop-only-action" onclick="CortexComputeStudio.downloadPptx('deck_${stepId}')" title="Download Presentation Slide Deck (.PPTX)">

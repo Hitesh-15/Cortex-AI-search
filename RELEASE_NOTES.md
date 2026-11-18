@@ -2,6 +2,11 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## 🪶 [v6.9.3] — 2026-11-17
+### **Quiet Single-Row Answer Footer & `Export ▾` Popover Menu**
+1. **De-Cluttered Answer Footer (`renderUnifiedTelemetryBar`)**: Replaced the noisy 11-item double-row telemetry & button box with a subtle, borderless single-row hairline footer showing a quiet model attribution label (`Cortex Neural Engine`, showing spend only when `> $0.00`) on the left and streamlined `Copy`, `Save`, `Listen`, and `Export ▾` controls on the right.
+2. **Floating `Export ▾` Popover**: Consolidated `Slide Deck (.PPTX)`, `Word Document (.DOCX)`, `Markdown (.MD)`, and `Print / Save PDF` into a sleek right-aligned glassmorphic popover menu that dismisses automatically on outside click.
+
 ## ⚡ [v6.9.2] — 2026-11-17
 ### **Slash Command (`/`) & `@` Mention Real-Click Hit-Testing Fix & Full Interactive Audit**
 1. **Fixed `/` Slash Command Menu Click Interception (`pointer-events` & `z-index`)**:
