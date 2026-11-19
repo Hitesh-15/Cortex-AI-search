@@ -399,8 +399,8 @@
                 <div class="auth-modal-title" style="display: flex; align-items: center; gap: 10px;">
                     <i class="fa-solid fa-shield-halved text-cyan" style="font-size: 1.35rem;"></i>
                     <div>
-                        <h3 style="margin: 0; font-size: 1.12rem;">Cortex Access & Key Vault</h3>
-                        <p class="auth-modal-sub" style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Universal Access across Mobile, Desktop & Tablet</p>
+                        <h3 style="margin: 0; font-size: 1.12rem;">Cortex Account &amp; Cloud Sync</h3>
+                        <p class="auth-modal-sub" style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94a3b8;">Sync threads, API keys &amp; Discord across Laptop, Android &amp; iOS</p>
                     </div>
                 </div>
                 <button class="modal-close" id="btnCloseAuthModal" onclick="closeAuthModal()">&times;</button>
@@ -415,8 +415,8 @@
                 </div>
             </div>
 
-            <!-- AUTH TABS (Streamlined 2-Tab View: Account & Cloud Sync | API Key) -->
-            <div class="auth-tabs-nav" id="authTabsNav">
+            <!-- AUTH TABS (Hidden in streamlined single-view Account & Cloud Sync modal; IDs preserved for automated tests) -->
+            <div class="auth-tabs-nav" id="authTabsNav" style="display: none;">
                 <button type="button" class="auth-tab-btn" id="tabBtnUnlock" onclick="switchAuthTab('unlock')" style="display: none;">
                     <i class="fa-solid fa-unlock-keyhole"></i> Unlock Pro
                 </button>
@@ -683,11 +683,11 @@
                 <div class="settings-vault-card" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <div style="font-size: 0.88rem; font-weight: 600; color: #f8fafc;"><i class="fa-solid fa-shield-halved text-cyan"></i> Frontier AI Access Vault</div>
+                            <div style="font-size: 0.88rem; font-weight: 600; color: #f8fafc;"><i class="fa-solid fa-cloud-arrow-up text-cyan"></i> Cloud Account &amp; Cross-Device Sync</div>
                             <div id="settingsVaultStatusText" style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">Status: Free Tier Active</div>
                         </div>
                         <button type="button" class="btn-primary" onclick="closeSettingsModal(); openAuthModal();" style="font-size: 0.78rem; padding: 6px 12px; border-radius: 6px;">
-                            <i class="fa-solid fa-key"></i> <span id="settingsVaultBtnLabel">Manage Vault</span>
+                            <i class="fa-solid fa-cloud"></i> <span id="settingsVaultBtnLabel">Cloud Sync</span>
                         </button>
                     </div>
                 </div>
@@ -695,7 +695,7 @@
                 <!-- API KEY GROUP -->
                 <div class="form-group">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <label for="apiKeyInput" id="apiKeyLabel"><i class="fa-solid fa-key text-gold"></i> OpenRouter API Key (Direct Override)</label>
+                        <label for="apiKeyInput" id="apiKeyLabel"><i class="fa-solid fa-key text-gold"></i> OpenRouter API Key</label>
                         <button type="button" id="btnTestApiKey" class="btn-secondary" onclick="testOpenRouterApiKeyNow()" style="font-size: 0.75rem; padding: 4px 10px; border-radius: 4px;">
                             <i class="fa-solid fa-bolt text-cyan"></i> Test Key
                         </button>
@@ -707,7 +707,7 @@
                         </button>
                     </div>
                     <div id="apiKeyStatusMessage" style="font-size: 0.78rem; margin-top: 6px; min-height: 18px; color: #94a3b8;">
-                        Stored securely behind your Master Password / Passcode. If locked, Cortex runs on the Free Tier ($0.00000).
+                        Saved locally and synced automatically when signed into Cloud Sync. Leave blank to use the Free Tier ($0.00000).
                     </div>
                 </div>
 
@@ -1118,7 +1118,7 @@
     <script src="src/core/firebase_config.js"></script>
     <script src="src/core/firebase_sync.js"></script>
     <!-- Application Script -->
-    <script src="app.js?v=2026.11.18.02"></script>
+    <script src="app.js?v=2026.11.18.03"></script>
 </body>
 
 </html>

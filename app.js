@@ -9582,7 +9582,7 @@ var CortexAuthVault = {
                 : `<span style="color: #94a3b8;"><i class="fa-solid fa-circle"></i> Free Neural Tier Active (Locked)</span>`;
         }
         if (settingsBtnLabel) {
-            settingsBtnLabel.textContent = loggedIn ? "Manage Vault" : "Unlock Pro";
+            settingsBtnLabel.textContent = (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn()) ? "Sync Active" : "Cloud Sync";
         }
 
         // 3. Auth Modal Status Banner
@@ -10115,7 +10115,7 @@ function switchAuthTab(tab) {
     if (tabCloudSync) tabCloudSync.style.display = (tab === "cloudSync") ? "block" : "none";
     if (tabUnlockedView) tabUnlockedView.style.display = (tab === "unlocked") ? "block" : "none";
 
-    if (tabsNav) tabsNav.style.display = "flex";
+    if (tabsNav) tabsNav.style.display = "none";
 
     if (btnUnlock) {
         btnUnlock.className = (tab === "unlock" || tab === "unlocked") ? "auth-tab-btn active" : "auth-tab-btn";
