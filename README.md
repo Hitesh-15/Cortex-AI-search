@@ -6,9 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Stack: Vanilla JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B-blue.svg)](https://developer.mozilla.org/)
 [![AI: Multi-Model Gateway](https://img.shields.io/badge/AI-Parallel%20Multi--Model%20Routing-cyan.svg)](#-features)
-[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v5.0.3-emerald.svg)](RELEASE_NOTES.md)
+[![Changelog](https://img.shields.io/badge/Changelog-Updated%20v7.0.0-emerald.svg)](RELEASE_NOTES.md)
 
-Cortex is a state-of-the-art AI search engine, autonomous deep research workstation, and multi-format deliverable studio. It synthesizes real-time facts across **10 to 20+ verified web sources**, delivers an authoritative **4-Part Structured Answering Framework** (Direct Answer First ➔ Structured Concept Bullets ➔ Context Narrative ➔ Key Takeaway Card), compiles comprehensive executive whitepapers, generates downloadable presentation slide decks (`.pptx`) and Word documents (`.docx`), executes parallel multi-model reasoning across frontier LLMs (**Claude 3.7 Sonnet, Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, DeepSeek R1**), and maintains 100% client-side privacy.
+Cortex is a state-of-the-art AI search engine, autonomous deep research workstation, installable Android/iOS PWA, and multi-format deliverable studio. It synthesizes real-time facts across **10 to 20+ verified web sources**, delivers an authoritative **4-Part Structured Answering Framework** (Direct Answer First ➔ Structured Concept Bullets ➔ Context Narrative ➔ Key Takeaway Card), compiles comprehensive executive whitepapers, generates downloadable presentation slide decks (`.pptx`) and Word documents (`.docx`), executes parallel multi-model reasoning across frontier LLMs (**Claude 3.7 Sonnet, Claude Sonnet 5, Gemini 3.7 Flash, GPT-4o, DeepSeek R1**) or `$0.00` local models, and operates **local-first by default** with optional opt-in **Google Firebase Auth & Firestore** cross-device sync.
 
 ---
 
@@ -109,10 +109,10 @@ flowchart TD
 - 🧠 **Autonomous Reasoning Effort Allocation**: Removed the manual "Effort: Auto / Low / Medium / High" dropdown menu. The system autonomously resolves and scales reasoning depth, test-time compute tokens, and web crawl width dynamically on every query without user friction.
 - 📊 **Interactive In-App Slide Viewer & 1-Click Deck Generator**: 16:9 widescreen presentation viewer with dark titanium theme, diamond glyph bullet hierarchy, takeaway callouts, slide counter, and 1-click native Microsoft PowerPoint export.
 - 🖥️ **Large Monitor & Ultrawide Alignment Engine**: Full layout alignment across 27-inch (`1240px`), 33"/34" ultrawide (`1420px`), and 4K displays with synchronized vertical bounding guidelines between header tickers, suggested prompts, memo answers, and search dock.
-- 📱 **Standalone Homescreen Bookmark & PWA Architecture**: Native web app experience with full `viewport-fit=cover`, dynamic iOS notch / Dynamic Island safe-area insets (`env(safe-area-inset-top)`), and bottom home swipe indicator / Android gesture nav clearance (`env(safe-area-inset-bottom)`).
-- ⏱️ **Live 1-Second Precision Clock & Recency Anchoring**: Continuous 1000ms temporal clock engine injecting live UTC ISO-8601 timestamps and local timezone into all LLM prompts to ground time-sensitive research queries.
+- 📱 **Installable Android & iOS PWA (`sw.js` + `pwa_manager.js`)**: Full-screen standalone app support on Android (Chrome/Edge 1-tap Install) and iOS (Safari Share ➔ Add to Home Screen) with `viewport-fit=cover`, safe-area insets, and network-first offline shell caching.
+- ⏱️ **Live 1-Second Precision Clock & Recency Anchoring**: Continuous 1000ms temporal clock engine injecting live UTC ISO-8601 timestamps and local timezone into all LLM prompts, with 15-minute cache TTL eviction and 1-click header clock sync.
 - 🔑 **Universal WebCrypto Auth Vault (AES-256-GCM + PBKDF2)**: Bank-grade client-side key encryption. Unlock your frontier models using a memorable PIN on any device without copying raw API keys.
-- ☁️ **Zero-Config 6-Digit Auto-Sync & QR Pairing**: Link laptops, desktops, and mobile devices in seconds via memorized 6-digit sync code or QR code scan with 100% client-side end-to-end encryption.
+- ☁️ **Opt-In Google Firebase Cloud Sync & Privacy-First Storage**: Local-first by default (zero cloud storage for guests). When you optionally sign in with Google or Email/Password, threads sync permanently in real time across Laptop, Android, and iOS under `users/{uid}/threads` isolated by Firestore Security Rules, with optional client-side `AES-256-GCM` encryption and 1-click **Wipe Cloud History**.
 - 🎨 **2026 Modern Design & UI/UX Revamp**:
   - **OLED Void Backdrop (`#030712`)**: Atmospheric radial glow meshes and sleek dark mode aesthetics.
   - **Glassmorphism 2.0**: High-clarity frosted glass blurs (`backdrop-filter: blur(28px) saturate(190%)`), specular inner highlights, and translucent borders.
@@ -125,6 +125,13 @@ flowchart TD
 - 📥 **Executive Memo Export Suite**: Instant Markdown (`.md`) download, multi-page clean print/PDF generation, and 1-click rich text clipboard copy.
 - 🔔 **Autonomous Topic Tracker**: Continuous background monitoring with instant Discord alerts on breaking news.
 - 📱 **Responsive Dark Glassmorphic Design**: Built purely with high-performance Vanilla HTML5, CSS3, and ES6+ JavaScript optimized across desktop, ultrawide, tablet, and mobile viewports.
+
+---
+
+## 🔒 Privacy & Data Storage Model
+
+- **Local-First by Default (Zero Cloud Storage for Guests)**: Without signing in, 100% of your search threads, saved library memos, and encrypted API keys remain strictly inside your browser's `localStorage`. Cortex uses zero tracking cookies and never sells or brokers user data.
+- **Opt-In Cross-Device Cloud Sync (Google Firebase)**: Only if you explicitly sign in under **Auth Vault → Cloud Sync** does Cortex store your account identifier (`uid`/email) and synced threads in Google Firebase Firestore (`users/{uid}/threads/{threadId}`), protected by per-user Firestore Security Rules and erasable anytime via **Wipe Cloud History**. See [privacy.html](privacy.html) and [terms.html](terms.html) (`v3.0`) for full details.
 
 ---
 

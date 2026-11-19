@@ -1,7 +1,7 @@
 {
   "name": "Cortex | Autonomous AI Market Intelligence",
   "short_name": "Cortex",
-  "description": "Executive Market Intelligence Workdesk with live web citations, frontier AI reasoning, deep autonomous research synthesis, and local-first encryption.",
+  "description": "Executive Market Intelligence Workdesk with live web citations, frontier AI reasoning, deep autonomous research synthesis, local-first encryption, and optional cross-device cloud sync.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
