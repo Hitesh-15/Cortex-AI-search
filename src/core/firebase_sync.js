@@ -91,8 +91,8 @@
             this.updateUI();
             const cfg = this.getConfig();
             if (!cfg) return;
-            // Only auto-load SDK if user has previously signed in or pre-baked config exists
-            if (localStorage.getItem('cortex_firebase_enabled') === 'true' || window.CORTEX_FIREBASE_CONFIG) {
+            // Strictly lazy-load Firebase SDK only if the user previously opted in to Cloud Sync
+            if (localStorage.getItem('cortex_firebase_enabled') === 'true') {
                 await this.ensureInitialized().catch(() => {});
                 this.updateUI();
             }
