@@ -406,8 +406,8 @@
                 <button class="modal-close" id="btnCloseAuthModal" onclick="closeAuthModal()">&times;</button>
             </div>
             
-            <!-- TIER STATUS BANNER -->
-            <div id="authCurrentStatusBanner" class="auth-status-banner free">
+            <!-- TIER STATUS BANNER (Compact hidden anchor; tier badge already visible in header) -->
+            <div id="authCurrentStatusBanner" class="auth-status-banner free" style="display: none;">
                 <div class="auth-status-icon" id="authStatusIcon"><i class="fa-solid fa-gift"></i></div>
                 <div class="auth-status-info">
                     <div class="auth-status-tier" id="authStatusTierTitle">Free Neural Tier Active</div>
@@ -545,20 +545,21 @@
 
                         <!-- SIGNED OUT VIEW -->
                         <div id="firebaseSignedOutView">
-                            <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.45;">By default, Cortex stays 100% local. Sign in once to sync <strong>all threads, OpenRouter API key, Discord webhook, Watchdog watchlist &amp; Library</strong> across any laptop, phone, or tablet.</p>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
-                                <button type="button" class="btn-primary" onclick="CortexFirebaseSync.signInWithGoogle()" style="flex: 1; min-width: 170px; font-size: 0.8rem; padding: 8px 12px;">
-                                    <i class="fa-brands fa-google"></i> Sign in with Google
-                                </button>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                                <input type="email" id="firebaseEmailInput" placeholder="Email address" style="padding: 7px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); color: #fff;">
-                                <input type="password" id="firebasePasswordInput" placeholder="Password (6+ chars)" style="padding: 7px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); color: #fff;">
-                            </div>
-                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signInWithEmail(false)" style="flex: 1; font-size: 0.76rem; padding: 6px 10px;">Sign In (Email)</button>
-                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signInWithEmail(true)" style="flex: 1; font-size: 0.76rem; padding: 6px 10px;">Create Account</button>
-                            </div>
+                            <p style="font-size: 0.76rem; color: #94a3b8; margin: 0 0 12px 0; line-height: 1.45;">Sign in once to sync your threads, API keys &amp; Discord webhook across Laptop, Android &amp; iOS.</p>
+                            <button type="button" class="btn-primary" onclick="CortexFirebaseSync.signInWithGoogle()" style="width: 100%; font-size: 0.86rem; padding: 10px 14px; margin-bottom: 10px;">
+                                <i class="fa-brands fa-google"></i> Sign in with Google
+                            </button>
+                            <details style="margin-top: 4px;">
+                                <summary style="cursor: pointer; font-size: 0.74rem; color: #94a3b8;">Or sign in with Email &amp; Password</summary>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0;">
+                                    <input type="email" id="firebaseEmailInput" placeholder="Email address" style="padding: 7px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); color: #fff;">
+                                    <input type="password" id="firebasePasswordInput" placeholder="Password (6+ chars)" style="padding: 7px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); color: #fff;">
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signInWithEmail(false)" style="flex: 1; font-size: 0.76rem; padding: 6px 10px;">Sign In</button>
+                                    <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signInWithEmail(true)" style="flex: 1; font-size: 0.76rem; padding: 6px 10px;">Create Account</button>
+                                </div>
+                            </details>
                         </div>
 
                         <!-- SIGNED IN VIEW -->
@@ -657,8 +658,8 @@
                 <button class="modal-close" id="btnCloseSettingsModal" onclick="closeSettingsModal()">&times;</button>
             </div>
             <form id="settingsForm">
-                <!-- AUTH VAULT STATUS CARD -->
-                <div class="settings-vault-card" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                <!-- AUTH VAULT STATUS CARD (Hidden to eliminate overlap with adjacent header Cloud Sync button) -->
+                <div class="settings-vault-card" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <div style="font-size: 0.88rem; font-weight: 600; color: #f8fafc;"><i class="fa-solid fa-cloud-arrow-up text-cyan"></i> Cloud Account &amp; Cross-Device Sync</div>
