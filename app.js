@@ -9601,7 +9601,7 @@ var CortexAuthVault = {
                 modalBanner.className = "auth-status-banner free";
                 if (statusIcon) statusIcon.innerHTML = `<i class="fa-solid fa-gift text-cyan"></i>`;
                 statusTitle.textContent = "Free Neural Tier Active ($0.00000)";
-                statusDesc.textContent = "Enter your Master Password or Passcode / PIN to unlock Frontier AI reasoning.";
+                statusDesc.textContent = "Sign in with Google to sync threads, API keys & Discord webhook across devices, or add an OpenRouter key.";
             }
         }
     }
@@ -10076,12 +10076,9 @@ function openAuthModal() {
     if (!modal) return;
     
     CortexAuthVault.updateAuthUI();
-
-    if (CortexAuthVault.isLoggedIn()) {
-        switchAuthTab("unlocked");
-    } else {
-        const hasVault = Boolean(CortexAuthVault.getVaultPayload());
-        switchAuthTab(hasVault ? "unlock" : "setup");
+    switchAuthTab("cloudSync");
+    if (window.CortexFirebaseSync && window.CortexFirebaseSync.updateUI) {
+        window.CortexFirebaseSync.updateUI();
     }
 
     modal.classList.add("active");
@@ -10275,12 +10272,12 @@ async function handleAuthSetupSubmit(e) {
     const keyInput = document.getElementById("authSetupApiKey");
     const submitBtn = document.getElementById("btnSubmitSetup");
 
-    if (!passInput || !keyInput) return;
-    const password = passInput.value.trim();
+    if (!keyInput) return;
+    const password = passInput ? passInput.value.trim() : "";
     const apiKey = keyInput.value.trim();
 
-    if (!password || password.length < 4) {
-        showAuthAlert("authSetupAlert", "Please enter a Master Password or PIN (at least 4 characters).");
+    if (password && password.length < 4) {
+        showAuthAlert("authSetupAlert", "Optional Local PIN must be at least 4 characters (or leave blank).");
         return;
     }
     if (!apiKey || (!apiKey.startsWith("sk-or-") && !apiKey.startsWith("sk-"))) {
@@ -10290,29 +10287,44 @@ async function handleAuthSetupSubmit(e) {
 
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Encrypting Vault...`;
+        submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Saving Key...`;
     }
 
     try {
-        await CortexAuthVault.saveVault(apiKey, password);
-        await CortexAuthVault.login(password, true);
+        if (password) {
+            await CortexAuthVault.saveVault(apiKey, password);
+            await CortexAuthVault.login(password, true);
+        } else {
+            appState.auth = appState.auth || {};
+            appState.auth.isLoggedIn = true;
+            appState.auth.activeKey = apiKey;
+            appState.settings.apiKeys.openrouter = apiKey;
+            localStorage.setItem("ambu_key_openrouter", apiKey);
+            localStorage.setItem(CortexAuthVault.REMEMBER_KEY, apiKey);
+            localStorage.setItem("cortex_is_authenticated", "true");
+            CortexAuthVault.updateAuthUI();
+            updateGatewayStatusBadge();
+            if (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn()) {
+                await window.CortexFirebaseSync.syncWorkspaceProfile(false);
+            }
+        }
 
-        showAuthAlert("authSetupAlert", "Vault encrypted & saved securely! Frontier Pro Unlocked.", "success");
-        passInput.value = "";
+        showAuthAlert("authSetupAlert", "API Key saved & synced! Frontier Pro Unlocked.", "success");
+        if (passInput) passInput.value = "";
         keyInput.value = "";
 
         setTimeout(() => {
             closeAuthModal();
             if (typeof showToast === "function") {
-                showToast("🔒 Secure Key Vault Configured & Unlocked", "success");
+                showToast("⚡ OpenRouter Pro Key Saved & Synced", "success");
             }
-        }, 700);
+        }, 650);
     } catch (err) {
-        showAuthAlert("authSetupAlert", err.message || "Failed to encrypt and save vault.");
+        showAuthAlert("authSetupAlert", err.message || "Failed to save API key.");
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Encrypt & Save Vault`;
+            submitBtn.innerHTML = `<i class="fa-solid fa-check"></i> Save & Sync Key`;
         }
     }
 }

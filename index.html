@@ -415,24 +415,24 @@
                 </div>
             </div>
 
-            <!-- AUTH TABS -->
+            <!-- AUTH TABS (Streamlined 2-Tab View: Account & Cloud Sync | API Key) -->
             <div class="auth-tabs-nav" id="authTabsNav">
-                <button type="button" class="auth-tab-btn active" id="tabBtnUnlock" onclick="switchAuthTab('unlock')">
+                <button type="button" class="auth-tab-btn" id="tabBtnUnlock" onclick="switchAuthTab('unlock')" style="display: none;">
                     <i class="fa-solid fa-unlock-keyhole"></i> Unlock Pro
                 </button>
-                <button type="button" class="auth-tab-btn" id="tabBtnCloudSync" onclick="switchAuthTab('cloudSync')">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Live Cloud Auto-Sync
+                <button type="button" class="auth-tab-btn active" id="tabBtnCloudSync" onclick="switchAuthTab('cloudSync')">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Account &amp; Cloud Sync
                 </button>
-                <button type="button" class="auth-tab-btn" id="tabBtnSync" onclick="switchAuthTab('sync')">
+                <button type="button" class="auth-tab-btn" id="tabBtnSync" onclick="switchAuthTab('sync')" style="display: none;">
                     <i class="fa-solid fa-mobile-screen-button"></i> Mobile QR
                 </button>
                 <button type="button" class="auth-tab-btn" id="tabBtnSetup" onclick="switchAuthTab('setup')">
-                    <i class="fa-solid fa-sliders"></i> Vault Setup
+                    <i class="fa-solid fa-key"></i> API Key
                 </button>
             </div>
 
-            <!-- TAB 1: UNLOCK PRO -->
-            <div id="authTabUnlock" class="auth-tab-pane active">
+            <!-- TAB 1: UNLOCK PRO (Legacy Local PIN Fallback) -->
+            <div id="authTabUnlock" class="auth-tab-pane" style="display: none;">
                 <form id="authUnlockForm" onsubmit="handleAuthUnlockSubmit(event)">
                     <div class="form-group" style="margin-top: 10px;">
                         <label for="authUnlockPassword"><i class="fa-solid fa-lock text-cyan"></i> Master Password or Passcode / PIN</label>
@@ -489,22 +489,12 @@
                 </div>
             </div>
 
-            <!-- TAB 3: VAULT SETUP / KEY CONFIG -->
+            <!-- TAB 3: DIRECT API KEY CONFIG (Zero Redundant PIN Required) -->
             <div id="authTabSetup" class="auth-tab-pane" style="display: none;">
                 <form id="authSetupForm" onsubmit="handleAuthSetupSubmit(event)">
                     <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5; margin: 10px 0 14px 0;">
-                        Configure your <strong>Master Password / PIN</strong> and underlying <strong>OpenRouter API Key</strong>. Cortex encrypts your key locally using <strong>AES-256-GCM + PBKDF2</strong> so you never need to copy-paste raw keys again.
+                        Enter your <strong>OpenRouter API Key</strong> once to unlock Frontier Pro models. If you are signed into <strong>Account &amp; Cloud Sync</strong>, your key syncs automatically to your other devices.
                     </p>
-
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label for="authSetupPassword"><i class="fa-solid fa-key text-gold"></i> Choose Master Password or Passcode / PIN</label>
-                        <div style="position: relative; margin-top: 4px;">
-                            <input type="password" id="authSetupPassword" class="text-input" placeholder="Create a memorable Master Password or PIN..." required autocomplete="new-password" style="width: 100%; padding: 11px 42px 11px 12px; font-size: 0.92rem; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
-                            <button type="button" onclick="toggleAuthPasswordVisibility('authSetupPassword', 'authSetupEyeIcon')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px;">
-                                <i class="fa-solid fa-eye" id="authSetupEyeIcon"></i>
-                            </button>
-                        </div>
-                    </div>
 
                     <div class="form-group" style="margin-bottom: 12px;">
                         <label for="authSetupApiKey"><i class="fa-solid fa-bolt text-cyan"></i> OpenRouter API Key (sk-or-v1-...)</label>
@@ -516,19 +506,32 @@
                         </div>
                     </div>
 
+                    <details style="margin-bottom: 12px; font-size: 0.78rem; color: #94a3b8;">
+                        <summary style="cursor: pointer; color: #cbd5e1; font-weight: 500;">Optional: Lock with an Offline Local PIN</summary>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label for="authSetupPassword"><i class="fa-solid fa-key text-gold"></i> Optional Local Passcode / PIN</label>
+                            <div style="position: relative; margin-top: 4px;">
+                                <input type="password" id="authSetupPassword" class="text-input" placeholder="Leave blank if using Google Cloud Sync..." autocomplete="new-password" style="width: 100%; padding: 10px 42px 10px 12px; font-size: 0.88rem; border-radius: 8px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff;">
+                                <button type="button" onclick="toggleAuthPasswordVisibility('authSetupPassword', 'authSetupEyeIcon')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px;">
+                                    <i class="fa-solid fa-eye" id="authSetupEyeIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </details>
+
                     <div id="authSetupAlert" class="auth-feedback-msg" style="display: none;"></div>
 
                     <div class="modal-footer" style="margin-top: 16px; display: flex; gap: 10px; justify-content: flex-end;">
                         <button type="button" class="btn-secondary" onclick="closeAuthModal()">Cancel</button>
                         <button type="submit" class="btn-primary" id="btnSubmitSetup" style="background: linear-gradient(135deg, #059669, #10b981); color: #fff; padding: 10px 20px; font-weight: 600;">
-                            <i class="fa-solid fa-lock"></i> Encrypt & Save Vault
+                            <i class="fa-solid fa-check"></i> Save &amp; Sync Key
                         </button>
                     </div>
                 </form>
             </div>
 
             <!-- TAB 4: OPT-IN FIREBASE CLOUD SYNC & PWA APP INSTALL -->
-            <div id="authTabCloudSync" class="auth-tab-pane" style="display: none;">
+            <div id="authTabCloudSync" class="auth-tab-pane active">
                 <div style="padding: 6px 0;">
                     <!-- GOOGLE FIREBASE PERMANENT CROSS-DEVICE SYNC -->
                     <div style="background: rgba(15, 23, 42, 0.55); border: 1px solid rgba(56, 189, 248, 0.26); border-radius: 10px; padding: 14px; margin-bottom: 12px;">
@@ -1115,7 +1118,7 @@
     <script src="src/core/firebase_config.js"></script>
     <script src="src/core/firebase_sync.js"></script>
     <!-- Application Script -->
-    <script src="app.js?v=2026.11.18.01"></script>
+    <script src="app.js?v=2026.11.18.02"></script>
 </body>
 
 </html>
