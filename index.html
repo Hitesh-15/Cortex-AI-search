@@ -615,28 +615,6 @@
                             <i class="fa-solid fa-download text-cyan"></i> Install App
                         </button>
                     </div>
-
-                    <!-- LEGACY 6-DIGIT TEMPORARY PAIRING ROOM (OPT-IN) -->
-                    <details style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 12px;">
-                        <summary style="cursor: pointer; font-size: 0.76rem; color: #cbd5e1; font-weight: 600;">Quick 6-Digit Temporary Room (No Account Required)</summary>
-                        <div style="margin-top: 10px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span id="cloudSyncDot" style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block;"></span>
-                                    <div>
-                                        <div style="font-size: 0.8rem; font-weight: 600; color: #f8fafc;" id="cloudSyncStatusTitle">Temporary Room (Idle)</div>
-                                        <div style="font-size: 0.72rem; color: #94a3b8;" id="cloudSyncStatusDesc">Room: <strong style="color: #38bdf8; font-family: monospace;" id="cloudSyncRoomBadge">CTX-AUTO</strong></div>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn-secondary" onclick="CortexLiveSyncEngine.triggerManualSync()" style="font-size: 0.72rem; padding: 4px 9px;">Sync Now</button>
-                            </div>
-                            <div id="cloudSyncDisplayCode" style="font-size: 1.25rem; font-weight: 800; letter-spacing: 0.1em; color: #38bdf8; font-family: 'JetBrains Mono', monospace; text-align: center; margin-bottom: 8px;">CTX-849204</div>
-                            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-                                <input type="text" id="joinSyncCodeInput" placeholder="e.g. CTX-849204" style="flex: 1; padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-transform: uppercase; font-family: monospace;">
-                                <button type="button" class="btn-primary" onclick="CortexLiveSyncEngine.joinSyncRoom()" style="font-size: 0.76rem; padding: 6px 12px;">Connect Room</button>
-                            </div>
-                        </div>
-                    </details>
                 </div>
             </div>
 
