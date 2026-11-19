@@ -585,9 +585,15 @@
                             <summary style="cursor: pointer; font-size: 0.75rem; color: #38bdf8; font-weight: 600;">Configure Firebase Project (Paste Web Config)</summary>
                             <div style="margin-top: 8px;">
                                 <textarea id="firebaseConfigInput" rows="4" placeholder='{"apiKey":"AIza...","authDomain":"your-app.firebaseapp.com","projectId":"your-app","appId":"1:..."}' style="width: 100%; box-sizing: border-box; padding: 8px; font-size: 0.74rem; font-family: monospace; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.14); color: #e2e8f0; margin-bottom: 6px;"></textarea>
-                                <div style="display: flex; gap: 8px;">
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                     <button type="button" class="btn-primary" onclick="CortexFirebaseSync.saveConfigFromInput()" style="font-size: 0.74rem; padding: 5px 12px;">Save Firebase Config</button>
+                                    <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.togglePhoneQr()" style="font-size: 0.74rem; padding: 5px 10px;"><i class="fa-solid fa-qrcode text-cyan"></i> Pair Phone (QR)</button>
+                                    <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.copyPhoneSetupLink()" style="font-size: 0.74rem; padding: 5px 10px;"><i class="fa-solid fa-link"></i> Copy Link</button>
                                     <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.clearSavedConfig()" style="font-size: 0.74rem; padding: 5px 10px;">Disconnect</button>
+                                </div>
+                                <div id="firebasePhoneQrWrap" style="display: none; margin-top: 10px; text-align: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(56,189,248,0.22); border-radius: 8px; padding: 10px;">
+                                    <div style="font-size: 0.72rem; color: #cbd5e1; margin-bottom: 8px;">Scan with your Android or iPhone camera to auto-import Firebase config (zero manual typing):</div>
+                                    <div id="firebasePhoneQrCanvas" style="display: inline-block; padding: 8px; background: #ffffff; border-radius: 8px;"></div>
                                 </div>
                             </div>
                         </details>

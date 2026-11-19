@@ -88,6 +88,7 @@
         }
 
         async autoBootIfConfigured() {
+            this.importConfigFromUrlHash();
             this.updateUI();
             const cfg = this.getConfig();
             if (!cfg) return;
@@ -95,6 +96,84 @@
             if (localStorage.getItem('cortex_firebase_enabled') === 'true') {
                 await this.ensureInitialized().catch(() => {});
                 this.updateUI();
+            }
+        }
+
+        importConfigFromUrlHash() {
+            try {
+                if (!window.location.hash || !window.location.hash.startsWith('#fbcfg=')) return false;
+                const rawB64 = window.location.hash.substring(7);
+                const decoded = decodeURIComponent(atob(rawB64));
+                const parsed = JSON.parse(decoded);
+                if (parsed && parsed.apiKey && parsed.projectId && parsed.authDomain) {
+                    localStorage.setItem(STORAGE_CONFIG_KEY, JSON.stringify(parsed));
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                    }
+                    setTimeout(() => {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast(`Firebase "${parsed.projectId}" imported! Tap Sign in with Google.`, 'success');
+                        }
+                        if (typeof window.openAuthModal === 'function' && typeof window.switchAuthTab === 'function') {
+                            window.openAuthModal();
+                            window.switchAuthTab('cloudSync');
+                        }
+                    }, 400);
+                    return true;
+                }
+            } catch (e) {}
+            return false;
+        }
+
+        getPhoneSetupUrl() {
+            const cfg = this.getConfig();
+            if (!cfg) return null;
+            const b64 = btoa(encodeURIComponent(JSON.stringify(cfg)));
+            const base = `${window.location.origin}${window.location.pathname}`;
+            return `${base}#fbcfg=${b64}`;
+        }
+
+        togglePhoneQr() {
+            const wrap = document.getElementById('firebasePhoneQrWrap');
+            const qrTarget = document.getElementById('firebasePhoneQrCanvas');
+            if (!wrap || !qrTarget) return;
+            const cfg = this.getConfig();
+            if (!cfg) {
+                this.showStatus('Save your Firebase Config on this device first, then scan the QR on your phone.', 'error');
+                return;
+            }
+            const isVisible = wrap.style.display === 'block';
+            if (isVisible) {
+                wrap.style.display = 'none';
+                return;
+            }
+            const url = this.getPhoneSetupUrl();
+            qrTarget.innerHTML = '';
+            if (typeof window.QRCode === 'function') {
+                new window.QRCode(qrTarget, {
+                    text: url,
+                    width: 170,
+                    height: 170,
+                    colorDark: '#030712',
+                    colorLight: '#ffffff',
+                    correctLevel: window.QRCode.CorrectLevel.M
+                });
+            }
+            wrap.style.display = 'block';
+        }
+
+        copyPhoneSetupLink() {
+            const url = this.getPhoneSetupUrl();
+            if (!url) {
+                this.showStatus('Save your Firebase Config on this device first.', 'error');
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('Phone setup link copied! Open it on your phone to auto-configure Firebase.', 'success');
+                    }
+                }).catch(() => {});
             }
         }
 
