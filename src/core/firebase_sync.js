@@ -26,6 +26,10 @@
             this.syncedThreadCount = 0;
             this.lastSyncIso = null;
 
+            // Immediately parse #fbcfg=... hash on load and on hashchange
+            this.importConfigFromUrlHash();
+            window.addEventListener('hashchange', () => this.importConfigFromUrlHash());
+
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => this.autoBootIfConfigured());
             } else {
@@ -56,15 +60,23 @@
                 return;
             }
             try {
-                // Support both strict JSON and JS object snippet copied from Firebase Console
-                let jsonCandidate = raw
-                    .replace(/^(?:const|let|var)\s+\w+\s*=\s*/, '')
-                    .replace(/;\s*$/, '')
-                    .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
-                    .replace(/'/g, '"')
-                    .replace(/,\s*}/g, '}');
-                const parsed = JSON.parse(jsonCandidate);
-                if (!parsed.apiKey || !parsed.projectId || !parsed.authDomain) {
+                let parsed = null;
+                // Also accept pasting a #fbcfg=... phone setup link directly!
+                const hashIdx = raw.indexOf('#fbcfg=');
+                if (hashIdx !== -1) {
+                    const b64 = raw.substring(hashIdx + 7).trim();
+                    parsed = JSON.parse(decodeURIComponent(atob(b64)));
+                } else {
+                    // Support both strict JSON and JS object snippet copied from Firebase Console
+                    let jsonCandidate = raw
+                        .replace(/^(?:const|let|var)\s+\w+\s*=\s*/, '')
+                        .replace(/;\s*$/, '')
+                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+                        .replace(/'/g, '"')
+                        .replace(/,\s*}/g, '}');
+                    parsed = JSON.parse(jsonCandidate);
+                }
+                if (!parsed || !parsed.apiKey || !parsed.projectId || !parsed.authDomain) {
                     throw new Error('Config must include apiKey, authDomain, and projectId.');
                 }
                 localStorage.setItem(STORAGE_CONFIG_KEY, JSON.stringify(parsed));
@@ -225,7 +237,15 @@
                 await this.ensureInitialized();
                 const { authMod } = this.sdk;
                 const provider = new authMod.GoogleAuthProvider();
-                await authMod.signInWithPopup(this.auth, provider);
+                try {
+                    await authMod.signInWithPopup(this.auth, provider);
+                } catch (popErr) {
+                    if (popErr && (popErr.code === 'auth/popup-blocked' || popErr.code === 'auth/operation-not-supported-in-this-environment')) {
+                        await authMod.signInWithRedirect(this.auth, provider);
+                        return;
+                    }
+                    throw popErr;
+                }
                 if (typeof window.showToast === 'function') {
                     window.showToast('Signed in with Google • Restoring Full Workspace...', 'success');
                 }

@@ -4,7 +4,7 @@
  * - Cache-first for static brand icons and manifest
  * - Strict bypass for all live search, market telemetry, and Firebase API requests
  */
-const CACHE_NAME = 'cortex-pwa-v7.0.0';
+const CACHE_NAME = 'cortex-pwa-v7.1.2';
 const APP_SHELL = [
     './',
     './index.html',
