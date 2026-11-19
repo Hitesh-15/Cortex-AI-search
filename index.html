@@ -542,7 +542,7 @@
 
                         <!-- SIGNED OUT VIEW -->
                         <div id="firebaseSignedOutView">
-                            <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.45;">By default, Cortex stays 100% local in your browser. Sign in to sync threads permanently across your laptop, Android, and iOS PWA via your Google Firebase Firestore project.</p>
+                            <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.45;">By default, Cortex stays 100% local. Sign in once to sync <strong>all threads, OpenRouter API key, Discord webhook, Watchdog watchlist &amp; Library</strong> across any laptop, phone, or tablet.</p>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
                                 <button type="button" class="btn-primary" onclick="CortexFirebaseSync.signInWithGoogle()" style="flex: 1; min-width: 170px; font-size: 0.8rem; padding: 8px 12px;">
                                     <i class="fa-brands fa-google"></i> Sign in with Google
@@ -565,15 +565,18 @@
                                     <div style="font-size: 0.82rem; font-weight: 600; color: #34d399;"><i class="fa-solid fa-circle-check"></i> <span id="firebaseUserEmail">Signed In</span></div>
                                     <div style="font-size: 0.72rem; color: #94a3b8;" id="firebaseSyncMeta">Real-time Firestore sync active</div>
                                 </div>
-                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.pushAllLocalThreads()" style="font-size: 0.74rem; padding: 5px 10px;">
-                                    <i class="fa-solid fa-arrows-rotate text-cyan"></i> Sync Now
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.syncAllNow()" style="font-size: 0.74rem; padding: 5px 10px;">
+                                    <i class="fa-solid fa-arrows-rotate text-cyan"></i> Sync All
                                 </button>
                             </div>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.clearAllCloudThreads()" style="font-size: 0.75rem; padding: 6px 10px; color: #fca5a5;">
-                                    <i class="fa-solid fa-trash-can"></i> Wipe Cloud History
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.clearAllCloudThreads()" style="font-size: 0.74rem; padding: 6px 10px; color: #fca5a5;">
+                                    <i class="fa-solid fa-trash-can"></i> Wipe Cloud
                                 </button>
-                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signOut()" style="font-size: 0.75rem; padding: 6px 10px; margin-left: auto;">
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signOut(true)" style="font-size: 0.74rem; padding: 6px 10px; color: #fbbf24;" title="Sign out and erase local threads, keys, and webhook from this device (ideal for shared/friend's phone)">
+                                    <i class="fa-solid fa-broom"></i> Sign Out &amp; Clean Device
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="CortexFirebaseSync.signOut(false)" style="font-size: 0.74rem; padding: 6px 10px; margin-left: auto;">
                                     <i class="fa-solid fa-right-from-bracket"></i> Sign Out
                                 </button>
                             </div>

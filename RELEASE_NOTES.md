@@ -2,6 +2,13 @@
 
 All notable changes, continuous architectural improvements, and daily/weekly feature updates to **Cortex** ([ai.ambulkar.com](https://ai.ambulkar.com)) are documented in this file.
 
+## ☁️ [v7.1.0] — 2026-11-18
+### **Unified 1-Login Full Workspace Sync (Threads, API Keys, Discord Webhook, Watchdog & Library)**
+1. **Complete Workspace Profile Sync (`users/{uid}/profile/workspace`)**: Signing in to Google Firebase Cloud Sync now restores your **entire** workspace in one shot across laptops, tablets, Android, and iOS — including all search threads, OpenRouter/OpenAI/Claude API keys & encrypted Master Vault, Discord webhook URL, Autonomous Watchdog Bot watchlist, saved Research Library memos, and Local AI settings.
+2. **Smart Non-Destructive Hydration**: Signing in on a brand-new blank device never overwrites existing cloud settings; it pulls your full cloud workspace automatically in real time.
+3. **1-Tap `Sign Out & Clean Device`**: Added a dedicated shared-device logout button that signs out and wipes local threads, API keys, vault, and Discord webhook from a friend's phone or shared laptop while keeping 100% of your workspace safely stored in Firebase.
+4. **1-Second QR & Hash-Link Phone Pairing**: Scan a QR code or open your `#fbcfg=...` setup link on any new device to auto-import Firebase project settings with zero manual typing and zero keys in Git.
+
 ## 📱 [v7.0.0] — 2026-11-18
 ### **Installable Android & iOS PWA + Opt-In Google Firebase Auth & Firestore Cross-Device Sync**
 1. **Installable Progressive Web App (`sw.js` + `src/core/pwa_manager.js`)**: Added a network-first Service Worker (`sw.js`) and `CortexPWA` install manager so `ai.ambulkar.com` installs as a full-screen standalone app on Android (Chrome/Edge) and iOS (Safari Share → Add to Home Screen) with automatic updates and offline shell fallback.

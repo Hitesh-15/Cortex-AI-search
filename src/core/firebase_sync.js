@@ -20,6 +20,7 @@
             this.sdk = null;
             this.user = null;
             this.unsubscribeThreads = null;
+            this.unsubscribeProfile = null;
             this.isInitialized = false;
             this.isSyncingFromRemote = false;
             this.syncedThreadCount = 0;
@@ -205,6 +206,7 @@
                 if (user) {
                     localStorage.setItem('cortex_firebase_enabled', 'true');
                     this.attachRealtimeListener();
+                    this.attachProfileListener();
                 } else {
                     this.detachRealtimeListener();
                 }
@@ -225,9 +227,10 @@
                 const provider = new authMod.GoogleAuthProvider();
                 await authMod.signInWithPopup(this.auth, provider);
                 if (typeof window.showToast === 'function') {
-                    window.showToast('Signed in with Google • Cloud Sync Active', 'success');
+                    window.showToast('Signed in with Google • Restoring Full Workspace...', 'success');
                 }
                 await this.pushAllLocalThreads();
+                await this.syncWorkspaceProfile(true);
             } catch (err) {
                 this.showStatus(err.message || 'Google Sign-In failed.', 'error');
             }
@@ -257,21 +260,48 @@
                     }
                 }
                 await this.pushAllLocalThreads();
+                await this.syncWorkspaceProfile(true);
             } catch (err) {
                 this.showStatus(err.message || 'Email authentication failed.', 'error');
             }
         }
 
-        async signOut() {
+        async signOut(cleanLocalDevice = false) {
             this.detachRealtimeListener();
             localStorage.removeItem('cortex_firebase_enabled');
             if (this.auth && this.sdk?.authMod) {
                 await this.sdk.authMod.signOut(this.auth);
             }
             this.user = null;
+
+            if (cleanLocalDevice) {
+                const keysToPurge = [
+                    'ambu_threads', 'ambu_key_openrouter', 'ambu_key_openai', 'ambu_key_claude',
+                    'ambu_key_deepseek', 'ambu_discord_webhook', 'cortex_encrypted_vault_v1',
+                    'cortex_remember_vault_key', 'cortex_is_authenticated', 'cortex_library_memos',
+                    'cortex_bot_config', 'cortex_local_ai_config', STORAGE_E2EE_KEY
+                ];
+                keysToPurge.forEach((k) => {
+                    localStorage.removeItem(k);
+                    sessionStorage.removeItem(k);
+                });
+                if (window.CortexAuthVault?.logout) window.CortexAuthVault.logout();
+                if (window.appState) {
+                    window.appState.threads = [];
+                    window.appState.activeThreadId = null;
+                }
+                if (typeof window.renderThreadHistory === 'function') window.renderThreadHistory();
+                if (typeof window.resetToNewSearch === 'function') window.resetToNewSearch();
+            }
+
             this.updateUI();
             if (typeof window.showToast === 'function') {
-                window.showToast('Signed out of Cloud Sync (local threads kept).', 'info');
+                window.showToast(
+                    cleanLocalDevice
+                        ? 'Signed out & wiped local device cleanly (cloud data kept safe).'
+                        : 'Signed out of Cloud Sync (local threads kept).',
+                    'info'
+                );
             }
         }
 
@@ -387,6 +417,188 @@
             if (typeof this.unsubscribeThreads === 'function') {
                 this.unsubscribeThreads();
                 this.unsubscribeThreads = null;
+            }
+            if (typeof this.unsubscribeProfile === 'function') {
+                this.unsubscribeProfile();
+                this.unsubscribeProfile = null;
+            }
+        }
+
+        collectWorkspaceProfile(onlyNonEmpty = false) {
+            const payload = {};
+            const put = (key, val) => {
+                if (onlyNonEmpty) {
+                    if (val !== null && val !== undefined && val !== '' && !(Array.isArray(val) && val.length === 0)) {
+                        payload[key] = val;
+                    }
+                } else {
+                    payload[key] = val;
+                }
+            };
+
+            const orKey = (window.CortexAuthVault?.getActiveKey && window.CortexAuthVault.getActiveKey())
+                || localStorage.getItem('ambu_key_openrouter') || '';
+            put('openrouterKey', orKey);
+            put('openaiKey', localStorage.getItem('ambu_key_openai') || '');
+            put('claudeKey', localStorage.getItem('ambu_key_claude') || '');
+            put('deepseekKey', localStorage.getItem('ambu_key_deepseek') || '');
+            put('encryptedVault', localStorage.getItem('cortex_encrypted_vault_v1') || '');
+            put('provider', localStorage.getItem('ambu_provider') || 'openrouter');
+            put('model', localStorage.getItem('ambu_model') || 'openrouter/auto');
+            put('customModel', localStorage.getItem('ambu_custom_model') || '');
+            put('costRouting', localStorage.getItem('ambu_cost_routing') || 'min_cost');
+            put('discordWebhook', localStorage.getItem('ambu_discord_webhook') || '');
+
+            try {
+                const botCfg = localStorage.getItem('cortex_bot_config');
+                if (botCfg) put('botConfig', botCfg);
+            } catch (e) {}
+
+            try {
+                const localAi = localStorage.getItem('cortex_local_ai_config');
+                if (localAi) put('localAiConfig', localAi);
+            } catch (e) {}
+
+            try {
+                const memosRaw = JSON.parse(localStorage.getItem('cortex_library_memos') || '[]');
+                if (Array.isArray(memosRaw) && memosRaw.length > 0) {
+                    const compactMemos = memosRaw.slice(0, 25).map((m) => ({
+                        id: m.id || '',
+                        title: String(m.title || '').slice(0, 200),
+                        date: m.date || '',
+                        tag: m.tag || '',
+                        tagLabel: m.tagLabel || '',
+                        html: String(m.html || '').slice(0, 14000)
+                    }));
+                    put('libraryMemos', compactMemos);
+                }
+            } catch (e) {}
+
+            return payload;
+        }
+
+        async syncWorkspaceProfile(onlyIfNonEmpty = false) {
+            if (!this.isSignedIn() || this.isSyncingFromRemote) return;
+            const data = this.collectWorkspaceProfile(onlyIfNonEmpty);
+            // On a brand-new blank device, skip pushing empty defaults so we don't clobber cloud profile
+            const meaningfulKeys = Object.keys(data).filter((k) => !['provider', 'model', 'costRouting'].includes(k));
+            if (onlyIfNonEmpty && meaningfulKeys.length === 0) return;
+
+            try {
+                const { fsMod } = this.sdk;
+                const ref = fsMod.doc(this.db, 'users', this.user.uid, 'profile', 'workspace');
+                await fsMod.setDoc(ref, {
+                    ...data,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                this.lastSyncIso = new Date().toISOString();
+                this.updateUI();
+            } catch (err) {
+                console.warn('[CortexFirebaseSync] syncWorkspaceProfile error:', err.message);
+            }
+        }
+
+        attachProfileListener() {
+            if (typeof this.unsubscribeProfile === 'function') {
+                this.unsubscribeProfile();
+                this.unsubscribeProfile = null;
+            }
+            if (!this.isSignedIn()) return;
+
+            const { fsMod } = this.sdk;
+            const ref = fsMod.doc(this.db, 'users', this.user.uid, 'profile', 'workspace');
+
+            this.unsubscribeProfile = fsMod.onSnapshot(ref, (docSnap) => {
+                if (!docSnap.exists()) return;
+                const d = docSnap.data();
+                if (!d) return;
+
+                this.isSyncingFromRemote = true;
+                try {
+                    if (d.encryptedVault) {
+                        localStorage.setItem('cortex_encrypted_vault_v1', d.encryptedVault);
+                    }
+                    if (d.openrouterKey && d.openrouterKey.length > 15) {
+                        localStorage.setItem('ambu_key_openrouter', d.openrouterKey);
+                        localStorage.setItem('cortex_remember_vault_key', d.openrouterKey);
+                        localStorage.setItem('cortex_is_authenticated', 'true');
+                        if (window.appState) {
+                            window.appState.auth = window.appState.auth || {};
+                            window.appState.auth.isLoggedIn = true;
+                            window.appState.auth.activeKey = d.openrouterKey;
+                            if (window.appState.settings?.apiKeys) {
+                                window.appState.settings.apiKeys.openrouter = d.openrouterKey;
+                            }
+                        }
+                    }
+                    if (d.openaiKey) {
+                        localStorage.setItem('ambu_key_openai', d.openaiKey);
+                        if (window.appState?.settings?.apiKeys) window.appState.settings.apiKeys.openai = d.openaiKey;
+                    }
+                    if (d.claudeKey) {
+                        localStorage.setItem('ambu_key_claude', d.claudeKey);
+                        if (window.appState?.settings?.apiKeys) window.appState.settings.apiKeys.claude = d.claudeKey;
+                    }
+                    if (d.deepseekKey) {
+                        localStorage.setItem('ambu_key_deepseek', d.deepseekKey);
+                        if (window.appState?.settings?.apiKeys) window.appState.settings.apiKeys.deepseek = d.deepseekKey;
+                    }
+                    if (d.provider) {
+                        localStorage.setItem('ambu_provider', d.provider);
+                        if (window.appState?.settings) window.appState.settings.provider = d.provider;
+                    }
+                    if (d.model) {
+                        localStorage.setItem('ambu_model', d.model);
+                        if (window.appState?.settings) window.appState.settings.model = d.model;
+                    }
+                    if (d.customModel !== undefined) {
+                        localStorage.setItem('ambu_custom_model', d.customModel || '');
+                        if (window.appState?.settings) window.appState.settings.customModel = d.customModel || '';
+                    }
+                    if (d.discordWebhook) {
+                        localStorage.setItem('ambu_discord_webhook', d.discordWebhook);
+                        const discordInput = document.getElementById('discordWebhookInput');
+                        if (discordInput) discordInput.value = d.discordWebhook;
+                    }
+                    if (d.botConfig) {
+                        localStorage.setItem('cortex_bot_config', d.botConfig);
+                        if (window.CortexAutonomousBot?.loadConfig) {
+                            window.CortexAutonomousBot.config = window.CortexAutonomousBot.loadConfig();
+                        }
+                    }
+                    if (d.localAiConfig) {
+                        localStorage.setItem('cortex_local_ai_config', d.localAiConfig);
+                        if (window.CortexLocalAI?.loadConfig) {
+                            window.CortexLocalAI.config = window.CortexLocalAI.loadConfig();
+                        }
+                    }
+                    if (Array.isArray(d.libraryMemos) && d.libraryMemos.length > 0) {
+                        const existing = JSON.parse(localStorage.getItem('cortex_library_memos') || '[]');
+                        const byId = new Map();
+                        existing.forEach((m) => { if (m && m.id) byId.set(m.id, m); });
+                        d.libraryMemos.forEach((m) => { if (m && m.id) byId.set(m.id, m); });
+                        localStorage.setItem('cortex_library_memos', JSON.stringify(Array.from(byId.values())));
+                    }
+
+                    if (window.CortexAuthVault?.updateAuthUI) window.CortexAuthVault.updateAuthUI();
+                    if (typeof window.updateGatewayStatusBadge === 'function') window.updateGatewayStatusBadge();
+                    this.lastSyncIso = new Date().toISOString();
+                    this.updateUI();
+                } finally {
+                    this.isSyncingFromRemote = false;
+                }
+            }, (err) => {
+                console.warn('[CortexFirebaseSync] profile onSnapshot error:', err.message);
+            });
+        }
+
+        async syncAllNow() {
+            await Promise.allSettled([
+                this.pushAllLocalThreads(),
+                this.syncWorkspaceProfile(false)
+            ]);
+            if (typeof window.showToast === 'function') {
+                window.showToast('Full Workspace Synced (Threads, API Keys, Discord & Watchdog)', 'success');
             }
         }
 

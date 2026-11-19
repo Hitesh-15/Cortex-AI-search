@@ -9305,6 +9305,9 @@ function saveSettingsForm(e) {
 
     closeSettingsModal();
     updateGatewayStatusBadge();
+    if (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn()) {
+        window.CortexFirebaseSync.syncWorkspaceProfile(false);
+    }
     if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.pushSync) {
         CortexLiveSyncEngine.pushSync();
     }
@@ -9411,6 +9414,9 @@ var CortexAuthVault = {
         const cleanPass = password.trim();
         const encrypted = await this.encrypt(cleanKey, cleanPass);
         localStorage.setItem(this.STORAGE_KEY, encrypted);
+        if (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn()) {
+            window.CortexFirebaseSync.syncWorkspaceProfile(false);
+        }
         if (typeof CortexLiveSyncEngine !== "undefined" && CortexLiveSyncEngine.pushSync) {
             CortexLiveSyncEngine.pushSync();
         }
@@ -10988,6 +10994,9 @@ function saveCurrentMemoToLibrary(btn) {
 
     savedList.unshift(memoItem);
     localStorage.setItem("cortex_library_memos", JSON.stringify(savedList));
+    if (window.CortexFirebaseSync && window.CortexFirebaseSync.isSignedIn()) {
+        window.CortexFirebaseSync.syncWorkspaceProfile(false);
+    }
 
     const originalHTML = btn.innerHTML;
     btn.innerHTML = `<i class="fa-solid fa-check text-teal"></i> <span style="color:#2dd4bf;">Bookmarked!</span>`;
